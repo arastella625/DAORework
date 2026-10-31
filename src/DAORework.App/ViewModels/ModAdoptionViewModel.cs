@@ -59,32 +59,37 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
         ReportSuccess(string.Empty);
     }
 
-    [RelayCommand]
-    private Task AdoptAsync(HandInstalledModRow mod, CancellationToken cancellationToken) =>
+    /// <summary>
+    /// Plans adopting <paramref name="mods"/> as one change (P2.5-13), in the order given (a later one wins a file name
+    /// two of them share), as <c>mods adopt &lt;id&gt;...</c> does: one plan, one backup, one rollback.
+    /// </summary>
+    public Task PlanAdoptionAsync(IReadOnlyList<HandInstalledModRow> mods, CancellationToken cancellationToken = default) =>
         GuardAsync(
             async token =>
             {
                 ClearPlan();
                 ReportSuccess(string.Empty);
-                if (mod.Candidate is not { } candidate)
+                var candidates = mods.Where(m => m.Candidate is not null).ToList();
+                if (candidates.Count == 0)
                 {
                     return;
                 }
 
                 if (!(await ProfileDocuments.ForAsync(_getProfile, ProfileName, token)).TryGetValue(out var documents, out var error)
-                    || !(await _plan.ExecuteAsync(new PlanAdoptionRequest(documents, [candidate], LooseFilesName), token)).TryGetValue(out var plan, out error))
+                    || !(await _plan.ExecuteAsync(new PlanAdoptionRequest(documents, [.. candidates.Select(m => m.Candidate!)], LooseFilesName), token)).TryGetValue(out var plan, out error))
                 {
                     ReportError(error);
                     return;
                 }
 
-                PlanTitle = $"Adopt {mod.Title}";
+                var names = string.Join(", ", candidates.Select(m => m.Title));
+                PlanTitle = candidates.Count == 1 ? $"Adopt {names}" : $"Adopt {candidates.Count} mods: {names}";
                 foreach (var line in ModActivationPlanText.Render(plan))
                 {
                     PlanLines.Add(line);
                 }
 
-                _pending = (documents, plan, mod.Title);
+                _pending = (documents, plan, names);
                 CanApply = !plan.IsBlocked && !plan.IsEmpty;
                 if (AfterPlanAsync is not null)
                 {
@@ -92,6 +97,9 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
                 }
             },
             cancellationToken);
+
+    [RelayCommand]
+    private Task AdoptAsync(HandInstalledModRow mod, CancellationToken cancellationToken) => PlanAdoptionAsync([mod], cancellationToken);
 
     [RelayCommand(CanExecute = nameof(CanApply))]
     private Task ApplyAsync(CancellationToken cancellationToken) =>

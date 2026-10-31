@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DAORework.Application.Mods.Adoption;
@@ -34,6 +35,9 @@ public sealed partial class HandInstalledViewModel : PageViewModel
 
     public ObservableCollection<HandInstalledModRow> Candidates { get; } = [];
 
+    /// <summary>Gets a value indicating whether any candidate is ticked for <i>Adopt selected</i> (P2.5-13).</summary>
+    public bool HasSelection => Candidates.Any(c => c.IsSelected);
+
     public ObservableCollection<HandInstalledModRow> NotAdoptable { get; } = [];
 
     [ObservableProperty]
@@ -45,7 +49,7 @@ public sealed partial class HandInstalledViewModel : PageViewModel
     public void Load(string? profileName)
     {
         ProfileName = profileName;
-        Candidates.Clear();
+        ClearCandidates();
         NotAdoptable.Clear();
         OfficialSummary = null;
         _shown = false;
@@ -55,6 +59,17 @@ public sealed partial class HandInstalledViewModel : PageViewModel
 
     /// <summary>Scans again after a change elsewhere (an adoption, a rollback), but only once the user has scanned.</summary>
     public Task RescanAsync(CancellationToken cancellationToken = default) => _shown ? ScanAsync(cancellationToken) : Task.CompletedTask;
+
+    /// <summary>Plans adopting every ticked mod as one change, in the list's order (P2.5-13).</summary>
+    [RelayCommand(CanExecute = nameof(HasSelection))]
+    private Task AdoptSelectedAsync(CancellationToken cancellationToken) =>
+        Adoption.PlanAdoptionAsync([.. Candidates.Where(c => c.IsSelected)], cancellationToken);
+
+    [RelayCommand]
+    private void SelectAll() => SetSelected(true);
+
+    [RelayCommand]
+    private void ClearSelection() => SetSelected(false);
 
     [RelayCommand]
     private Task ScanAsync(CancellationToken cancellationToken) =>
@@ -85,13 +100,48 @@ public sealed partial class HandInstalledViewModel : PageViewModel
             },
             cancellationToken);
 
+    private void SetSelected(bool selected)
+    {
+        foreach (var candidate in Candidates)
+        {
+            candidate.IsSelected = selected;
+        }
+    }
+
+    private void OnCandidateChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(HandInstalledModRow.IsSelected))
+        {
+            SelectionChanged();
+        }
+    }
+
+    private void SelectionChanged()
+    {
+        OnPropertyChanged(nameof(HasSelection));
+        AdoptSelectedCommand.NotifyCanExecuteChanged();
+    }
+
+    private void ClearCandidates()
+    {
+        foreach (var candidate in Candidates)
+        {
+            candidate.PropertyChanged -= OnCandidateChanged;
+        }
+
+        Candidates.Clear();
+        SelectionChanged();
+    }
+
     private void Show(AdoptionScan scan)
     {
-        Candidates.Clear();
+        ClearCandidates();
         NotAdoptable.Clear();
         foreach (var candidate in scan.Candidates)
         {
-            Candidates.Add(HandInstalledModRow.From(candidate));
+            var row = HandInstalledModRow.From(candidate);
+            row.PropertyChanged += OnCandidateChanged;
+            Candidates.Add(row);
         }
 
         foreach (var exclusion in scan.Exclusions.Where(e => e.Reason != AdoptionExclusionReason.Official))
@@ -104,6 +154,6 @@ public sealed partial class HandInstalledViewModel : PageViewModel
         OfficialSummary = official == 0 ? null : $"Official DLC ({official} add-in(s)) is never adopted or changed.";
         ReportSuccess(scan.Candidates.Count == 0
             ? "Nothing installed by hand can be adopted."
-            : $"{scan.Candidates.Count} mod(s) installed by hand could be adopted. Adopt shows the plan first; nothing moves until you apply it.");
+            : $"{scan.Candidates.Count} mod(s) installed by hand could be adopted. Adopt one, or tick several and adopt them together; the plan shows first, and nothing moves until you apply it.");
     }
 }

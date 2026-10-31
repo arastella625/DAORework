@@ -6,7 +6,7 @@ using Xunit;
 
 namespace DAORework.App.Tests;
 
-/// <summary>Adopting a mod installed by hand from the Mods tab (P2.5-03, P3-04): the plan first, then Apply, as <c>mods adopt</c> does.</summary>
+/// <summary>Adopting mods installed by hand from the Mods tab (P2.5-03, P3-04, P2.5-13): the plan first, then Apply, as <c>mods adopt</c> does.</summary>
 public sealed class ModAdoptionScreenTests : IDisposable
 {
     private readonly AppTestHost _host = new();
@@ -89,5 +89,58 @@ public sealed class ModAdoptionScreenTests : IDisposable
         Assert.Equal(before, handInstalled.Candidates.Select(c => c.Title));
         Assert.False(Assert.Single(viewModel.Library.Mods).IsActive);
         Assert.True(_host.FileSystem.File.Exists(Path.Combine(GamePaths.OverrideDirectory(_scenario.DocumentsDirectory), "textures", "hair_01.dds")));
+    }
+
+    [AvaloniaFact]
+    public async Task AdoptSelected_NeedsATick_AndSelectAllAndClearSetEveryTick()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        var handInstalled = viewModel.HandInstalled;
+        await handInstalled.ScanCommand.ExecuteAsync(null);
+
+        Assert.False(handInstalled.AdoptSelectedCommand.CanExecute(null));
+
+        handInstalled.SelectAllCommand.Execute(null);
+
+        Assert.All(handInstalled.Candidates, c => Assert.True(c.IsSelected));
+        Assert.True(handInstalled.AdoptSelectedCommand.CanExecute(null));
+
+        handInstalled.ClearSelectionCommand.Execute(null);
+
+        Assert.All(handInstalled.Candidates, c => Assert.False(c.IsSelected));
+        Assert.False(handInstalled.AdoptSelectedCommand.CanExecute(null));
+
+        handInstalled.Candidates.Single(c => c.Title == "textures").IsSelected = true;
+
+        Assert.True(handInstalled.AdoptSelectedCommand.CanExecute(null));
+    }
+
+    [AvaloniaFact]
+    public async Task AdoptSelected_AdoptsEveryTickedMod_AsOneChange()
+    {
+        var (window, viewModel) = await _scenario.OpenAsync();
+        var handInstalled = viewModel.HandInstalled;
+        await handInstalled.ScanCommand.ExecuteAsync(null);
+        var count = handInstalled.Candidates.Count;
+        handInstalled.SelectAllCommand.Execute(null);
+        handInstalled.Adoption.LooseFilesName = "Loose fixes";
+
+        await handInstalled.AdoptSelectedCommand.ExecuteAsync(null);
+
+        Assert.False(handInstalled.Adoption.IsError, handInstalled.Adoption.StatusMessage);
+        Assert.StartsWith($"Adopt {count} mods: ", handInstalled.Adoption.PlanTitle, StringComparison.Ordinal);
+        Assert.True(handInstalled.Adoption.ApplyCommand.CanExecute(null));
+        ModsTabScenario.Show<HandInstalledPanel>(window);
+        Screenshots.Save(window, "28-adopt-selected");
+
+        await handInstalled.Adoption.ApplyCommand.ExecuteAsync(null);
+
+        Assert.False(handInstalled.Adoption.IsError, handInstalled.Adoption.StatusMessage);
+        Assert.Empty(handInstalled.Candidates);
+        Assert.False(handInstalled.AdoptSelectedCommand.CanExecute(null));
+        Assert.Equal(count, viewModel.Library.Mods.Count(m => m.IsActive));
+        Assert.Single(viewModel.ModsTab.Changes.Backups);
+        Assert.False(_host.FileSystem.File.Exists(Path.Combine(GamePaths.OverrideDirectory(_scenario.DocumentsDirectory), "textures", "hair_01.dds")));
+        Assert.False(_host.FileSystem.File.Exists(Path.Combine(GamePaths.OverrideDirectory(_scenario.DocumentsDirectory), "qwinn_fixpack", "fixes.gda")));
     }
 }

@@ -8,8 +8,9 @@
   <UserControl.Resources>
     <DataTemplate x:Key="Candidate" x:DataType="vm:HandInstalledModRow">
       <Border Padding="0,10" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
-        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-          <StackPanel Spacing="3">
+        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+          <CheckBox VerticalAlignment="Top" IsChecked="{Binding IsSelected}" ToolTip.Tip="Tick to adopt it with the others" />
+          <StackPanel Grid.Column="1" Spacing="3">
             <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
             <TextBlock Classes="Mono Secondary" Text="{Binding Details}" TextWrapping="Wrap" />
             <ItemsControl ItemsSource="{Binding Notes}">
@@ -25,7 +26,7 @@
                        Text="{Binding $parent[views:HandInstalledPanel].((vm:HandInstalledViewModel)DataContext).Adoption.LooseFilesName}" />
             </StackPanel>
           </StackPanel>
-          <Button Grid.Column="1" VerticalAlignment="Top" Content="Adopt" CommandParameter="{Binding}"
+          <Button Grid.Column="2" VerticalAlignment="Top" Content="Adopt" CommandParameter="{Binding}"
                   Command="{Binding $parent[views:HandInstalledPanel].((vm:HandInstalledViewModel)DataContext).Adoption.AdoptCommand}" />
         </Grid>
       </Border>
@@ -59,7 +60,7 @@
         <StackPanel Spacing="8">
           <TextBlock FontWeight="SemiBold" Text="{Binding Adoption.PlanTitle}" />
           <TextBlock Classes="Secondary" TextWrapping="Wrap"
-                     Text="Planning copied the mod into the Library, which writes only DAORework's own folder. Nothing in the documents folder moves until you apply it; a backup is taken first." />
+                     Text="Planning copied what is adopted into the Library, which writes only DAORework's own folder. Nothing in the documents folder moves until you apply it; a backup is taken first." />
           <ItemsControl ItemsSource="{Binding Adoption.PlanLines}">
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="x:String">
@@ -75,6 +76,14 @@
       </Border>
       <TextBlock Name="AdoptionStatus" Classes="Status" Classes.Error="{Binding Adoption.IsError}" Text="{Binding Adoption.StatusMessage}" TextWrapping="Wrap"
                  IsVisible="{Binding Adoption.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+      <StackPanel Name="SelectionBar" Orientation="Horizontal" Spacing="8"
+                  IsVisible="{Binding Candidates.Count, Converter={x:Static views:CountConverters.IsPositive}}">
+        <Button Name="AdoptSelectedButton" Classes="accent" Content="Adopt selected" Command="{Binding AdoptSelectedCommand}" />
+        <Button Name="SelectAllButton" Content="Select all" Command="{Binding SelectAllCommand}" />
+        <Button Name="ClearSelectionButton" Content="Clear" Command="{Binding ClearSelectionCommand}" />
+        <TextBlock VerticalAlignment="Center" Classes="Secondary" TextWrapping="Wrap"
+                   Text="Ticked mods are adopted together: one plan, one backup, one rollback." />
+      </StackPanel>
       <ItemsControl Name="Candidates" ItemsSource="{Binding Candidates}" ItemTemplate="{StaticResource Candidate}" />
       <TextBlock Classes="Label" Text="Cannot be adopted" Margin="0,6,0,0"
                  IsVisible="{Binding NotAdoptable.Count, Converter={x:Static views:CountConverters.IsPositive}}" />
