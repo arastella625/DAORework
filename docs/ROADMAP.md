@@ -191,6 +191,9 @@ Task IDs use the `P2.5-` prefix (branch `feat/P2.5-02-adopt-scan`). P3-04 moves 
 - P2.5-09 Release 0.3.0 and the launch kit: the release, a Nexus page written by the owner, screenshots from the
   headless tests, and the generative-AI tag chosen by Nexus's guidelines as they stand on upload day. The README
   says plainly how the project is built, including the AI assistance.
+  *Done: 0.3.0 released on 2026-10-31 on [GitHub](https://github.com/arastella625/DAORework/releases/tag/v0.3.0)
+  and [Nexus Mods](https://www.nexusmods.com/dragonage/mods/7083), with its build attestation, and its checksum on
+  the [website](https://daorework.dilly-world.net/).*
 
 **Not in this phase:** Nexus "Mod Manager Download" (`nxm://`) links and any other network access (SDD §12 and
 ADR-0009 need an ADR first); hard links for large texture packs (ADR-0012 leaves that to its own ADR); any format

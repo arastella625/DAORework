@@ -10,7 +10,8 @@ already on your machine. See [docs/LEGAL_BOUNDARIES.md](docs/LEGAL_BOUNDARIES.md
 
 ## Download
 
-Windows builds are on the [Releases page](https://github.com/arastella625/DAORework/releases), and the project
+Windows builds are on the [Releases page](https://github.com/arastella625/DAORework/releases) and on
+[Nexus Mods](https://www.nexusmods.com/dragonage/mods/7083), and the project
 website, <https://daorework.dilly-world.net/>, lists each release's checksum. Unzip anywhere and run
 `DAORework.exe` for the window or `dao.exe` for the command line; both are self-contained, so no .NET install is
 needed. Profiles, the mod library, reports and backups go to `%LOCALAPPDATA%\DAORework`. Your game and Documents
