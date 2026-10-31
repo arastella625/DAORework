@@ -28,6 +28,7 @@ public sealed class ModsTabViewModel
         LoadOrder.AfterChangeAsync = RefreshAfterChangeAsync;
         handInstalled.Adoption.AfterChangeAsync = RefreshAfterChangeAsync;
         handInstalled.Adoption.AfterPlanAsync = library.LoadAsync;
+        Changes.NameOf = NameOf; // Changes names mods by their Library names (P2.5-19).
     }
 
     /// <summary>Gets the summary of the override and AddIns folders and the inventory.</summary>
@@ -62,6 +63,9 @@ public sealed class ModsTabViewModel
         await LoadOrder.LoadAsync(profileName, cancellationToken);
         await HandInstalled.RefreshAsync(cancellationToken);
     }
+
+    private string NameOf(string modId) =>
+        Library.Mods.FirstOrDefault(m => string.Equals(m.Id, modId, StringComparison.OrdinalIgnoreCase))?.Title ?? modId;
 
     private async Task RefreshAfterChangeAsync(CancellationToken cancellationToken)
     {

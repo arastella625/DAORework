@@ -5,6 +5,8 @@ using DAORework.Application.Mods.Apply;
 using DAORework.Application.Mods.Changes;
 using DAORework.Application.Profiles;
 using DAORework.Core.Common;
+using DAORework.Core.Fixes;
+using DAORework.Core.Mods.Backups;
 using Microsoft.Extensions.Logging;
 
 namespace DAORework.App.ViewModels;
@@ -61,7 +63,18 @@ public sealed partial class FixStatusViewModel : RecoverableChangesViewModel
         Summary = status.Applied.Count == 0 ? $"No fixes are applied through DAORework in {install}." : $"Install folder: {install}";
         ChangeUnfinished = status.ChangeUnfinished;
 
-        // A fix is recorded by its library id, fixes/<entry>; the entry names the fix and its version.
-        ShowBackups(status.Backups, id => id[(id.LastIndexOf('/') + 1)..], "no fixes");
+        ShowBackups(status.Backups, [.. status.Applied.Select(f => f.LibraryId)], DeploymentChangeText.Fixes, FixName, "no fixes");
+    }
+
+    /// <summary>
+    /// A fix is recorded by its library id, fixes/&lt;entry&gt;, whose entry starts with the fix's id: it reads as the fix's
+    /// name ("4 GB patch", "DXVK"), and an entry of a fix DAORework does not know as the entry.
+    /// </summary>
+    private static string FixName(string libraryId)
+    {
+        string[] known = [FixIds.LargeAddressAware, FixIds.Dxvk];
+        return known.FirstOrDefault(fix => FixIds.IsEntryOf(libraryId, fix)) is { } fix
+            ? FixIds.DisplayName(fix)
+            : libraryId[(libraryId.LastIndexOf('/') + 1)..];
     }
 }

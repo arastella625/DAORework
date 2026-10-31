@@ -24,21 +24,34 @@ public sealed class ModChangesScreenTests : IDisposable
     public void Dispose() => _host.Dispose();
 
     [AvaloniaFact]
+    public async Task Backups_EachSayWhatTheirChangeDid_NewestFirst()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        await _scenario.ImportHairPackAsync(viewModel);
+        await _scenario.ActivateHairPackAsync(viewModel);
+        await viewModel.ModsTab.Activation.DeactivateCommand.ExecuteAsync(viewModel.Library.Mods.Single(m => m.Title == "Hair Pack"));
+        await viewModel.ModsTab.Activation.ApplyCommand.ExecuteAsync(null);
+
+        Assert.Equal(["Deactivated Hair Pack", "Activated Hair Pack"], viewModel.ModsTab.Changes.Backups.Select(b => b.Change));
+    }
+
+    [AvaloniaFact]
     public async Task RollBack_AskedOnceMore_ThenPutsTheFolderBack()
     {
         var (window, viewModel) = await _scenario.OpenAsync();
         await _scenario.ImportHairPackAsync(viewModel);
         await _scenario.ActivateHairPackAsync(viewModel);
         var changes = viewModel.ModsTab.Changes;
-        var modId = viewModel.Library.Mods[0].Id;
 
-        Assert.Equal($"Active in {_scenario.DocumentsDirectory}, lowest priority first: {modId} (1 file(s)).", changes.Summary);
+        // Mods are named by their Library names, and each backup says what its change did (P2.5-19).
+        Assert.Equal($"Active in {_scenario.DocumentsDirectory}, lowest priority first: Hair Pack (1 file(s)).", changes.Summary);
         var backup = Assert.Single(changes.Backups);
+        Assert.Equal("Activated Hair Pack", backup.Change);
         Assert.Equal("Before it: no mods", backup.Before);
 
         await changes.RollBackToCommand.ExecuteAsync(backup);
 
-        Assert.StartsWith($"Undo the change backed up as {backup.Id}", changes.PendingRollback, StringComparison.Ordinal);
+        Assert.StartsWith("Undo \u201cActivated Hair Pack\u201d (", changes.PendingRollback, StringComparison.Ordinal);
         Assert.Single(_scenario.DeployedHair());
         ModsTabScenario.Show<ChangesPanel>(window);
         Screenshots.Save(window, "15-changes-rollback");

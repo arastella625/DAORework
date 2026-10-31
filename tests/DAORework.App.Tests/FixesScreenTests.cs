@@ -98,10 +98,11 @@ public sealed class FixesScreenTests : IDisposable
         var status = viewModel.Fixes.Status;
         var backup = Assert.Single(status.Backups);
         Assert.Equal("Before it: no fixes", backup.Before);
+        Assert.Equal("Applied 4 GB patch", backup.Change);
 
         await status.RollBackToCommand.ExecuteAsync(backup);
 
-        Assert.StartsWith($"Undo the change backed up as {backup.Id}", status.PendingRollback, StringComparison.Ordinal);
+        Assert.StartsWith("Undo \u201cApplied 4 GB patch\u201d (", status.PendingRollback, StringComparison.Ordinal);
         Assert.EndsWith("the fixes applied before it are the applied ones again.", status.PendingRollback, StringComparison.Ordinal);
         Assert.True(FixFixtures.LargeAddressAware(_host.FileSystem.File.ReadAllBytes(Exe)));
         Screenshots.Save(window, "20-fixes-rollback");

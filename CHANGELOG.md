@@ -6,6 +6,9 @@ All notable changes to DAORework are recorded here. The format follows
 
 ## [Unreleased]
 
+### Changed
+- Each backup says what its change did (P2.5-19): the Mods tab's *Changes* and the Fixes tab name each backup by its change (*Activated Eyes and Nails*, *Adopted 4 mods: …*, *Changed the load order*, *Applied 4 GB patch*), and asking to roll one back names it too. Mods are named by their Library names there, and fixes by theirs (*4 GB patch*, *DXVK*), instead of their ids.
+
 ### Added
 - *Installed by hand* fills in by itself (P2.5-16): the Mods tab lists the mods you installed by hand as soon as a profile is chosen, and again after every change, without pressing a button. It only reads. *Look again* reads it once more after you add files by hand.
 - Adopt several mods at once (P2.5-13): each mod in *Installed by hand* on the Mods tab has a tick box, with *Select all* and *Clear*. *Adopt selected* shows one plan for every ticked mod, applied with one backup and undone by one rollback, as `mods adopt <id>...` does on the command line.
