@@ -33,6 +33,9 @@ public sealed partial class HandInstalledViewModel : PageViewModel
 
     public ObservableCollection<HandInstalledModRow> Candidates { get; } = [];
 
+    /// <summary>Gets the section's name on the Mods tab, with how many mods could be adopted (P2.5-17).</summary>
+    public string SectionHeader => Candidates.Count == 0 ? "Installed by hand" : $"Installed by hand ({Candidates.Count})";
+
     /// <summary>Gets a value indicating whether any candidate is ticked for <i>Adopt selected</i> (P2.5-13).</summary>
     public bool HasSelection => Candidates.Any(c => c.IsSelected);
 
@@ -120,6 +123,7 @@ public sealed partial class HandInstalledViewModel : PageViewModel
 
     private void SelectionChanged()
     {
+        OnPropertyChanged(nameof(SectionHeader));
         OnPropertyChanged(nameof(HasSelection));
         AdoptSelectedCommand.NotifyCanExecuteChanged();
     }
@@ -145,6 +149,8 @@ public sealed partial class HandInstalledViewModel : PageViewModel
             row.PropertyChanged += OnCandidateChanged;
             Candidates.Add(row);
         }
+
+        SelectionChanged();
 
         foreach (var exclusion in scan.Exclusions.Where(e => e.Reason != AdoptionExclusionReason.Official))
         {

@@ -6,6 +6,9 @@ All notable changes to DAORework are recorded here. The format follows
 
 ## [Unreleased]
 
+### Changed
+- The Mods tab is in sections (P2.5-17): *Library*, *Installed by hand* (with how many mods it found), *Load order*, *Changes* and *Folders*, one at a time instead of one long page. Each plan shows in the section you asked for it, and the *Adopt* next step opens *Installed by hand*.
+
 ### Added
 - *Installed by hand* fills in by itself (P2.5-16): the Mods tab lists the mods you installed by hand as soon as a profile is chosen, and again after every change, without pressing a button. It only reads. *Look again* reads it once more after you add files by hand.
 - Adopt several mods at once (P2.5-13): each mod in *Installed by hand* on the Mods tab has a tick box, with *Select all* and *Clear*. *Adopt selected* shows one plan for every ticked mod, applied with one backup and undone by one rollback, as `mods adopt <id>...` does on the command line.

@@ -17,5 +17,6 @@
     <StyleInclude Source="avares://DAORework.App/Themes/Styles/Text.axaml" />
     <StyleInclude Source="avares://DAORework.App/Themes/Styles/Status.axaml" />
     <StyleInclude Source="avares://DAORework.App/Themes/Styles/Dialogs.axaml" />
+    <StyleInclude Source="avares://DAORework.App/Themes/Styles/Tabs.axaml" />
   </Application.Styles>
 </Application>
