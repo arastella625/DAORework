@@ -7,6 +7,7 @@ All notable changes to DAORework are recorded here. The format follows
 ## [Unreleased]
 
 ### Changed
+- The Mods tab is in sections (P2.5-17): *Library*, *Installed by hand* (with how many mods it found), *Load order*, *Changes* and *Folders*, one at a time instead of one long page. Each plan shows in the section you asked for it, and the *Adopt* next step opens *Installed by hand*.
 - Plans in the window are easier to read (P2.5-18): each opens with one sentence saying what it does (*Copies 1 file and deletes 1. Writes 3 B.*), its warnings follow in full, and the file-by-file detail is behind *Show details*. Mods are named by their names instead of ids like `eyes-bd85c991`. The command line's plans are unchanged.
 
 ### Added

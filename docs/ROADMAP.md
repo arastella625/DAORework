@@ -213,6 +213,13 @@ window up to the command line. Each change still shows its plan first and is app
   instead of waiting for *Find mods installed by hand*. Finding still only reads. *Done: read when a profile is
   chosen and after every change; a profile without a documents folder shows an empty list, and the button is now
   Look again.*
+- P2.5-17 The Mods tab in sections: *Library*, *Installed by hand* (with how many), *Load order*, *Changes* and
+  *Folders*, instead of one long page with the folder figures first and *Installed by hand* last. Each plan shows
+  in the section it was asked for.
+- P2.5-18 Plans in the window name mods by their names, not their ids, open with a one-line summary (*copies 2
+  files, moves 3*), and keep the file-by-file detail behind *Show details*. The command line's text is unchanged.
+- P2.5-19 Each backup in *Changes* says what its change did (*Activated Eyes, Nails*, *Adopted 4 mods*), so the one
+  to roll back to can be found without reading timestamps.
 
 **Not in this phase:** Nexus "Mod Manager Download" (`nxm://`) links and any other network access (SDD §12 and
 ADR-0009 need an ADR first); hard links for large texture packs (ADR-0012 leaves that to its own ADR); any format

@@ -138,6 +138,7 @@ public sealed class MainWindowTests : IDisposable
         Assert.Equal(5, viewModel.Mods.Inventory.TotalFiles);
         Assert.Equal(["dupe.gda"], viewModel.Mods.Inventory.DuplicateFileNames);
         Assert.True(_host.FileSystem.File.Exists(viewModel.Mods.InventoryPath));
+        ModsTabScenario.Show<ModsPage>(window);
         Screenshots.Save(window, "03-mods");
     }
 

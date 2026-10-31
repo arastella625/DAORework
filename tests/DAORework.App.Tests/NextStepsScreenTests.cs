@@ -49,7 +49,9 @@ public sealed class NextStepsScreenTests : IDisposable
         await viewModel.NextSteps.TakeCommand.ExecuteAsync(viewModel.NextSteps.Steps.Single(s => s.Kind == NextStepKind.AdoptHandInstalled));
 
         Assert.Equal(MainWindowViewModel.ModsPage, viewModel.SelectedPage);
+        Assert.Equal(MainWindowViewModel.InstalledByHandSection, viewModel.ModsSection);
         Assert.Equal(4, viewModel.HandInstalled.Candidates.Count);
+        Assert.Equal("Installed by hand (4)", viewModel.HandInstalled.SectionHeader);
     }
 
     [AvaloniaFact]

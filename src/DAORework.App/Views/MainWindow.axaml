@@ -40,15 +40,34 @@
           <views:DiagnosticsPage DataContext="{Binding Diagnostics}" />
         </TabItem>
         <TabItem Header="Mods">
-          <ScrollViewer>
-            <StackPanel>
-              <views:ModsPage DataContext="{Binding Mods}" />
-              <views:LibraryPanel DataContext="{Binding ModsTab}" />
-              <views:LoadOrderPanel DataContext="{Binding ModsTab.LoadOrder}" />
-              <views:ChangesPanel DataContext="{Binding ModsTab.Changes}" />
-              <views:HandInstalledPanel DataContext="{Binding HandInstalled}" />
-            </StackPanel>
-          </ScrollViewer>
+          <!-- P2.5-17: one section at a time, each plan shown in the section it was asked for. -->
+          <TabControl Name="ModsSections" Classes="Sections" SelectedIndex="{Binding ModsSection}">
+            <TabItem Header="Library">
+              <ScrollViewer>
+                <views:LibraryPanel DataContext="{Binding ModsTab}" />
+              </ScrollViewer>
+            </TabItem>
+            <TabItem Header="{Binding HandInstalled.SectionHeader}">
+              <ScrollViewer>
+                <views:HandInstalledPanel DataContext="{Binding HandInstalled}" />
+              </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Load order">
+              <ScrollViewer>
+                <views:LoadOrderPanel DataContext="{Binding ModsTab.LoadOrder}" />
+              </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Changes">
+              <ScrollViewer>
+                <views:ChangesPanel DataContext="{Binding ModsTab.Changes}" />
+              </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Folders">
+              <ScrollViewer>
+                <views:ModsPage DataContext="{Binding Mods}" />
+              </ScrollViewer>
+            </TabItem>
+          </TabControl>
         </TabItem>
         <TabItem Header="Saves">
           <views:SavesPage DataContext="{Binding Saves}" />

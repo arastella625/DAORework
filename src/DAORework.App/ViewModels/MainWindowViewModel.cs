@@ -11,6 +11,9 @@ public sealed partial class MainWindowViewModel : ObservableObject
     /// <summary>The Fixes tab's index in the window.</summary>
     public const int FixesPage = 4;
 
+    /// <summary>The <i>Installed by hand</i> section's index on the Mods tab (P2.5-17).</summary>
+    public const int InstalledByHandSection = 1;
+
     private Task? _initialization;
 
     public MainWindowViewModel(ProfileListViewModel profiles, LaunchViewModel launch, PagesViewModel pages, SettingsPageViewModel settings, NextStepsViewModel nextSteps)
@@ -32,6 +35,10 @@ public sealed partial class MainWindowViewModel : ObservableObject
     /// <summary>Gets or sets the tab shown; a next step switches to the tab its plan is on.</summary>
     [ObservableProperty]
     public partial int SelectedPage { get; set; }
+
+    /// <summary>Gets or sets the Mods tab's section shown (P2.5-17); the <i>Adopt</i> next step opens <i>Installed by hand</i>.</summary>
+    [ObservableProperty]
+    public partial int ModsSection { get; set; }
 
     /// <summary>Gets the suggested next steps on the Profile tab (P2.5-07).</summary>
     public NextStepsViewModel NextSteps { get; }
@@ -88,6 +95,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
                 break;
             default:
                 SelectedPage = ModsPage;
+                ModsSection = InstalledByHandSection;
                 await HandInstalled.ScanCommand.ExecuteAsync(null);
                 break;
         }
