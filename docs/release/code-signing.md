@@ -1,5 +1,7 @@
 # Code signing with Azure Artifact Signing: optional setup for the owner
 
+*Status: set up on 2026-10-31 with a Public Trust profile; releases are signed from 0.3.1.*
+
 Signing is **optional** ([ADR-0018](../adr/0018-mod-safety.md) §4). Without it, a `v*` tag publishes the release
 unsigned, with its `.sha256` and a GitHub build provenance attestation, and Windows SmartScreen warns on first run.
 With it, the release job also signs `DAORework.exe` and `dao.exe`. If only some of the setup below is in place, the run
@@ -81,10 +83,10 @@ In the repository: Settings > Environments > New environment, named exactly `rel
 
 ## 6. Releasing
 
-Push the tag as before (`git tag v0.3.0`, `git push origin v0.3.0`). The workflow builds and smoke-tests the
+Push the tag as before (`git tag -a vX.Y.Z -m "DAORework X.Y.Z"`, `git push origin vX.Y.Z`). The workflow builds and smoke-tests the
 executables, then the **Sign, attest and publish the release** job signs `DAORework.exe` and `dao.exe`, checks that Windows
 reports both signatures as valid, runs the signed `dao.exe`, zips them with the `.sha256`, and publishes the release.
-If signing fails, nothing is published; fix the setup and re-run with Actions > Release > Run workflow, tag `v0.3.0`.
+If signing fails, nothing is published; fix the setup and re-run with Actions > Release > Run workflow, with the tag.
 To turn signing off again, delete the six variables.
 
 To check a download yourself: right-click `DAORework.exe` > Properties > Digital Signatures, or in PowerShell

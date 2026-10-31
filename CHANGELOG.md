@@ -6,7 +6,12 @@ All notable changes to DAORework are recorded here. The format follows
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-10-31
+
+The same program as 0.3.0, now code-signed, and the first release published to Nexus by the release workflow.
+
 ### Changed
+- `DAORework.exe` and `dao.exe` are code-signed ([ADR-0018](docs/adr/0018-mod-safety.md) §4): Windows names the publisher, which you can check under Properties > Digital Signatures. A new publisher still builds up reputation with Windows SmartScreen, so it may warn on the first releases. Each release keeps its `.sha256` and its build attestation.
 - Releases can go to Nexus Mods by themselves ([ADR-0024](docs/adr/0024-publishing-releases-to-nexus.md)): once the owner adds the Nexus API key and file id to the release environment, each tag uploads the same zip as the GitHub release to the [Nexus page](https://www.nexusmods.com/dragonage/mods/7083) as a new version of the main file. The app itself still never goes online.
 
 ## [0.3.0] - 2026-10-31
@@ -118,5 +123,6 @@ CLI does what it did before, with the fixes listed under *Fixed*.
 - Report JSON uses one consistent camelCase naming (P0-06).
 - The README tree and command list are correct again (P0-14).
 
-[Unreleased]: https://github.com/arastella625/DAORework/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/arastella625/DAORework/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/arastella625/DAORework/releases/tag/v0.3.1
 [0.3.0]: https://github.com/arastella625/DAORework/releases/tag/v0.3.0

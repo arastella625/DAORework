@@ -18,8 +18,9 @@ needed. Profiles, the mod library, reports and backups go to `%LOCALAPPDATA%\DAO
 folders change only when you activate a mod or apply a fix, always after showing the plan and taking a backup you can
 roll back to.
 
-The executables are not code-signed (a signing certificate would carry the author's personal details), so Windows
-SmartScreen may warn on first run: **More info**, then **Run anyway**. Instead, every release can be checked two ways:
+From 0.3.1, `DAORework.exe` and `dao.exe` are code-signed: right-click > Properties > Digital Signatures shows the
+publisher. A new publisher still builds up reputation with Windows SmartScreen, so it may warn on the first releases
+(**More info**, then **Run anyway**). Every release can also be checked two ways:
 
 - **Checksum:** compare `Get-FileHash DAORework-<version>-win-x64.zip` in PowerShell with the release's `.sha256` file.
 - **Build attestation:** `gh attestation verify DAORework-<version>-win-x64.zip --repo arastella625/DAORework`

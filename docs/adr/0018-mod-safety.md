@@ -86,6 +86,9 @@ protections below, and how each one acts, on 2026-10-29.
   page say why and how to check the download. Ways to sign later without the owner's name (a business of her own, or
   the Microsoft Store) need their own decision. SignPath Foundation is out: it requires an OSI-approved license, which
   [ADR-0020](0020-license-noncommercial.md) is not.
+- *Signing turned on, later on 2026-10-31, by the owner:* she set up Azure Artifact Signing with a Public Trust
+  certificate profile in her validated name, accepting that the name is on every download, and added the signing
+  setup to the `release` environment. Releases are signed from 0.3.1; 0.3.0 stays unsigned.
 - Every release asset keeps its published `.sha256` (as today), and the release notes and the Nexus page say how to
   check it.
 
