@@ -57,18 +57,11 @@
       </StackPanel>
       <TextBlock Name="HandInstalledStatus" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" />
       <Border Name="AdoptionPlan" Padding="12" CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource BorderSoftBrush}"
-              IsVisible="{Binding Adoption.PlanTitle, Converter={x:Static ObjectConverters.IsNotNull}}">
+              IsVisible="{Binding Adoption.Preview.Title, Converter={x:Static ObjectConverters.IsNotNull}}">
         <StackPanel Spacing="8">
-          <TextBlock FontWeight="SemiBold" Text="{Binding Adoption.PlanTitle}" />
+          <views:PlanPreviewView DataContext="{Binding Adoption.Preview}" />
           <TextBlock Classes="Secondary" TextWrapping="Wrap"
                      Text="Planning copied what is adopted into the Library, which writes only DAORework's own folder. Nothing in the documents folder moves until you apply it; a backup is taken first." />
-          <ItemsControl ItemsSource="{Binding Adoption.PlanLines}">
-            <ItemsControl.ItemTemplate>
-              <DataTemplate x:DataType="x:String">
-                <TextBlock Classes="Mono" Text="{Binding}" TextWrapping="Wrap" />
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
           <StackPanel Orientation="Horizontal" Spacing="12">
             <Button Name="ApplyAdoptionButton" Classes="accent" Content="Apply" Command="{Binding Adoption.ApplyCommand}" />
             <Button Name="CancelAdoptionButton" Content="Cancel" Command="{Binding Adoption.CancelPlanCommand}" />

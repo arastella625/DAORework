@@ -38,16 +38,19 @@ public sealed partial class ModActivationViewModel : PageViewModel
     /// <summary>Gets or sets what runs after a change was applied, such as reading the backups again.</summary>
     public Func<CancellationToken, Task>? AfterChangeAsync { get; set; }
 
-    /// <summary>Gets the plan being previewed, as <c>mods activate --dry-run</c> prints it.</summary>
-    public ObservableCollection<string> PlanLines { get; } = [];
+    /// <summary>Gets the plan being previewed: a summary, its warnings, and its full text behind Show details (P2.5-18).</summary>
+    public PlanPreview Preview { get; } = new();
+
+    /// <summary>Gets the plan's full text, as <c>mods activate --dry-run</c> prints it, with mods named.</summary>
+    public ObservableCollection<string> PlanLines => Preview.Lines;
+
+    /// <summary>Gets what the plan being previewed is for, or null when there is none.</summary>
+    public string? PlanTitle => Preview.Title;
 
     public IReadOnlyList<string> ActiveModIds { get; private set; } = [];
 
     [ObservableProperty]
     public partial string? ProfileName { get; set; }
-
-    [ObservableProperty]
-    public partial string? PlanTitle { get; set; }
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ApplyCommand))]
@@ -130,11 +133,7 @@ public sealed partial class ModActivationViewModel : PageViewModel
 
                 var verb = kind == ModChangeKind.Activate ? "Activate" : "Deactivate";
                 var names = string.Join(", ", mods.Select(m => m.Title));
-                PlanTitle = mods.Count == 1 ? $"{verb} {names}" : $"{verb} {mods.Count} mods: {names}";
-                foreach (var line in ModActivationPlanText.Render(plan))
-                {
-                    PlanLines.Add(line);
-                }
+                Preview.Show(mods.Count == 1 ? $"{verb} {names}" : $"{verb} {mods.Count} mods: {names}", plan);
 
                 _pending = (documents, plan);
                 CanApply = !plan.IsBlocked && !plan.IsEmpty;
@@ -168,8 +167,7 @@ public sealed partial class ModActivationViewModel : PageViewModel
     private void ClearPlan()
     {
         _pending = null;
-        PlanLines.Clear();
-        PlanTitle = null;
+        Preview.Clear();
         CanApply = false;
     }
 }

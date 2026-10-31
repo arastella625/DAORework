@@ -6,6 +6,9 @@ All notable changes to DAORework are recorded here. The format follows
 
 ## [Unreleased]
 
+### Changed
+- Plans in the window are easier to read (P2.5-18): each opens with one sentence saying what it does (*Copies 1 file and deletes 1. Writes 3 B.*), its warnings follow in full, and the file-by-file detail is behind *Show details*. Mods are named by their names instead of ids like `eyes-bd85c991`. The command line's plans are unchanged.
+
 ### Added
 - *Installed by hand* fills in by itself (P2.5-16): the Mods tab lists the mods you installed by hand as soon as a profile is chosen, and again after every change, without pressing a button. It only reads. *Look again* reads it once more after you add files by hand.
 - Adopt several mods at once (P2.5-13): each mod in *Installed by hand* on the Mods tab has a tick box, with *Select all* and *Clear*. *Adopt selected* shows one plan for every ticked mod, applied with one backup and undone by one rollback, as `mods adopt <id>...` does on the command line.
