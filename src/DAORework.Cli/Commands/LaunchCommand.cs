@@ -28,7 +28,9 @@ public sealed class LaunchCommand : AsyncCommand<ProfileNameSettings>
             return ExitCodes.Failure;
         }
 
-        _console.WriteLine($"Launch succeeded. ProcessId: {launched.ProcessId}. Executable: {launched.ExecutablePath}");
+        _console.WriteLine(launched.StartedBySteam
+            ? $"Launch succeeded. Steam was asked to start the game ({launched.ExecutablePath})."
+            : $"Launch succeeded. ProcessId: {launched.ProcessId}. Executable: {launched.ExecutablePath}");
         return ExitCodes.Success;
     }
 }

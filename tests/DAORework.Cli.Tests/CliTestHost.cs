@@ -26,6 +26,8 @@ internal sealed class CliTestHost : IDisposable
 
     public FakeProcessLauncher ProcessLauncher { get; } = new();
 
+    public FakeUriLauncher UriLauncher { get; } = new();
+
     public CommandAppResult Run(params string[] args)
     {
         var services = new ServiceCollection()
@@ -36,6 +38,7 @@ internal sealed class CliTestHost : IDisposable
         services.Replace(ServiceDescriptor.Singleton<IFileSystem>(FileSystem));
         services.Replace(ServiceDescriptor.Singleton<IKnownFolders>(KnownFolders));
         services.Replace(ServiceDescriptor.Singleton<IProcessLauncher>(ProcessLauncher));
+        services.Replace(ServiceDescriptor.Singleton<IUriLauncher>(UriLauncher));
         services.Replace(ServiceDescriptor.Singleton<IRegistry>(new EmptyRegistry()));
 
         var tester = new CommandAppTester(new MicrosoftDependencyInjectionRegistrar(services));
