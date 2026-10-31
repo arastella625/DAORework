@@ -4,7 +4,7 @@ The manual record the Phase 1 exit gate asks for ([ROADMAP](../ROADMAP.md#phase-
 it works on Steam, GOG and EA App installs; no write operation targets any path outside the app-data folder; every
 Phase 1 feature is reachable in the GUI; the headless screenshot tests are green.
 
-**Status: Steam verified; GOG and EA App carried forward as an open issue.**
+**Status: Steam verified; GOG and EA App carried forward as issue [#5](https://github.com/arastella625/DAORework/issues/5).**
 Steam is verified on a real install. GOG and EA App are covered only by automated tests that use a fake registry,
 because nobody on the project has a real GOG or EA App copy yet. The owner closed Phase 1 on 2026-09-29 with this item
 open, rather than hold Phase 2 for it. The runs go in [How to add a run](#how-to-add-a-run).

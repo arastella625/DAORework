@@ -49,7 +49,7 @@ window, install and documents detection, the full diagnostic rule set, support b
 known-items catalog. Phase 2 (mod manager, release 0.2.0) writes, always behind a plan, a backup and rollback: a mod
 library, mod activation, and the 4 GB patch and DXVK as managed fixes, with a test suite that kills DAORework at
 every write and proves each change still ends fully before or fully after. Both are verified on a real Steam
-install; GOG and EA App installs still need a real run.
+install; GOG and EA App installs still need a real run ([#5](https://github.com/arastella625/DAORework/issues/5)).
 Phase 2.5 (release 0.3.0, the first public one) puts all of it in the window and adds adopting the mods you installed
 by hand, `.7z` and `.rar` import, the load order and its conflicts, and mod safety checks (programs never installed,
 your antivirus scans every mod, downloads compared with the known official ones). Phase 3, the file-format toolkit,

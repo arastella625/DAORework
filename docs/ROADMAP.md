@@ -62,11 +62,11 @@ built on solid ground. User-visible behavior stays the same, apart from the list
 
 **Status: closed on 2026-09-29 with one gate item carried forward.** All tasks are done (P1-00 to P1-07, PRs #70
 to #77) and released as `v0.1.0`. The owner decided to start Phase 2 while the real GOG and EA App runs (and a Steam
-run with launch) stay open as an issue, because nobody on the
+run with launch) stay open as an issue ([#5](https://github.com/arastella625/DAORework/issues/5)), because nobody on the
 project has those copies. The record is [testing/phase-1-matrix.md](testing/phase-1-matrix.md).
 
 **Exit gate:**
-- [ ] It works on Steam, GOG and EA App installs (manual test matrix recorded in `docs/testing/`). *(Steam verified on a real install; GOG and EA App covered by fake-registry tests only. Carried forward as an open issue.)*
+- [ ] It works on Steam, GOG and EA App installs (manual test matrix recorded in `docs/testing/`). *(Steam verified on a real install; GOG and EA App covered by fake-registry tests only. Carried forward as [#5](https://github.com/arastella625/DAORework/issues/5).)*
 - [x] No write operation targets any path outside the app-data folder. *(Audited: every writer is rooted in `DaoReworkOptions`; the saves and the install are only read.)*
 - [x] Every Phase 1 feature is reachable in the GUI.
 - [x] The headless screenshot tests are green.
@@ -77,7 +77,7 @@ project has those copies. The record is [testing/phase-1-matrix.md](testing/phas
 
 **Status: complete.** Closed on 2026-10-06 and released as `v0.2.0`. All tasks are done (P2-01 to P2-08, in
 PRs #82 to #93) and the exit gate is met (PR #102). Verified on a real Steam install; Phase 1's GOG and EA App runs
-are still carried as an open issue.
+are still carried as [#5](https://github.com/arastella625/DAORework/issues/5).
 
 **Goal:** safe mod activation. This is the first code that writes to user folders, so it holds the highest standard.
 
@@ -186,7 +186,7 @@ Task IDs use the `P2.5-` prefix (branch `feat/P2.5-02-adopt-scan`). P3-04 moves 
   signing up ([setup](release/code-signing.md)), which she has chosen not to for now.*
 - P2.5-08 Closed beta and the platform matrix: a small group of testers outside the project, including at least one
   GOG and one EA App install, run a written script (detect, adopt, import, activate, conflict, rollback, fixes).
-  Results go in `docs/testing/phase-2.5-matrix.md`; the open GOG and EA App issue
+  Results go in `docs/testing/phase-2.5-matrix.md`; issue [#5](https://github.com/arastella625/DAORework/issues/5)
   closes here.
 - P2.5-09 Release 0.3.0 and the launch kit: the release, a Nexus page written by the owner, screenshots from the
   headless tests, and the generative-AI tag chosen by Nexus's guidelines as they stand on upload day. The README
