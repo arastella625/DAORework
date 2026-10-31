@@ -51,8 +51,9 @@
     <StackPanel Spacing="10">
       <TextBlock Classes="SectionTitle" Text="Installed by hand" />
       <StackPanel Orientation="Horizontal" Spacing="12">
-        <Button Name="ScanButton" Content="Find mods installed by hand" Command="{Binding ScanCommand}" />
-        <TextBlock VerticalAlignment="Center" Classes="Secondary" Text="Finding only reads; adopting shows its plan first." />
+        <Button Name="ScanButton" Content="Look again" Command="{Binding ScanCommand}" />
+        <TextBlock VerticalAlignment="Center" Classes="Secondary" TextWrapping="Wrap"
+                   Text="This list fills in by itself and only reads. Look again after adding files by hand; adopting shows its plan first." />
       </StackPanel>
       <TextBlock Name="HandInstalledStatus" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" />
       <Border Name="AdoptionPlan" Padding="12" CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource BorderSoftBrush}"

@@ -20,8 +20,6 @@ public sealed partial class HandInstalledViewModel : PageViewModel
     private readonly GetProfile _getProfile;
     private readonly ScanForAdoption _scan;
 
-    private bool _shown;
-
     public HandInstalledViewModel(GetProfile getProfile, ScanForAdoption scan, ModAdoptionViewModel adoption, ILogger<HandInstalledViewModel> logger)
         : base(logger)
     {
@@ -52,13 +50,15 @@ public sealed partial class HandInstalledViewModel : PageViewModel
         ClearCandidates();
         NotAdoptable.Clear();
         OfficialSummary = null;
-        _shown = false;
         Adoption.Load(profileName);
         ReportSuccess(string.Empty);
     }
 
-    /// <summary>Scans again after a change elsewhere (an adoption, a rollback), but only once the user has scanned.</summary>
-    public Task RescanAsync(CancellationToken cancellationToken = default) => _shown ? ScanAsync(cancellationToken) : Task.CompletedTask;
+    /// <summary>
+    /// Reads the list without being asked (P2.5-16): when a profile is chosen and after every change elsewhere (an
+    /// adoption, a rollback). It only reads. A profile with no documents folder yet shows an empty list, not an error.
+    /// </summary>
+    public Task RefreshAsync(CancellationToken cancellationToken = default) => GuardAsync(token => ReadAsync(quiet: true, token), cancellationToken);
 
     /// <summary>Plans adopting every ticked mod as one change, in the list's order (P2.5-13).</summary>
     [RelayCommand(CanExecute = nameof(HasSelection))]
@@ -72,33 +72,35 @@ public sealed partial class HandInstalledViewModel : PageViewModel
     private void ClearSelection() => SetSelected(false);
 
     [RelayCommand]
-    private Task ScanAsync(CancellationToken cancellationToken) =>
-        GuardAsync(
-            async token =>
-            {
-                if (ProfileName is null)
-                {
-                    return;
-                }
+    private Task ScanAsync(CancellationToken cancellationToken) => GuardAsync(token => ReadAsync(quiet: false, token), cancellationToken);
 
-                if (!(await _getProfile.ExecuteAsync(new GetProfileRequest(ProfileName), token)).TryGetValue(out var profile, out var error))
-                {
-                    ReportError(error);
-                }
-                else if (string.IsNullOrWhiteSpace(profile.UserDocumentsDirectory))
-                {
-                    ReportError(new Error(DiagnosticCodes.ModDocumentsNotSet, $"Profile '{ProfileName}' has no documents folder.", "Set it on the Profile page."));
-                }
-                else if (!(await _scan.ExecuteAsync(profile.UserDocumentsDirectory, token)).TryGetValue(out var scan, out error))
-                {
-                    ReportError(error);
-                }
-                else
-                {
-                    Show(scan);
-                }
-            },
-            cancellationToken);
+    private async Task ReadAsync(bool quiet, CancellationToken cancellationToken)
+    {
+        if (ProfileName is null)
+        {
+            return;
+        }
+
+        if (!(await _getProfile.ExecuteAsync(new GetProfileRequest(ProfileName), cancellationToken)).TryGetValue(out var profile, out var error))
+        {
+            ReportError(error);
+        }
+        else if (string.IsNullOrWhiteSpace(profile.UserDocumentsDirectory))
+        {
+            if (!quiet)
+            {
+                ReportError(new Error(DiagnosticCodes.ModDocumentsNotSet, $"Profile '{ProfileName}' has no documents folder.", "Set it on the Profile page."));
+            }
+        }
+        else if (!(await _scan.ExecuteAsync(profile.UserDocumentsDirectory, cancellationToken)).TryGetValue(out var scan, out error))
+        {
+            ReportError(error);
+        }
+        else
+        {
+            Show(scan);
+        }
+    }
 
     private void SetSelected(bool selected)
     {
@@ -149,7 +151,6 @@ public sealed partial class HandInstalledViewModel : PageViewModel
             NotAdoptable.Add(HandInstalledModRow.From(exclusion));
         }
 
-        _shown = true;
         var official = scan.Exclusions.Count(e => e.Reason == AdoptionExclusionReason.Official);
         OfficialSummary = official == 0 ? null : $"Official DLC ({official} add-in(s)) is never adopted or changed.";
         ReportSuccess(scan.Candidates.Count == 0

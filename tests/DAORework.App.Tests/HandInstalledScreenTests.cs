@@ -31,9 +31,9 @@ public sealed class HandInstalledScreenTests : IDisposable
                 """));
         _host.FileSystem.AddFile(Path.Combine(GamePaths.AddInsDirectory(documents), "Extra_Dog_Slot", "core", "dog.gda"), new MockFileData(new byte[1024]));
         _host.FileSystem.AddFile(Path.Combine(GamePaths.AddInsDirectory(documents), "Leftover_Mod", "x.erf"), new MockFileData(new byte[16]));
-        var (window, viewModel) = await OpenModsTabAsync();
 
-        await viewModel.HandInstalled.ScanCommand.ExecuteAsync(null);
+        // The list fills in when the profile is chosen, without Look again (P2.5-16).
+        var (window, viewModel) = await OpenModsTabAsync();
 
         Assert.False(viewModel.HandInstalled.IsError, viewModel.HandInstalled.StatusMessage);
         Assert.Equal(
@@ -46,6 +46,26 @@ public sealed class HandInstalledScreenTests : IDisposable
         Assert.DoesNotContain(viewModel.HandInstalled.Candidates, c => c.Details.Contains("DAO_PRC_EP_1", StringComparison.OrdinalIgnoreCase));
         ShowPanel(window);
         Screenshots.Save(window, "12-installed-by-hand");
+    }
+
+    [AvaloniaFact]
+    public async Task ModsTab_ProfileWithoutADocumentsFolder_ShowsAnEmptyListAndNoError()
+    {
+        _host.SeedRealisticInstall();
+        var (_, viewModel) = await OpenModsTabAsync();
+        var profiles = _host.Resolve<DAORework.Application.Profiles.IProfileRepository>();
+        var profile = await profiles.LoadAsync("Default", TestContext.Current.CancellationToken);
+        await profiles.SaveAsync(profile! with { UserDocumentsDirectory = null }, TestContext.Current.CancellationToken);
+
+        await viewModel.SelectProfileAsync("Default", TestContext.Current.CancellationToken);
+
+        Assert.False(viewModel.HandInstalled.IsError, viewModel.HandInstalled.StatusMessage);
+        Assert.Empty(viewModel.HandInstalled.Candidates);
+
+        await viewModel.HandInstalled.ScanCommand.ExecuteAsync(null);
+
+        Assert.True(viewModel.HandInstalled.IsError);
+        Assert.Contains("has no documents folder", viewModel.HandInstalled.StatusMessage, StringComparison.Ordinal);
     }
 
     /// <summary>The panel sits below the folder summary; scroll so its heading is at the top of the screenshot.</summary>

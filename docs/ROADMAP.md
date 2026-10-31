@@ -210,7 +210,9 @@ window up to the command line. Each change still shows its plan first and is app
 - P2.5-15 Import several downloads at once from *Import a mod* (dropping several already works), each scanned and
   checked as now, with one summary. *Done: the picker takes several files, imported in turn with one message.*
 - P2.5-16 *Installed by hand* fills in by itself: the list is read when the Mods tab opens and after each change,
-  instead of waiting for *Find mods installed by hand*. Finding still only reads.
+  instead of waiting for *Find mods installed by hand*. Finding still only reads. *Done: read when a profile is
+  chosen and after every change; a profile without a documents folder shows an empty list, and the button is now
+  Look again.*
 
 **Not in this phase:** Nexus "Mod Manager Download" (`nxm://`) links and any other network access (SDD §12 and
 ADR-0009 need an ADR first); hard links for large texture packs (ADR-0012 leaves that to its own ADR); any format
