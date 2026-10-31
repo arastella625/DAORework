@@ -206,7 +206,7 @@ window up to the command line. Each change still shows its plan first and is app
 - P2.5-14 Activate and deactivate several Library mods at once: tick boxes in the Library, *Activate selected* and
   *Deactivate selected*, one plan for all of them.
 - P2.5-15 Import several downloads at once from *Import a mod* (dropping several already works), each scanned and
-  checked as now, with one summary.
+  checked as now, with one summary. *Done: the picker takes several files, imported in turn with one message.*
 - P2.5-16 *Installed by hand* fills in by itself: the list is read when the Mods tab opens and after each change,
   instead of waiting for *Find mods installed by hand*. Finding still only reads.
 

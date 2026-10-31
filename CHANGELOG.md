@@ -6,6 +6,9 @@ All notable changes to DAORework are recorded here. The format follows
 
 ## [Unreleased]
 
+### Added
+- Import several downloads at once (P2.5-15): *Import a mod* on the Mods tab lets you pick several files in one go, as dropping several already did. Each is scanned and checked as before, and one message lists what was imported.
+
 ## [0.3.1] - 2026-10-31
 
 The same program as 0.3.0, now code-signed, and the first release published to Nexus by the release workflow.
