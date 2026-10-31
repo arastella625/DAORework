@@ -10,8 +10,7 @@ this is the one-time setup in your Cloudflare account. It costs nothing on Cloud
 1. In the [Cloudflare dashboard](https://dash.cloudflare.com), open **Workers & Pages** and choose **Create
    application**.
 2. Choose **GitHub** (this makes a Worker, which is what Cloudflare now recommends; not the Pages tab). Sign in to
-   GitHub when asked, give Cloudflare access to `arastella625/DAORework` only, and pick it. This works while the
-   repository is private.
+   GitHub when asked, give Cloudflare access to `arastella625/DAORework` only, and pick it.
 3. Keep Cloudflare's default build settings: the `wrangler.jsonc` at the top of the repository tells it everything.
 
 | Setting | Value |
@@ -44,8 +43,15 @@ second `Contact: mailto:...` line.
 - **After each release:** put the zip's SHA-256 (from its `.sha256` file) and the version in the *Check your download*
   section of `site/public/index.html`, and merge. Add the Nexus page's address to the *Download* section once it
   exists.
-- **Private vulnerability reports:** `security.txt` points to GitHub's private reporting. Once the repository is
-  public, turn it on: **Settings** > **Code security** > **Private vulnerability reporting**.
+- **Private vulnerability reports:** `security.txt` points to GitHub's private reporting. Turn it on in the
+  repository: **Settings** > **Code security** > **Private vulnerability reporting**.
 
 By default every push to `main` rebuilds the site. To rebuild only when it changes, set **Settings** > **Builds** >
 **Build watch paths** to include `site/*` and `wrangler.jsonc`.
+
+## If the repository moves or is renamed
+
+Cloudflare's build follows the repository it was connected to, even after a rename, so the site stops picking up
+`main` of a new repository. In the Worker: **Settings** > **Builds** > **Disconnect**, then **Connect** to the new
+repository with the same settings. Cloudflare builds on the next push to `main`; to build at once, start a deploy
+from the Worker's **Deployments** page.
