@@ -6,6 +6,9 @@ All notable changes to DAORework are recorded here. The format follows
 
 ## [Unreleased]
 
+### Added
+- Adopt several mods at once (P2.5-13): each mod in *Installed by hand* on the Mods tab has a tick box, with *Select all* and *Clear*. *Adopt selected* shows one plan for every ticked mod, applied with one backup and undone by one rollback, as `mods adopt <id>...` does on the command line.
+
 ## [0.3.1] - 2026-10-31
 
 The same program as 0.3.0, now code-signed, and the first release published to Nexus by the release workflow.
