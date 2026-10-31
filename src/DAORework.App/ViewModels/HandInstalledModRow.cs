@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using DAORework.Core.Common;
 using DAORework.Core.Mods.Adoption;
 
@@ -5,10 +6,30 @@ namespace DAORework.App.ViewModels;
 
 /// <summary>
 /// One line of the <i>Installed by hand</i> list: a title, a details line and any notes, worded as the CLI words them,
-/// and for a mod that can be adopted, the candidate itself.
+/// and for a mod that can be adopted, the candidate itself and whether it is ticked for <i>Adopt selected</i> (P2.5-13).
 /// </summary>
-public sealed record HandInstalledModRow(string Title, string Details, IReadOnlyList<string> Notes, AdoptionCandidate? Candidate = null)
+public sealed partial class HandInstalledModRow : ObservableObject
 {
+    public HandInstalledModRow(string title, string details, IReadOnlyList<string> notes, AdoptionCandidate? candidate = null)
+    {
+        Title = title;
+        Details = details;
+        Notes = notes;
+        Candidate = candidate;
+    }
+
+    public string Title { get; }
+
+    public string Details { get; }
+
+    public IReadOnlyList<string> Notes { get; }
+
+    public AdoptionCandidate? Candidate { get; }
+
+    /// <summary>Gets or sets a value indicating whether it is ticked to be adopted with the others by <i>Adopt selected</i>.</summary>
+    [ObservableProperty]
+    public partial bool IsSelected { get; set; }
+
     /// <summary>Gets a value indicating whether adopting it needs a name: loose override files have none of their own.</summary>
     public bool NeedsName => Candidate?.Kind == AdoptionCandidateKind.LooseOverrideFiles;
 
