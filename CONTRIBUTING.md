@@ -121,7 +121,8 @@ If the board is ever lost, or a fork needs one:
    marked as pre-releases.
 4. Submit the release zip to Microsoft's file analysis as its developer
    (<https://www.microsoft.com/wdsi/filesubmission>, *Software developer*, "incorrectly detected" if Defender or
-   SmartScreen flagged it), and upload the same zip to Nexus.
+   SmartScreen flagged it). The release job uploads the same zip to Nexus when that is set up
+   ([docs/release/nexus-upload.md](docs/release/nexus-upload.md)); otherwise upload it by hand.
 5. Put the zip's SHA-256 (from its `.sha256` file) and the version in the *Check your download* section of
    `site/public/index.html` and merge it, so the website ([ADR-0021](docs/adr/0021-project-website.md)) shows the
    checksum from a second host.
