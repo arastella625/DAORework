@@ -43,6 +43,11 @@ public sealed class LargeAddressAwareRule : IDiagnosticRule
             return [Unreadable(exception.Message)];
         }
 
+        if (SteamStub.IsProtected(header.AsSpan(0, read)))
+        {
+            return []; // SteamProtectedExecutableRule reports Steam's protected copy (ADR-0023).
+        }
+
         if (!PortableExecutable.IsLargeAddressAware(header.AsSpan(0, read)).TryGetValue(out var enabled, out var error))
         {
             return [Unreadable(error.Message)];

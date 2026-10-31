@@ -34,6 +34,14 @@ public sealed class LargeAddressAwareRuleTests
     }
 
     [Fact]
+    public async Task EvaluateAsync_SteamProtectedExecutable_LeavesItToTheSteamRule()
+    {
+        _fileSystem.AddFile(_exe, new MockFileData(Fixes.TestExecutable.Build(steamProtected: true)));
+
+        Assert.Empty(await Evaluate());
+    }
+
+    [Fact]
     public async Task EvaluateAsync_NotAnExecutable_WarnsUnreadable()
     {
         _fileSystem.AddFile(_exe, new MockFileData("not an exe"));

@@ -20,6 +20,7 @@ internal static class TestDiagnosticRules
         new DocumentsRedirectionRule(new DetectDocumentsFolders(fileSystem, knownFolders)),
         new ModFoldersRule(fileSystem),
         new LargeAddressAwareRule(fileSystem),
+        new SteamProtectedExecutableRule(fileSystem),
         new PrerequisitesRule(fileSystem, knownFolders),
         new ConfigRule(fileSystem),
         new SavesRule(fileSystem),

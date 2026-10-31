@@ -61,7 +61,8 @@ nothing depends on DAORework's own backups. Then use only `DAORework.exe` from t
 
 | # | Step | Expected | Result |
 |---|---|---|---|
-| 1 | Fixes tab: apply the 4 GB patch, then Steam → Verify integrity of game files, then back in DAORework | The fix shows as no longer in effect, naming Verify integrity; applying it again restores it | |
+| 1 | Steam install, Fixes tab: apply the 4 GB patch | Refused as Steam's protected copy (`DAO_FIX_STEAM_PROTECTED`, ADR-0023); Diagnostics shows `DAO_STEAM_EXE_PROTECTED`, and Next steps offers no 4 GB patch. If the patch was applied earlier, Diagnostics warns `DAO_STEAM_EXE_PATCHED`, and removing it lets Steam start the game again | |
+| 1b | DXVK installed, then Steam → Verify integrity of game files, then back in DAORework | DXVK shows as no longer in effect, naming Verify integrity; installing it again restores it | |
 | 2 | Fixes tab: install DXVK from a downloaded release, then roll it back from its backup | The game starts with DXVK, then without it | |
 | 3 | Saves tab: back up the saves | A backup appears; the saves folder is unchanged | |
 
