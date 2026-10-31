@@ -12,8 +12,8 @@ green on `main`; what only a real Windows machine can show is below.
 | Distribution | Real install | Status |
 |---|---|---|
 | **Steam** | Ultimate Edition at `D:\SteamLibrary\steamapps\common\Dragon Age Ultimate Edition`, owner's machine | To run |
-| **GOG** | Nobody on the project has a GOG copy | Open, as in Phase 1 |
-| **EA App** | Nobody on the project has an EA App copy | Open, as in Phase 1 |
+| **GOG** | Nobody on the project has a GOG copy | Open, as in Phase 1 ([#5](https://github.com/arastella625/DAORework/issues/5)) |
+| **EA App** | Nobody on the project has an EA App copy | Open, as in Phase 1 ([#5](https://github.com/arastella625/DAORework/issues/5)) |
 
 The exit gate says no platform is carried forward again. If 0.3.0 ships with GOG and EA App still open, the
 release notes and the Nexus page say plainly that only Steam has been run on a real install.
