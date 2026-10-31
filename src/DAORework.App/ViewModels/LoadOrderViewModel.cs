@@ -43,7 +43,11 @@ public sealed partial class LoadOrderViewModel : PageViewModel
     public ObservableCollection<FileConflictRow> Conflicts { get; } = [];
 
     /// <summary>Gets the plan for the edited order, empty while it is the saved one.</summary>
-    public ObservableCollection<string> PlanLines { get; } = [];
+    /// <summary>Gets the plan for the new order: a summary, its warnings, and its full text behind Show details (P2.5-18).</summary>
+    public PlanPreview Preview { get; } = new();
+
+    /// <summary>Gets the plan's full text, with mods named.</summary>
+    public ObservableCollection<string> PlanLines => Preview.Lines;
 
     [ObservableProperty]
     public partial string? ProfileName { get; set; }
@@ -132,7 +136,7 @@ public sealed partial class LoadOrderViewModel : PageViewModel
     {
         _pending = null;
         CanApply = false;
-        PlanLines.Clear();
+        Preview.Clear();
         if (!(await ProfileDocuments.ForAsync(_getProfile, ProfileName, cancellationToken)).TryGetValue(out var documents, out var error))
         {
             Show([], null);
@@ -156,7 +160,7 @@ public sealed partial class LoadOrderViewModel : PageViewModel
         IsReordered = !plan.TargetModIds.SequenceEqual(_saved, StringComparer.OrdinalIgnoreCase);
         if (IsReordered)
         {
-            ShowPlan(plan);
+            ShowPlan(plan, names);
             _pending = (documents, plan);
 
             // Library mods never change and a mod activated later goes last, so an order that changes no file now never
@@ -165,14 +169,13 @@ public sealed partial class LoadOrderViewModel : PageViewModel
         }
     }
 
-    private void ShowPlan(ModActivationPlan plan)
+    private void ShowPlan(ModActivationPlan plan, Dictionary<string, string> names)
     {
-        foreach (var line in ModActivationPlanText.Render(plan))
-        {
-            PlanLines.Add(plan.IsEmpty && !plan.IsBlocked && line.StartsWith("Nothing to change", StringComparison.Ordinal)
-                ? "No file changes: none of these mods ships a file another one does, so their order makes no difference."
-                : line);
-        }
+        Preview.NameOf = id => names.TryGetValue(id, out var name) ? name : id;
+        Preview.Show(
+            "The plan for the new order",
+            plan,
+            plan.IsEmpty && !plan.IsBlocked ? "No file changes: none of these mods ships a file another one does, so their order makes no difference." : null);
     }
 
     private void Show(IReadOnlyList<LoadOrderRow> rows, ModActivationPlan? plan, IReadOnlyDictionary<string, string>? names = null)

@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DAORework.App.ViewModels"
+             xmlns:views="using:DAORework.App.Views"
+             x:Class="DAORework.App.Views.PlanPreviewView"
+             x:DataType="vm:PlanPreview">
+  <!-- P2.5-18: the plan in one sentence, its warnings in full, and the file-by-file detail on request. -->
+  <StackPanel Spacing="8">
+    <TextBlock Name="PlanTitle" FontWeight="SemiBold" Text="{Binding Title}" TextWrapping="Wrap" />
+    <TextBlock Name="PlanSummary" Text="{Binding Summary}" TextWrapping="Wrap" />
+    <ItemsControl Name="PlanNotes" ItemsSource="{Binding Notes}">
+      <ItemsControl.ItemTemplate>
+        <DataTemplate x:DataType="x:String">
+          <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" Margin="0,2">
+            <PathIcon Classes="Warning" Data="{StaticResource IconWarning}" VerticalAlignment="Top" />
+            <TextBlock Grid.Column="1" Classes="Warning" Text="{Binding}" TextWrapping="Wrap" />
+          </Grid>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+    <ToggleButton Name="ShowDetailsButton" Content="Show details" IsChecked="{Binding ShowDetails}" />
+    <ItemsControl Name="PlanLines" ItemsSource="{Binding Lines}" IsVisible="{Binding ShowDetails}">
+      <ItemsControl.ItemTemplate>
+        <DataTemplate x:DataType="x:String">
+          <TextBlock Classes="Mono" Text="{Binding}" TextWrapping="Wrap" />
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+  </StackPanel>
+</UserControl>

@@ -49,7 +49,10 @@ public sealed class ModActivationScreenTests : IDisposable
 
         Assert.False(activation.IsError, activation.StatusMessage);
         Assert.Equal("Activate Hair Pack", activation.PlanTitle);
-        Assert.Contains(activation.PlanLines, l => l == $"Mods: no mods -> 1 ({mod.Id})");
+        Assert.Equal("Copies 1 file. Writes 8 B.", activation.Preview.Summary);
+        Assert.False(activation.Preview.ShowDetails);
+        Assert.Contains(activation.PlanLines, l => l == "Mods: no mods -> 1 (Hair Pack)");
+        Assert.DoesNotContain(activation.PlanLines, l => l.Contains(mod.Id, StringComparison.Ordinal));
         Assert.Contains("  Copy      1 file", activation.PlanLines);
         Assert.True(activation.ApplyCommand.CanExecute(null));
         Assert.Empty(_scenario.DeployedHair());
