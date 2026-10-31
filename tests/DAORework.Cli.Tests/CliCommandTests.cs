@@ -243,6 +243,28 @@ public sealed class CliCommandTests : IDisposable
     }
 
     [Fact]
+    public void Launch_SteamInstall_AsksSteamToStartTheGame()
+    {
+        var library = MockUnixSupport.Path(@"D:\SteamLibrary");
+        var install = Path.Combine(library, "steamapps", "common", "Dragon Age Ultimate Edition");
+        var exe = GamePaths.GameExecutable(install);
+        _host.FileSystem.AddFile(exe, new MockFileData("exe"));
+        _host.FileSystem.AddFile(
+            Path.Combine(library, "steamapps", "appmanifest_47810.acf"),
+            new MockFileData("\"AppState\" { \"appid\" \"47810\" \"installdir\" \"Dragon Age Ultimate Edition\" }"));
+        _host.Run("init", "Steam");
+        _host.Run("profile", "set-path", "Steam", "install", install);
+        _host.Run("profile", "set-path", "Steam", "game", exe);
+
+        var result = _host.Run("launch", "Steam");
+
+        Assert.Equal(ExitCodes.Success, result.ExitCode);
+        Assert.Contains("Launch succeeded. Steam was asked to start the game (steam://rungameid/47810).", result.Output, StringComparison.Ordinal);
+        Assert.Equal("steam://rungameid/47810", _host.UriLauncher.LastUri?.AbsoluteUri);
+        Assert.Null(_host.ProcessLauncher.LastRequest);
+    }
+
+    [Fact]
     public void ModsInspectAndInventory_WithFilesInOverride_ReportThem()
     {
         var documents = MockUnixSupport.Path(@"C:\Docs");

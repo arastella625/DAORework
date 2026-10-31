@@ -37,7 +37,9 @@ public sealed partial class LaunchViewModel : PageViewModel
                     return;
                 }
 
-                ReportSuccess($"Launched {launched.ExecutablePath} (process {launched.ProcessId}).");
+                ReportSuccess(launched.StartedBySteam
+                    ? "Steam was asked to start the game. If Steam is closed, it opens first."
+                    : $"Launched {launched.ExecutablePath} (process {launched.ProcessId}).");
             },
             cancellationToken);
 

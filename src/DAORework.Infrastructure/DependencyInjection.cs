@@ -33,6 +33,7 @@ public static class DependencyInjection
         services.AddSingleton<IFileSystem, FileSystem>();
         services.AddSingleton<IKnownFolders, EnvironmentKnownFolders>();
         services.AddSingleton<IProcessLauncher, ProcessLauncher>();
+        services.AddSingleton<IUriLauncher, ShellUriLauncher>();
         services.AddSingleton<IFileHasher, Sha256FileHasher>();
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IRegistry, WindowsRegistry>();
@@ -69,7 +70,10 @@ public static class DependencyInjection
         services.AddSingleton<IInstallLocator, WellKnownPathLocator>();
 
         // Runtimes are keyed by mode (SDD §5, Factory via keyed DI); add a runtime by adding a keyed registration.
-        services.AddKeyedSingleton<IGameRuntime, ProcessGameRuntime>(RuntimeMode.OriginalGame);
+        // The original game: through Steam for a Steam install, otherwise by starting the executable (ADR-0022).
+        services.AddSingleton<ProcessGameRuntime>();
+        services.AddSingleton<SteamGameInstall>();
+        services.AddKeyedSingleton<IGameRuntime, SteamAwareGameRuntime>(RuntimeMode.OriginalGame);
         services.AddKeyedSingleton<IGameRuntime, ExperimentalRuntime>(RuntimeMode.ExperimentalRuntime);
         services.AddSingleton<IGameRuntimeResolver, KeyedGameRuntimeResolver>();
 

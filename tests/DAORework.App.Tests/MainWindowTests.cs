@@ -160,7 +160,7 @@ public sealed class MainWindowTests : IDisposable
     }
 
     [AvaloniaFact]
-    public async Task Launch_StartsTheGameThroughTheFakeLauncher()
+    public async Task Launch_SteamInstall_AsksSteamToStartTheGame()
     {
         _host.SeedRealisticInstall();
         var (window, viewModel) = await OpenAsync();
@@ -169,8 +169,9 @@ public sealed class MainWindowTests : IDisposable
         await viewModel.Launch.LaunchCommand.ExecuteAsync(null);
 
         Assert.False(viewModel.Launch.IsError);
-        Assert.Contains("process 4242", viewModel.Launch.StatusMessage, StringComparison.Ordinal);
-        Assert.Equal(GamePaths.GameExecutable(AppTestHost.InstallDirectory), _host.ProcessLauncher.LastRequest?.FileName);
+        Assert.Equal("Steam was asked to start the game. If Steam is closed, it opens first.", viewModel.Launch.StatusMessage);
+        Assert.Equal("steam://rungameid/47810", _host.UriLauncher.LastUri?.AbsoluteUri);
+        Assert.Null(_host.ProcessLauncher.LastRequest);
         Screenshots.Save(window, "04-launched");
     }
 

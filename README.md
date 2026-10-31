@@ -112,7 +112,8 @@ window and the CLI below use the same use cases and app-data folders, so the two
 - Finds the documents folder, including a OneDrive-redirected Documents folder, and warns when saves sit somewhere else than the profile says
 - Creates named runtime profiles (install directory, executables, documents folder, launch target)
 - Diagnoses a profile and writes a JSON report with stable `DAO_*` codes
-- Launches the game or the official launcher from a profile
+- Launches the game or the official launcher from a profile; a Steam install is started through Steam
+  ([ADR-0022](docs/adr/0022-launching-steam-installs-through-steam.md))
 - Summarizes the `override` and `AddIns` mod folders and writes a JSON inventory, optionally with SHA-256 hashes
 - Recognizes known community fixes and mods from a [catalog](catalog/README.md) kept in the repository: DXVK with its version (and a 64-bit DLL the game cannot load), the 4 GB patch, and known-incompatible combinations
 - Manages mods (`mods import`, `library`, `activate`, `deactivate`, `adopt`, `status`, `rollback`, `recover`), fixes (`fixes apply`, `remove`, `status`, `rollback`, `recover`) and save backups (`saves backup`, `list`), each change behind a plan, a backup and rollback

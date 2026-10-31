@@ -32,6 +32,7 @@ internal sealed class AppTestHost : IDisposable
         services.Replace(ServiceDescriptor.Singleton<IFileSystem>(FileSystem));
         services.Replace(ServiceDescriptor.Singleton<IKnownFolders>(KnownFolders));
         services.Replace(ServiceDescriptor.Singleton<IProcessLauncher>(ProcessLauncher));
+        services.Replace(ServiceDescriptor.Singleton<IUriLauncher>(UriLauncher));
         services.Replace(ServiceDescriptor.Singleton<IPathPicker>(Picker));
         services.Replace(ServiceDescriptor.Singleton<IRegistry>(new EmptyRegistry()));
         _services = services.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true });
@@ -47,6 +48,8 @@ internal sealed class AppTestHost : IDisposable
     public FakeKnownFolders KnownFolders { get; } = new();
 
     public FakeProcessLauncher ProcessLauncher { get; } = new();
+
+    public FakeUriLauncher UriLauncher { get; } = new();
 
     public FakePathPicker Picker { get; } = new();
 
