@@ -6,6 +6,9 @@ All notable changes to DAORework are recorded here. The format follows
 
 ## [Unreleased]
 
+### Changed
+- Releases can go to Nexus Mods by themselves ([ADR-0024](docs/adr/0024-publishing-releases-to-nexus.md)): once the owner adds the Nexus API key and file id to the release environment, each tag uploads the same zip as the GitHub release to the [Nexus page](https://www.nexusmods.com/dragonage/mods/7083) as a new version of the main file. The app itself still never goes online.
+
 ## [0.3.0] - 2026-10-31
 
 Phase 2.5 (launch-ready mod manager), the first public release. Everything the command line does with mods, fixes and saves is now in the window, and a player who already mods by hand can hand that setup over to DAORework without reinstalling anything. Every mod is checked before it enters the library: programs are named and never installed, your own antivirus scans it, and a download that differs from the official one is pointed out. As before, nothing is written to your folders without a plan you confirm and a backup you can roll back to. GOG and EA App installs are detected but have not yet been run on a real machine ([#5](https://github.com/arastella625/DAORework/issues/5)).

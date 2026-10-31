@@ -2,9 +2,9 @@ name: Release
 
 # On a pull request that touches the shipped apps or this pipeline: build the Windows release zip (unsigned) and attach it
 # to the run, so it can be tried before release. On a v* tag: the same build, then the executables are code-signed if the
-# owner has set signing up (optional, ADR-0018 §4), the zip and executables get a build provenance attestation, and a
-# GitHub Release is published. Run by hand with a tag (Actions > Release > Run
-# workflow) to build and publish an existing tag with this version of the workflow.
+# owner has set signing up (optional, ADR-0018 §4), the zip and executables get a build provenance attestation, a
+# GitHub Release is published, and the same zip goes to Nexus Mods if that is set up (optional, ADR-0024). Run by hand
+# with a tag (Actions > Release > Run workflow) to build and publish an existing tag with this version of the workflow.
 on:
   pull_request:
     paths:
@@ -137,6 +137,27 @@ jobs:
           name: release-folder
           path: ${{ env.FOLDER }}
 
+      # Uploading to Nexus Mods is optional too (ADR-0024): with the API key and the file id, the zip is added as a new
+      # version of the mod's main file after the GitHub Release is out; with neither, it is skipped; with only one, the
+      # setup is half done and the run stops here, before anything is published.
+      - name: Check the Nexus upload setup
+        id: nexus
+        shell: pwsh
+        env:
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_FILE_ID: ${{ vars.NEXUS_FILE_ID }}
+        run: |
+          $version = $env:TAG.TrimStart('v')
+          "version=$version" >> $env:GITHUB_OUTPUT
+          if (-not $env:NEXUS_API_KEY -and -not $env:NEXUS_FILE_ID) {
+              Write-Host '::notice::The Nexus upload is not set up, so upload the zip to Nexus Mods by hand.'
+              'upload=false' >> $env:GITHUB_OUTPUT
+          }
+          elseif (-not $env:NEXUS_API_KEY -or -not $env:NEXUS_FILE_ID) {
+              throw 'The Nexus upload is half set up: the release environment needs both the NEXUS_API_KEY secret and the NEXUS_FILE_ID variable. See docs/release/nexus-upload.md.'
+          }
+          else { 'upload=true' >> $env:GITHUB_OUTPUT }
+
       # Signing is optional (ADR-0018 §4): with all six variables set, the executables are signed; with none, the release
       # is published unsigned; with only some, the setup is half done and the run stops before anything is published.
       - name: Check the signing setup
@@ -227,3 +248,20 @@ jobs:
           $files = @((Get-ChildItem artifacts -File).FullName)
           gh release create $env:TAG @files --verify-tag --title "DAORework $version" --notes-file notes.md @flags
           if ($LASTEXITCODE -ne 0) { throw 'gh release create failed.' }
+
+      # The same zip as the GitHub Release, so its checksum matches. Pinned to the commit of v1.0.0-beta.11: this
+      # third-party action receives the Nexus API key, so a moved tag must not change what runs.
+      - name: Upload to Nexus Mods
+        if: steps.nexus.outputs.upload == 'true'
+        uses: Nexus-Mods/upload-action@98532f7670c27cbecc78fae03fa3e278147827e2 # v1.0.0-beta.11
+        with:
+          api_key: ${{ secrets.NEXUS_API_KEY }}
+          file_id: ${{ vars.NEXUS_FILE_ID }}
+          filename: artifacts/DAORework-${{ steps.nexus.outputs.version }}-win-x64.zip
+          version: ${{ steps.nexus.outputs.version }}
+          display_name: DAORework ${{ steps.nexus.outputs.version }}
+          description: 'The same zip as the GitHub release. Its SHA-256 is on the release page and the project website.'
+          archive_existing_version: true
+          update_mod_version: true
+          mod_id: ${{ vars.NEXUS_MOD_ID }}
+          changelog: "${{ vars.NEXUS_MOD_ID && format('Changes in {0}: https://github.com/{1}/releases/tag/{2}', steps.nexus.outputs.version, github.repository, env.TAG) || '' }}"
