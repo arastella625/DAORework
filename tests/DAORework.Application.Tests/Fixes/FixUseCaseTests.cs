@@ -40,6 +40,18 @@ public sealed class FixUseCaseTests
     }
 
     [Fact]
+    public async Task PlanApply_SteamProtectedExe_IsRefusedAndChangesNothing()
+    {
+        _files.Files[Exe] = TestExecutable.Build(steamProtected: true);
+
+        var result = await Plan(FixChangeKind.Apply);
+
+        Assert.Equal(DiagnosticCodes.FixSteamProtected, result.Error!.Code);
+        Assert.Empty(_library.Entries);
+        Assert.Null(_stores.Journal);
+    }
+
+    [Fact]
     public async Task Apply_StoresTheEntryThenRunsTheJournaledChange()
     {
         var planned = (await Plan(FixChangeKind.Apply)).Value;

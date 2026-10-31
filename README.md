@@ -36,7 +36,9 @@ SmartScreen may warn on first run: **More info**, then **Run anyway**. Instead, 
 - **Shows conflicts.** For every file two mods share, whose copy the game uses, and lets you reorder them.
 - **Checks every mod.** Programs inside a mod are named and never installed, your own antivirus scans every mod before
   it is kept, and a download that differs from the known official one is pointed out.
-- **Applies the 4 GB patch and DXVK**, and notices when Steam's Verify integrity has undone them.
+- **Applies DXVK and the 4 GB patch**, and notices when Steam's Verify integrity has undone them. The 4 GB patch
+  is for copies without Steam's copy protection, such as GOG and EA App: Steam refuses to start its own executable
+  once it is patched, so DAORework does not patch it.
 - **Diagnoses your install** and suggests next steps, each with its button.
 - **Backs up your saves**, and launches the game.
 
@@ -189,7 +191,9 @@ overwritten: the plan is blocked instead. `--yes` applies without asking; withou
 `fixes` applies well-known fixes to the game's install folder the same way: plan first, then a backup,
 then the change, and `fixes remove` or `fixes rollback` puts the original files back. There are two: the
 4 GB patch, which lets the 32-bit game use 4 GB of memory, and DXVK, which runs the game's Direct3D 9 on
-Vulkan, from a release you download from [its GitHub releases](https://github.com/doitsujin/dxvk/releases):
+Vulkan, from a release you download from [its GitHub releases](https://github.com/doitsujin/dxvk/releases). The 4 GB
+patch is refused for Steam's protected `daorigins.exe`, which Steam will not start once changed
+([ADR-0023](docs/adr/0023-steam-protected-executable.md)):
 
 ```bash
 dotnet run --project src/DAORework.Cli -- fixes apply laa --dry-run   # show the plan only

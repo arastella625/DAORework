@@ -6,9 +6,12 @@
 ## Context
 DAORework has always launched the game by starting `daorigins.exe` (or `DAOriginsLauncher.exe`) itself. On the
 owner's real Steam install, during the 0.3.0 release run, that start was refused by Steam with *"Application load
-error 3:0000065432"*: the process starts, then Steam stops it. Steam shows this error when a Steam game is started
-from its own executable and Steam cannot confirm the start (Steam not running, its check blocked, or a changed
-executable). Most players have the Steam edition, so launching must work for them.
+error 3:0000065432"*. Starting the game through Steam is how Steam expects its games to start, so this ADR made
+DAORework do that.
+
+*Correction, same day:* the error came back when Steam started the game, and was caused by the 4 GB patch on Steam's
+protected executable, not by how DAORework started it ([ADR-0023](0023-steam-protected-executable.md)). Launching
+through Steam stays: it is still how Steam expects to be used, and it brings the overlay and playtime.
 
 ## Decision
 - **A Steam install is launched by asking Steam to start it:** DAORework opens `steam://rungameid/47810`, the same
@@ -28,7 +31,7 @@ executable). Most players have the Steam edition, so launching must work for the
   reads the app manifest. `LaunchResult.ProcessId` becomes optional, because Steam starts the game, not DAORework.
 
 ## Consequences
-- Steam players launch from DAORework the way Steam expects: through Steam, which is what this error asks for.
+- Steam players launch from DAORework the way Steam expects, with the overlay and playtime.
 - DAORework no longer knows the game's process id for a Steam launch; the window and the command line say that Steam
   was asked to start the game.
 - If Steam is not installed or the link cannot be opened, the launch fails with `DAO_PROCESS_START_FAILED` and a hint

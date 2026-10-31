@@ -123,6 +123,11 @@ public static class DiagnosticCodes
     public const string ModSafetyThreatFound = "DAO_MOD_SAFETY_THREAT_FOUND";
     public const string ModSafetyDownloadDiffers = "DAO_MOD_SAFETY_DOWNLOAD_DIFFERS";
 
+    // ADR-0023: Steam's copy of daorigins.exe is protected by SteamStub, and Steam refuses it once patched.
+    public const string SteamExecutableProtected = "DAO_STEAM_EXE_PROTECTED";
+    public const string SteamExecutablePatched = "DAO_STEAM_EXE_PATCHED";
+    public const string FixSteamProtected = "DAO_FIX_STEAM_PROTECTED";
+
     public const string FixSourceInvalid = "DAO_FIX_SOURCE_INVALID";
     public const string FixSourceRequired = "DAO_FIX_SOURCE_REQUIRED";
     public const string FixUnknown = "DAO_FIX_UNKNOWN";

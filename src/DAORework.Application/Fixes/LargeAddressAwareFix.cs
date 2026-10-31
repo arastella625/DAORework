@@ -2,13 +2,15 @@ using DAORework.Application.Abstractions;
 using DAORework.Core.Common;
 using DAORework.Core.Diagnostics;
 using DAORework.Core.Fixes;
+using DAORework.Core.Formats;
 using DAORework.Core.Mods.Library;
 
 namespace DAORework.Application.Fixes;
 
 /// <summary>
 /// The 4 GB patch (ADR-0013): patches the game executable's bytes in memory and makes an entry holding the patched and
-/// the unpatched exe, named by the unpatched exe's hash. A flag set by hand, or by another tool, is left alone.
+/// the unpatched exe, named by the unpatched exe's hash. A flag set by hand, or by another tool, is left alone, and
+/// Steam's protected executable is never patched (ADR-0023).
 /// </summary>
 public sealed class LargeAddressAwareFix : IManagedFix
 {
@@ -33,6 +35,14 @@ public sealed class LargeAddressAwareFix : IManagedFix
         if (!(await _files.ReadAsync(context.InstallDirectory, ExecutablePath, cancellationToken)).TryGetValue(out var original, out var error))
         {
             return Result.Failure<PreparedFix>(error);
+        }
+
+        if (SteamStub.IsProtected(original))
+        {
+            return Result.Failure<PreparedFix>(new Error(
+                DiagnosticCodes.FixSteamProtected,
+                $"{ExecutablePath} is Steam's protected copy (SteamStub), and Steam refuses to start it once it is patched.",
+                "DAORework does not apply the 4 GB patch to it (ADR-0023). DXVK helps with the game's memory crashes without touching the executable."));
         }
 
         if (!LargeAddressAwarePatch.Apply(original).TryGetValue(out var patch, out error))
