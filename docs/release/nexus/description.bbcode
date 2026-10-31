@@ -65,10 +65,10 @@ Deactivate or roll back the mods you activated through it (Mods tab), remove the
 
 [size=5][b]Windows SmartScreen[/b][/size]
 
-DAORework is not code-signed: a signing certificate would put my personal details on every download, so Windows may say it protected your PC. Choose [b]More info[/b], then [b]Run anyway[/b]. You can check that your download is the real one in two ways:
+From 0.3.1, DAORework.exe and dao.exe are code-signed: right-click > Properties > Digital Signatures shows who published them. A new publisher still builds up reputation with SmartScreen, so on early releases Windows may still say it protected your PC: choose [b]More info[/b], then [b]Run anyway[/b]. You can also check that your download is the real one in two ways:
 [list]
-[*][b]Checksum:[/b] run [i]Get-FileHash DAORework-0.3.0-win-x64.zip[/i] in PowerShell and compare it with the .sha256 file on the [url=https://github.com/arastella625/DAORework/releases]GitHub release[/url].
-[*][b]Build attestation:[/b] with the GitHub CLI, [i]gh attestation verify DAORework-0.3.0-win-x64.zip --repo arastella625/DAORework[/i] proves the zip was built by the project's own release workflow from its published source, and not changed since.
+[*][b]Checksum:[/b] run [i]Get-FileHash DAORework-0.3.1-win-x64.zip[/i] in PowerShell and compare it with the .sha256 file on the [url=https://github.com/arastella625/DAORework/releases]GitHub release[/url].
+[*][b]Build attestation:[/b] with the GitHub CLI, [i]gh attestation verify DAORework-0.3.1-win-x64.zip --repo arastella625/DAORework[/i] proves the zip was built by the project's own release workflow from its published source, and not changed since.
 [/list]
 
 [line]
