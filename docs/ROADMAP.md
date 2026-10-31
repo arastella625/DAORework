@@ -200,20 +200,23 @@ reader.
 - [x] Every `mods`, `fixes` and `saves` capability is reachable in the GUI. Normal use needs no command line.
   *(Library, activation, Changes, Load order, Installed by hand and Adopt on the Mods tab; the Fixes tab with its
   rollback and recovery; the Saves tab.)*
-- [ ] On the owner's real install, a hand-built mod setup (at least Qwinn's Ultimate DAO Fixpack, one other add-in
+- [x] On the owner's real install, a hand-built mod setup (at least Qwinn's Ultimate DAO Fixpack, one other add-in
   and one multi-folder override mod) is adopted without reinstalling, and deactivating and rolling back leave it
-  as it was.
+  as it was. *(Steam, 2026-10-31, owner's report: [matrix](testing/phase-2.5-matrix.md).)*
 - [x] The fault-injection suite covers adopt and is green. *(Four adoption scenarios beside Phase 2's eight.)*
 - [ ] Steam, GOG and EA App each have a real run recorded in `docs/testing/phase-2.5-matrix.md`. No platform is
-  carried forward.
+  carried forward. *Steam is recorded (2026-10-31). GOG and EA App are still open as
+  [#5](https://github.com/arastella625/DAORework/issues/5): nobody on the project has either copy, so 0.3.0 says
+  plainly that only Steam has been run on a real install.*
 - [ ] At least one beta tester who is not on the project completes adopt, import, activate and rollback in the GUI
   without the docs or help from the owner. *The owner decided on 2026-10-31 to release 0.3.0 without one, since
   nobody outside the project is available yet; the first public users take that role, and their reports are
   tracked as issues.*
 - [x] The headless screenshot tests are green and cover every new page. *(Library, activation plan, Changes,
   adoption plan, load order, Fixes and its rollback, next steps.)*
-- [ ] On the owner's Windows machine, a zip holding the EICAR test file (made on the spot, never committed) is refused
-  at import, and a mod with an `.exe` inside imports with the program named and is never deployed.
+- [x] On the owner's Windows machine, a zip holding the EICAR test file (made on the spot, never committed) is refused
+  at import, and a mod with an `.exe` inside imports with the program named and is never deployed. *(2026-10-31,
+  owner's report.)*
 
 ---
 
