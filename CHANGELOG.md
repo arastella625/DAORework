@@ -8,6 +8,7 @@ All notable changes to DAORework are recorded here. The format follows
 
 ### Added
 - Adopt several mods at once (P2.5-13): each mod in *Installed by hand* on the Mods tab has a tick box, with *Select all* and *Clear*. *Adopt selected* shows one plan for every ticked mod, applied with one backup and undone by one rollback, as `mods adopt <id>...` does on the command line.
+- Activate or deactivate several Library mods at once (P2.5-14): each mod in the Library has a tick box, with *Select all* and *Clear*. *Activate selected* plans every ticked mod that is not active, and *Deactivate selected* every ticked mod that is, each as one change with one backup, as `mods activate <id>...` does on the command line.
 
 ## [0.3.1] - 2026-10-31
 
