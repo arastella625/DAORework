@@ -55,6 +55,7 @@ public sealed class ModsTabViewModel
         await Activation.LoadAsync(profileName, cancellationToken);
         await Changes.LoadAsync(profileName, cancellationToken);
         await LoadOrder.LoadAsync(profileName, cancellationToken);
+        await HandInstalled.RefreshAsync(cancellationToken);
     }
 
     private async Task RefreshAfterChangeAsync(CancellationToken cancellationToken)
@@ -63,6 +64,6 @@ public sealed class ModsTabViewModel
         await Activation.RefreshActiveAsync(cancellationToken);
         await Changes.RefreshAsync(cancellationToken);
         await LoadOrder.RefreshAsync(cancellationToken);
-        await HandInstalled.RescanAsync(cancellationToken);
+        await HandInstalled.RefreshAsync(cancellationToken);
     }
 }
