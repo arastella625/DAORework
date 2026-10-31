@@ -195,6 +195,21 @@ Task IDs use the `P2.5-` prefix (branch `feat/P2.5-02-adopt-scan`). P3-04 moves 
   and [Nexus Mods](https://www.nexusmods.com/dragonage/mods/7083), with its build attestation, and its checksum on
   the [website](https://daorework.dilly-world.net/).*
 
+**Quality of life** *(added 2026-10-31, from the owner's own use after 0.3.0: adopting a real setup one mod at a time
+is cumbersome)*. The command line already takes several mods at once (`mods adopt <id>...`, `mods activate
+<id>...`) and the use cases plan them as one change; the window offers one mod at a time. These tasks bring the
+window up to the command line. Each change still shows its plan first and is applied only on *Apply*.
+
+- P2.5-13 Adopt several mods at once: each mod in *Installed by hand* gets a tick box, with *Select all*, and
+  *Adopt selected* makes one plan for all of them, applied with one backup and undone by one rollback. Loose
+  override files still need their name.
+- P2.5-14 Activate and deactivate several Library mods at once: tick boxes in the Library, *Activate selected* and
+  *Deactivate selected*, one plan for all of them.
+- P2.5-15 Import several downloads at once from *Import a mod* (dropping several already works), each scanned and
+  checked as now, with one summary.
+- P2.5-16 *Installed by hand* fills in by itself: the list is read when the Mods tab opens and after each change,
+  instead of waiting for *Find mods installed by hand*. Finding still only reads.
+
 **Not in this phase:** Nexus "Mod Manager Download" (`nxm://`) links and any other network access (SDD §12 and
 ADR-0009 need an ADR first); hard links for large texture packs (ADR-0012 leaves that to its own ADR); any format
 reader.
