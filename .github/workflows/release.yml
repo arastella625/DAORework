@@ -183,7 +183,13 @@ jobs:
               'sign=false' >> $env:GITHUB_OUTPUT
           }
           elseif ($missing) { throw "Signing is half set up; the release environment is missing: $($missing -join ', '). See docs/release/code-signing.md." }
-          else { 'sign=true' >> $env:GITHUB_OUTPUT }
+          else {
+              # A value pasted with a line break or space at either end is sent as part of the name, and Azure answers
+              # 403 Forbidden without saying why. Name the value (never print it) so it can be saved again.
+              $padded = @($names | Where-Object { $v = [Environment]::GetEnvironmentVariable($_); $v -ne $v.Trim() })
+              if ($padded) { throw "These signing values start or end with a space or line break: $($padded -join ', '). Edit each in Settings > Environments > release and save it again without them." }
+              'sign=true' >> $env:GITHUB_OUTPUT
+          }
 
       # OpenID Connect: GitHub vouches for this run, and Azure accepts it only from the release environment. No secret.
       - name: Sign in to Azure
