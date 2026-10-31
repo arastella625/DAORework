@@ -36,13 +36,17 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
     /// <summary>Gets or sets what runs after a plan was made: planning copies the mod into the library, as <c>mods adopt --dry-run</c> does.</summary>
     public Func<CancellationToken, Task>? AfterPlanAsync { get; set; }
 
-    public ObservableCollection<string> PlanLines { get; } = [];
+    /// <summary>Gets the plan being previewed: a summary, its warnings, and its full text behind Show details (P2.5-18).</summary>
+    public PlanPreview Preview { get; } = new();
+
+    /// <summary>Gets the plan's full text, as <c>mods adopt --dry-run</c> prints it, with mods named.</summary>
+    public ObservableCollection<string> PlanLines => Preview.Lines;
+
+    /// <summary>Gets what the plan being previewed is for, or null when there is none.</summary>
+    public string? PlanTitle => Preview.Title;
 
     [ObservableProperty]
     public partial string? ProfileName { get; set; }
-
-    [ObservableProperty]
-    public partial string? PlanTitle { get; set; }
 
     /// <summary>Gets or sets the name the loose override files are adopted under.</summary>
     [ObservableProperty]
@@ -83,18 +87,15 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
                 }
 
                 var names = string.Join(", ", candidates.Select(m => m.Title));
-                PlanTitle = candidates.Count == 1 ? $"Adopt {names}" : $"Adopt {candidates.Count} mods: {names}";
-                foreach (var line in ModActivationPlanText.Render(plan))
-                {
-                    PlanLines.Add(line);
-                }
-
                 _pending = (documents, plan, names);
                 CanApply = !plan.IsBlocked && !plan.IsEmpty;
                 if (AfterPlanAsync is not null)
                 {
                     await AfterPlanAsync(token);
                 }
+
+                // Shown once the library has been read again, so the mods planning just imported are named.
+                Preview.Show(candidates.Count == 1 ? $"Adopt {names}" : $"Adopt {candidates.Count} mods: {names}", plan);
             },
             cancellationToken);
 
@@ -138,8 +139,7 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
     private void ClearPlan()
     {
         _pending = null;
-        PlanLines.Clear();
-        PlanTitle = null;
+        Preview.Clear();
         CanApply = false;
     }
 }

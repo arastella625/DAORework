@@ -30,14 +30,7 @@
       <Border Name="OrderPlan" Padding="12" CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource BorderSoftBrush}"
               IsVisible="{Binding IsReordered}">
         <StackPanel Spacing="8">
-          <TextBlock FontWeight="SemiBold" Text="The plan for the new order" />
-          <ItemsControl ItemsSource="{Binding PlanLines}">
-            <ItemsControl.ItemTemplate>
-              <DataTemplate x:DataType="x:String">
-                <TextBlock Classes="Mono" Text="{Binding}" TextWrapping="Wrap" />
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
+          <views:PlanPreviewView DataContext="{Binding Preview}" />
           <StackPanel Orientation="Horizontal" Spacing="12">
             <Button Name="ApplyOrderButton" Classes="accent" Content="Apply" Command="{Binding ApplyCommand}" />
             <Button Name="ResetOrderButton" Content="Back to the saved order" Command="{Binding ResetCommand}" />

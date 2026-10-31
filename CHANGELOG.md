@@ -7,6 +7,8 @@ All notable changes to DAORework are recorded here. The format follows
 ## [Unreleased]
 
 ### Changed
+- The Mods tab is in sections (P2.5-17): *Library*, *Installed by hand* (with how many mods it found), *Load order*, *Changes* and *Folders*, one at a time instead of one long page. Each plan shows in the section you asked for it, and the *Adopt* next step opens *Installed by hand*.
+- Plans in the window are easier to read (P2.5-18): each opens with one sentence saying what it does (*Copies 1 file and deletes 1. Writes 3 B.*), its warnings follow in full, and the file-by-file detail is behind *Show details*. Mods are named by their names instead of ids like `eyes-bd85c991`. The command line's plans are unchanged.
 - Each backup says what its change did (P2.5-19): the Mods tab's *Changes* and the Fixes tab name each backup by its change (*Activated Eyes and Nails*, *Adopted 4 mods: …*, *Changed the load order*, *Applied 4 GB patch*), and asking to roll one back names it too. Mods are named by their Library names there, and fixes by theirs (*4 GB patch*, *DXVK*), instead of their ids.
 
 ### Added

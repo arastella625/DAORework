@@ -133,15 +133,8 @@ public sealed class LibraryScreenTests : IDisposable
 
     private static LibraryPanel Panel(MainWindow window) => window.GetVisualDescendants().OfType<LibraryPanel>().Single();
 
-    /// <summary>Scroll so the panel's heading is at the top of the screenshot.</summary>
-    private static void ShowPanel(MainWindow window)
-    {
-        window.UpdateLayout();
-        var panel = Panel(window);
-        var scroller = panel.FindAncestorOfType<ScrollViewer>() ?? throw new InvalidOperationException("The panel is not in a ScrollViewer.");
-        scroller.Offset = new Avalonia.Vector(0, panel.Bounds.Top);
-        window.UpdateLayout();
-    }
+    /// <summary>Open the panel's section and scroll so its heading is at the top of the screenshot.</summary>
+    private static void ShowPanel(MainWindow window) => ModsTabScenario.Show<LibraryPanel>(window);
 
     private async Task<(MainWindow Window, MainWindowViewModel ViewModel)> OpenModsTabAsync()
     {

@@ -1,7 +1,6 @@
 using System.IO.Abstractions.TestingHelpers;
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
-using Avalonia.VisualTree;
 using DAORework.App.ViewModels;
 using DAORework.App.Views;
 using DAORework.Core.Common;
@@ -68,15 +67,8 @@ public sealed class HandInstalledScreenTests : IDisposable
         Assert.Contains("has no documents folder", viewModel.HandInstalled.StatusMessage, StringComparison.Ordinal);
     }
 
-    /// <summary>The panel sits below the folder summary; scroll so its heading is at the top of the screenshot.</summary>
-    private static void ShowPanel(MainWindow window)
-    {
-        window.UpdateLayout();
-        var panel = window.GetVisualDescendants().OfType<HandInstalledPanel>().Single();
-        var scroller = panel.FindAncestorOfType<ScrollViewer>() ?? throw new InvalidOperationException("The panel is not in a ScrollViewer.");
-        scroller.Offset = new Avalonia.Vector(0, panel.Bounds.Top);
-        window.UpdateLayout();
-    }
+    /// <summary>Open the panel's section and scroll so its heading is at the top of the screenshot.</summary>
+    private static void ShowPanel(MainWindow window) => ModsTabScenario.Show<HandInstalledPanel>(window);
 
     private async Task<(MainWindow Window, MainWindowViewModel ViewModel)> OpenModsTabAsync()
     {

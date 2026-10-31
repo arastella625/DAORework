@@ -18,18 +18,11 @@
       <TextBlock Name="LibraryStatus" Classes="Status" Classes.Error="{Binding Library.IsError}" Text="{Binding Library.StatusMessage}" TextWrapping="Wrap"
                  IsVisible="{Binding Library.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       <Border Name="PlanPreview" Padding="12" CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource BorderSoftBrush}"
-              IsVisible="{Binding Activation.PlanTitle, Converter={x:Static ObjectConverters.IsNotNull}}">
+              IsVisible="{Binding Activation.Preview.Title, Converter={x:Static ObjectConverters.IsNotNull}}">
         <StackPanel Spacing="8">
-          <TextBlock FontWeight="SemiBold" Text="{Binding Activation.PlanTitle}" />
+          <views:PlanPreviewView DataContext="{Binding Activation.Preview}" />
           <TextBlock Classes="Secondary" TextWrapping="Wrap"
-                     Text="The plan for the profile's documents folder. Nothing changes until you apply it; a backup is taken first." />
-          <ItemsControl Name="PlanLines" ItemsSource="{Binding Activation.PlanLines}">
-            <ItemsControl.ItemTemplate>
-              <DataTemplate x:DataType="x:String">
-                <TextBlock Classes="Mono" Text="{Binding}" TextWrapping="Wrap" />
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
+                     Text="Nothing changes in the profile's documents folder until you apply it; a backup is taken first." />
           <StackPanel Orientation="Horizontal" Spacing="12">
             <Button Name="ApplyPlanButton" Classes="accent" Content="Apply" Command="{Binding Activation.ApplyCommand}" />
             <Button Name="CancelPlanButton" Content="Cancel" Command="{Binding Activation.CancelPlanCommand}" />
