@@ -241,6 +241,15 @@ reader.
   [ADR-0019](adr/0019-the-games-own-music.md), proposed and waiting on the owner's decision and a format check. The audio library
   needs an ADR and the ADR-0009 license check first.
 
+- P3-06 Knowing about new releases *(the owner's wish, 2026-10-31;
+  [#19](https://github.com/arastella625/DAORework/issues/19))*: an opt-in *Check for updates*, off by default and
+  asked once, that makes one anonymous request to GitHub's public releases API (no account, no key, no profile or
+  path sent), compares versions, and links to the GitHub release and the Nexus page with how to check the download.
+  It is DAORework's first network access, so an ADR comes first (SDD §12): what is sent, where and how often, the
+  opt-in, and why GitHub rather than the Nexus API, which needs each player's own key. Installing an update itself
+  (download, verify the SHA-256 and the build attestation, replace the running executables) is not part of this task
+  and would need its own ADR and threat model.
+
 **Exit gate:** each reader round-trips every file in a real install without exceptions (verified by a local-only test that runs on the developer's machine against their own install; no game files are committed).
 
 ---
