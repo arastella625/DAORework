@@ -64,15 +64,15 @@
 
     <section id="check">
       <h2>Check your download</h2>
-      <p>DAORework is not code-signed: a signing certificate would put the author's personal details on every download. So Windows SmartScreen may say it protected your PC. Choose <strong>More info</strong>, then <strong>Run anyway</strong>, after checking the zip one of these ways:</p>
+      <p>From 0.3.1, <code>DAORework.exe</code> and <code>dao.exe</code> are code-signed: right-click either one, choose <strong>Properties</strong>, then <strong>Digital Signatures</strong> to see the publisher. A new publisher has to build up reputation with Windows, so SmartScreen may still say it protected your PC on the first releases. If it does, choose <strong>More info</strong>, then <strong>Run anyway</strong>, after checking the zip one of these ways:</p>
       <dl class="release">
-        <dt>Latest release</dt><dd>0.3.0</dd>
-        <dt>File</dt><dd><code>DAORework-0.3.0-win-x64.zip</code></dd>
-        <dt>SHA-256</dt><dd><code class="hash">d51a736e50aa6e16581fd53afd4a2ba35c0aff462c77696b52842d94b2f4ed61</code></dd>
+        <dt>Latest release</dt><dd>0.3.1</dd>
+        <dt>File</dt><dd><code>DAORework-0.3.1-win-x64.zip</code></dd>
+        <dt>SHA-256</dt><dd><code class="hash">1ab7007ffb9b4a698650ac9cb80c5ff7e27f4e03c2faae7c608315a8492afca6</code></dd>
       </dl>
       <ol class="steps">
-        <li><strong>Checksum:</strong> in PowerShell, run <code>Get-FileHash DAORework-0.3.0-win-x64.zip</code> and compare the hash with the one above and with the release's <code>.sha256</code> file. This page is hosted separately from the downloads, so both have to agree.</li>
-        <li><strong>Build attestation:</strong> with the <a href="https://cli.github.com/">GitHub CLI</a>, run <code>gh attestation verify DAORework-0.3.0-win-x64.zip --repo arastella625/DAORework</code>. It proves the zip was built by the project's own release workflow from its published source, and not changed since.</li>
+        <li><strong>Checksum:</strong> in PowerShell, run <code>Get-FileHash DAORework-0.3.1-win-x64.zip</code> and compare the hash with the one above and with the release's <code>.sha256</code> file. This page is hosted separately from the downloads, so both have to agree.</li>
+        <li><strong>Build attestation:</strong> with the <a href="https://cli.github.com/">GitHub CLI</a>, run <code>gh attestation verify DAORework-0.3.1-win-x64.zip --repo arastella625/DAORework</code>. It proves the zip was built by the project's own release workflow from its published source, and not changed since.</li>
       </ol>
     </section>
 
