@@ -145,31 +145,36 @@ jobs:
         shell: pwsh
         env:
           NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
-          NEXUS_FILE_ID: ${{ vars.NEXUS_FILE_ID }}
+          NEXUS_FILE_ID: ${{ vars.NEXUS_FILE_ID || secrets.NEXUS_FILE_ID }}
+          # Only whether it is there, never its value: a key saved as a variable is readable by anyone with access.
+          KEY_SAVED_AS_VARIABLE: ${{ vars.NEXUS_API_KEY != '' }}
         run: |
           $version = $env:TAG.TrimStart('v')
           "version=$version" >> $env:GITHUB_OUTPUT
+          if ($env:KEY_SAVED_AS_VARIABLE -eq 'true') {
+              throw 'NEXUS_API_KEY is saved as a variable in the release environment. Delete it there and add it under Environment secrets. See docs/release/nexus-upload.md.'
+          }
           if (-not $env:NEXUS_API_KEY -and -not $env:NEXUS_FILE_ID) {
               Write-Host '::notice::The Nexus upload is not set up, so upload the zip to Nexus Mods by hand.'
               'upload=false' >> $env:GITHUB_OUTPUT
           }
-          elseif (-not $env:NEXUS_API_KEY -or -not $env:NEXUS_FILE_ID) {
-              throw 'The Nexus upload is half set up: the release environment needs both the NEXUS_API_KEY secret and the NEXUS_FILE_ID variable. See docs/release/nexus-upload.md.'
-          }
+          elseif (-not $env:NEXUS_API_KEY) { throw 'The Nexus upload is half set up: NEXUS_FILE_ID is set, but the release environment has no NEXUS_API_KEY secret. See docs/release/nexus-upload.md.' }
+          elseif (-not $env:NEXUS_FILE_ID) { throw 'The Nexus upload is half set up: the NEXUS_API_KEY secret is set, but the release environment has no NEXUS_FILE_ID. See docs/release/nexus-upload.md.' }
           else { 'upload=true' >> $env:GITHUB_OUTPUT }
 
-      # Signing is optional (ADR-0018 §4): with all six variables set, the executables are signed; with none, the release
-      # is published unsigned; with only some, the setup is half done and the run stops before anything is published.
+      # Signing is optional (ADR-0018 §4): with all six values set, the executables are signed; with none, the release is
+      # published unsigned; with only some, the setup is half done and the run stops before anything is published. None
+      # of them is a password, so each may be saved as a variable or as a secret of the release environment.
       - name: Check the signing setup
         id: signing
         shell: pwsh
         env:
-          AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-          AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-          ARTIFACT_SIGNING_ENDPOINT: ${{ vars.ARTIFACT_SIGNING_ENDPOINT }}
-          ARTIFACT_SIGNING_ACCOUNT: ${{ vars.ARTIFACT_SIGNING_ACCOUNT }}
-          ARTIFACT_SIGNING_PROFILE: ${{ vars.ARTIFACT_SIGNING_PROFILE }}
+          AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID || secrets.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID || secrets.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID || secrets.AZURE_SUBSCRIPTION_ID }}
+          ARTIFACT_SIGNING_ENDPOINT: ${{ vars.ARTIFACT_SIGNING_ENDPOINT || secrets.ARTIFACT_SIGNING_ENDPOINT }}
+          ARTIFACT_SIGNING_ACCOUNT: ${{ vars.ARTIFACT_SIGNING_ACCOUNT || secrets.ARTIFACT_SIGNING_ACCOUNT }}
+          ARTIFACT_SIGNING_PROFILE: ${{ vars.ARTIFACT_SIGNING_PROFILE || secrets.ARTIFACT_SIGNING_PROFILE }}
         run: |
           $names = 'AZURE_CLIENT_ID', 'AZURE_TENANT_ID', 'AZURE_SUBSCRIPTION_ID', 'ARTIFACT_SIGNING_ENDPOINT', 'ARTIFACT_SIGNING_ACCOUNT', 'ARTIFACT_SIGNING_PROFILE'
           $missing = @($names | Where-Object { -not [Environment]::GetEnvironmentVariable($_) })
@@ -185,17 +190,17 @@ jobs:
         if: steps.signing.outputs.sign == 'true'
         uses: azure/login@v2
         with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ vars.AZURE_CLIENT_ID || secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID || secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID || secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Sign the executables
         if: steps.signing.outputs.sign == 'true'
         uses: Azure/artifact-signing-action@v2.0.0
         with:
-          endpoint: ${{ vars.ARTIFACT_SIGNING_ENDPOINT }}
-          signing-account-name: ${{ vars.ARTIFACT_SIGNING_ACCOUNT }}
-          certificate-profile-name: ${{ vars.ARTIFACT_SIGNING_PROFILE }}
+          endpoint: ${{ vars.ARTIFACT_SIGNING_ENDPOINT || secrets.ARTIFACT_SIGNING_ENDPOINT }}
+          signing-account-name: ${{ vars.ARTIFACT_SIGNING_ACCOUNT || secrets.ARTIFACT_SIGNING_ACCOUNT }}
+          certificate-profile-name: ${{ vars.ARTIFACT_SIGNING_PROFILE || secrets.ARTIFACT_SIGNING_PROFILE }}
           files-folder: ${{ github.workspace }}/${{ env.FOLDER }}
           files-folder-filter: exe
 
@@ -256,12 +261,12 @@ jobs:
         uses: Nexus-Mods/upload-action@98532f7670c27cbecc78fae03fa3e278147827e2 # v1.0.0-beta.11
         with:
           api_key: ${{ secrets.NEXUS_API_KEY }}
-          file_id: ${{ vars.NEXUS_FILE_ID }}
+          file_id: ${{ vars.NEXUS_FILE_ID || secrets.NEXUS_FILE_ID }}
           filename: artifacts/DAORework-${{ steps.nexus.outputs.version }}-win-x64.zip
           version: ${{ steps.nexus.outputs.version }}
           display_name: DAORework ${{ steps.nexus.outputs.version }}
           description: 'The same zip as the GitHub release. Its SHA-256 is on the release page and the project website.'
           archive_existing_version: true
           update_mod_version: true
-          mod_id: ${{ vars.NEXUS_MOD_ID }}
-          changelog: "${{ vars.NEXUS_MOD_ID && format('Changes in {0}: https://github.com/{1}/releases/tag/{2}', steps.nexus.outputs.version, github.repository, env.TAG) || '' }}"
+          mod_id: ${{ vars.NEXUS_MOD_ID || secrets.NEXUS_MOD_ID }}
+          changelog: "${{ (vars.NEXUS_MOD_ID || secrets.NEXUS_MOD_ID) && format('Changes in {0}: https://github.com/{1}/releases/tag/{2}', steps.nexus.outputs.version, github.repository, env.TAG) || '' }}"

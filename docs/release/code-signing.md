@@ -70,7 +70,8 @@ In the repository: Settings > Environments > New environment, named exactly `rel
   branch is for re-running a release by hand from Actions > Release > Run workflow).
 - **Required reviewers:** add yourself, so every signing waits for your click. On a private repository this needs a
   paid GitHub plan; once the repository is public it is free.
-- **Environment variables** (variables, not secrets; none of these is a password):
+- **Environment variables** (none of these is a password, so variables are simplest; saving them as environment
+  secrets works too):
 
 | Name | Value |
 |---|---|
