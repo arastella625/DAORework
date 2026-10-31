@@ -15,6 +15,22 @@ internal sealed class FakePathPicker : IPathPicker
 
     public Task<string?> PickFileAsync(string title, string filterName, IReadOnlyList<string> patterns, CancellationToken cancellationToken = default) => AnswerAsync(title);
 
+    /// <summary>Answers a dialog that picks several files with every queued path, in order.</summary>
+    public Task<IReadOnlyList<string>> PickFilesAsync(string title, string filterName, IReadOnlyList<string> patterns, CancellationToken cancellationToken = default)
+    {
+        Titles.Add(title);
+        var paths = new List<string>();
+        while (_answers.TryDequeue(out var path))
+        {
+            if (path is not null)
+            {
+                paths.Add(path);
+            }
+        }
+
+        return Task.FromResult<IReadOnlyList<string>>(paths);
+    }
+
     private Task<string?> AnswerAsync(string title)
     {
         Titles.Add(title);

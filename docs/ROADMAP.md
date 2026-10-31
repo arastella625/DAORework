@@ -208,7 +208,7 @@ window up to the command line. Each change still shows its plan first and is app
   *Deactivate selected*, one plan for all of them. *Done: tick boxes with Select all and Clear, each choice planned
   as one change ([screenshot](screenshots/p2.5-14/01-activate-selected.png)).*
 - P2.5-15 Import several downloads at once from *Import a mod* (dropping several already works), each scanned and
-  checked as now, with one summary.
+  checked as now, with one summary. *Done: the picker takes several files, imported in turn with one message.*
 - P2.5-16 *Installed by hand* fills in by itself: the list is read when the Mods tab opens and after each change,
   instead of waiting for *Find mods installed by hand*. Finding still only reads.
 
