@@ -272,9 +272,10 @@ Infrastructure and Cli have no floor, but every bug fix needs a regression test.
 
 ## 12. Security, privacy and legal
 
-- No network access in Phases 0 to 2. If network access is ever added, it needs an ADR and user opt-in.
+- No network access in Phases 0 to 2.5. If network access is ever added, it needs an ADR and user opt-in; the first
+  planned is an opt-in update check (ROADMAP P3-06).
 - Support reports must offer path redaction (replace `C:\Users\<name>` with `%USERPROFILE%`).
-- Mods are untrusted input ([ADR-0018](adr/0018-mod-safety.md)): DAORework never runs anything from a mod, never deploys a program file from one, scans every mod through the user's antivirus (AMSI) before it enters the library and refuses it on a detection, and recognizes known downloads by their SHA-256. Its own releases are code-signed.
+- Mods are untrusted input ([ADR-0018](adr/0018-mod-safety.md)): DAORework never runs anything from a mod, never deploys a program file from one, scans every mod through the user's antivirus (AMSI) before it enters the library and refuses it on a detection, and recognizes known downloads by their SHA-256. Its own releases carry a SHA-256 and a build provenance attestation, and are code-signed once the owner sets signing up (ADR-0018 §4).
 - The project is licensed under PolyForm Noncommercial 1.0.0 ([ADR-0020](adr/0020-license-noncommercial.md), superseding the MIT choice in [ADR-0008](adr/0008-project-license-mit.md)): free to use, change and share for any noncommercial purpose, never sold. Existing mods, fixes and tools are incorporated by the three tiers in [ADR-0009](adr/0009-third-party-mods-and-tools.md): detect and advise, manage, reuse permissively licensed code with attribution.
 - Any file-format knowledge (Phase 3) comes from **public community specifications and our own observation of file behavior**. The source is cited in `docs/formats/<FORMAT>.md`, and no decompiled code is used. See [LEGAL_BOUNDARIES.md](LEGAL_BOUNDARIES.md).
 
