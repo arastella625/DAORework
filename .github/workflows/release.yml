@@ -1,0 +1,229 @@
+name: Release
+
+# On a pull request that touches the shipped apps or this pipeline: build the Windows release zip (unsigned) and attach it
+# to the run, so it can be tried before release. On a v* tag: the same build, then the executables are code-signed if the
+# owner has set signing up (optional, ADR-0018 §4), the zip and executables get a build provenance attestation, and a
+# GitHub Release is published. Run by hand with a tag (Actions > Release > Run
+# workflow) to build and publish an existing tag with this version of the workflow.
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/release.yml'
+      - 'scripts/publish-release.ps1'
+      - 'scripts/third-party-licenses.ps1'
+      - 'scripts/release-notes.ps1'
+      - 'Directory.Build.props'
+      - 'Directory.Packages.props'
+      - 'src/**'
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'An existing v* tag to build and publish (leave empty to only build)'
+        required: false
+        default: ''
+
+# The package job only reads. Signing, attesting and publishing happen in the release job, which runs only for a v* tag,
+# inside the GitHub environment `release`: if signing is set up, Azure trusts that environment and nothing else
+# (docs/release/code-signing.md).
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  package:
+    name: Build the Windows release
+    runs-on: windows-latest
+    outputs:
+      folder: ${{ steps.build.outputs.folder }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+
+      - name: Set up .NET (from global.json)
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      # The tag names the release, but the executables and the zip take their version from Directory.Build.props.
+      # v0.2.0 was first published with both stamped 0.1.0, so a tag that disagrees stops the run before anything is built.
+      - name: Check the tag matches the version
+        if: startsWith(github.ref, 'refs/tags/v') || startsWith(inputs.tag, 'v')
+        shell: pwsh
+        env:
+          TAG: ${{ inputs.tag || github.ref_name }}
+        run: |
+          $version = $env:TAG.TrimStart('v')
+          $declared = ([xml](Get-Content 'Directory.Build.props' -Raw)).Project.PropertyGroup.Version | Where-Object { $_ } | Select-Object -First 1
+          if ($declared -ne $version) { throw "Tag $env:TAG does not match <Version>$declared</Version> in Directory.Build.props. Bump it before tagging." }
+          ./scripts/release-notes.ps1 -Version $version | Out-Null
+          Write-Host "Tag $env:TAG matches Directory.Build.props and CHANGELOG.md."
+
+      # Built as a folder, not zipped yet: a tagged release signs the executables before they are zipped.
+      - name: Build the release folder
+        id: build
+        shell: pwsh
+        run: |
+          ./scripts/publish-release.ps1 -OutDir artifacts -NoZip
+          $staging = Get-ChildItem artifacts -Directory -Filter 'DAORework-*' | Select-Object -First 1
+          "folder=$($staging.Name)" >> $env:GITHUB_OUTPUT
+
+      - name: Smoke-test the executables
+        shell: pwsh
+        run: |
+          $staging = Get-ChildItem artifacts -Directory -Filter 'DAORework-*' | Select-Object -First 1
+          & (Join-Path $staging.FullName 'dao.exe') --help
+          if ($LASTEXITCODE -ne 0) { throw "dao.exe --help exited $LASTEXITCODE" }
+          & (Join-Path $staging.FullName 'dao.exe') detect
+          if ($LASTEXITCODE -ne 0) { throw "dao.exe detect exited $LASTEXITCODE" }
+          $window = Start-Process (Join-Path $staging.FullName 'DAORework.exe') -PassThru
+          Start-Sleep -Seconds 10
+          if ($window.HasExited) { throw "DAORework.exe exited early with code $($window.ExitCode)" }
+          Stop-Process -Id $window.Id
+          Write-Host 'Both executables start.'
+
+      # A pull request or an untagged run gets the unsigned zip to try out. A tagged run never publishes this zip.
+      - name: Zip the unsigned build
+        if: ${{ !(startsWith(github.ref, 'refs/tags/v') || startsWith(inputs.tag, 'v')) }}
+        shell: pwsh
+        run: ./scripts/publish-release.ps1 -OutDir artifacts -ZipOnly
+
+      - name: Upload the unsigned zip
+        if: ${{ !(startsWith(github.ref, 'refs/tags/v') || startsWith(inputs.tag, 'v')) }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: DAORework-win-x64-unsigned
+          path: |
+            artifacts/*.zip
+            artifacts/*.zip.sha256
+          retention-days: 14
+
+      - name: Upload the folder for signing
+        if: startsWith(github.ref, 'refs/tags/v') || startsWith(inputs.tag, 'v')
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-folder
+          path: artifacts/${{ steps.build.outputs.folder }}/
+          retention-days: 1
+
+  release:
+    name: Sign, attest and publish the release
+    needs: package
+    if: startsWith(github.ref, 'refs/tags/v') || startsWith(inputs.tag, 'v')
+    runs-on: windows-latest
+    environment: release
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
+      FOLDER: artifacts/${{ needs.package.outputs.folder }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+
+      - name: Download the built folder
+        uses: actions/download-artifact@v7
+        with:
+          name: release-folder
+          path: ${{ env.FOLDER }}
+
+      # Signing is optional (ADR-0018 §4): with all six variables set, the executables are signed; with none, the release
+      # is published unsigned; with only some, the setup is half done and the run stops before anything is published.
+      - name: Check the signing setup
+        id: signing
+        shell: pwsh
+        env:
+          AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          ARTIFACT_SIGNING_ENDPOINT: ${{ vars.ARTIFACT_SIGNING_ENDPOINT }}
+          ARTIFACT_SIGNING_ACCOUNT: ${{ vars.ARTIFACT_SIGNING_ACCOUNT }}
+          ARTIFACT_SIGNING_PROFILE: ${{ vars.ARTIFACT_SIGNING_PROFILE }}
+        run: |
+          $names = 'AZURE_CLIENT_ID', 'AZURE_TENANT_ID', 'AZURE_SUBSCRIPTION_ID', 'ARTIFACT_SIGNING_ENDPOINT', 'ARTIFACT_SIGNING_ACCOUNT', 'ARTIFACT_SIGNING_PROFILE'
+          $missing = @($names | Where-Object { -not [Environment]::GetEnvironmentVariable($_) })
+          if ($missing.Count -eq $names.Count) {
+              Write-Host '::notice::Signing is not set up, so this release is published unsigned, with its checksum and build attestation.'
+              'sign=false' >> $env:GITHUB_OUTPUT
+          }
+          elseif ($missing) { throw "Signing is half set up; the release environment is missing: $($missing -join ', '). See docs/release/code-signing.md." }
+          else { 'sign=true' >> $env:GITHUB_OUTPUT }
+
+      # OpenID Connect: GitHub vouches for this run, and Azure accepts it only from the release environment. No secret.
+      - name: Sign in to Azure
+        if: steps.signing.outputs.sign == 'true'
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Sign the executables
+        if: steps.signing.outputs.sign == 'true'
+        uses: Azure/artifact-signing-action@v2.0.0
+        with:
+          endpoint: ${{ vars.ARTIFACT_SIGNING_ENDPOINT }}
+          signing-account-name: ${{ vars.ARTIFACT_SIGNING_ACCOUNT }}
+          certificate-profile-name: ${{ vars.ARTIFACT_SIGNING_PROFILE }}
+          files-folder: ${{ github.workspace }}/${{ env.FOLDER }}
+          files-folder-filter: exe
+
+      - name: Check the signatures and that the signed executables start
+        if: steps.signing.outputs.sign == 'true'
+        shell: pwsh
+        run: |
+          foreach ($exe in 'DAORework.exe', 'dao.exe') {
+              $signature = Get-AuthenticodeSignature (Join-Path $env:FOLDER $exe)
+              if ($signature.Status -ne 'Valid') { throw "$exe is not validly signed: $($signature.Status) $($signature.StatusMessage)" }
+              Write-Host "$exe signed by $($signature.SignerCertificate.Subject)"
+          }
+          & (Join-Path $env:FOLDER 'dao.exe') --help | Out-Null
+          if ($LASTEXITCODE -ne 0) { throw "The signed dao.exe --help exited $LASTEXITCODE" }
+
+      - name: Zip the release
+        shell: pwsh
+        run: ./scripts/publish-release.ps1 -OutDir artifacts -ZipOnly
+
+      # A signed record, kept by GitHub, that these exact files were built by this workflow from this commit: anyone can
+      # check it with `gh attestation verify <file> --repo arastella625/DAORework`. It names the repository, not a person.
+      # GitHub offers it free for public repositories only, so a release from the private repository goes without.
+      - name: Attest the build provenance
+        if: ${{ !github.event.repository.private }}
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: |
+            artifacts/*.zip
+            ${{ env.FOLDER }}/DAORework.exe
+            ${{ env.FOLDER }}/dao.exe
+
+      - name: Upload the release zip
+        uses: actions/upload-artifact@v7
+        with:
+          name: DAORework-win-x64
+          path: |
+            artifacts/*.zip
+            artifacts/*.zip.sha256
+          retention-days: 14
+
+      # @(...) keeps one-item lists as arrays: splatting a bare string passes it to gh one character at a time.
+      - name: Publish the GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = $env:TAG.TrimStart('v')
+          ./scripts/release-notes.ps1 -Version $version | Set-Content notes.md
+          $flags = @(if ($version.StartsWith('0.')) { '--prerelease' })
+          $files = @((Get-ChildItem artifacts -File).FullName)
+          gh release create $env:TAG @files --verify-tag --title "DAORework $version" --notes-file notes.md @flags
+          if ($LASTEXITCODE -ne 0) { throw 'gh release create failed.' }

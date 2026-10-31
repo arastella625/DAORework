@@ -1,0 +1,64 @@
+<!-- The look of DAORework's own controls (ADR-0016). Every color is a theme token. -->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:DAORework.App.Controls">
+  <ControlTheme x:Key="{x:Type controls:Card}" TargetType="controls:Card">
+    <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource BorderSoftBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="16,14" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Panel>
+          <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}"
+                  Padding="{TemplateBinding Padding}">
+            <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}"
+                              ContentTemplate="{TemplateBinding ContentTemplate}" />
+          </Border>
+          <Path Data="{StaticResource FiligreeCorner}" Stroke="{DynamicResource BorderBrush}" StrokeThickness="1.2"
+                Width="26" Height="26" Margin="3" HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False" />
+          <Path Data="{StaticResource FiligreeCorner}" Stroke="{DynamicResource BorderBrush}" StrokeThickness="1.2"
+                Width="26" Height="26" Margin="3" HorizontalAlignment="Right" VerticalAlignment="Bottom" IsHitTestVisible="False"
+                RenderTransform="rotate(180deg)" />
+        </Panel>
+      </ControlTemplate>
+    </Setter>
+  </ControlTheme>
+
+  <ControlTheme x:Key="{x:Type controls:RuneDivider}" TargetType="controls:RuneDivider">
+    <Setter Property="Width" Value="360" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Grid ColumnDefinitions="*,Auto,*" Height="10">
+          <Rectangle Height="1" Fill="{DynamicResource BorderFadeInBrush}" />
+          <Path Grid.Column="1" Margin="8,0" Width="56" Height="10" Data="{StaticResource RuneGlyph}"
+                Stroke="{DynamicResource BorderBrush}" StrokeThickness="1" />
+          <Rectangle Grid.Column="2" Height="1" Fill="{DynamicResource BorderFadeOutBrush}" />
+        </Grid>
+      </ControlTemplate>
+    </Setter>
+  </ControlTheme>
+
+  <ControlTheme x:Key="{x:Type controls:Backdrop}" TargetType="controls:Backdrop">
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Panel>
+          <Border Background="{DynamicResource BackgroundBrush}" />
+          <!-- A custom look's picture (ADR-0017), tinted already, under a veil of the background at no less than its floor. -->
+          <Image Source="{DynamicResource LookPicture}" Stretch="{DynamicResource LookPictureStretch}"
+                 Effect="{DynamicResource LookPictureBlur}" IsHitTestVisible="False" />
+          <Border Background="{DynamicResource BackgroundBrush}" Opacity="{DynamicResource LookVeilOpacity}" IsHitTestVisible="False" />
+          <Border Background="{DynamicResource SmokeBrush}" />
+          <Border Background="{DynamicResource GrainBrush}" Opacity="0.04" IsHitTestVisible="False" />
+          <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}" Padding="{TemplateBinding Padding}" />
+        </Panel>
+      </ControlTemplate>
+    </Setter>
+  </ControlTheme>
+</ResourceDictionary>

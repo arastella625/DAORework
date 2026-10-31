@@ -1,0 +1,88 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DAORework.App.ViewModels"
+             xmlns:views="using:DAORework.App.Views"
+             xmlns:controls="using:DAORework.App.Controls"
+             x:Class="DAORework.App.Views.HandInstalledPanel"
+             x:DataType="vm:HandInstalledViewModel">
+  <UserControl.Resources>
+    <DataTemplate x:Key="Candidate" x:DataType="vm:HandInstalledModRow">
+      <Border Padding="0,10" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+          <StackPanel Spacing="3">
+            <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
+            <TextBlock Classes="Mono Secondary" Text="{Binding Details}" TextWrapping="Wrap" />
+            <ItemsControl ItemsSource="{Binding Notes}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                  <TextBlock Text="{Binding}" TextWrapping="Wrap" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding NeedsName}">
+              <TextBlock VerticalAlignment="Center" Text="Adopt them as" />
+              <TextBox Name="LooseFilesName" Width="240" PlaceholderText="a name for these files"
+                       Text="{Binding $parent[views:HandInstalledPanel].((vm:HandInstalledViewModel)DataContext).Adoption.LooseFilesName}" />
+            </StackPanel>
+          </StackPanel>
+          <Button Grid.Column="1" VerticalAlignment="Top" Content="Adopt" CommandParameter="{Binding}"
+                  Command="{Binding $parent[views:HandInstalledPanel].((vm:HandInstalledViewModel)DataContext).Adoption.AdoptCommand}" />
+        </Grid>
+      </Border>
+    </DataTemplate>
+    <DataTemplate x:Key="Row" x:DataType="vm:HandInstalledModRow">
+      <Border Padding="0,10" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
+        <StackPanel Spacing="3">
+          <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
+          <TextBlock Classes="Mono Secondary" Text="{Binding Details}" TextWrapping="Wrap" />
+          <ItemsControl ItemsSource="{Binding Notes}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="x:String">
+                <TextBlock Text="{Binding}" TextWrapping="Wrap" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+  </UserControl.Resources>
+  <controls:Card Margin="12,0,12,12">
+    <StackPanel Spacing="10">
+      <TextBlock Classes="SectionTitle" Text="Installed by hand" />
+      <StackPanel Orientation="Horizontal" Spacing="12">
+        <Button Name="ScanButton" Content="Find mods installed by hand" Command="{Binding ScanCommand}" />
+        <TextBlock VerticalAlignment="Center" Classes="Secondary" Text="Finding only reads; adopting shows its plan first." />
+      </StackPanel>
+      <TextBlock Name="HandInstalledStatus" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" />
+      <Border Name="AdoptionPlan" Padding="12" CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource BorderSoftBrush}"
+              IsVisible="{Binding Adoption.PlanTitle, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <StackPanel Spacing="8">
+          <TextBlock FontWeight="SemiBold" Text="{Binding Adoption.PlanTitle}" />
+          <TextBlock Classes="Secondary" TextWrapping="Wrap"
+                     Text="Planning copied the mod into the Library, which writes only DAORework's own folder. Nothing in the documents folder moves until you apply it; a backup is taken first." />
+          <ItemsControl ItemsSource="{Binding Adoption.PlanLines}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="x:String">
+                <TextBlock Classes="Mono" Text="{Binding}" TextWrapping="Wrap" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <Button Name="ApplyAdoptionButton" Classes="accent" Content="Apply" Command="{Binding Adoption.ApplyCommand}" />
+            <Button Name="CancelAdoptionButton" Content="Cancel" Command="{Binding Adoption.CancelPlanCommand}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+      <TextBlock Name="AdoptionStatus" Classes="Status" Classes.Error="{Binding Adoption.IsError}" Text="{Binding Adoption.StatusMessage}" TextWrapping="Wrap"
+                 IsVisible="{Binding Adoption.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+      <ItemsControl Name="Candidates" ItemsSource="{Binding Candidates}" ItemTemplate="{StaticResource Candidate}" />
+      <TextBlock Classes="Label" Text="Cannot be adopted" Margin="0,6,0,0"
+                 IsVisible="{Binding NotAdoptable.Count, Converter={x:Static views:CountConverters.IsPositive}}" />
+      <ItemsControl Name="NotAdoptable" ItemsSource="{Binding NotAdoptable}" ItemTemplate="{StaticResource Row}" />
+      <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding OfficialSummary, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <PathIcon Classes="Muted" Data="{StaticResource IconLock}" />
+        <TextBlock Name="OfficialSummary" Classes="Secondary" Text="{Binding OfficialSummary}" TextWrapping="Wrap" />
+      </StackPanel>
+    </StackPanel>
+  </controls:Card>
+</UserControl>

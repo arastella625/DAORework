@@ -1,0 +1,102 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DAORework.App.ViewModels"
+             xmlns:views="using:DAORework.App.Views"
+             xmlns:controls="using:DAORework.App.Controls"
+             xmlns:themes="using:DAORework.App.Themes"
+             xmlns:looks="using:DAORework.Core.Looks"
+             x:Class="DAORework.App.Views.LooksPanel"
+             x:DataType="vm:SettingsPageViewModel">
+  <UserControl.Styles>
+    <!-- As the theme picker's cards: the picked look is framed in the focus glow, not filled, so its text stays readable. -->
+    <Style Selector="ListBox#LookList ListBoxItem">
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Margin" Value="0,0,10,10" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderSoftBrush}" />
+    </Style>
+    <Style Selector="ListBox#LookList ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource FocusGlowBrush}" />
+      <Setter Property="BoxShadow" Value="{DynamicResource GlowShadow}" />
+    </Style>
+  </UserControl.Styles>
+  <controls:Card>
+    <StackPanel Spacing="10">
+      <TextBlock Classes="SectionTitle" Text="Your looks" />
+      <TextBlock Classes="Secondary" TextWrapping="Wrap"
+                 Text="A look starts from a theme and can have its own accent and picture. Pick one to change it; it shows at once while you edit." />
+      <StackPanel Orientation="Horizontal" Spacing="10" DataContext="{Binding Looks}" x:DataType="vm:LookListViewModel">
+        <Button Name="NewLookButton" Content="New look" Classes="accent" Command="{Binding NewLookCommand}" />
+        <Button Name="UseEverywhereButton" Content="Use everywhere" Command="{Binding UseEverywhereCommand}" IsEnabled="{Binding HasSelection}" />
+        <Button Name="DeleteLookButton" Content="Delete" Command="{Binding DeleteCommand}" IsEnabled="{Binding HasSelection}"
+                Classes.danger="{Binding ConfirmingDelete}" />
+      </StackPanel>
+      <TextBlock Name="LooksStatus" Classes="Status" DataContext="{Binding Looks}" x:DataType="vm:LookListViewModel"
+                 Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" />
+      <ListBox Name="LookList" ItemsSource="{Binding Looks.Looks}" SelectedItem="{Binding Looks.SelectedLook}" Background="Transparent">
+        <ListBox.ItemsPanel>
+          <ItemsPanelTemplate>
+            <UniformGrid Columns="3" />
+          </ItemsPanelTemplate>
+        </ListBox.ItemsPanel>
+        <ListBox.ItemTemplate>
+          <DataTemplate x:DataType="looks:Look">
+            <StackPanel Margin="12,10" Spacing="6">
+              <TextBlock FontWeight="SemiBold" Text="{Binding Name}" />
+              <Border Height="8" CornerRadius="2" Background="{Binding Accent, Converter={x:Static themes:LookBrushes.FromHex}}"
+                      IsVisible="{Binding Accent, Converter={x:Static ObjectConverters.IsNotNull}}" />
+              <TextBlock Classes="Secondary" FontSize="12" Text="{Binding BaseTheme, Converter={x:Static views:ThemeNames.Of}}" />
+            </StackPanel>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+
+      <!-- The editor for the picked look. -->
+      <StackPanel Name="LookEditor" Spacing="10" DataContext="{Binding Details}" x:DataType="vm:LookDetailsViewModel" IsVisible="{Binding HasLook}">
+        <TextBlock Classes="Label" Text="Change this look" />
+        <Grid ColumnDefinitions="Auto,12,*" RowDefinitions="Auto,8,Auto,8,Auto">
+          <TextBlock VerticalAlignment="Center" Text="Name" />
+          <TextBox Grid.Column="2" Name="LookName" Text="{Binding Name}" MaxLength="40" />
+          <TextBlock Grid.Row="2" VerticalAlignment="Center" Text="Starts from" />
+          <ComboBox Grid.Row="2" Grid.Column="2" Name="LookBaseTheme" ItemsSource="{Binding Themes}" SelectedItem="{Binding BaseTheme}">
+            <ComboBox.ItemTemplate>
+              <DataTemplate x:DataType="themes:AppTheme">
+                <TextBlock Text="{Binding Name}" />
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+          <TextBlock Grid.Row="4" VerticalAlignment="Top" Margin="0,6,0,0" Text="Accent" />
+          <StackPanel Grid.Row="4" Grid.Column="2" Spacing="8">
+            <CheckBox Name="UseThemeAccent" Content="Use the theme's own accent" IsChecked="{Binding UseThemeAccent}" />
+            <StackPanel Orientation="Horizontal" Spacing="8" IsEnabled="{Binding !UseThemeAccent}">
+              <TextBox Name="LookAccent" Width="110" Text="{Binding Accent}" PlaceholderText="Like #3BA3D9" />
+              <ItemsControl ItemsSource="{Binding SuggestedAccents}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" Spacing="6" />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="x:String">
+                    <Button Width="28" Height="28" Padding="0" ToolTip.Tip="{Binding}"
+                            Background="{Binding Converter={x:Static themes:LookBrushes.FromHex}}"
+                            Command="{Binding $parent[ItemsControl].((vm:LookDetailsViewModel)DataContext).PickAccentCommand}" CommandParameter="{Binding}" />
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+            <TextBlock Classes="Secondary" FontSize="12" TextWrapping="Wrap"
+                       Text="Reds are kept for danger. The app keeps your hue and adjusts its lightness until text on it is readable." />
+          </StackPanel>
+        </Grid>
+        <StackPanel Orientation="Horizontal" Spacing="10">
+          <Button Name="SaveLookButton" Content="Save" Classes="accent" Command="{Binding SaveCommand}" />
+          <TextBlock Name="LookStatus" VerticalAlignment="Center" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" />
+        </StackPanel>
+      </StackPanel>
+      <views:LookPicturePanel DataContext="{Binding Picture}" IsVisible="{Binding HasLook}" />
+    </StackPanel>
+  </controls:Card>
+</UserControl>

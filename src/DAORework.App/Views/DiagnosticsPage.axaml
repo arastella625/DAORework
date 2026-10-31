@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DAORework.App.ViewModels"
+             xmlns:views="using:DAORework.App.Views"
+             xmlns:controls="using:DAORework.App.Controls"
+             xmlns:diagnostics="using:DAORework.Core.Diagnostics"
+             x:Class="DAORework.App.Views.DiagnosticsPage"
+             x:DataType="vm:DiagnosticsPageViewModel">
+  <DockPanel Margin="12">
+    <StackPanel DockPanel.Dock="Top" Spacing="8">
+      <StackPanel Spacing="6">
+        <TextBlock Classes="PageTitle" Text="Diagnostics" />
+        <controls:RuneDivider />
+      </StackPanel>
+      <StackPanel Orientation="Horizontal" Spacing="12">
+        <Button Name="RunButton" Content="Run diagnostics" Command="{Binding RunDiagnosticsCommand}" />
+        <Button Name="BundleButton" Content="Export support bundle" Command="{Binding ExportSupportBundleCommand}" />
+        <TextBlock VerticalAlignment="Center" Classes="Secondary" Text="{Binding ProfileName, TargetNullValue='No profile selected'}" />
+      </StackPanel>
+      <TextBlock Name="Status" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" />
+      <TextBlock IsVisible="{Binding HasReport}" Classes="Secondary" Text="{Binding ReportPath, StringFormat='Report written to {0}'}" TextWrapping="Wrap" />
+      <SelectableTextBlock Name="BundlePath" Text="{Binding BundlePath, StringFormat='Support bundle: {0}'}" TextWrapping="Wrap"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           IsVisible="{Binding BundlePath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+    </StackPanel>
+    <ScrollViewer Margin="0,12,0,0">
+      <ItemsControl Name="Issues" ItemsSource="{Binding Issues}">
+        <ItemsControl.ItemTemplate>
+          <!-- Each row shows its severity as an icon and a word as well as the stripe's color (ADR-0016 rule 4). -->
+          <DataTemplate x:DataType="diagnostics:DiagnosticIssue">
+            <Border Classes="Severity" Margin="0,0,0,6"
+                    Classes.Info="{Binding Severity, Converter={x:Static views:SeverityConverters.IsInfo}}"
+                    Classes.Warning="{Binding Severity, Converter={x:Static views:SeverityConverters.IsWarning}}"
+                    Classes.Error="{Binding Severity, Converter={x:Static views:SeverityConverters.IsError}}">
+              <Grid ColumnDefinitions="96,*" RowDefinitions="Auto,Auto" RowSpacing="2">
+                <StackPanel Grid.RowSpan="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Top">
+                  <PathIcon Classes="Info" Data="{StaticResource IconInfo}" IsVisible="{Binding Severity, Converter={x:Static views:SeverityConverters.IsInfo}}" />
+                  <PathIcon Classes="Warning" Data="{StaticResource IconWarning}" IsVisible="{Binding Severity, Converter={x:Static views:SeverityConverters.IsWarning}}" />
+                  <PathIcon Classes="Error" Data="{StaticResource IconError}" IsVisible="{Binding Severity, Converter={x:Static views:SeverityConverters.IsError}}" />
+                  <TextBlock FontWeight="SemiBold" Text="{Binding Severity}"
+                             Classes.Info="{Binding Severity, Converter={x:Static views:SeverityConverters.IsInfo}}"
+                             Classes.Warning="{Binding Severity, Converter={x:Static views:SeverityConverters.IsWarning}}"
+                             Classes.Error="{Binding Severity, Converter={x:Static views:SeverityConverters.IsError}}" />
+                </StackPanel>
+                <TextBlock Grid.Column="1" TextWrapping="Wrap">
+                  <Run FontFamily="{StaticResource MonoFontFamily}" Text="{Binding Code}" />
+                  <Run Text="{Binding Message}" />
+                </TextBlock>
+                <TextBlock Grid.Row="1" Grid.Column="1" Classes="Secondary" TextWrapping="Wrap" Text="{Binding Recommendation}"
+                           IsVisible="{Binding Recommendation, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+              </Grid>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
+  </DockPanel>
+</UserControl>

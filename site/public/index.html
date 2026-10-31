@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DAORework: mod manager for Dragon Age: Origins</title>
+  <meta name="description" content="A free mod manager, launcher and diagnostics tool for Dragon Age: Origins. Every change is planned first, backed up and can be rolled back.">
+  <meta property="og:title" content="DAORework">
+  <meta property="og:description" content="A free mod manager, launcher and diagnostics tool for Dragon Age: Origins.">
+  <meta property="og:image" content="https://daorework.dilly-world.net/images/00-cover.png">
+  <link rel="canonical" href="https://daorework.dilly-world.net/">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <h1>DAORework</h1>
+      <p class="tagline">A mod manager, launcher and diagnostics tool for Dragon Age: Origins.</p>
+      <p class="promise">Plan first. Backup always. Roll back anything. Free, always.</p>
+      <p class="actions">
+        <a class="button" href="#download">Download</a>
+        <a class="button ghost" href="#check">Check your download</a>
+      </p>
+      <img class="cover" src="/images/03-load-order.png" alt="The Mods tab: two mods share a file, and the plan for a new order" width="960" height="640">
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section id="what">
+      <h2>What it does</h2>
+      <ul class="points">
+        <li><strong>Takes over the mods you already installed by hand</strong>, without reinstalling them. Official DLC is never touched.</li>
+        <li><strong>Installs mods safely.</strong> Import a <code>.dazip</code>, <code>.zip</code>, <code>.7z</code> or <code>.rar</code>, see exactly what will be copied, replaced or removed, and nothing changes until you apply it. A backup is taken first.</li>
+        <li><strong>Shows conflicts.</strong> For every file two mods share, see whose copy the game uses, and reorder them.</li>
+        <li><strong>Checks every mod.</strong> Your own antivirus scans it before it is kept, programs inside a mod are never installed, and a download that differs from the official one is pointed out.</li>
+        <li><strong>Applies the 4 GB patch and DXVK</strong> safely, and notices when Steam's Verify integrity has undone them.</li>
+        <li><strong>Diagnoses your install</strong> and suggests next steps, and backs up your saves.</li>
+      </ul>
+      <p class="note">It never downloads mods or game files, and never sends anything over the internet. Everything stays on your computer.</p>
+    </section>
+
+    <section id="screens">
+      <h2>See it</h2>
+      <div class="gallery">
+        <figure><img src="/images/01-first-run-next-steps.png" alt="The Profile tab with next steps" width="960" height="640" loading="lazy"><figcaption>First run: it finds your install, checks it, and lists your next steps.</figcaption></figure>
+        <figure><img src="/images/02-activate-plan.png" alt="The plan for activating a mod" width="960" height="640" loading="lazy"><figcaption>Every change shows its plan first. Nothing changes until you press Apply.</figcaption></figure>
+        <figure><img src="/images/03-load-order.png" alt="The load order with a file conflict" width="960" height="640" loading="lazy"><figcaption>See whose copy of a shared file the game uses, and reorder.</figcaption></figure>
+        <figure><img src="/images/04-adopt-hand-installed.png" alt="Adopting mods installed by hand" width="960" height="640" loading="lazy"><figcaption>Already modded by hand? It takes those mods over without reinstalling.</figcaption></figure>
+        <figure><img src="/images/05-fixes.png" alt="The Fixes tab" width="960" height="640" loading="lazy"><figcaption>The 4 GB patch and DXVK, applied and removed safely.</figcaption></figure>
+        <figure><img src="/images/06-rollback.png" alt="Rolling back a change" width="960" height="640" loading="lazy"><figcaption>Every change is backed up and can be rolled back.</figcaption></figure>
+        <figure><img src="/images/07-themes.png" alt="The theme picker" width="960" height="640" loading="lazy"><figcaption>Four built-in themes, and looks of your own.</figcaption></figure>
+      </div>
+    </section>
+
+    <section id="download">
+      <h2>Download</h2>
+      <p>Windows 10 or 11, 64-bit, and Dragon Age: Origins (any edition). Nothing else to install.</p>
+      <p>Get it from the <a href="https://github.com/arastella625/DAORework/releases">GitHub releases page</a> or from Nexus Mods. Both are the same zip. Unzip it anywhere and run <code>DAORework.exe</code>.</p>
+    </section>
+
+    <section id="check">
+      <h2>Check your download</h2>
+      <p>DAORework is not code-signed: a signing certificate would put the author's personal details on every download. So Windows SmartScreen may say it protected your PC. Choose <strong>More info</strong>, then <strong>Run anyway</strong>, after checking the zip one of these ways:</p>
+      <dl class="release">
+        <dt>Latest release</dt><dd>0.3.0</dd>
+        <dt>File</dt><dd><code>DAORework-0.3.0-win-x64.zip</code></dd>
+        <dt>SHA-256</dt><dd><code class="hash">Published here when 0.3.0 is released.</code></dd>
+      </dl>
+      <ol class="steps">
+        <li><strong>Checksum:</strong> in PowerShell, run <code>Get-FileHash DAORework-0.3.0-win-x64.zip</code> and compare the hash with the one above and with the release's <code>.sha256</code> file. This page is hosted separately from the downloads, so both have to agree.</li>
+        <li><strong>Build attestation:</strong> with the <a href="https://cli.github.com/">GitHub CLI</a>, run <code>gh attestation verify DAORework-0.3.0-win-x64.zip --repo arastella625/DAORework</code>. It proves the zip was built by the project's own release workflow from its published source, and not changed since.</li>
+      </ol>
+    </section>
+
+    <section id="built">
+      <h2>How it is built</h2>
+      <p>DAORework is designed and directed by Amber Rastella, with an AI coding assistant writing much of the code under strict engineering standards, written decisions, automated tests and a run on a real install before every release. The whole story, in her own words: <a href="https://github.com/arastella625/DAORework/blob/main/docs/HOW_IT_IS_BUILT.md">How DAORework is built</a>.</p>
+    </section>
+
+    <section id="license">
+      <h2>Free, always</h2>
+      <p>DAORework will never cost anything. Its source is public under the <a href="https://github.com/arastella625/DAORework/blob/main/LICENSE">PolyForm Noncommercial License 1.0.0</a>: you may use it, change it, share it and build on it for any noncommercial purpose. Nobody may sell it.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p><a href="https://github.com/arastella625/DAORework">Source and bug reports on GitHub</a> · <a href="/.well-known/security.txt">Report a security problem</a></p>
+      <p class="small">This site has no scripts, no cookies and no trackers. DAORework is a fan project, not affiliated with BioWare or Electronic Arts. Dragon Age is a trademark of Electronic Arts Inc.</p>
+    </div>
+  </footer>
+</body>
+</html>

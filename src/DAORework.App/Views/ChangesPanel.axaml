@@ -1,0 +1,59 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DAORework.App.ViewModels"
+             xmlns:views="using:DAORework.App.Views"
+             xmlns:controls="using:DAORework.App.Controls"
+             x:Class="DAORework.App.Views.ChangesPanel"
+             x:DataType="vm:ModChangesViewModel">
+  <controls:Card Margin="12,0,12,12">
+    <StackPanel Spacing="10">
+      <TextBlock Classes="SectionTitle" Text="Changes" />
+      <TextBlock Name="ChangesSummary" Text="{Binding Summary}" TextWrapping="Wrap"
+                 IsVisible="{Binding Summary, Converter={x:Static ObjectConverters.IsNotNull}}" />
+      <Border Name="Unfinished" Padding="12" CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource BorderSoftBrush}"
+              IsVisible="{Binding ChangeUnfinished}">
+        <StackPanel Spacing="8">
+          <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6">
+            <PathIcon Classes="Warning" Data="{StaticResource IconWarning}" VerticalAlignment="Top" />
+            <TextBlock Grid.Column="1" Classes="Warning" TextWrapping="Wrap"
+                       Text="A change did not finish, so no other change can be made here. Finish it, or roll it back to how the folder was before it." />
+          </Grid>
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <Button Name="FinishButton" Content="Finish it" Command="{Binding FinishInterruptedCommand}" />
+            <Button Name="RollBackInterruptedButton" Content="Roll it back" Command="{Binding RollBackInterruptedCommand}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+      <Border Name="RollbackConfirm" Padding="12" CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource BorderSoftBrush}"
+              IsVisible="{Binding PendingRollback, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <StackPanel Spacing="8">
+          <TextBlock Text="{Binding PendingRollback}" TextWrapping="Wrap" />
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <Button Name="ConfirmRollbackButton" Classes="accent" Content="Roll back" Command="{Binding ConfirmRollbackCommand}" />
+            <Button Name="CancelRollbackButton" Content="Cancel" Command="{Binding CancelRollbackCommand}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+      <TextBlock Name="ChangesStatus" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" TextWrapping="Wrap"
+                 IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+      <TextBlock Classes="Label" Text="Backups, most recent first"
+                 IsVisible="{Binding Backups.Count, Converter={x:Static views:CountConverters.IsPositive}}" />
+      <ItemsControl Name="Backups" ItemsSource="{Binding Backups}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:BackupRow">
+            <Border Padding="0,8" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <StackPanel Spacing="2">
+                  <TextBlock Classes="Mono" Text="{Binding When}" />
+                  <TextBlock Classes="Secondary" Text="{Binding Before}" TextWrapping="Wrap" />
+                </StackPanel>
+                <Button Grid.Column="1" VerticalAlignment="Top" Content="Roll back to before this" CommandParameter="{Binding}"
+                        Command="{Binding $parent[views:ChangesPanel].((vm:ModChangesViewModel)DataContext).RollBackToCommand}" />
+              </Grid>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </StackPanel>
+  </controls:Card>
+</UserControl>

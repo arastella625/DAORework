@@ -1,0 +1,120 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DAORework.App.ViewModels"
+             xmlns:views="using:DAORework.App.Views"
+             xmlns:controls="using:DAORework.App.Controls"
+             x:Class="DAORework.App.Views.FixesPage"
+             x:DataType="vm:FixesTabViewModel">
+  <StackPanel Margin="12" Spacing="12">
+    <StackPanel Spacing="6">
+      <TextBlock Classes="PageTitle" Text="Fixes" />
+      <controls:RuneDivider />
+    </StackPanel>
+    <TextBlock Classes="Secondary" TextWrapping="Wrap"
+               Text="Fixes change files in the install folder. Each change shows its plan first and is backed up, so removing a fix puts the original files back." />
+    <controls:Card>
+      <StackPanel Spacing="10">
+        <TextBlock Classes="SectionTitle" Text="Applied" />
+        <TextBlock Name="FixSummary" Text="{Binding Status.Summary}" TextWrapping="Wrap"
+                   IsVisible="{Binding Status.Summary, Converter={x:Static ObjectConverters.IsNotNull}}" />
+        <Border Name="FixUnfinished" Padding="12" CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource BorderSoftBrush}"
+                IsVisible="{Binding Status.ChangeUnfinished}">
+          <StackPanel Spacing="8">
+            <TextBlock Classes="Warning" TextWrapping="Wrap"
+                       Text="A fix change did not finish, so no other change can be made here. Finish it, or roll it back to how the install folder was before it." />
+            <StackPanel Orientation="Horizontal" Spacing="12">
+              <Button Name="FinishFixButton" Content="Finish it" Command="{Binding Status.FinishInterruptedCommand}" />
+              <Button Name="RollBackFixButton" Content="Roll it back" Command="{Binding Status.RollBackInterruptedCommand}" />
+            </StackPanel>
+          </StackPanel>
+        </Border>
+        <Border Name="FixRollbackConfirm" Padding="12" CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource BorderSoftBrush}"
+                IsVisible="{Binding Status.PendingRollback, Converter={x:Static ObjectConverters.IsNotNull}}">
+          <StackPanel Spacing="8">
+            <TextBlock Text="{Binding Status.PendingRollback}" TextWrapping="Wrap" />
+            <StackPanel Orientation="Horizontal" Spacing="12">
+              <Button Name="ConfirmFixRollbackButton" Classes="accent" Content="Roll back" Command="{Binding Status.ConfirmRollbackCommand}" />
+              <Button Name="CancelFixRollbackButton" Content="Cancel" Command="{Binding Status.CancelRollbackCommand}" />
+            </StackPanel>
+          </StackPanel>
+        </Border>
+        <TextBlock Classes="Status" Classes.Error="{Binding Status.IsError}" Text="{Binding Status.StatusMessage}" TextWrapping="Wrap"
+                   IsVisible="{Binding Status.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        <ItemsControl Name="AppliedFixes" ItemsSource="{Binding Status.Applied}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:AppliedFixRow">
+              <Border Padding="0,8" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
+                <StackPanel Spacing="2">
+                  <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
+                  <TextBlock Text="{Binding State}" TextWrapping="Wrap" Classes.Warning="{Binding !InEffect}" />
+                </StackPanel>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <TextBlock Classes="Label" Text="Backups, most recent first"
+                   IsVisible="{Binding Status.Backups.Count, Converter={x:Static views:CountConverters.IsPositive}}" />
+        <ItemsControl Name="FixBackups" ItemsSource="{Binding Status.Backups}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:BackupRow">
+              <Border Padding="0,8" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                  <StackPanel Spacing="2">
+                    <TextBlock Classes="Mono" Text="{Binding When}" />
+                    <TextBlock Classes="Secondary" Text="{Binding Before}" TextWrapping="Wrap" />
+                  </StackPanel>
+                  <Button Grid.Column="1" VerticalAlignment="Top" Content="Roll back to before this" CommandParameter="{Binding}"
+                          Command="{Binding $parent[views:FixesPage].((vm:FixesTabViewModel)DataContext).Status.RollBackToCommand}" />
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+    </controls:Card>
+    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+      <controls:Card>
+        <StackPanel Spacing="8">
+          <TextBlock Classes="SectionTitle" Text="4 GB patch" />
+          <TextBlock Classes="Secondary" TextWrapping="Wrap"
+                     Text="Lets the game use up to 4 GB of memory, which large texture mods need. DAORework patches a copy of the game executable; removing it puts the original back." />
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <Button Name="ApplyLaaButton" Content="Apply" Command="{Binding Change.ApplyLargeAddressAwareCommand}" />
+            <Button Name="RemoveLaaButton" Content="Remove" Command="{Binding Change.RemoveLargeAddressAwareCommand}" />
+          </StackPanel>
+        </StackPanel>
+      </controls:Card>
+      <controls:Card Grid.Column="1">
+        <StackPanel Spacing="8">
+          <TextBlock Classes="SectionTitle" Text="DXVK" />
+          <TextBlock Classes="Secondary" TextWrapping="Wrap"
+                     Text="Runs the game's Direct3D 9 on Vulkan, which often fixes stutter on modern systems. Download a release from the DXVK project first; DAORework installs its 32-bit d3d9.dll." />
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <Button Name="InstallDxvkButton" Content="Install from a release" Command="{Binding Change.InstallDxvkCommand}" />
+            <Button Name="RemoveDxvkButton" Content="Remove" Command="{Binding Change.RemoveDxvkCommand}" />
+          </StackPanel>
+        </StackPanel>
+      </controls:Card>
+    </Grid>
+    <Border Name="FixPlan" Padding="12" CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource BorderSoftBrush}"
+            IsVisible="{Binding Change.PlanTitle, Converter={x:Static ObjectConverters.IsNotNull}}">
+      <StackPanel Spacing="8">
+        <TextBlock FontWeight="SemiBold" Text="{Binding Change.PlanTitle}" />
+        <TextBlock Classes="Secondary" Text="The plan for the install folder. Nothing changes until you apply it; a backup is taken first." TextWrapping="Wrap" />
+        <ItemsControl ItemsSource="{Binding Change.PlanLines}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="x:String">
+              <TextBlock Classes="Mono" Text="{Binding}" TextWrapping="Wrap" />
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <Button Name="ApplyFixPlanButton" Classes="accent" Content="Apply" Command="{Binding Change.ApplyCommand}" />
+          <Button Name="CancelFixPlanButton" Content="Cancel" Command="{Binding Change.CancelPlanCommand}" />
+        </StackPanel>
+      </StackPanel>
+    </Border>
+    <TextBlock Name="FixStatus" Classes="Status" Classes.Error="{Binding Change.IsError}" Text="{Binding Change.StatusMessage}" TextWrapping="Wrap"
+               IsVisible="{Binding Change.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+  </StackPanel>
+</UserControl>

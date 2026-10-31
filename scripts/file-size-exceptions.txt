@@ -1,0 +1,3 @@
+# Files temporarily allowed over the 300-line hard limit (ENGINEERING_STANDARDS §1).
+# Format: <repo-relative path> <roadmap task that removes the exception>
+# Add a line only with a written reason in the PR; remove it in the named task.

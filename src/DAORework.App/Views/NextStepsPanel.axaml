@@ -1,0 +1,33 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DAORework.App.ViewModels"
+             xmlns:views="using:DAORework.App.Views"
+             xmlns:controls="using:DAORework.App.Controls"
+             x:Class="DAORework.App.Views.NextStepsPanel"
+             x:DataType="vm:NextStepsViewModel">
+  <controls:Card Margin="12,0,12,12" IsVisible="{Binding HasContent}">
+    <StackPanel Spacing="10">
+      <TextBlock Classes="SectionTitle" Text="Next steps" />
+      <TextBlock Name="NextStepsStatus" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" TextWrapping="Wrap"
+                 IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+      <ItemsControl Name="Steps" ItemsSource="{Binding Steps}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:NextStep">
+            <Border Padding="0,10" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <StackPanel Spacing="3">
+                  <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
+                  <TextBlock Classes="Secondary" Text="{Binding Detail}" TextWrapping="Wrap" />
+                </StackPanel>
+                <Button Grid.Column="1" VerticalAlignment="Top" Content="{Binding Action}" CommandParameter="{Binding}"
+                        Command="{Binding $parent[views:NextStepsPanel].((vm:NextStepsViewModel)DataContext).TakeCommand}" />
+              </Grid>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+      <TextBlock Classes="Secondary" TextWrapping="Wrap" IsVisible="{Binding Steps.Count, Converter={x:Static views:CountConverters.IsPositive}}"
+                 Text="Each button opens a plan on its tab. Nothing changes until you apply it there." />
+    </StackPanel>
+  </controls:Card>
+</UserControl>

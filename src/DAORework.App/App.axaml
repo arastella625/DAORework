@@ -1,0 +1,21 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="DAORework.App.App">
+  <!-- The themes (ADR-0016) are registered in code from Themes/. ThemeSwitcher replaces this FluentTheme with one
+       whose dark palette holds the chosen theme's colors. -->
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://DAORework.App/Themes/Shared.axaml" />
+        <ResourceInclude Source="avares://DAORework.App/Themes/Controls.axaml" />
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Application.Resources>
+  <Application.Styles>
+    <FluentTheme />
+    <StyleInclude Source="avares://DAORework.App/Themes/Styles/Buttons.axaml" />
+    <StyleInclude Source="avares://DAORework.App/Themes/Styles/Text.axaml" />
+    <StyleInclude Source="avares://DAORework.App/Themes/Styles/Status.axaml" />
+    <StyleInclude Source="avares://DAORework.App/Themes/Styles/Dialogs.axaml" />
+  </Application.Styles>
+</Application>

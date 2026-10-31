@@ -1,0 +1,125 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DAORework.App.ViewModels"
+             xmlns:views="using:DAORework.App.Views"
+             xmlns:controls="using:DAORework.App.Controls"
+             xmlns:profiles="using:DAORework.Core.Profiles"
+             xmlns:installations="using:DAORework.Core.Installations"
+             xmlns:documents="using:DAORework.Core.Documents"
+             xmlns:launching="using:DAORework.Core.Launching"
+             x:Class="DAORework.App.Views.ProfilePage"
+             x:DataType="vm:ProfilePageViewModel">
+  <UserControl.Styles>
+    <Style Selector="TextBox.path">
+      <Setter Property="IsReadOnly" Value="True" />
+      <Setter Property="PlaceholderText" Value="Not set" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="TextBlock.label">
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Margin" Value="0,0,12,0" />
+    </Style>
+  </UserControl.Styles>
+  <ScrollViewer>
+    <StackPanel Margin="12" Spacing="12">
+      <StackPanel DataContext="{Binding Paths}" x:DataType="vm:ProfilePathsViewModel" Spacing="12">
+        <StackPanel Spacing="6">
+          <TextBlock Classes="PageTitle" Text="{Binding ProfileName, TargetNullValue='No profile selected'}" />
+          <controls:RuneDivider />
+        </StackPanel>
+        <TextBlock Text="Create a profile in the header, then point it at your install." IsVisible="{Binding !HasProfile}" />
+        <Grid IsEnabled="{Binding HasProfile}" ColumnDefinitions="Auto,*,8,Auto" RowDefinitions="Auto,8,Auto,8,Auto,8,Auto">
+          <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="Install folder" />
+          <TextBox Grid.Row="0" Grid.Column="1" Classes="path" Name="InstallDirectory" Text="{Binding InstallDirectory}" />
+          <Button Grid.Row="0" Grid.Column="3" Content="Browse…" Command="{Binding BrowseCommand}" CommandParameter="{x:Static profiles:ProfilePathKind.Install}" />
+
+          <TextBlock Grid.Row="2" Grid.Column="0" Classes="label" Text="Game executable" />
+          <TextBox Grid.Row="2" Grid.Column="1" Classes="path" Name="GameExecutablePath" Text="{Binding GameExecutablePath}" />
+          <Button Grid.Row="2" Grid.Column="3" Content="Browse…" Command="{Binding BrowseCommand}" CommandParameter="{x:Static profiles:ProfilePathKind.Game}" />
+
+          <TextBlock Grid.Row="4" Grid.Column="0" Classes="label" Text="Launcher executable" />
+          <TextBox Grid.Row="4" Grid.Column="1" Classes="path" Name="LauncherExecutablePath" Text="{Binding LauncherExecutablePath}" />
+          <Button Grid.Row="4" Grid.Column="3" Content="Browse…" Command="{Binding BrowseCommand}" CommandParameter="{x:Static profiles:ProfilePathKind.Launcher}" />
+
+          <TextBlock Grid.Row="6" Grid.Column="0" Classes="label" Text="Documents folder" />
+          <TextBox Grid.Row="6" Grid.Column="1" Classes="path" Name="UserDocumentsDirectory" Text="{Binding UserDocumentsDirectory}" />
+          <Button Grid.Row="6" Grid.Column="3" Content="Browse…" Command="{Binding BrowseCommand}" CommandParameter="{x:Static profiles:ProfilePathKind.Documents}" />
+        </Grid>
+        <StackPanel Orientation="Horizontal" Spacing="16" IsEnabled="{Binding HasProfile}">
+          <TextBlock Classes="label" Text="Launch" />
+          <RadioButton Name="GameTarget" Content="The game (daorigins.exe)" GroupName="target" IsChecked="{Binding IsGameTarget, Mode=OneWay}"
+                       Command="{Binding SetLaunchTargetCommand}" CommandParameter="{x:Static launching:LaunchTarget.Game}" />
+          <RadioButton Name="LauncherTarget" Content="The official launcher" GroupName="target" IsChecked="{Binding IsLauncherTarget, Mode=OneWay}"
+                       Command="{Binding SetLaunchTargetCommand}" CommandParameter="{x:Static launching:LaunchTarget.OfficialLauncher}" />
+        </StackPanel>
+        <TextBlock Name="Status" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" />
+      </StackPanel>
+      <views:NextStepsPanel Margin="-12,0" DataContext="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).NextSteps}" />
+
+      <controls:Card DataContext="{Binding Look}" x:DataType="vm:ProfileLookViewModel">
+        <StackPanel Spacing="8">
+          <TextBlock Classes="SectionTitle" Text="Look" />
+          <TextBlock Classes="Secondary" TextWrapping="Wrap"
+                     Text="What DAORework looks like while this profile is selected. Make your own looks in Settings." />
+          <ComboBox Name="ProfileLook" MinWidth="320" ItemsSource="{Binding Choices}" SelectedItem="{Binding SelectedChoice}" IsEnabled="{Binding HasProfile}">
+            <ComboBox.ItemTemplate>
+              <DataTemplate x:DataType="vm:LookChoice">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                  <TextBlock Text="{Binding Name}" />
+                  <TextBlock Classes="Secondary" Text="{Binding Detail}" />
+                </StackPanel>
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+          <TextBlock Name="LookStatus" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" />
+        </StackPanel>
+      </controls:Card>
+
+      <controls:Card DataContext="{Binding Installs}" x:DataType="vm:InstallsViewModel">
+        <StackPanel Spacing="8">
+          <Grid ColumnDefinitions="Auto,12,Auto,12,*">
+            <TextBlock Grid.Column="0" Classes="SectionTitle" VerticalAlignment="Center" Text="Detected installs" />
+            <Button Grid.Column="2" Name="DetectButton" Content="Detect" Command="{Binding DetectCommand}" />
+            <TextBlock Grid.Column="4" VerticalAlignment="Center" TextWrapping="Wrap" Classes="Secondary"
+                       Text="Steam libraries on any drive, GOG Galaxy, the EA App, the usual folders, and your documents folder." />
+          </Grid>
+          <TextBlock Name="InstallsStatus" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}"
+                     IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+          <ItemsControl Name="Installs" ItemsSource="{Binding Installs}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="installations:Installation">
+                <Grid ColumnDefinitions="110,*,Auto" Margin="0,2">
+                  <TextBlock Grid.Column="0" FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding Distribution}" />
+                  <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding InstallDirectory}" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding Notes}" Classes="Secondary" FontSize="12" IsVisible="{Binding Notes, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    <TextBlock Text="daorigins.exe not found here" Classes="Error" FontSize="12" IsVisible="{Binding !HasValidGameExecutable}" />
+                  </StackPanel>
+                  <Button Grid.Column="2" Content="Use" VerticalAlignment="Center"
+                          Command="{Binding $parent[ItemsControl].((vm:InstallsViewModel)DataContext).UseCommand}" CommandParameter="{Binding}" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <TextBlock FontWeight="SemiBold" Text="Documents folders" IsVisible="{Binding HasDetected}" Margin="0,8,0,0" />
+          <ItemsControl Name="DocumentsFolders" ItemsSource="{Binding DocumentsFolders}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="documents:DocumentsFolder">
+                <Grid ColumnDefinitions="110,*,Auto" Margin="0,2">
+                  <TextBlock Grid.Column="0" FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding Source}" />
+                  <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Path}" TextWrapping="Wrap" />
+                    <TextBlock Text="Folder not found yet (the game creates it on first launch)" Classes="Secondary" FontSize="12" IsVisible="{Binding !Exists}" />
+                    <TextBlock Text="Synced by OneDrive" Classes="Warning" FontSize="12" IsVisible="{Binding IsOneDrive}" />
+                  </StackPanel>
+                  <Button Grid.Column="2" Content="Use" VerticalAlignment="Center"
+                          Command="{Binding $parent[ItemsControl].((vm:InstallsViewModel)DataContext).UseDocumentsCommand}" CommandParameter="{Binding}" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </controls:Card>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

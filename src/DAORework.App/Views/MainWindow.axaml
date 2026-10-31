@@ -1,0 +1,67 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:DAORework.App.ViewModels"
+        xmlns:views="using:DAORework.App.Views"
+        xmlns:controls="using:DAORework.App.Controls"
+        x:Class="DAORework.App.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="DAORework"
+        Width="960" Height="640"
+        MinWidth="720" MinHeight="480"
+        Background="{DynamicResource BackgroundBrush}">
+  <DockPanel>
+    <Border DockPanel.Dock="Top" Padding="16,12" Background="{DynamicResource SurfaceBrush}"
+            BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,0,0,1">
+      <!-- The status lines live outside the grid: inside it, a long message widens the auto columns and pushes the buttons off-screen. -->
+      <StackPanel Spacing="6">
+        <Grid ColumnDefinitions="Auto,14,Auto,220,16,Auto,200,8,Auto,*,Auto">
+          <PathIcon Grid.Column="0" Data="{StaticResource EmblemFeather}" Width="22" Height="22"
+                    Foreground="{DynamicResource HeadingBrush}" ToolTip.Tip="DAORework" />
+          <TextBlock Grid.Column="2" Text="Profile" VerticalAlignment="Center" Margin="0,0,8,0" />
+          <ComboBox Grid.Column="3" Name="ProfileSelector" HorizontalAlignment="Stretch"
+                    ItemsSource="{Binding Profiles.Profiles}" SelectedItem="{Binding Profiles.SelectedProfile}" PlaceholderText="No profiles yet" />
+          <TextBlock Grid.Column="5" Text="New" VerticalAlignment="Center" Margin="0,0,8,0" />
+          <TextBox Grid.Column="6" Name="NewProfileName" Text="{Binding Profiles.NewProfileName}" PlaceholderText="Profile name" />
+          <Button Grid.Column="8" Name="CreateProfileButton" Content="Create" Command="{Binding Profiles.CreateProfileCommand}" />
+          <Button Grid.Column="10" Name="LaunchButton" Content="Launch game" Classes="accent" Command="{Binding Launch.LaunchCommand}" />
+        </Grid>
+        <TextBlock Name="ProfilesStatus" Classes="Status" Classes.Error="{Binding Profiles.IsError}" Text="{Binding Profiles.StatusMessage}"
+                   IsVisible="{Binding Profiles.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        <TextBlock Name="LaunchStatus" Classes="Status" Classes.Error="{Binding Launch.IsError}" Text="{Binding Launch.StatusMessage}"
+                   IsVisible="{Binding Launch.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+      </StackPanel>
+    </Border>
+    <controls:Backdrop>
+      <TabControl Name="Pages" Margin="8" SelectedIndex="{Binding SelectedPage}">
+        <TabItem Header="Profile">
+          <views:ProfilePage DataContext="{Binding Profile}" />
+        </TabItem>
+        <TabItem Header="Diagnostics">
+          <views:DiagnosticsPage DataContext="{Binding Diagnostics}" />
+        </TabItem>
+        <TabItem Header="Mods">
+          <ScrollViewer>
+            <StackPanel>
+              <views:ModsPage DataContext="{Binding Mods}" />
+              <views:LibraryPanel DataContext="{Binding ModsTab}" />
+              <views:LoadOrderPanel DataContext="{Binding ModsTab.LoadOrder}" />
+              <views:ChangesPanel DataContext="{Binding ModsTab.Changes}" />
+              <views:HandInstalledPanel DataContext="{Binding HandInstalled}" />
+            </StackPanel>
+          </ScrollViewer>
+        </TabItem>
+        <TabItem Header="Saves">
+          <views:SavesPage DataContext="{Binding Saves}" />
+        </TabItem>
+        <TabItem Header="Fixes">
+          <ScrollViewer>
+            <views:FixesPage DataContext="{Binding Fixes}" />
+          </ScrollViewer>
+        </TabItem>
+        <TabItem Header="Settings">
+          <views:SettingsPage DataContext="{Binding Settings}" />
+        </TabItem>
+      </TabControl>
+    </controls:Backdrop>
+  </DockPanel>
+</Window>

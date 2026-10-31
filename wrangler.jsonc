@@ -1,0 +1,12 @@
+// The project website (ADR-0021): the static files in site/public, served by Cloudflare Workers static assets, with no
+// Worker script and no build step. Cloudflare deploys it from main on every push with its default settings
+// (root directory "/", no build command, deploy command `npx wrangler deploy`).
+{
+  "name": "daorework",
+  "compatibility_date": "2026-10-31",
+  "assets": {
+    "directory": "./site/public",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  }
+}

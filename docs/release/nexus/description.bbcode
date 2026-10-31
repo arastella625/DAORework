@@ -1,0 +1,106 @@
+[center][size=6][b]DAORework[/b][/size]
+[size=4]A free mod manager, launcher and diagnostics tool for Dragon Age: Origins[/size][/center]
+
+[img]https://daorework.dilly-world.net/images/00-cover.png[/img]
+
+Already have mods installed by hand? DAORework takes them over [b]without reinstalling anything[/b], and from then on every change shows you exactly what it will do first, takes a backup, and can be rolled back.
+
+[line]
+
+[size=5][b]What it does[/b][/size]
+
+[list]
+[*][b]Adopts the mods you installed by hand[/b] in [i]override[/i] and [i]AddIns[/i], without reinstalling them. Official DLC is never touched.
+[*][b]Installs mods safely.[/b] Import a .dazip, .zip, .7z or .rar, or drop it on the window. Activating shows exactly what will be copied, replaced or removed before anything changes, takes a backup first, and any change can be rolled back.
+[*][b]Shows conflicts.[/b] For every file two mods share, it shows whose copy the game uses, and lets you reorder them.
+[*][b]Checks every mod.[/b] Programs inside a mod are named and never installed. Every mod is scanned by your own antivirus (Microsoft Defender or whichever you use) before it is kept, and a mod it flags is refused. A download that differs from the known official one is pointed out.
+[*][b]Fixes.[/b] Applies and removes the 4 GB (large address aware) patch and DXVK, and notices when Steam's Verify integrity has undone them.
+[*][b]Diagnoses your install[/b] and suggests next steps, each with its own button.
+[*][b]Backs up your saves[/b], keeping the newest backups, and launches the game.
+[/list]
+
+[b]What it does not do:[/b] it does not include or download any game files or mods, and it never sends anything over the internet. It only changes the game's own files for the two fixes, each behind a plan and a backup.
+
+[line]
+
+[size=5][b]Screenshots[/b][/size]
+
+[b]Already modded by hand? It takes those mods over without reinstalling[/b]
+[img]https://daorework.dilly-world.net/images/04-adopt-hand-installed.png[/img]
+
+[b]The plan, before anything is written[/b]
+[img]https://daorework.dilly-world.net/images/02-activate-plan.png[/img]
+
+[b]Load order and the files mods share[/b]
+[img]https://daorework.dilly-world.net/images/03-load-order.png[/img]
+
+[b]The 4 GB patch and DXVK[/b]
+[img]https://daorework.dilly-world.net/images/05-fixes.png[/img]
+
+[b]Every change is backed up and can be rolled back[/b]
+[img]https://daorework.dilly-world.net/images/06-rollback.png[/img]
+
+[line]
+
+[size=5][b]Requirements[/b][/size]
+
+[list]
+[*]Windows 10 or 11, 64-bit. Nothing else to install (no .NET needed).
+[*]Dragon Age: Origins, any edition. Tested on a real Steam Ultimate Edition install. GOG and EA App installs are detected but have not been tried on a real machine yet, so reports are very welcome.
+[/list]
+
+[size=5][b]Installation[/b][/size]
+
+[list=1]
+[*]Unzip anywhere.
+[*]Run [b]DAORework.exe[/b].
+[*]Create a profile at the top of the window. It finds your install and documents folder, checks them, and lists your next steps.
+[/list]
+
+Your profiles, mod library and backups are kept in [i]%LOCALAPPDATA%\DAORework[/i]. [i]dao.exe[/i] is the same tool on the command line, if you want it.
+
+[size=5][b]Uninstall[/b][/size]
+
+Deactivate or roll back the mods you activated through it (Mods tab), remove the fixes (Fixes tab), then delete the folder you unzipped and [i]%LOCALAPPDATA%\DAORework[/i].
+
+[size=5][b]Windows SmartScreen[/b][/size]
+
+DAORework is not code-signed: a signing certificate would put my personal details on every download, so Windows may say it protected your PC. Choose [b]More info[/b], then [b]Run anyway[/b]. You can check that your download is the real one in two ways:
+[list]
+[*][b]Checksum:[/b] run [i]Get-FileHash DAORework-0.3.0-win-x64.zip[/i] in PowerShell and compare it with the .sha256 file on the [url=https://github.com/arastella625/DAORework/releases]GitHub release[/url].
+[*][b]Build attestation:[/b] with the GitHub CLI, [i]gh attestation verify DAORework-0.3.0-win-x64.zip --repo arastella625/DAORework[/i] proves the zip was built by the project's own release workflow from its published source, and not changed since.
+[/list]
+
+[line]
+
+[size=5][b]How it is built, in my own words[/b][/size]
+
+Hello! My name is Amber :) Right now I am working as a Junior Dev and lately I have been getting more into my own projects. This has been brewing for a while, but with BioWare's shutdown I felt the need to start dedicating more time on the project to get it released. The Dragon Age series have been a beloved one to me, like many others, and DAO especially a game I will always pivot back to. I've never beat a game more than this one - and that says a lot since I never finish games anymore lol. When I am not gaming or doing coding on the side, I like to watch TV (Outlander is my latest obsession), but I also have gotten pretty decent at crocheting. It's those damn visual patterns that seem so far away! (iykyk)
+
+[b]The short version, cutting the crap so they say[/b]
+
+I use an AI coding assistant (Anthropic's Claude) to write much of DAORework's code. I, however, do not [i]vibe code[/i]. That requires a level of ignorance that would be insulting to my bachelor's degree and [i]checks invisible watch[/i] about to be masters degree. Although AI can generate code, it does not suddenly instill clean code standards, proper design decisions, appropriate architecture into the code itself without someone actually guiding standards and decisions. It may be able to get something working without it; but I promise you when you open the back it's a miracle the thing got past the first Program.cs file (or the like) since it probably STARTS AT 15,000 LINES OF CODE (AKA a 'god file').
+
+I assure this is not what is happening here. Although there may need to be fixes or normal debugging, there is unit and regression testing going on. Established engineering standards. The such. Yada yada this was supposed to be the short version.
+
+[b]The concern is fair[/b]
+
+Look, I get it. I just want to start there. You can't come to me with a concern that likely isn't to some degree super valid, especially with the way it probably makes you feel, and there are real climate consequences without any true regulation.
+
+What I cannot ignore is the power that it puts back into ordinary hands. AI has infested the corporate world, and although we hope that would give people their extra 10 or 15 minutes back in their day, there are some who seem to think it is more important to fill the space with work. This is not how AI should be brought to us; these programs being built should offer ease with nothing expected in return. That's why this program will never be charged, EVER. It will always be free and I will continue to update this particular mod manager until the day I die. If someone chooses to take it and do something more, it is on them as I have at least offered a foundation for the next steps. I intend to make Dragon Age games accessible for as long as possible in the hopes it will continue to bring joy to old and newcomers alike.
+
+The rest, with the receipts (the engineering standards, my decisions, the research on AI and programming, and the water question): [url=https://github.com/arastella625/DAORework/blob/main/docs/HOW_IT_IS_BUILT.md]How DAORework is built[/url].
+
+[line]
+
+[size=5][b]Source, bugs and support[/b][/size]
+
+Free, with its source public, under the PolyForm Noncommercial License 1.0.0: use it, change it and share it for free, but nobody may sell it. [url=https://github.com/arastella625/DAORework]github.com/arastella625/DAORework[/url]
+
+Website, with the checksum of every release: [url=https://daorework.dilly-world.net/]daorework.dilly-world.net[/url]
+
+Please report bugs on the [url=https://github.com/arastella625/DAORework/issues]GitHub issues page[/url]. The [b]Export support bundle[/b] button on the Diagnostics tab makes a zip of your setup with your Windows user name removed, which helps a lot.
+
+[size=5][b]Credits[/b][/size]
+
+DXVK, Qwinn's Ultimate DAO Fixpack and Extra Dog Slot are only recognized, never included; all credit to their authors. The libraries DAORework uses are listed in THIRD-PARTY-LICENSES.md inside the download.

@@ -1,0 +1,38 @@
+# Package updates arrive as CI-validated PRs (roadmap P0-15). Versions live in
+# Directory.Packages.props (central package management), which Dependabot understands.
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    labels: ["type: chore", "area: ci"]
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      dotnet-extensions:
+        patterns: ["Microsoft.Extensions.*"]
+      analyzers:
+        patterns: ["StyleCop.*", "Microsoft.CodeAnalysis.*"]
+      test-tooling:
+        patterns: ["xunit*", "Microsoft.NET.Test.Sdk", "coverlet.*", "NetArchTest.*", "TestableIO.*", "Spectre.Console.Cli.Testing"]
+      spectre:
+        patterns: ["Spectre.Console", "Spectre.Console.Cli"]
+      serilog:
+        patterns: ["Serilog*"]
+    ignore:
+      # xunit.v3 4.x runs only on Microsoft.Testing.Platform, which dotnet test on the .NET 10 SDK cannot
+      # mix with the VSTest mode the other test projects (xUnit 2, coverlet.collector) need. Held at 3.x
+      # until the tests move to the new platform together.
+      - dependency-name: "xunit.v3"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    labels: ["type: chore", "area: ci"]
+    commit-message:
+      prefix: "chore(ci)"
