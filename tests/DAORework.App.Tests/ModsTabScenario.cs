@@ -1,6 +1,7 @@
 using System.IO.Abstractions.TestingHelpers;
 using System.IO.Compression;
 using Avalonia.Controls;
+using Avalonia.LogicalTree;
 using Avalonia.VisualTree;
 using DAORework.App.ViewModels;
 using DAORework.App.Views;
@@ -89,8 +90,12 @@ internal sealed class ModsTabScenario(AppTestHost host)
     public static void Show<TPanel>(MainWindow window)
         where TPanel : Control
     {
+        // The Mods tab shows one section at a time (P2.5-17): select the panel's section, then scroll to the panel.
         window.UpdateLayout();
-        var panel = window.GetVisualDescendants().OfType<TPanel>().Single();
+        var panel = window.GetLogicalDescendants().OfType<TPanel>().Distinct().Single();
+        var section = panel.FindLogicalAncestorOfType<TabItem>() ?? throw new InvalidOperationException("The panel is not in a section.");
+        section.IsSelected = true;
+        window.UpdateLayout();
         var scroller = panel.FindAncestorOfType<ScrollViewer>() ?? throw new InvalidOperationException("The panel is not in a ScrollViewer.");
         scroller.Offset = new Avalonia.Vector(0, panel.Bounds.Top);
         window.UpdateLayout();
