@@ -7,7 +7,8 @@ the zip is uploaded to Nexus by hand.
 ## 1. On Nexus Mods
 
 1. **The file id:** on the mod page ([mods/7083](https://www.nexusmods.com/dragonage/mods/7083)), open the **Files**
-   tab, tick **Advanced**, and note the number shown for the main file (DAORework 0.3.0). The mod id is `7083`.
+   tab, tick **Advanced**, and note the number shown for the main file (DAORework 0.3.0). The mod id for the upload
+   is the **Unique Mod ID** shown in the same place (`601295428523`), not the `7083` in the page's address.
 2. **An API key:** open [your API keys](https://www.nexusmods.com/settings/api-keys) and copy your personal API key.
    Treat it like a password: it acts as your Nexus account.
 
@@ -19,7 +20,7 @@ In the repository: **Settings** → **Environments** → `release` (create it if
 |---|---|---|
 | Secret | `NEXUS_API_KEY` | the API key from step 1 |
 | Variable | `NEXUS_FILE_ID` | the main file's id |
-| Variable | `NEXUS_MOD_ID` | `7083` (optional: adds a changelog entry linking the release notes) |
+| Variable | `NEXUS_MOD_ID` | `601295428523`, the Unique Mod ID (optional: adds a changelog entry linking the release notes) |
 
 The key goes in **Environment secrets**, never in a variable, a file or a comment; the release job stops if it finds
 the key saved as a variable. The file id and mod id may be variables or secrets.
