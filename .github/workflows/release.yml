@@ -194,6 +194,19 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID || secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID || secrets.AZURE_SUBSCRIPTION_ID }}
 
+      # Some Windows runner images come without the PowerShell Gallery registered, and the signing action installs its
+      # module from it with pwsh (actions/runner-images#13758). Register it when missing; a runner that has it is left
+      # as it is.
+      - name: Make sure the PowerShell Gallery is registered
+        if: steps.signing.outputs.sign == 'true'
+        shell: pwsh
+        run: |
+          if (-not (Get-PSRepository -Name PSGallery -ErrorAction SilentlyContinue)) {
+              Register-PSRepository -Default
+              Write-Host 'Registered the PowerShell Gallery, which this runner did not have.'
+          }
+          Get-PSRepository -Name PSGallery | Format-Table Name, SourceLocation, InstallationPolicy
+
       - name: Sign the executables
         if: steps.signing.outputs.sign == 'true'
         uses: Azure/artifact-signing-action@v2.0.0
