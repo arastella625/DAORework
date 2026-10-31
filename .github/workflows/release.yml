@@ -188,7 +188,7 @@ jobs:
       # OpenID Connect: GitHub vouches for this run, and Azure accepts it only from the release environment. No secret.
       - name: Sign in to Azure
         if: steps.signing.outputs.sign == 'true'
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID || secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID || secrets.AZURE_TENANT_ID }}
