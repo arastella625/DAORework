@@ -65,10 +65,10 @@ public sealed partial class ModActivationViewModel : PageViewModel
     public Task RefreshActiveAsync(CancellationToken cancellationToken = default) => GuardAsync(ReadActiveAsync, cancellationToken);
 
     [RelayCommand]
-    private Task ActivateAsync(LibraryModRow mod, CancellationToken cancellationToken) => PlanAsync(ModChangeKind.Activate, mod, cancellationToken);
+    private Task ActivateAsync(LibraryModRow mod, CancellationToken cancellationToken) => PlanChangeAsync(ModChangeKind.Activate, [mod], cancellationToken);
 
     [RelayCommand]
-    private Task DeactivateAsync(LibraryModRow mod, CancellationToken cancellationToken) => PlanAsync(ModChangeKind.Deactivate, mod, cancellationToken);
+    private Task DeactivateAsync(LibraryModRow mod, CancellationToken cancellationToken) => PlanChangeAsync(ModChangeKind.Deactivate, [mod], cancellationToken);
 
     [RelayCommand(CanExecute = nameof(CanApply))]
     private Task ApplyAsync(CancellationToken cancellationToken) =>
@@ -106,20 +106,31 @@ public sealed partial class ModActivationViewModel : PageViewModel
         ReportSuccess("Nothing was changed.");
     }
 
-    private Task PlanAsync(ModChangeKind kind, LibraryModRow mod, CancellationToken cancellationToken) =>
+    /// <summary>
+    /// Plans activating or deactivating <paramref name="mods"/> as one change (P2.5-14), as <c>mods activate &lt;id&gt;...</c>
+    /// does: mods activated together are added in the order given, after what is already active.
+    /// </summary>
+    public Task PlanChangeAsync(ModChangeKind kind, IReadOnlyList<LibraryModRow> mods, CancellationToken cancellationToken = default) =>
         GuardAsync(
             async token =>
             {
                 ClearPlan();
                 ReportSuccess(string.Empty);
+                if (mods.Count == 0)
+                {
+                    return;
+                }
+
                 if (!(await DocumentsAsync(token)).TryGetValue(out var documents, out var error)
-                    || !(await _plan.ExecuteAsync(new PlanModChangeRequest(documents, new ModChange(kind, [mod.Id])), token)).TryGetValue(out var plan, out error))
+                    || !(await _plan.ExecuteAsync(new PlanModChangeRequest(documents, new ModChange(kind, [.. mods.Select(m => m.Id)])), token)).TryGetValue(out var plan, out error))
                 {
                     ReportError(error);
                     return;
                 }
 
-                PlanTitle = $"{(kind == ModChangeKind.Activate ? "Activate" : "Deactivate")} {mod.Title}";
+                var verb = kind == ModChangeKind.Activate ? "Activate" : "Deactivate";
+                var names = string.Join(", ", mods.Select(m => m.Title));
+                PlanTitle = mods.Count == 1 ? $"{verb} {names}" : $"{verb} {mods.Count} mods: {names}";
                 foreach (var line in ModActivationPlanText.Render(plan))
                 {
                     PlanLines.Add(line);

@@ -11,10 +11,12 @@ public sealed class ModsTabViewModel
     {
         ArgumentNullException.ThrowIfNull(handInstalled);
         ArgumentNullException.ThrowIfNull(deployed);
+        ArgumentNullException.ThrowIfNull(library);
         Folders = folders;
         HandInstalled = handInstalled;
         Library = library;
         Activation = deployed.Activation;
+        Selection = new LibrarySelectionViewModel(library.Mods, Activation);
         Changes = deployed.Changes;
         LoadOrder = deployed.LoadOrder;
         Activation.ActiveModsChanged += (_, _) => Library.ShowActive(Activation.ActiveModIds);
@@ -36,6 +38,9 @@ public sealed class ModsTabViewModel
 
     /// <summary>Gets the <i>Library</i> (P3-04).</summary>
     public LibraryViewModel Library { get; }
+
+    /// <summary>Gets the Library's tick boxes and activating or deactivating the ticked mods together (P2.5-14).</summary>
+    public LibrarySelectionViewModel Selection { get; }
 
     /// <summary>Gets activating and deactivating library mods in the selected profile (P3-04).</summary>
     public ModActivationViewModel Activation { get; }

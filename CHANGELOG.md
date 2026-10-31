@@ -6,6 +6,9 @@ All notable changes to DAORework are recorded here. The format follows
 
 ## [Unreleased]
 
+### Added
+- Activate or deactivate several Library mods at once (P2.5-14): each mod in the Library has a tick box, with *Select all* and *Clear*. *Activate selected* plans every ticked mod that is not active, and *Deactivate selected* every ticked mod that is, each as one change with one backup, as `mods activate <id>...` does on the command line.
+
 ## [0.3.1] - 2026-10-31
 
 The same program as 0.3.0, now code-signed, and the first release published to Nexus by the release workflow.

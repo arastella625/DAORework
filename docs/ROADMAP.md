@@ -204,7 +204,8 @@ window up to the command line. Each change still shows its plan first and is app
   *Adopt selected* makes one plan for all of them, applied with one backup and undone by one rollback. Loose
   override files still need their name.
 - P2.5-14 Activate and deactivate several Library mods at once: tick boxes in the Library, *Activate selected* and
-  *Deactivate selected*, one plan for all of them.
+  *Deactivate selected*, one plan for all of them. *Done: tick boxes with Select all and Clear, each choice planned
+  as one change ([screenshot](screenshots/p2.5-14/01-activate-selected.png)).*
 - P2.5-15 Import several downloads at once from *Import a mod* (dropping several already works), each scanned and
   checked as now, with one summary.
 - P2.5-16 *Installed by hand* fills in by itself: the list is read when the Mods tab opens and after each change,
