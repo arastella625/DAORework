@@ -21,7 +21,8 @@ In the repository: **Settings** → **Environments** → `release` (create it if
 | Variable | `NEXUS_FILE_ID` | the main file's id |
 | Variable | `NEXUS_MOD_ID` | `7083` (optional: adds a changelog entry linking the release notes) |
 
-The key goes in **Environment secrets**, never in a variable, a file or a comment.
+The key goes in **Environment secrets**, never in a variable, a file or a comment; the release job stops if it finds
+the key saved as a variable. The file id and mod id may be variables or secrets.
 
 ## 3. What happens on each tag
 
