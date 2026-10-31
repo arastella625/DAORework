@@ -1,0 +1,22 @@
+<!-- Buttons over the theme tokens (ADR-0016). Fluent's accent button already takes the Accent brushes from the theme.
+     These come after FluentTheme, so they win over its pointer-over and pressed states. -->
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="BoxShadow" Value="{DynamicResource GlowShadow}" />
+  </Style>
+  <Style Selector="Button:focus-visible /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="BoxShadow" Value="{DynamicResource GlowShadow}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource FocusGlowBrush}" />
+  </Style>
+
+  <!-- A filled red button is only ever a destructive confirm, such as Roll back (ADR-0016 rule 3). -->
+  <Style Selector="Button.danger /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource DangerBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource DangerBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+  </Style>
+  <Style Selector="Button.danger:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="BorderBrush" Value="{DynamicResource DangerTextBrush}" />
+  </Style>
+</Styles>

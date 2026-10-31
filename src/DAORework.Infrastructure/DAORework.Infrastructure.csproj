@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\DAORework.Core\DAORework.Core.csproj" />
+    <ProjectReference Include="..\DAORework.Application\DAORework.Application.csproj" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="SharpCompress" />
+    <PackageReference Include="System.IO.Abstractions" />
+    <!-- Decodes, scales and measures background pictures (ADR-0017); already in every App release through Avalonia.Skia. -->
+    <PackageReference Include="SkiaSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- The known-items catalog (ADR-0011) lives at the repository root as data and ships inside this assembly. -->
+    <EmbeddedResource Include="..\..\catalog\known-items.json" LogicalName="DAORework.KnownItems.json" />
+  </ItemGroup>
+</Project>

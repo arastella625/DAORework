@@ -1,0 +1,34 @@
+name: User story
+description: A user-facing outcome. Tasks that deliver it are attached as sub-issues.
+title: "[Story] "
+labels: ["type: user-story"]
+body:
+  - type: textarea
+    id: story
+    attributes:
+      label: Story
+      description: Who wants this, what they want, and why.
+      placeholder: "As a <player / modder / maintainer>, I want <outcome> so that <benefit>."
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Observable conditions that make this story done. One per line.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: input
+    id: roadmap
+    attributes:
+      label: Roadmap reference
+      description: Phase and task IDs in docs/ROADMAP.md that this story covers.
+      placeholder: "Phase 1: P1-01, P1-02"
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Constraints, links to SDD sections or ADRs, open questions.

@@ -1,0 +1,27 @@
+<!-- The Fade (ADR-0016): cooler lavender surfaces and the strongest glow.
+     Colors only: ThemeResources adds the brushes, the glow and Fluent's colors from them. -->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+  <Color x:Key="BackgroundColor">#13121E</Color>
+  <Color x:Key="SurfaceColor">#1B1A2B</Color>
+  <Color x:Key="SurfaceRaisedColor">#25233A</Color>
+  <Color x:Key="BorderColor">#4E4870</Color>
+  <Color x:Key="BorderStrongColor">#7A72A6</Color>
+  <Color x:Key="TextPrimaryColor">#ECE8F7</Color>
+  <Color x:Key="TextSecondaryColor">#ABA6C6</Color>
+  <Color x:Key="HeadingColor">#CFC4F5</Color>
+  <Color x:Key="AccentColor">#5E4BB8</Color>
+  <Color x:Key="OnAccentColor">#ECE8F7</Color>
+  <Color x:Key="AccentTextColor">#B9A3FF</Color>
+  <Color x:Key="AccentSecondaryColor">#3F7F8A</Color>
+  <Color x:Key="AccentSecondaryTextColor">#7FC4CF</Color>
+  <Color x:Key="SuccessColor">#86BC72</Color>
+  <Color x:Key="WarningColor">#C9A227</Color>
+  <Color x:Key="DangerColor">#8E3A52</Color>
+  <Color x:Key="DangerTextColor">#E2799A</Color>
+  <Color x:Key="FocusGlowColor">#B9A3FF</Color>
+  <Color x:Key="EmphasisStartColor">#5E4BB8</Color>
+  <Color x:Key="EmphasisEndColor">#B9A3FF</Color>
+  <sys:Double x:Key="GlowRadius">24</sys:Double>
+</ResourceDictionary>

@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Project documentation
+    url: https://github.com/arastella625/DAORework/tree/main/docs
+    about: Read the SDD, Engineering Standards and Roadmap before filing work.

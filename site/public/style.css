@@ -1,0 +1,74 @@
+/* The app's "Witch of the Wilds" colors and Cinzel headings (ADR-0016), self-hosted: nothing loads from elsewhere. */
+@font-face {
+  font-family: "Cinzel";
+  src: url("/fonts/Cinzel.ttf") format("truetype");
+  font-weight: 400 900;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: dark;
+  --bg: #120d18;
+  --surface: #1e1528;
+  --surface-2: #2a1e38;
+  --line: #6b5a3a;
+  --gold: #c9a96e;
+  --text: #e8dfcf;
+  --muted: #a99bb8;
+  --accent: #6d45c4;
+  --accent-light: #a98bfa;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+
+h1, h2 { font-family: "Cinzel", Georgia, serif; color: var(--gold); font-weight: 400; }
+h1 { font-size: clamp(2.6rem, 8vw, 4.5rem); margin: 0; letter-spacing: 0.02em; }
+h2 { font-size: 1.8rem; margin: 0 0 0.6em; padding-bottom: 0.3em; border-bottom: 1px solid var(--line); }
+
+a { color: var(--accent-light); }
+a:hover { color: var(--text); }
+code { font: 0.9em ui-monospace, Consolas, monospace; background: var(--surface-2); padding: 0.1em 0.35em; border-radius: 4px; overflow-wrap: anywhere; }
+
+.hero {
+  padding: 56px 0 40px;
+  background: radial-gradient(ellipse at 20% 0%, var(--surface-2), var(--bg) 70%);
+}
+.tagline { font-size: 1.3rem; margin: 0.4em 0 0; }
+.promise { color: var(--muted); font-family: "Cinzel", Georgia, serif; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 1.5em 0 2em; }
+.button {
+  display: inline-block; padding: 0.6em 1.3em; border-radius: 6px; text-decoration: none;
+  background: var(--accent); color: #fff; border: 1px solid var(--accent);
+}
+.button.ghost { background: transparent; color: var(--text); border-color: var(--line); }
+.button:hover { color: #fff; filter: brightness(1.15); }
+.cover, .gallery img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 6px; }
+
+section { padding: 40px 0 8px; }
+.points { padding-left: 1.2em; }
+.points li { margin-bottom: 0.6em; }
+.note, .small { color: var(--muted); }
+.small { font-size: 0.9rem; }
+
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+figure { margin: 0; }
+figcaption { color: var(--muted); font-size: 0.95rem; margin-top: 0.4em; }
+
+.release {
+  display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 16px;
+}
+.release dt { color: var(--gold); }
+.release dd { margin: 0; min-width: 0; }
+.steps li { margin-bottom: 0.8em; }
+
+footer { margin-top: 48px; padding: 24px 0; border-top: 1px solid var(--line); background: var(--surface); }

@@ -1,0 +1,4 @@
+# How to report a security problem in DAORework privately.
+Contact: https://github.com/arastella625/DAORework/security/advisories/new
+Expires: 2027-10-31T00:00:00.000Z
+Preferred-Languages: en

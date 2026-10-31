@@ -1,0 +1,38 @@
+<!-- Text roles (ADR-0016). Cinzel is for titles only; body text, names the user typed, paths and codes are not. -->
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Style Selector="TextBlock.PageTitle">
+    <Setter Property="FontFamily" Value="{StaticResource HeadingFontFamily}" />
+    <Setter Property="FontSize" Value="22" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="LetterSpacing" Value="1.1" />
+    <Setter Property="Foreground" Value="{DynamicResource HeadingBrush}" />
+  </Style>
+  <Style Selector="TextBlock.SectionTitle">
+    <Setter Property="FontFamily" Value="{StaticResource HeadingFontFamily}" />
+    <Setter Property="FontSize" Value="17" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="LetterSpacing" Value="0.7" />
+    <Setter Property="Foreground" Value="{DynamicResource HeadingBrush}" />
+  </Style>
+  <Style Selector="TextBlock.DialogTitle">
+    <Setter Property="FontFamily" Value="{StaticResource HeadingFontFamily}" />
+    <Setter Property="FontSize" Value="19" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="LetterSpacing" Value="0.6" />
+    <Setter Property="Foreground" Value="{DynamicResource HeadingBrush}" />
+  </Style>
+  <Style Selector="TextBlock.Secondary">
+    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+  </Style>
+  <Style Selector="TextBlock.Mono">
+    <Setter Property="FontFamily" Value="{StaticResource MonoFontFamily}" />
+    <Setter Property="FontSize" Value="12.5" />
+  </Style>
+  <Style Selector="TextBlock.Label">
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="LetterSpacing" Value="1" />
+    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+  </Style>
+</Styles>

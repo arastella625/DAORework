@@ -1,0 +1,87 @@
+<!-- Severity rows, callouts, badges and status icons (ADR-0016). Each shows an icon and a word as well as a color
+     (rule 4), and red is only ever DangerText or Danger (rule 3). -->
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Style Selector="PathIcon.Ok, PathIcon.Info, PathIcon.Warning, PathIcon.Error, PathIcon.Muted">
+    <Setter Property="Width" Value="16" />
+    <Setter Property="Height" Value="16" />
+  </Style>
+  <Style Selector="PathIcon.Ok">
+    <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
+  </Style>
+  <Style Selector="PathIcon.Info">
+    <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+  </Style>
+  <Style Selector="TextBlock.Info">
+    <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+  </Style>
+  <Style Selector="PathIcon.Warning">
+    <Setter Property="Foreground" Value="{DynamicResource WarningBrush}" />
+  </Style>
+  <Style Selector="TextBlock.Warning">
+    <Setter Property="Foreground" Value="{DynamicResource WarningBrush}" />
+  </Style>
+  <Style Selector="PathIcon.Error">
+    <Setter Property="Foreground" Value="{DynamicResource DangerTextBrush}" />
+  </Style>
+  <Style Selector="TextBlock.Error">
+    <Setter Property="Foreground" Value="{DynamicResource DangerTextBrush}" />
+  </Style>
+  <Style Selector="PathIcon.Muted">
+    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+  </Style>
+
+  <!-- A diagnostic or plan row: a panel with a stripe of its severity's color on the left. -->
+  <Style Selector="Border.Severity">
+    <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="12,10" />
+    <Setter Property="BorderThickness" Value="3,0,0,0" />
+  </Style>
+  <Style Selector="Border.Severity.Info">
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentTextBrush}" />
+  </Style>
+  <Style Selector="Border.Severity.Warning">
+    <Setter Property="BorderBrush" Value="{DynamicResource WarningBrush}" />
+  </Style>
+  <Style Selector="Border.Severity.Error">
+    <Setter Property="BorderBrush" Value="{DynamicResource DangerTextBrush}" />
+  </Style>
+
+  <!-- A boxed note inside a plan or dialog. Its text stays TextPrimary; the icon carries the color. -->
+  <Style Selector="Border.Callout">
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="12,10" />
+    <Setter Property="BorderThickness" Value="1" />
+  </Style>
+  <Style Selector="Border.Callout.Warning">
+    <Setter Property="Background" Value="{DynamicResource WarningSoftBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource WarningBrush}" />
+  </Style>
+  <Style Selector="Border.Callout.Danger">
+    <Setter Property="Background" Value="{DynamicResource DangerTextSoftBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource DangerTextBrush}" />
+  </Style>
+
+  <!-- A small pill, such as "In the catalog". -->
+  <Style Selector="Border.Badge">
+    <Setter Property="CornerRadius" Value="99" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentSecondaryTextBrush}" />
+    <Setter Property="Padding" Value="8,1" />
+  </Style>
+  <Style Selector="Border.Badge TextBlock">
+    <Setter Property="FontSize" Value="11.5" />
+    <Setter Property="Foreground" Value="{DynamicResource AccentSecondaryTextBrush}" />
+  </Style>
+
+  <!-- A page's status line: witch-green when it went well, DangerText when it did not (Classes.Error bound to IsError).
+       The message itself says which, so color is never the only signal. -->
+  <Style Selector="TextBlock.Status">
+    <Setter Property="Foreground" Value="{DynamicResource AccentSecondaryTextBrush}" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+  </Style>
+  <Style Selector="TextBlock.Status.Error">
+    <Setter Property="Foreground" Value="{DynamicResource DangerTextBrush}" />
+  </Style>
+</Styles>

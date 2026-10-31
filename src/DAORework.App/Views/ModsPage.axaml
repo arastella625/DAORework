@@ -1,0 +1,67 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DAORework.App.ViewModels"
+             xmlns:views="using:DAORework.App.Views"
+             xmlns:controls="using:DAORework.App.Controls"
+             xmlns:mods="using:DAORework.Core.Mods"
+             x:Class="DAORework.App.Views.ModsPage"
+             x:DataType="vm:ModsPageViewModel">
+  <StackPanel Margin="12" Spacing="12">
+    <StackPanel Spacing="6">
+      <TextBlock Classes="PageTitle" Text="Mods" />
+      <controls:RuneDivider />
+    </StackPanel>
+    <StackPanel Orientation="Horizontal" Spacing="12">
+      <Button Name="InspectButton" Content="Inspect mod folders" Command="{Binding InspectCommand}" />
+      <CheckBox Name="IncludeHashes" Content="Include SHA-256 hashes" IsChecked="{Binding IncludeHashes}" />
+      <Button Name="InventoryButton" Content="Write inventory" Command="{Binding WriteInventoryCommand}" />
+      <TextBlock VerticalAlignment="Center" Classes="Secondary" Text="{Binding ProfileName, TargetNullValue='No profile selected'}" />
+    </StackPanel>
+    <TextBlock Name="Status" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" />
+    <ItemsControl Name="Folders" ItemsSource="{Binding Folders}">
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <UniformGrid Columns="2" />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+      <ItemsControl.ItemTemplate>
+        <DataTemplate x:DataType="mods:ModFolderSummary">
+          <controls:Card Margin="0,0,8,0">
+            <StackPanel Spacing="4">
+              <TextBlock Classes="SectionTitle" Text="{Binding Name}" />
+              <TextBlock Classes="Mono Secondary" Text="{Binding Path}" TextWrapping="Wrap" />
+              <TextBlock Classes="Error" Text="Folder not found" IsVisible="{Binding !Exists}" />
+              <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="14" Margin="0,4,0,0" IsVisible="{Binding Exists}">
+                <TextBlock Classes="Secondary" Text="Files" />
+                <TextBlock Grid.Column="1" Text="{Binding FileCount}" />
+                <TextBlock Grid.Row="1" Classes="Secondary" Text="Folders" />
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding FolderCount}" />
+                <TextBlock Grid.Row="2" Classes="Secondary" Text="Size" />
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding SizeDisplay}" />
+              </Grid>
+              <TextBlock Classes="Error" Text="{Binding UnreadableFileCount, StringFormat='Unreadable files: {0}'}"
+                         IsVisible="{Binding UnreadableFileCount, Converter={x:Static views:CountConverters.IsPositive}}" />
+            </StackPanel>
+          </controls:Card>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+    <controls:Card IsVisible="{Binding Inventory, Converter={x:Static ObjectConverters.IsNotNull}}">
+      <StackPanel Spacing="4" DataContext="{Binding Inventory}" x:DataType="mods:ModInventory">
+        <TextBlock Classes="SectionTitle" Text="Inventory" />
+        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnSpacing="14" Margin="0,4,0,0">
+          <TextBlock Classes="Secondary" Text="Total files" />
+          <TextBlock Grid.Column="1" Text="{Binding TotalFiles}" />
+          <TextBlock Grid.Row="1" Classes="Secondary" Text="Total size" />
+          <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding TotalSizeDisplay}" />
+          <TextBlock Grid.Row="2" Classes="Secondary" Text="Unreadable files" />
+          <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding UnreadableFileCount}" />
+          <TextBlock Grid.Row="3" Classes="Secondary" Text="Duplicate file names" />
+          <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DuplicateFileNames.Count}" />
+          <TextBlock Grid.Row="4" Classes="Secondary" Text="Duplicate relative paths" />
+          <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding DuplicateRelativePaths.Count}" />
+        </Grid>
+      </StackPanel>
+    </controls:Card>
+  </StackPanel>
+</UserControl>

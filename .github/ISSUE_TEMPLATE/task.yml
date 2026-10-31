@@ -1,0 +1,39 @@
+name: Task
+description: A concrete unit of work, usually one roadmap task ID and one PR.
+title: "[P0-00] "
+labels: ["type: task"]
+body:
+  - type: input
+    id: roadmap
+    attributes:
+      label: Roadmap task ID
+      description: The stable ID from docs/ROADMAP.md. Use it in the branch name and commits.
+      placeholder: "P0-04"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What
+      description: The change, stated so someone else could do it.
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Definition of Done
+      description: Pre-filled from ENGINEERING_STANDARDS.md §8. Add task-specific items.
+      value: |
+        - [ ] Merged to `main` via PR with CI green
+        - [ ] PR checklist satisfied (layering, size limits, no static I/O, no swallowed errors)
+        - [ ] Tests cover the new behavior; coverage at or above the floor
+        - [ ] `CHANGELOG.md` updated under *Unreleased* if user-facing
+        - [ ] Docs (SDD, README, audit) reflect reality
+    validations:
+      required: true
+  - type: input
+    id: audit
+    attributes:
+      label: Closes audit items
+      description: IDs from docs/CURRENT_STATE_AUDIT.md, if any.
+      placeholder: "A1, C2"

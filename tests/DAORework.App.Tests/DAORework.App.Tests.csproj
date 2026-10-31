@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Avalonia.Headless.XUnit targets xUnit v3, whose test projects are executables. -->
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Remove="xunit" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="Avalonia.Headless.XUnit" />
+    <PackageReference Include="Avalonia.Skia" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
+    <PackageReference Include="TestableIO.System.IO.Abstractions.TestingHelpers" />
+    <ProjectReference Include="..\..\src\DAORework.App\DAORework.App.csproj" />
+  </ItemGroup>
+</Project>

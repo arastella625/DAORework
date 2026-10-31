@@ -1,0 +1,25 @@
+<!-- A confirm dialog's panel and the rule under its title (ADR-0016): the emphasis gradient, or Danger when the
+     change removes something. -->
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Style Selector="Border.Dialog">
+    <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="Padding" Value="22,20" />
+    <Setter Property="MaxWidth" Value="480" />
+    <Setter Property="BoxShadow" Value="{DynamicResource GlowShadow}" />
+  </Style>
+  <Style Selector="Border.EmphasisRule">
+    <Setter Property="Height" Value="2" />
+    <Setter Property="Background" Value="{DynamicResource EmphasisBrush}" />
+  </Style>
+  <Style Selector="Border.EmphasisRule.Danger">
+    <Setter Property="Background" Value="{DynamicResource DangerBrush}" />
+  </Style>
+  <!-- The veil behind an open dialog. Avalonia cannot blur what is behind it, so it dims instead. -->
+  <Style Selector="Border.Veil">
+    <Setter Property="Background" Value="{DynamicResource VeilBrush}" />
+  </Style>
+</Styles>

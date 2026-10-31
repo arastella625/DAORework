@@ -1,0 +1,10 @@
+Nexus image captions (paste each into the image's description when uploading)
+
+00-cover.png                  DAORework: mod manager, launcher and diagnostics for Dragon Age: Origins. (Set as the main image.)
+01-first-run-next-steps.png   First run: DAORework finds your install, checks it, and lists your next steps.
+02-activate-plan.png          Activating a mod shows exactly what will be copied, replaced or removed. Nothing changes until you press Apply, and a backup is taken first.
+03-load-order.png             Load order: for every file two mods share, see whose copy the game uses, and reorder them.
+04-adopt-hand-installed.png   Already modded by hand? DAORework takes over those mods without reinstalling anything.
+05-fixes.png                  The 4 GB patch and DXVK, applied and removed safely. It notices when Steam's Verify integrity has undone a fix.
+06-rollback.png               Every change is backed up. Roll back to before any change, with one more confirmation first.
+07-themes.png                 Four built-in themes, plus your own looks with your own accent and background picture.

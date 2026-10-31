@@ -1,0 +1,68 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DAORework.App.ViewModels"
+             xmlns:views="using:DAORework.App.Views"
+             xmlns:controls="using:DAORework.App.Controls"
+             x:Class="DAORework.App.Views.LoadOrderPanel"
+             x:DataType="vm:LoadOrderViewModel">
+  <controls:Card Margin="12,0,12,12">
+    <StackPanel Spacing="10">
+      <TextBlock Classes="SectionTitle" Text="Load order" />
+      <TextBlock Classes="Secondary" TextWrapping="Wrap"
+                 Text="The active mods, lowest priority first. When mods ship a file with the same name, the one lower in this list wins. Moving a mod shows the new plan; nothing changes until you apply it." />
+      <TextBlock Name="LoadOrderEmpty" Classes="Secondary" Text="No mods are active through DAORework."
+                 IsVisible="{Binding !Order.Count}" />
+      <ItemsControl Name="Order" ItemsSource="{Binding Order}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:LoadOrderRow">
+            <Border Padding="0,6" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
+              <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                <TextBlock VerticalAlignment="Center" Text="{Binding Label}" />
+                <Button Grid.Column="1" Content="Up" CommandParameter="{Binding}"
+                        Command="{Binding $parent[views:LoadOrderPanel].((vm:LoadOrderViewModel)DataContext).MoveUpCommand}" />
+                <Button Grid.Column="2" Content="Down" CommandParameter="{Binding}"
+                        Command="{Binding $parent[views:LoadOrderPanel].((vm:LoadOrderViewModel)DataContext).MoveDownCommand}" />
+              </Grid>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+      <Border Name="OrderPlan" Padding="12" CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource BorderSoftBrush}"
+              IsVisible="{Binding IsReordered}">
+        <StackPanel Spacing="8">
+          <TextBlock FontWeight="SemiBold" Text="The plan for the new order" />
+          <ItemsControl ItemsSource="{Binding PlanLines}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="x:String">
+                <TextBlock Classes="Mono" Text="{Binding}" TextWrapping="Wrap" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <Button Name="ApplyOrderButton" Classes="accent" Content="Apply" Command="{Binding ApplyCommand}" />
+            <Button Name="ResetOrderButton" Content="Back to the saved order" Command="{Binding ResetCommand}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+      <TextBlock Name="LoadOrderStatus" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" TextWrapping="Wrap"
+                 IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+      <TextBlock Classes="Label" Text="Files more than one mod ships"
+                 IsVisible="{Binding Conflicts.Count, Converter={x:Static views:CountConverters.IsPositive}}" />
+      <ItemsControl Name="Conflicts" ItemsSource="{Binding Conflicts}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:FileConflictRow">
+            <Border Padding="0,6" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
+              <StackPanel Spacing="2">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                  <TextBlock Classes="Mono" Text="{Binding FileName}" />
+                  <TextBlock FontWeight="SemiBold" Text="{Binding Winner}" />
+                </StackPanel>
+                <TextBlock Classes="Secondary" Text="{Binding Detail}" TextWrapping="Wrap" />
+              </StackPanel>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </StackPanel>
+  </controls:Card>
+</UserControl>

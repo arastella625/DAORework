@@ -1,0 +1,38 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DAORework.App.ViewModels"
+             x:Class="DAORework.App.Views.LookPicturePanel"
+             x:DataType="vm:LookPictureViewModel">
+  <!-- A look's own picture, blended into the theme (ADR-0017). Changes show and save as they are made. -->
+  <StackPanel Spacing="10">
+    <TextBlock Classes="Label" Text="Picture" />
+    <TextBlock Classes="Secondary" TextWrapping="Wrap"
+               Text="A picture of your own behind the pages, tinted toward the theme's colors and veiled so text stays readable. Changes here show and save at once." />
+    <StackPanel Orientation="Horizontal" Spacing="10">
+      <Button Name="ChoosePictureButton" Content="Choose picture…" Command="{Binding ChooseCommand}" />
+      <Button Name="RemovePictureButton" Content="Remove picture" Command="{Binding RemoveCommand}" IsEnabled="{Binding HasPicture}" />
+    </StackPanel>
+    <Grid Name="PictureSettings" ColumnDefinitions="Auto,12,*,12,48" RowDefinitions="Auto,8,Auto,8,Auto,8,Auto,6,Auto" IsVisible="{Binding HasPicture}">
+      <CheckBox Grid.ColumnSpan="5" Name="FillWindow" IsChecked="{Binding FillWindow}"
+                Content="Fill the window, cropping the edges (off: show the whole picture)" />
+
+      <TextBlock Grid.Row="2" VerticalAlignment="Center" Text="Tint" />
+      <Slider Grid.Row="2" Grid.Column="2" Name="TintSlider" Minimum="0" Maximum="100" SmallChange="1" LargeChange="10"
+              IsSnapToTickEnabled="True" TickFrequency="1" Value="{Binding Tint}" />
+      <TextBlock Grid.Row="2" Grid.Column="4" VerticalAlignment="Center" Text="{Binding Tint, StringFormat={}{0}%}" />
+
+      <TextBlock Grid.Row="4" VerticalAlignment="Center" Text="Veil" />
+      <Slider Grid.Row="4" Grid.Column="2" Name="VeilSlider" Minimum="{Binding Floor}" Maximum="100" SmallChange="1" LargeChange="10"
+              IsSnapToTickEnabled="True" TickFrequency="1" Value="{Binding Dim}" />
+      <TextBlock Grid.Row="4" Grid.Column="4" VerticalAlignment="Center" Text="{Binding Dim, StringFormat={}{0}%}" />
+
+      <TextBlock Grid.Row="6" VerticalAlignment="Center" Text="Blur" />
+      <Slider Grid.Row="6" Grid.Column="2" Name="BlurSlider" Minimum="0" Maximum="{x:Static vm:LookPictureViewModel.MaxBlur}" SmallChange="1" LargeChange="4"
+              IsSnapToTickEnabled="True" TickFrequency="1" Value="{Binding Blur}" />
+      <TextBlock Grid.Row="6" Grid.Column="4" VerticalAlignment="Center" Text="{Binding Blur, StringFormat={}{0} px}" />
+
+      <TextBlock Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="3" Classes="Secondary" FontSize="12" TextWrapping="Wrap" Text="{Binding FloorNote}" />
+    </Grid>
+    <TextBlock Name="PictureStatus" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" TextWrapping="Wrap" />
+  </StackPanel>
+</UserControl>

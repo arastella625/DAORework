@@ -1,0 +1,68 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DAORework.App.ViewModels"
+             xmlns:views="using:DAORework.App.Views"
+             xmlns:controls="using:DAORework.App.Controls"
+             xmlns:themes="using:DAORework.App.Themes"
+             x:Class="DAORework.App.Views.SettingsPage"
+             x:DataType="vm:SettingsPageViewModel">
+  <UserControl.Styles>
+    <!-- A theme card: the picked one is framed in the focus glow rather than filled, so its colors stay readable. -->
+    <Style Selector="ListBox#ThemePicker ListBoxItem">
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Margin" Value="0,0,12,12" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderSoftBrush}" />
+    </Style>
+    <Style Selector="ListBox#ThemePicker ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource FocusGlowBrush}" />
+      <Setter Property="BoxShadow" Value="{DynamicResource GlowShadow}" />
+    </Style>
+  </UserControl.Styles>
+  <ScrollViewer>
+    <StackPanel Margin="12" Spacing="12">
+      <StackPanel Spacing="6">
+        <TextBlock Classes="PageTitle" Text="Settings" />
+        <controls:RuneDivider />
+      </StackPanel>
+      <controls:Card>
+        <StackPanel Spacing="10">
+          <TextBlock Classes="SectionTitle" Text="Theme" />
+          <TextBlock Classes="Secondary" TextWrapping="Wrap"
+                     Text="Pick how DAORework looks. It changes at once, and the app opens in it from now on." />
+          <ListBox Name="ThemePicker" ItemsSource="{Binding Themes}" SelectedItem="{Binding SelectedTheme}" Background="Transparent">
+            <ListBox.ItemsPanel>
+              <ItemsPanelTemplate>
+                <UniformGrid Columns="2" />
+              </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="themes:AppTheme">
+                <StackPanel Margin="14,12" Spacing="6">
+                  <TextBlock FontWeight="SemiBold" FontSize="15" Text="{Binding Name}" />
+                  <ItemsControl ItemsSource="{Binding Converter={x:Static views:ThemeSwatches.Of}}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate>
+                        <UniformGrid Rows="1" />
+                      </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="IBrush">
+                        <Border Height="12" Background="{Binding}" />
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                  <TextBlock Classes="Secondary" TextWrapping="Wrap" Text="{Binding Description}" />
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <TextBlock Name="Status" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" />
+        </StackPanel>
+      </controls:Card>
+      <views:LooksPanel />
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

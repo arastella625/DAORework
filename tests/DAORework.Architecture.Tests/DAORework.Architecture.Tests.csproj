@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DAORework.Core\DAORework.Core.csproj" />
+    <ProjectReference Include="..\..\src\DAORework.Application\DAORework.Application.csproj" />
+    <ProjectReference Include="..\..\src\DAORework.Infrastructure\DAORework.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\DAORework.App\DAORework.App.csproj" />
+    <PackageReference Include="NetArchTest.eNhancedEdition" />
+  </ItemGroup>
+</Project>
