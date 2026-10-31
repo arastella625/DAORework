@@ -49,10 +49,40 @@ public sealed class LibraryScreenTests : IDisposable
         Assert.Equal(
             $"Extra Dog Slot.dazip differs from the known downloads of Extra Dog Slot. Unless it is a newer version, get it from https://www.nexusmods.com/dragonage/mods/664 ({DiagnosticCodes.ModSafetyDownloadDiffers})",
             row.Warning);
-        Assert.Equal("Import a mod", Assert.Single(_host.Picker.Titles));
+        Assert.Equal("Import mods", Assert.Single(_host.Picker.Titles));
         Assert.False(Panel(window).FindControl<TextBlock>("LibraryEmpty")!.IsVisible);
         ShowPanel(window);
         Screenshots.Save(window, "13-library");
+    }
+
+    [AvaloniaFact]
+    public async Task ImportMods_SeveralPickedAtOnce_ImportsEachWithOneSummary()
+    {
+        var eyes = Path.Combine(_downloads, "Eyes.zip");
+        var nails = Path.Combine(_downloads, "Nails.zip");
+        _host.FileSystem.AddFile(eyes, new MockFileData(Archive(("eyes.dds", "eyes"))));
+        _host.FileSystem.AddFile(nails, new MockFileData(Archive(("nails.dds", "nails"))));
+        var (_, viewModel) = await OpenModsTabAsync();
+        _host.Picker.Enqueue(eyes);
+        _host.Picker.Enqueue(nails);
+
+        await viewModel.Library.ImportFileCommand.ExecuteAsync(null);
+
+        Assert.False(viewModel.Library.IsError, viewModel.Library.StatusMessage);
+        Assert.Equal("Imported Eyes, Nails. Nothing was installed; the game folders are unchanged.", viewModel.Library.StatusMessage);
+        Assert.Equal(["Eyes", "Nails"], viewModel.Library.Mods.Select(m => m.Title).Order());
+        Assert.Equal("Import mods", Assert.Single(_host.Picker.Titles));
+    }
+
+    [AvaloniaFact]
+    public async Task ImportMods_Cancelled_ImportsNothing()
+    {
+        var (_, viewModel) = await OpenModsTabAsync();
+
+        await viewModel.Library.ImportFileCommand.ExecuteAsync(null);
+
+        Assert.False(viewModel.Library.IsError, viewModel.Library.StatusMessage);
+        Assert.Empty(viewModel.Library.Mods);
     }
 
     [AvaloniaFact]

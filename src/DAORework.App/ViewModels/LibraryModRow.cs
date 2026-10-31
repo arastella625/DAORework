@@ -35,6 +35,10 @@ public sealed partial class LibraryModRow : ObservableObject
     [ObservableProperty]
     public partial bool IsActive { get; set; }
 
+    /// <summary>Gets or sets a value indicating whether it is ticked for <i>Activate selected</i> or <i>Deactivate selected</i> (P2.5-14).</summary>
+    [ObservableProperty]
+    public partial bool IsSelected { get; set; }
+
     /// <param name="entry">The library mod.</param>
     /// <param name="check">How its download compares with the catalog's known downloads, or the error that kept it from being compared.</param>
     public static LibraryModRow From(LibraryEntry entry, Result<DownloadCheck> check)

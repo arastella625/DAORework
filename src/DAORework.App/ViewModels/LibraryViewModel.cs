@@ -78,10 +78,11 @@ public sealed partial class LibraryViewModel : PageViewModel
     [RelayCommand]
     private async Task ImportFileAsync(CancellationToken cancellationToken)
     {
-        var path = await _picker.PickFileAsync("Import a mod", "Mod downloads", _downloadPatterns, cancellationToken);
-        if (path is not null)
+        // Several downloads can be picked at once, as several can be dropped (P2.5-15); each is imported in turn.
+        var paths = await _picker.PickFilesAsync("Import mods", "Mod downloads", _downloadPatterns, cancellationToken);
+        if (paths.Count > 0)
         {
-            await ImportPathsAsync([path], cancellationToken);
+            await ImportPathsAsync(paths, cancellationToken);
         }
     }
 

@@ -41,12 +41,20 @@
       <TextBlock Name="LibraryEmpty" Classes="Secondary" TextWrapping="Wrap"
                  Text="The library is empty. A mod you import is kept here, scanned by your antivirus, and installed only when you activate it."
                  IsVisible="{Binding !Library.Mods.Count}" />
+      <StackPanel Name="LibrarySelectionBar" Orientation="Horizontal" Spacing="8"
+                  IsVisible="{Binding Library.Mods.Count, Converter={x:Static views:CountConverters.IsPositive}}">
+        <Button Name="ActivateSelectedButton" Classes="accent" Content="Activate selected" Command="{Binding Selection.ActivateSelectedCommand}" />
+        <Button Name="DeactivateSelectedButton" Content="Deactivate selected" Command="{Binding Selection.DeactivateSelectedCommand}" />
+        <Button Name="SelectAllModsButton" Content="Select all" Command="{Binding Selection.SelectAllCommand}" />
+        <Button Name="ClearModsSelectionButton" Content="Clear" Command="{Binding Selection.ClearSelectionCommand}" />
+      </StackPanel>
       <ItemsControl Name="LibraryMods" ItemsSource="{Binding Library.Mods}">
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="vm:LibraryModRow">
             <Border Padding="0,10" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
-              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                <StackPanel Spacing="3">
+              <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                <CheckBox VerticalAlignment="Top" IsChecked="{Binding IsSelected}" ToolTip.Tip="Tick to activate or deactivate it with the others" />
+                <StackPanel Grid.Column="1" Spacing="3">
                   <StackPanel Orientation="Horizontal" Spacing="8">
                     <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
                     <TextBlock Classes="Info" Text="Active" IsVisible="{Binding IsActive}" />
@@ -64,7 +72,7 @@
                     </ItemsControl.ItemTemplate>
                   </ItemsControl>
                 </StackPanel>
-                <StackPanel Grid.Column="1" VerticalAlignment="Top">
+                <StackPanel Grid.Column="2" VerticalAlignment="Top">
                   <Button Content="Activate" IsVisible="{Binding !IsActive}" CommandParameter="{Binding}"
                           Command="{Binding $parent[views:LibraryPanel].((vm:ModsTabViewModel)DataContext).Activation.ActivateCommand}" />
                   <Button Content="Deactivate" IsVisible="{Binding IsActive}" CommandParameter="{Binding}"

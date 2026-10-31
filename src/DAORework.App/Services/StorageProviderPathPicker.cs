@@ -16,15 +16,23 @@ public sealed class StorageProviderPathPicker : IPathPicker
 
     public async Task<string?> PickFileAsync(string title, string filterName, IReadOnlyList<string> patterns, CancellationToken cancellationToken = default)
     {
-        var provider = RequireProvider();
+        var files = await OpenFilesAsync(title, filterName, patterns, allowMultiple: false);
+        return files.Count == 0 ? null : files[0];
+    }
+
+    public Task<IReadOnlyList<string>> PickFilesAsync(string title, string filterName, IReadOnlyList<string> patterns, CancellationToken cancellationToken = default) =>
+        OpenFilesAsync(title, filterName, patterns, allowMultiple: true);
+
+    private static async Task<IReadOnlyList<string>> OpenFilesAsync(string title, string filterName, IReadOnlyList<string> patterns, bool allowMultiple)
+    {
         var options = new FilePickerOpenOptions
         {
             Title = title,
-            AllowMultiple = false,
+            AllowMultiple = allowMultiple,
             FileTypeFilter = [new FilePickerFileType(filterName) { Patterns = patterns }],
         };
-        var files = await provider.OpenFilePickerAsync(options);
-        return files.Count == 0 ? null : files[0].TryGetLocalPath();
+        var files = await RequireProvider().OpenFilePickerAsync(options);
+        return [.. files.Select(f => f.TryGetLocalPath()).OfType<string>()];
     }
 
     private static IStorageProvider RequireProvider()
