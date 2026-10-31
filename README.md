@@ -36,9 +36,9 @@ SmartScreen may warn on first run: **More info**, then **Run anyway**. Instead, 
 - **Shows conflicts.** For every file two mods share, whose copy the game uses, and lets you reorder them.
 - **Checks every mod.** Programs inside a mod are named and never installed, your own antivirus scans every mod before
   it is kept, and a download that differs from the known official one is pointed out.
-- **Applies DXVK and the 4 GB patch**, and notices when Steam's Verify integrity has undone them. The 4 GB patch
-  is for copies without Steam's copy protection, such as GOG and EA App: Steam refuses to start its own executable
-  once it is patched, so DAORework does not patch it.
+- **Installs DXVK** from a release you download, and **the 4 GB patch on copies that allow it** (GOG, EA App).
+  Steam's own `daorigins.exe` is protected, and Steam will not start it once patched, so DAORework leaves the Steam
+  copy alone and tells you if it was patched before. It notices when Steam's Verify integrity has undone a fix.
 - **Diagnoses your install** and suggests next steps, each with its button.
 - **Backs up your saves**, and launches the game.
 
@@ -49,7 +49,8 @@ Nothing is downloaded and nothing is sent anywhere: DAORework only works with fi
 Phases 1 and 2 of the [roadmap](docs/ROADMAP.md) are done. Phase 1 (companion v1, release 0.1.0) is read-only: the
 window, install and documents detection, the full diagnostic rule set, support bundles, save backups and the
 known-items catalog. Phase 2 (mod manager, release 0.2.0) writes, always behind a plan, a backup and rollback: a mod
-library, mod activation, and the 4 GB patch and DXVK as managed fixes, with a test suite that kills DAORework at
+library, mod activation, and DXVK and the 4 GB patch (since 0.3.0, not on Steam's protected copy) as managed
+fixes, with a test suite that kills DAORework at
 every write and proves each change still ends fully before or fully after. Both are verified on a real Steam
 install; GOG and EA App installs still need a real run ([#5](https://github.com/arastella625/DAORework/issues/5)).
 Phase 2.5 (release 0.3.0, the first public one) puts all of it in the window and adds adopting the mods you installed
@@ -91,7 +92,7 @@ dotnet run --project src/DAORework.App
 
 Create a profile in the header: DAORework finds your install and documents folder, checks them, and lists next steps
 on the **Profile** tab. The **Mods** tab holds your library, the load order, your changes and backups, and the mods you
-installed by hand; **Fixes** applies the 4 GB patch and DXVK; **Saves** backs up your saves; **Settings** picks a theme
+installed by hand; **Fixes** installs DXVK, and the 4 GB patch where the copy allows it; **Saves** backs up your saves; **Settings** picks a theme
 or your own look. Every change shows its plan before anything is written, and **Launch game** starts the game. The
 window and the CLI below use the same use cases and app-data folders, so the two can be mixed freely.
 
@@ -102,7 +103,7 @@ window and the CLI below use the same use cases and app-data folders, so the two
 | ![The load order and the files mods share](docs/screenshots/readme/04-load-order.png) | ![Adopting a mod installed by hand](docs/screenshots/readme/05-adopt-plan.png) |
 | **Load order:** whose copy of a shared file wins, reordered through a plan | **Adopt:** a mod you installed by hand, taken over without reinstalling |
 | ![The Fixes tab](docs/screenshots/readme/06-fixes.png) | ![Rolling back to a backup](docs/screenshots/readme/07-rollback.png) |
-| **Fixes:** the 4 GB patch and DXVK, and when Steam's Verify integrity undid one | **Changes:** any change rolled back from its backup, asked once more |
+| **Fixes:** DXVK, the 4 GB patch on copies that allow it, and when Steam's Verify integrity undid one | **Changes:** any change rolled back from its backup, asked once more |
 | ![Four themes on the Settings tab](docs/screenshots/readme/08-themes.png) | ![A custom look with a picture](docs/screenshots/readme/09-custom-look.png) |
 | **Themes:** four dark themes | **Your looks:** your own accent and background picture |
 
