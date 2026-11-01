@@ -51,7 +51,7 @@ public sealed class ModChangesScreenTests : IDisposable
 
         await changes.RollBackToCommand.ExecuteAsync(backup);
 
-        Assert.StartsWith("Undo back to before \u201cTurned on Hair Pack\u201d (", changes.PendingRollback, StringComparison.Ordinal);
+        Assert.StartsWith("Undo back to before \u201cTurned on Hair Pack\u201d? ", changes.PendingRollback, StringComparison.Ordinal);
         Assert.Single(_scenario.DeployedHair());
         ModsTabScenario.Show<ChangesPanel>(window);
         Screenshots.Save(window, "15-changes-rollback");

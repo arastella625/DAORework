@@ -46,7 +46,7 @@ public sealed partial class LibraryModRow : ObservableObject
         ArgumentNullException.ThrowIfNull(entry);
         ArgumentNullException.ThrowIfNull(check);
         var kind = entry.Mod.AddInUid is { } uid ? $"add-in {uid}" : "override mod";
-        var imported = entry.ImportedAtUtc.ToLocalTime().ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        var imported = entry.ImportedAtUtc.ToLocalTime().ToString("d MMM yyyy", CultureInfo.InvariantCulture);
         var notes = new List<string> { LibraryEntryNotes.Scan(entry) };
         if (LibraryEntryNotes.Programs(entry) is { } programs)
         {

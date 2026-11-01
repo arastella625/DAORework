@@ -148,7 +148,7 @@ public sealed partial class LookListViewModel : PageViewModel
                 if (!ConfirmingDelete)
                 {
                     ConfirmingDelete = true;
-                    ReportSuccess($"Click Delete again to delete {look.Name} and its picture. Profiles that used it go back to the default.");
+                    ReportStatus($"Click Delete again to delete {look.Name} and its picture. Profiles that used it go back to the default.");
                     return;
                 }
 

@@ -42,12 +42,13 @@
                              Classes.Warning="{Binding Severity, Converter={x:Static views:SeverityConverters.IsWarning}}"
                              Classes.Error="{Binding Severity, Converter={x:Static views:SeverityConverters.IsError}}" />
                 </StackPanel>
-                <TextBlock Grid.Column="1" TextWrapping="Wrap">
-                  <Run FontFamily="{StaticResource MonoFontFamily}" Text="{Binding Code}" />
-                  <Run Text="{Binding Message}" />
-                </TextBlock>
-                <TextBlock Grid.Row="1" Grid.Column="1" Classes="Secondary" TextWrapping="Wrap" Text="{Binding Recommendation}"
-                           IsVisible="{Binding Recommendation, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                <!-- What it means first; the code, for a bug report, small and last (docs/VOICE.md rule 2). -->
+                <TextBlock Grid.Column="1" TextWrapping="Wrap" Text="{Binding Message}" ToolTip.Tip="{Binding Code}" />
+                <StackPanel Grid.Row="1" Grid.Column="1" Spacing="2">
+                  <TextBlock Classes="Secondary" TextWrapping="Wrap" Text="{Binding Recommendation}"
+                             IsVisible="{Binding Recommendation, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                  <TextBlock Name="DiagnosticCode" Classes="Secondary" FontSize="11" FontFamily="{StaticResource MonoFontFamily}" Text="{Binding Code}" />
+                </StackPanel>
               </Grid>
             </Border>
           </DataTemplate>

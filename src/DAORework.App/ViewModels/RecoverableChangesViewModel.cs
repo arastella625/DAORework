@@ -106,7 +106,7 @@ public abstract partial class RecoverableChangesViewModel : PageViewModel
 
                 _pending = (folder, backup.Id);
                 var what = backup.Change is null ? $"the change backed up as {backup.Id}" : $"\u201c{backup.Change}\u201d";
-                PendingRollback = $"Undo back to before {what} ({backup.When})? The files it changed are put back as they were, and {RollbackConsequence}";
+                PendingRollback = $"Undo back to before {what}? The files it changed are put back as they were, and {RollbackConsequence}";
                 ReportSuccess(string.Empty);
             },
             cancellationToken);
