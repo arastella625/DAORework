@@ -62,20 +62,28 @@ public sealed class ChargenMorphScreenTests : IDisposable
     }
 
     [AvaloniaFact]
-    public async Task ACopyThatCannotBeRead_IsNotCombined_AndThePlanSaysWhich()
+    public async Task ACopyThatCannotBeRead_IsLeftOut_AndTheGoodOnesAreCombined()
     {
+        // Found in a real run: falling back to the last copy installed the broken one, which the game cannot read.
         var (_, viewModel) = await _scenario.OpenAsync();
         await _scenario.ImportAsync(viewModel, Path.Combine(_downloads, "Long Hair.zip"), (GamePaths.ChargenMorphFileName, Morph("hm_har_long")));
-        await _scenario.ImportAsync(viewModel, Path.Combine(_downloads, "Broken Hair.zip"), (GamePaths.ChargenMorphFileName, "<morph_config><hairs>"));
+        await _scenario.ImportAsync(viewModel, Path.Combine(_downloads, "Short Hair.zip"), (GamePaths.ChargenMorphFileName, Morph("hm_har_short")));
+        await _scenario.ImportAsync(viewModel, Path.Combine(_downloads, "Zany Hair.zip"), (GamePaths.ChargenMorphFileName, "<morph_config><hairs>"));
         var activation = viewModel.ModsTab.Activation;
         viewModel.ModsTab.Selection.SelectAllCommand.Execute(null);
 
         await viewModel.ModsTab.Selection.ActivateSelectedCommand.ExecuteAsync(null);
 
         Assert.False(activation.IsError, activation.StatusMessage);
-        Assert.DoesNotContain("Combines", activation.Preview.Summary, StringComparison.Ordinal);
-        Assert.Contains(activation.Preview.Notes, n => n.Contains("Broken Hair", StringComparison.Ordinal) && n.EndsWith($"({DiagnosticCodes.ModChargenMorphUnreadable})", StringComparison.Ordinal));
-        Assert.Contains(activation.Preview.Notes, n => n.StartsWith("chargenmorphcfg.xml is in", StringComparison.Ordinal));
+        Assert.EndsWith("Combines chargenmorphcfg.xml from Long Hair and Short Hair: 3 entries.", activation.Preview.Summary, StringComparison.Ordinal);
+        Assert.Contains(activation.Preview.Notes, n => n.StartsWith("chargenmorphcfg.xml from Zany Hair cannot be read", StringComparison.Ordinal)
+            && n.Contains("It is left out of the combined file", StringComparison.Ordinal)
+            && n.EndsWith($"({DiagnosticCodes.ModChargenMorphUnreadable})", StringComparison.Ordinal));
+
+        await activation.ApplyCommand.ExecuteAsync(null);
+
+        Assert.Equal([Combined], MorphCopies());
+        Assert.DoesNotContain("<hairs>\r\n</morph_config>", _host.FileSystem.File.ReadAllText(Combined), StringComparison.Ordinal);
     }
 
     [AvaloniaFact]
