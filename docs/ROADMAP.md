@@ -242,7 +242,9 @@ read the game's file formats wait for P3-01 (P3-07 to P3-09).
   install folder's override into them.*
 - P2.5-22 The install folder's override: read `<install>/packages/core/override`, where older guides put mods and
   which the game loads too. List what is there under *Installed by hand* as *in the install folder*, and include it
-  in the shared-file warnings. Adopting from there needs ADR-0015 amended first.
+  in the shared-file warnings. Adopting from there needs ADR-0015 amended first. *Diagnostics done
+  (`InstallOverrideRule`: what is there, and each name both overrides have, with what it means); the Installed by hand
+  list and the plan's warnings follow.*
 - P2.5-23 Add-ins against each other: show the active add-ins with their `Priority` from `AddIns.xml`, and warn when
   two add-ins ship a file with the same name. How the game ranks add-ins is checked on the owner's install first;
   DAORework changes no priority until it is.

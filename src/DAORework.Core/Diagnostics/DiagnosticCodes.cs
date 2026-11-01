@@ -21,6 +21,10 @@ public static class DiagnosticCodes
     public const string DocumentsOneDriveRedirected = "DAO_DOCUMENTS_ONEDRIVE_REDIRECTED";
 
     public const string OverrideDirectoryFound = "DAO_OVERRIDE_DIRECTORY_FOUND";
+
+    // P2.5-22: the install folder's own override, which older guides use and the game loads too.
+    public const string InstallOverrideFiles = "DAO_INSTALL_OVERRIDE_FILES";
+    public const string InstallOverrideShared = "DAO_INSTALL_OVERRIDE_SHARED";
     public const string OverrideDirectoryNotFound = "DAO_OVERRIDE_DIRECTORY_NOT_FOUND";
 
     public const string AddInsDirectoryFound = "DAO_ADDINS_DIRECTORY_FOUND";
