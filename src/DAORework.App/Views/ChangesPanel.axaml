@@ -44,6 +44,8 @@
             <Border Padding="0,8" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
               <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                 <StackPanel Spacing="2">
+                  <TextBlock FontWeight="SemiBold" Text="{Binding Change}" TextWrapping="Wrap"
+                             IsVisible="{Binding Change, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                   <TextBlock Classes="Mono" Text="{Binding When}" />
                   <TextBlock Classes="Secondary" Text="{Binding Before}" TextWrapping="Wrap" />
                 </StackPanel>

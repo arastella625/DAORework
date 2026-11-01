@@ -29,9 +29,10 @@ public sealed class ModsTabViewModel
         handInstalled.Adoption.AfterChangeAsync = RefreshAfterChangeAsync;
         handInstalled.Adoption.AfterPlanAsync = library.LoadAsync;
 
-        // Plans name mods by their Library names, not their ids (P2.5-18).
+        // Plans and Changes name mods by their Library names, not their ids (P2.5-18, P2.5-19).
         Activation.Preview.NameOf = NameOf;
         handInstalled.Adoption.Preview.NameOf = NameOf;
+        Changes.NameOf = NameOf;
     }
 
     /// <summary>Gets the summary of the override and AddIns folders and the inventory.</summary>

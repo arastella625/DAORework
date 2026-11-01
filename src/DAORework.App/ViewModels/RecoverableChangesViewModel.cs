@@ -66,14 +66,29 @@ public abstract partial class RecoverableChangesViewModel : PageViewModel
     /// <summary>Reads the status into the panel; a folder the profile does not name has nothing to show, which is not an error.</summary>
     protected abstract Task ReadAsync(CancellationToken cancellationToken);
 
-    /// <summary>Shows the backups that record what was active before them, most recent first, as <see cref="BackupRow.From"/> words them.</summary>
-    protected void ShowBackups(IReadOnlyList<DeploymentBackup> backups, Func<string, string> name, string none)
+    /// <summary>
+    /// Shows the backups that record what was active before them, most recent first, as <see cref="BackupRow.From"/>
+    /// words them. What came after a backup's change is what the next newer one had before it, and for the newest, what
+    /// is active now (P2.5-19).
+    /// </summary>
+    protected void ShowBackups(IReadOnlyList<DeploymentBackup> backups, IReadOnlyList<string> active, ChangeWords words, Func<string, string> name, string none)
     {
         ArgumentNullException.ThrowIfNull(backups);
         Backups.Clear();
-        foreach (var row in backups.Select(b => BackupRow.From(b, name, none)).OfType<BackupRow>().Take(MaxBackups))
+        IReadOnlyList<string>? after = active;
+        foreach (var backup in backups)
         {
-            Backups.Add(row);
+            if (Backups.Count == MaxBackups)
+            {
+                break;
+            }
+
+            if (BackupRow.From(backup, after, words, name, none) is { } row)
+            {
+                Backups.Add(row);
+            }
+
+            after = backup.PreviousRecord?.ActiveModIds;
         }
     }
 
@@ -90,7 +105,8 @@ public abstract partial class RecoverableChangesViewModel : PageViewModel
                 }
 
                 _pending = (folder, backup.Id);
-                PendingRollback = $"Undo the change backed up as {backup.Id} ({backup.When}) in {folder}? The files that change wrote are put back as they were before it, and {RollbackConsequence}";
+                var what = backup.Change is null ? $"the change backed up as {backup.Id}" : $"\u201c{backup.Change}\u201d";
+                PendingRollback = $"Undo {what} ({backup.When}) in {folder}? The files that change wrote are put back as they were before it, and {RollbackConsequence}";
                 ReportSuccess(string.Empty);
             },
             cancellationToken);

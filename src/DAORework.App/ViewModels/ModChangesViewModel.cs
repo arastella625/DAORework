@@ -3,6 +3,7 @@ using DAORework.Application.Mods.Apply;
 using DAORework.Application.Mods.Changes;
 using DAORework.Application.Profiles;
 using DAORework.Core.Common;
+using DAORework.Core.Mods.Backups;
 using Microsoft.Extensions.Logging;
 
 namespace DAORework.App.ViewModels;
@@ -26,6 +27,9 @@ public sealed partial class ModChangesViewModel : RecoverableChangesViewModel
 
     [ObservableProperty]
     public partial string? Summary { get; set; }
+
+    /// <summary>Gets or sets how a mod id is shown: by its Library name in the window (P2.5-19), as it is otherwise.</summary>
+    public Func<string, string> NameOf { get; set; } = id => id;
 
     protected override string RollbackConsequence => "the mods active before it are the active ones again.";
 
@@ -51,8 +55,8 @@ public sealed partial class ModChangesViewModel : RecoverableChangesViewModel
         var active = status.Record.ActiveModIds;
         Summary = active.Count == 0
             ? $"No mods are active through DAORework in {documents}."
-            : $"Active in {documents}, lowest priority first: {string.Join(", ", active)} ({status.Record.Files.Count} file(s)).";
+            : $"Active in {documents}, lowest priority first: {string.Join(", ", active.Select(NameOf))} ({status.Record.Files.Count} file(s)).";
         ChangeUnfinished = status.ChangeUnfinished;
-        ShowBackups(status.Backups, id => id, "no mods");
+        ShowBackups(status.Backups, active, DeploymentChangeText.Mods, NameOf, "no mods");
     }
 }
