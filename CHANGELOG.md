@@ -7,6 +7,7 @@ All notable changes to DAORework are recorded here. The format follows
 ## [Unreleased]
 
 ### Added
+- A file two mods share now says what that means (P2.5-21): in plans and the Load order's shared files, a texture or model says only one mod's look shows, a `.gda` data table that the other mod's changes to it are lost (look for a compatibility patch; M2DA files do not clash), a script that what the other mod does with it is lost, a talk table that the other mod's text is not shown, and an `.erf` archive that only one is loaded and its contents are not compared yet. Identical copies need no explanation.
 - Hair, head and colour mods work together (P2.5-20, [ADR-0025](docs/adr/0025-combining-chargenmorphcfg.md)): when two or more active mods ship `chargenmorphcfg.xml`, which the game reads only one copy of, DAORework combines them into one file in load order, so every mod's hairs, heads, beards and colours show in the character creator. The plan says so (*Combines chargenmorphcfg.xml from Long Hair and Short Hair: 214 entries*). The combined file is backed up and rolled back like any other, rebuilt whenever the active mods change, and removed when fewer than two such mods are left. Activating, deactivating, reordering and adopting all combine. A copy that cannot be read is named, and the copy from the mod last in the load order is used instead (`DAO_MOD_CHARGENMORPH_UNREADABLE`). Only the mods' files are read; the game's own copy is never touched.
 
 ## [0.3.2] - 2026-11-01

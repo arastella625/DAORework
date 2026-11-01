@@ -41,7 +41,7 @@ public sealed class ModActivationPlanTextTests
                 "  hair-b: copy 1",
                 "  old-ui: delete 1",
                 "Warnings:",
-                "  ! hair.dds is in hair-a and hair-b; hair-b's copy is used.",
+                "  ! hair.dds is in hair-a and hair-b; hair-b's copy is used. It is a texture or model, so only that mod's look shows.",
                 @"  ! eyes.dds from hair-a has the same name as My Mods\eyes.dds in the override folder, which DAORework does not manage; the game picks one.",
             ],
             lines);
