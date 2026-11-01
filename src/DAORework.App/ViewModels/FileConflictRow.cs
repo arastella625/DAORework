@@ -8,6 +8,9 @@ namespace DAORework.App.ViewModels;
 /// </summary>
 public sealed record FileConflictRow(string FileName, string Winner, string Detail)
 {
+    /// <summary>Gets a value indicating whether every copy is the same, so the order changes nothing for this file.</summary>
+    public bool SameContent { get; init; }
+
     /// <param name="conflict">The conflict the scanner found.</param>
     /// <param name="names">Mod names by id, for the mods in the load order.</param>
     public static FileConflictRow From(OverrideConflict conflict, IReadOnlyDictionary<string, string> names)
@@ -19,6 +22,6 @@ public sealed record FileConflictRow(string FileName, string Winner, string Deta
         var detail = conflict.SameContent
             ? $"Also in {losers}, with the same content, so the order changes nothing for it."
             : $"Also in {losers}, whose copy is not used.{(SharedFileMeaning.For(conflict.FileName) is { } meaning ? " " + meaning : string.Empty)}";
-        return new FileConflictRow(conflict.FileName, $"{Name(conflict.Winner.ModId)} wins", detail);
+        return new FileConflictRow(conflict.FileName, $"{Name(conflict.Winner.ModId)} wins", detail) { SameContent = conflict.SameContent };
     }
 }

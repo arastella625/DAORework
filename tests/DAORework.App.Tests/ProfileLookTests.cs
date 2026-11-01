@@ -94,7 +94,7 @@ public sealed class ProfileLookTests : IDisposable
         await viewModel.Profiles.CreateProfileCommand.ExecuteAsync(null);
         await viewModel.SelectProfileAsync(Profile, TestContext.Current.CancellationToken);
         var tabs = window.FindControl<TabControl>("Pages") ?? throw new InvalidOperationException("No tab control named Pages.");
-        tabs.SelectedIndex = 0;
+        tabs.SelectedIndex = MainWindowViewModel.ProfilePage;
         return (window, viewModel);
     }
 }

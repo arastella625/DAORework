@@ -1,0 +1,74 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DAORework.App.ViewModels"
+             xmlns:views="using:DAORework.App.Views"
+             xmlns:controls="using:DAORework.App.Controls"
+             x:Class="DAORework.App.Views.HomePage"
+             x:DataType="vm:HomeViewModel">
+  <!-- Home (ADR-0026, P2.5-25): ready or not, the setup at a glance, the last change, and what is worth a look. -->
+  <ScrollViewer>
+    <StackPanel Margin="12" Spacing="12">
+      <Grid ColumnDefinitions="3*,12,2*">
+        <controls:Card>
+          <StackPanel Spacing="8">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <PathIcon Classes="Ok" Width="22" Height="22" Data="{StaticResource IconOk}" IsVisible="{Binding IsReady}" />
+              <PathIcon Classes="Warning" Width="22" Height="22" Data="{StaticResource IconWarning}" IsVisible="{Binding HasProblems}" />
+              <TextBlock Name="ReadyTitle" Classes="PageTitle" Text="{Binding ReadyTitle}" />
+            </StackPanel>
+            <TextBlock Name="ReadyBody" Classes="Secondary" TextWrapping="Wrap" Text="{Binding ReadyBody}" />
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <Button Name="CheckGameButton" Classes="accent" Content="Check the game" Command="{Binding CheckGameCommand}" IsVisible="{Binding CanCheck}" />
+              <Button Name="SeeProblemsButton" Content="See what's wrong" Command="{Binding OpenCommand}"
+                      CommandParameter="{x:Static vm:HomeTarget.Diagnostics}" IsVisible="{Binding HasProblems}" />
+            </StackPanel>
+          </StackPanel>
+        </controls:Card>
+        <controls:Card Grid.Column="2">
+          <StackPanel Spacing="6">
+            <TextBlock Classes="Label" Text="Last change" />
+            <StackPanel Spacing="6" IsVisible="{Binding HasLastChange}">
+              <TextBlock Name="LastChange" FontWeight="SemiBold" TextWrapping="Wrap" Text="{Binding LastChange}" />
+              <TextBlock Classes="Secondary" Text="{Binding LastChangeAt, Converter={x:Static views:FriendlyTimeConverter.Instance}}" />
+              <Button Name="UndoLastButton" Content="Undo" Command="{Binding UndoLastCommand}" HorizontalAlignment="Left" />
+            </StackPanel>
+            <TextBlock Classes="Secondary" Text="Nothing changed yet." IsVisible="{Binding !HasLastChange}" />
+          </StackPanel>
+        </controls:Card>
+      </Grid>
+
+      <controls:Card DataContext="{Binding Setup}" x:DataType="vm:SetupSummary" IsVisible="{Binding $parent[UserControl].((vm:HomeViewModel)DataContext).Setup, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <StackPanel Spacing="10">
+          <TextBlock Name="SetupTitle" Classes="SectionTitle" Text="{Binding Title}" />
+          <TextBlock Classes="Secondary" TextWrapping="Wrap" Text="{Binding Body}" />
+          <ItemsControl Name="SetupParts" ItemsSource="{Binding Parts}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <UniformGrid Columns="3" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:SetupPart">
+                <Button Margin="0,0,10,0" Padding="14,12" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                        Command="{Binding $parent[UserControl].((vm:HomeViewModel)DataContext).OpenCommand}" CommandParameter="{Binding Target}">
+                  <Grid ColumnDefinitions="Auto,12,*">
+                    <PathIcon Classes="Ok" Width="20" Height="20" VerticalAlignment="Top" Data="{StaticResource IconOk}" IsVisible="{Binding IsReady}" />
+                    <PathIcon Classes="Warning" Width="20" Height="20" VerticalAlignment="Top" Data="{StaticResource IconWarning}" IsVisible="{Binding NeedsALook}" />
+                    <StackPanel Grid.Column="2" Spacing="2">
+                      <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
+                      <TextBlock Classes="Secondary" TextWrapping="Wrap" Text="{Binding Count}" />
+                      <TextBlock Classes="Status" Text="{Binding Status}" IsVisible="{Binding IsReady}" />
+                      <TextBlock Classes="Warning" Text="{Binding Status}" IsVisible="{Binding NeedsALook}" />
+                    </StackPanel>
+                  </Grid>
+                </Button>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </controls:Card>
+
+      <views:NextStepsPanel DataContext="{Binding NextSteps}" />
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

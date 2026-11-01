@@ -262,6 +262,9 @@ unchanged.
   A few notes the command line shares keep their wording until the CLI gets its own.*
 - P2.5-25 Home, the first tab: ready to play or not, the readiness strip for add-ins, override mods and combined
   files, the last change with *Undo*, and at most three suggestions (P2.5-07's Next steps move here).
+  *Done: Home opens first, says whether the game is ready (or offers *Check the game*), shows add-ins, override mods
+  and combined files with what is on and any overlap, the newest change from Mods or Fixes with *Undo* (asked on its
+  History, confirmed there), and *Worth a look* ([screenshot](screenshots/p2.5-25/01-home.png)).*
 - P2.5-26 Mods as one list: an on/off switch per mod, the three cards that filter it, *Found in your game* in the
   same list with *Manage*, *Arrange* for the load order, and Combined files listing each shared file as combined,
   one wins, or needs a patch (P2.5-21's meanings). Agreed with the P2.5-21 to P2.5-23 work before it starts.

@@ -42,6 +42,10 @@ public sealed partial class LoadOrderViewModel : PageViewModel
     /// <summary>Gets the override files more than one mod in <see cref="Order"/> ships.</summary>
     public ObservableCollection<FileConflictRow> Conflicts { get; } = [];
 
+    /// <summary>Gets how many files are combined from several mods' copies (ADR-0025), such as <c>chargenmorphcfg.xml</c>.</summary>
+    [ObservableProperty]
+    public partial int CombinedCount { get; set; }
+
     /// <summary>Gets the plan for the edited order, empty while it is the saved one.</summary>
     /// <summary>Gets the plan for the new order: a summary, its warnings, and its full text behind Show details (P2.5-18).</summary>
     public PlanPreview Preview { get; } = new();
@@ -186,6 +190,7 @@ public sealed partial class LoadOrderViewModel : PageViewModel
             Order.Add(row);
         }
 
+        CombinedCount = plan?.Combined.Count ?? 0;
         Conflicts.Clear();
         foreach (var conflict in plan?.Conflicts.OverrideConflicts ?? [])
         {

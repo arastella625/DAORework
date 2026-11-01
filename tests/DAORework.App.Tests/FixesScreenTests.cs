@@ -13,7 +13,7 @@ namespace DAORework.App.Tests;
 /// <summary>The Fixes tab (P2.5-06): the 4 GB patch and DXVK applied and removed through a plan, and a fix Steam undid.</summary>
 public sealed class FixesScreenTests : IDisposable
 {
-    private const int FixesTab = 4;
+    private const int FixesTab = MainWindowViewModel.FixesPage;
     private static readonly string _release = MockUnixSupport.Path(@"C:\Users\Me\Downloads\dxvk-2.3.zip");
 
     private readonly AppTestHost _host = new();

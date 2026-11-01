@@ -82,7 +82,7 @@ public sealed class HandInstalledScreenTests : IDisposable
         await viewModel.SelectProfileAsync("Default", TestContext.Current.CancellationToken);
 
         var tabs = window.FindControl<TabControl>("Pages") ?? throw new InvalidOperationException("No tab control named Pages.");
-        tabs.SelectedIndex = 2;
+        tabs.SelectedIndex = MainWindowViewModel.ModsPage;
         return (window, viewModel);
     }
 }
