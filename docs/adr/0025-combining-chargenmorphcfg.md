@@ -30,10 +30,12 @@ a `name` (hairs also a `cut`; the same hair with two cuts is two entries the gam
   not know are kept as they are.
 - **No guessing:** if any copy is not well-formed XML or its root is not `morph_config`, nothing is combined. The plan
   falls back to the copy from the mod last in the load order, as before, and warns which mod's file could not be read.
-- **Owned like any deployed file:** the combined file is in the deployment record (under the reserved id
-  `combined:chargenmorphcfg`), backed up before it is written or removed, and rolled back with the change. Each plan
+- **Owned like any deployed file:** the combined file is kept in the library under `library/_combined/<sha256>/`,
+  never overwritten once written, and deployed from there like any mod file. It is in the deployment record under the
+  reserved id `_combined`, backed up before it is written or removed, and rolled back with the change. Each plan
   works it out again from the active mods; the output is deterministic, so an unchanged set of mods changes nothing.
-  When fewer than two such mods remain active, the plan removes it.
+  When fewer than two such mods remain active, the plan removes it. Activating, deactivating, reordering and adopting
+  all combine.
 - **The plan says so:** *Combines chargenmorphcfg.xml from Thedas Hairs, More Eyes and Beautiful People: 214
   entries.* The CLI's text says the same.
 - **The user's own copy** (a `chargenmorphcfg.xml` in the override folder that DAORework did not place) is never
