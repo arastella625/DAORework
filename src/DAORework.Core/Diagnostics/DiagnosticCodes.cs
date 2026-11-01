@@ -96,6 +96,9 @@ public static class DiagnosticCodes
     public const string ModDocumentsNotSet = "DAO_MOD_DOCUMENTS_NOT_SET";
     public const string ModScanFailed = "DAO_MOD_SCAN_FAILED";
 
+    // P2.5-20: combining chargenmorphcfg.xml from several mods (ADR-0025).
+    public const string ModChargenMorphUnreadable = "DAO_MOD_CHARGENMORPH_UNREADABLE";
+
     // P2.5-10: the app's own preferences, such as the theme (ADR-0016, ADR-0017).
     public const string PreferencesUnreadable = "DAO_PREFERENCES_UNREADABLE";
 
