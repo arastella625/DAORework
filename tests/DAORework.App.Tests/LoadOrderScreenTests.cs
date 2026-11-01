@@ -51,7 +51,7 @@ public sealed class LoadOrderScreenTests : IDisposable
         await order.ApplyCommand.ExecuteAsync(null);
 
         Assert.False(order.IsError, order.StatusMessage);
-        Assert.StartsWith("Done: the new order is applied", order.StatusMessage, StringComparison.Ordinal);
+        Assert.StartsWith("Saved the new order", order.StatusMessage, StringComparison.Ordinal);
         Assert.False(order.IsReordered);
         Assert.Equal(["1. Blue Hair", "2. Red Hair"], order.Order.Select(r => r.Label));
         Assert.Equal("red", _scenario.DeployedContent("hair.dds"));

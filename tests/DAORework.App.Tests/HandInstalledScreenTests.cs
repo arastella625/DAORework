@@ -40,8 +40,8 @@ public sealed class HandInstalledScreenTests : IDisposable
             viewModel.HandInstalled.Candidates.Select(c => c.Title));
         Assert.Contains("Known as Extra Dog Slot: https://www.nexusmods.com/dragonage/mods/664", viewModel.HandInstalled.Candidates[0].Notes);
         var leftover = Assert.Single(viewModel.HandInstalled.NotAdoptable);
-        Assert.Equal("addin:Leftover_Mod", leftover.Details);
-        Assert.Equal("Official DLC (1 add-in(s)) is never adopted or changed.", viewModel.HandInstalled.OfficialSummary);
+        Assert.Equal("Can't be managed here", leftover.Details);
+        Assert.Equal("Official DLC (1 add-in) is left as it is.", viewModel.HandInstalled.OfficialSummary);
         Assert.DoesNotContain(viewModel.HandInstalled.Candidates, c => c.Details.Contains("DAO_PRC_EP_1", StringComparison.OrdinalIgnoreCase));
         ShowPanel(window);
         Screenshots.Save(window, "12-installed-by-hand");

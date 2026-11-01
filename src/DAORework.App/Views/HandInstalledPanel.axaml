@@ -21,12 +21,12 @@
               </ItemsControl.ItemTemplate>
             </ItemsControl>
             <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding NeedsName}">
-              <TextBlock VerticalAlignment="Center" Text="Adopt them as" />
+              <TextBlock VerticalAlignment="Center" Text="Name them" />
               <TextBox Name="LooseFilesName" Width="240" PlaceholderText="a name for these files"
                        Text="{Binding $parent[views:HandInstalledPanel].((vm:HandInstalledViewModel)DataContext).Adoption.LooseFilesName}" />
             </StackPanel>
           </StackPanel>
-          <Button Grid.Column="2" VerticalAlignment="Top" Content="Adopt" CommandParameter="{Binding}"
+          <Button Grid.Column="2" VerticalAlignment="Top" Content="Manage" CommandParameter="{Binding}"
                   Command="{Binding $parent[views:HandInstalledPanel].((vm:HandInstalledViewModel)DataContext).Adoption.AdoptCommand}" />
         </Grid>
       </Border>
@@ -49,11 +49,11 @@
   </UserControl.Resources>
   <controls:Card Margin="12,0,12,12">
     <StackPanel Spacing="10">
-      <TextBlock Classes="SectionTitle" Text="Installed by hand" />
+      <TextBlock Classes="SectionTitle" Text="Found in your game" />
       <StackPanel Orientation="Horizontal" Spacing="12">
         <Button Name="ScanButton" Content="Look again" Command="{Binding ScanCommand}" />
         <TextBlock VerticalAlignment="Center" Classes="Secondary" TextWrapping="Wrap"
-                   Text="This list fills in by itself and only reads. Look again after adding files by hand; adopting shows its plan first." />
+                   Text="Mods you put in your game yourself. Manage them to turn them off or undo them later, like any other mod." />
       </StackPanel>
       <TextBlock Name="HandInstalledStatus" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" />
       <Border Name="AdoptionPlan" Padding="12" CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource BorderSoftBrush}"
@@ -72,11 +72,11 @@
                  IsVisible="{Binding Adoption.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       <StackPanel Name="SelectionBar" Orientation="Horizontal" Spacing="8"
                   IsVisible="{Binding Candidates.Count, Converter={x:Static views:CountConverters.IsPositive}}">
-        <Button Name="AdoptSelectedButton" Classes="accent" Content="Adopt selected" Command="{Binding AdoptSelectedCommand}" />
+        <Button Name="AdoptSelectedButton" Classes="accent" Content="Manage selected" Command="{Binding AdoptSelectedCommand}" />
         <Button Name="SelectAllButton" Content="Select all" Command="{Binding SelectAllCommand}" />
         <Button Name="ClearSelectionButton" Content="Clear" Command="{Binding ClearSelectionCommand}" />
         <TextBlock VerticalAlignment="Center" Classes="Secondary" TextWrapping="Wrap"
-                   Text="Ticked mods are adopted together: one plan, one backup, one rollback." />
+                   Text="Ticked mods are managed together, in one change you can undo." />
       </StackPanel>
       <ItemsControl Name="Candidates" ItemsSource="{Binding Candidates}" ItemTemplate="{StaticResource Candidate}" />
       <TextBlock Classes="Label" Text="Cannot be adopted" Margin="0,6,0,0"

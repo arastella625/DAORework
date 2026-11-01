@@ -31,7 +31,7 @@ public sealed partial class ModChangesViewModel : RecoverableChangesViewModel
     /// <summary>Gets or sets how a mod id is shown: by its Library name in the window (P2.5-19), as it is otherwise.</summary>
     public Func<string, string> NameOf { get; set; } = id => id;
 
-    protected override string RollbackConsequence => "the mods active before it are the active ones again.";
+    protected override string RollbackConsequence => "the mods that were on before it are on again.";
 
     protected override Task<Result<string>> FolderAsync(CancellationToken cancellationToken) => ProfileDocuments.ForAsync(_getProfile, ProfileName, cancellationToken);
 
@@ -54,8 +54,8 @@ public sealed partial class ModChangesViewModel : RecoverableChangesViewModel
 
         var active = status.Record.ActiveModIds;
         Summary = active.Count == 0
-            ? $"No mods are active through DAORework in {documents}."
-            : $"Active in {documents}, lowest priority first: {string.Join(", ", active.Select(NameOf))} ({status.Record.Files.Count} file(s)).";
+            ? "No mods are on yet."
+            : $"On now, in order: {string.Join(", ", active.Select(NameOf))} ({Counted.Of(status.Record.Files.Count, "file")}).";
         ChangeUnfinished = status.ChangeUnfinished;
         ShowBackups(status.Backups, active, DeploymentChangeText.Mods, NameOf, "no mods");
     }

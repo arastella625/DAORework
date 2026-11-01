@@ -33,7 +33,7 @@ public sealed partial class FixStatusViewModel : RecoverableChangesViewModel
     [ObservableProperty]
     public partial string? Summary { get; set; }
 
-    protected override string RollbackConsequence => "the fixes applied before it are the applied ones again.";
+    protected override string RollbackConsequence => "the fixes that were on before it are on again.";
 
     protected override Task<Result<string>> FolderAsync(CancellationToken cancellationToken) => ProfileInstall.ForAsync(_getProfile, ProfileName, cancellationToken);
 

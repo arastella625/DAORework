@@ -34,7 +34,7 @@ public sealed partial class HandInstalledViewModel : PageViewModel
     public ObservableCollection<HandInstalledModRow> Candidates { get; } = [];
 
     /// <summary>Gets the section's name on the Mods tab, with how many mods could be adopted (P2.5-17).</summary>
-    public string SectionHeader => Candidates.Count == 0 ? "Installed by hand" : $"Installed by hand ({Candidates.Count})";
+    public string SectionHeader => Candidates.Count == 0 ? "Found in your game" : $"Found in your game ({Candidates.Count})";
 
     /// <summary>Gets a value indicating whether any candidate is ticked for <i>Adopt selected</i> (P2.5-13).</summary>
     public bool HasSelection => Candidates.Any(c => c.IsSelected);
@@ -158,9 +158,9 @@ public sealed partial class HandInstalledViewModel : PageViewModel
         }
 
         var official = scan.Exclusions.Count(e => e.Reason == AdoptionExclusionReason.Official);
-        OfficialSummary = official == 0 ? null : $"Official DLC ({official} add-in(s)) is never adopted or changed.";
+        OfficialSummary = official == 0 ? null : $"Official DLC ({Counted.Of(official, "add-in")}) is left as it is.";
         ReportSuccess(scan.Candidates.Count == 0
-            ? "Nothing installed by hand can be adopted."
-            : $"{scan.Candidates.Count} mod(s) installed by hand could be adopted. Adopt one, or tick several and adopt them together; the plan shows first, and nothing moves until you apply it.");
+            ? "Nothing found in your game needs managing."
+            : $"{Counted.Of(scan.Candidates.Count, "mod")} found in your game. Manage one, or tick several and manage them together; a preview shows first.");
     }
 }

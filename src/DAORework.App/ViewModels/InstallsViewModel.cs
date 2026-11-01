@@ -64,7 +64,7 @@ public sealed partial class InstallsViewModel : PageViewModel
                 HasDetected = true;
                 ReportSuccess(installations.Count == 0
                     ? "No installation was detected. Use the Browse buttons above."
-                    : $"Found {installations.Count} installation(s).");
+                    : $"Found {Counted.Of(installations.Count, "installation")}.");
             },
             cancellationToken);
 

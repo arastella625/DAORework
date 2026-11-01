@@ -7,10 +7,10 @@
              x:DataType="vm:LoadOrderViewModel">
   <controls:Card Margin="12,0,12,12">
     <StackPanel Spacing="10">
-      <TextBlock Classes="SectionTitle" Text="Load order" />
+      <TextBlock Classes="SectionTitle" Text="Arrange" />
       <TextBlock Classes="Secondary" TextWrapping="Wrap"
-                 Text="The active mods, lowest priority first. When mods ship a file with the same name, the one lower in this list wins. Moving a mod shows the new plan; nothing changes until you apply it." />
-      <TextBlock Name="LoadOrderEmpty" Classes="Secondary" Text="No mods are active through DAORework."
+                 Text="The mods that are on, in order. When two mods change the same file, the lower one wins. Moving a mod shows a preview first." />
+      <TextBlock Name="LoadOrderEmpty" Classes="Secondary" Text="No mods are on yet."
                  IsVisible="{Binding !Order.Count}" />
       <ItemsControl Name="Order" ItemsSource="{Binding Order}">
         <ItemsControl.ItemTemplate>
@@ -39,7 +39,7 @@
       </Border>
       <TextBlock Name="LoadOrderStatus" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" TextWrapping="Wrap"
                  IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-      <TextBlock Classes="Label" Text="Files more than one mod ships"
+      <TextBlock Classes="Label" Text="Files more than one mod changes"
                  IsVisible="{Binding Conflicts.Count, Converter={x:Static views:CountConverters.IsPositive}}" />
       <ItemsControl Name="Conflicts" ItemsSource="{Binding Conflicts}">
         <ItemsControl.ItemTemplate>

@@ -1,8 +1,8 @@
 namespace DAORework.Core.Mods.Backups;
 
 /// <summary>
-/// What a backed-up change did, in a few words, from what was active before it and after it (P2.5-19): <i>Activated
-/// Eyes, Nails</i>, <i>Adopted 4 mods: …</i>, <i>Changed the load order</i>. A backup records only what was active
+/// What a backed-up change did, in a few words, from what was active before it and after it (P2.5-19), in the window's
+/// words (docs/VOICE.md): <i>Turned on Eyes, Nails</i>, <i>Started managing 4 mods: …</i>, <i>Changed the order</i>. A backup records only what was active
 /// before its change; what came after is the next backup's <i>before</i>, or what is active now. Pure.
 /// </summary>
 public static class DeploymentChangeText
@@ -10,10 +10,10 @@ public static class DeploymentChangeText
     private const int NamesShown = 3;
 
     /// <summary>Gets the words for mod changes on the Mods tab.</summary>
-    public static ChangeWords Mods { get; } = new("Activated", "Deactivated", "Adopted", "mods");
+    public static ChangeWords Mods { get; } = new("Turned on", "Turned off", "Started managing", "mods");
 
     /// <summary>Gets the words for fix changes on the Fixes tab.</summary>
-    public static ChangeWords Fixes { get; } = new("Applied", "Removed", "Applied", "fixes");
+    public static ChangeWords Fixes { get; } = new("Turned on", "Turned off", "Turned on", "fixes");
 
     /// <param name="before">What was active before the change, in order.</param>
     /// <param name="after">What was active after it, in order.</param>
@@ -46,7 +46,7 @@ public static class DeploymentChangeText
             return string.Join("; ", parts);
         }
 
-        return before.SequenceEqual(after, comparer) ? $"Changed no active {words.Noun}" : "Changed the load order";
+        return before.SequenceEqual(after, comparer) ? $"Changed no {words.Noun}" : "Changed the order";
     }
 
     private static string Phrase(string verb, List<string> ids, string noun, Func<string, string> nameOf)

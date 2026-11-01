@@ -57,8 +57,8 @@ public sealed partial class SavesPageViewModel : PageViewModel
                 }
 
                 await ReloadAsync(token);
-                var removed = result.Deleted.Count == 0 ? string.Empty : $" Removed {result.Deleted.Count} older backup(s).";
-                ReportSuccess($"Backed up {result.FileCount} file(s), {new ByteSize(result.SourceBytes)}.{removed}");
+                var removed = result.Deleted.Count == 0 ? string.Empty : $" Removed {Counted.Of(result.Deleted.Count, "older backup")}.";
+                ReportSuccess($"Backed up {Counted.Of(result.FileCount, "file")}, {new ByteSize(result.SourceBytes)}.{removed}");
             },
             cancellationToken);
 

@@ -27,7 +27,7 @@
         </ItemsControl.ItemTemplate>
       </ItemsControl>
       <TextBlock Classes="Secondary" TextWrapping="Wrap" IsVisible="{Binding Steps.Count, Converter={x:Static views:CountConverters.IsPositive}}"
-                 Text="Each button opens a plan on its tab. Nothing changes until you apply it there." />
+                 Text="Each button opens a preview. Nothing changes until you apply it." />
     </StackPanel>
   </controls:Card>
 </UserControl>

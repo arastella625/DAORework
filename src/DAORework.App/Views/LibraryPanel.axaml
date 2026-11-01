@@ -10,10 +10,10 @@
     <StackPanel Spacing="10">
       <TextBlock Classes="SectionTitle" Text="Library" />
       <StackPanel Orientation="Horizontal" Spacing="12">
-        <Button Name="ImportFileButton" Content="Import a mod" Command="{Binding Library.ImportFileCommand}" />
-        <Button Name="ImportFolderButton" Content="Import a folder" Command="{Binding Library.ImportFolderCommand}" />
+        <Button Name="ImportFileButton" Content="Add mods" Command="{Binding Library.ImportFileCommand}" />
+        <Button Name="ImportFolderButton" Content="Add a folder" Command="{Binding Library.ImportFolderCommand}" />
         <TextBlock VerticalAlignment="Center" Classes="Secondary"
-                   Text="Or drop .dazip, .zip, .7z or .rar files here. Importing installs nothing." />
+                   Text="Or drop .dazip, .zip, .7z or .rar files here. Adding a mod doesn't change your game until you turn it on." />
       </StackPanel>
       <TextBlock Name="LibraryStatus" Classes="Status" Classes.Error="{Binding Library.IsError}" Text="{Binding Library.StatusMessage}" TextWrapping="Wrap"
                  IsVisible="{Binding Library.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
@@ -22,7 +22,7 @@
         <StackPanel Spacing="8">
           <views:PlanPreviewView DataContext="{Binding Activation.Preview}" />
           <TextBlock Classes="Secondary" TextWrapping="Wrap"
-                     Text="Nothing changes in the profile's documents folder until you apply it; a backup is taken first." />
+                     Text="Nothing changes in your game until you apply it." />
           <StackPanel Orientation="Horizontal" Spacing="12">
             <Button Name="ApplyPlanButton" Classes="accent" Content="Apply" Command="{Binding Activation.ApplyCommand}" />
             <Button Name="CancelPlanButton" Content="Cancel" Command="{Binding Activation.CancelPlanCommand}" />
@@ -32,12 +32,12 @@
       <TextBlock Name="ActivationStatus" Classes="Status" Classes.Error="{Binding Activation.IsError}" Text="{Binding Activation.StatusMessage}" TextWrapping="Wrap"
                  IsVisible="{Binding Activation.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       <TextBlock Name="LibraryEmpty" Classes="Secondary" TextWrapping="Wrap"
-                 Text="The library is empty. A mod you import is kept here, scanned by your antivirus, and installed only when you activate it."
+                 Text="No mods yet. A mod you add is kept here and scanned by your antivirus; it reaches your game only when you turn it on."
                  IsVisible="{Binding !Library.Mods.Count}" />
       <StackPanel Name="LibrarySelectionBar" Orientation="Horizontal" Spacing="8"
                   IsVisible="{Binding Library.Mods.Count, Converter={x:Static views:CountConverters.IsPositive}}">
-        <Button Name="ActivateSelectedButton" Classes="accent" Content="Activate selected" Command="{Binding Selection.ActivateSelectedCommand}" />
-        <Button Name="DeactivateSelectedButton" Content="Deactivate selected" Command="{Binding Selection.DeactivateSelectedCommand}" />
+        <Button Name="ActivateSelectedButton" Classes="accent" Content="Turn on selected" Command="{Binding Selection.ActivateSelectedCommand}" />
+        <Button Name="DeactivateSelectedButton" Content="Turn off selected" Command="{Binding Selection.DeactivateSelectedCommand}" />
         <Button Name="SelectAllModsButton" Content="Select all" Command="{Binding Selection.SelectAllCommand}" />
         <Button Name="ClearModsSelectionButton" Content="Clear" Command="{Binding Selection.ClearSelectionCommand}" />
       </StackPanel>
@@ -50,7 +50,7 @@
                 <StackPanel Grid.Column="1" Spacing="3">
                   <StackPanel Orientation="Horizontal" Spacing="8">
                     <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
-                    <TextBlock Classes="Info" Text="Active" IsVisible="{Binding IsActive}" />
+                    <TextBlock Classes="Info" Text="On" IsVisible="{Binding IsActive}" />
                   </StackPanel>
                   <TextBlock Classes="Mono Secondary" Text="{Binding Details}" TextWrapping="Wrap" />
                   <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" IsVisible="{Binding Warning, Converter={x:Static ObjectConverters.IsNotNull}}">
@@ -66,9 +66,9 @@
                   </ItemsControl>
                 </StackPanel>
                 <StackPanel Grid.Column="2" VerticalAlignment="Top">
-                  <Button Content="Activate" IsVisible="{Binding !IsActive}" CommandParameter="{Binding}"
+                  <Button Content="Turn on" IsVisible="{Binding !IsActive}" CommandParameter="{Binding}"
                           Command="{Binding $parent[views:LibraryPanel].((vm:ModsTabViewModel)DataContext).Activation.ActivateCommand}" />
-                  <Button Content="Deactivate" IsVisible="{Binding IsActive}" CommandParameter="{Binding}"
+                  <Button Content="Turn off" IsVisible="{Binding IsActive}" CommandParameter="{Binding}"
                           Command="{Binding $parent[views:LibraryPanel].((vm:ModsTabViewModel)DataContext).Activation.DeactivateCommand}" />
                 </StackPanel>
               </Grid>

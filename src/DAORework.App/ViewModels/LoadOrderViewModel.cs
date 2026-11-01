@@ -99,7 +99,7 @@ public sealed partial class LoadOrderViewModel : PageViewModel
                     return;
                 }
 
-                ReportSuccess($"Done: the new order is applied, {report.StepsRun} step(s). Backup {report.BackupId} holds what was there before.");
+                ReportSuccess("Saved the new order. You can undo it in History.");
             },
             cancellationToken);
 

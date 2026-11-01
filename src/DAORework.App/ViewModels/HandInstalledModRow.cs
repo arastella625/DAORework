@@ -40,7 +40,7 @@ public sealed partial class HandInstalledModRow : ObservableObject
         {
             AdoptionCandidateKind.AddIn => "add-in",
             AdoptionCandidateKind.OverrideFolder => "override folder",
-            _ => "loose override files, named when adopted",
+            _ => "loose override files, named when you manage them",
         };
         var notes = new List<string>();
         if (candidate.CatalogItem is { } item)
@@ -51,25 +51,25 @@ public sealed partial class HandInstalledModRow : ObservableObject
         if (candidate.LibraryMatch is { } match)
         {
             notes.Add(match.IsExact
-                ? $"Same as library mod {match.ModName}: adopting imports nothing new."
-                : $"Differs from library mod {match.ModName} in {match.DifferingFiles} file(s): adopting would import it from disk.");
+                ? $"Same as {match.ModName} in your Library: managing it adds nothing new."
+                : $"Differs from library mod {match.ModName} in {Counted.Of(match.DifferingFiles, "file")}: managing it adds this copy to the Library.");
         }
 
         if (candidate.Programs.Count > 0)
         {
             var names = string.Join(", ", candidate.Programs.Select(p => p.Path[(p.Path.LastIndexOf('/') + 1)..]));
-            notes.Add($"Holds {candidate.Programs.Count} program file(s) ({names}): adopting leaves them where they are, and DAORework never installs programs.");
+            notes.Add($"Holds {Counted.Of(candidate.Programs.Count, "program file")} ({names}): managing it leaves them where they are, and DAORework never installs programs.");
         }
 
         if (candidate.DeployedByVortex)
         {
             var folder = candidate.Kind == AdoptionCandidateKind.AddIn ? "AddIns" : "override";
-            notes.Add($"Vortex manages files in {folder}. Purge this mod in Vortex before adopting it, or Vortex may undo the move.");
+            notes.Add($"Vortex manages files in {folder}. Purge this mod in Vortex before managing it here, or Vortex may undo the move.");
         }
 
         return new HandInstalledModRow(
             candidate.Name,
-            $"{candidate.Id} · {kind} · {candidate.Files.Count} file(s) · {new ByteSize(candidate.SizeBytes)} · in {candidate.Path}",
+            $"{kind} · {Counted.Of(candidate.Files.Count, "file")} · {new ByteSize(candidate.SizeBytes)} · in {candidate.Path}",
             notes,
             candidate);
     }
@@ -83,6 +83,6 @@ public sealed partial class HandInstalledModRow : ObservableObject
             AdoptionExclusionReason.NotRegistered => "A folder in AddIns with no entry in AddIns.xml, so the game does not load it.",
             _ => "Official DLC.",
         };
-        return new HandInstalledModRow(exclusion.Name, exclusion.Id, [reason]);
+        return new HandInstalledModRow(exclusion.Name, "Can't be managed here", [reason]);
     }
 }

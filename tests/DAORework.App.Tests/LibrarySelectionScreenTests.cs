@@ -53,7 +53,7 @@ public sealed class LibrarySelectionScreenTests : IDisposable
         await selection.ActivateSelectedCommand.ExecuteAsync(null);
 
         Assert.False(activation.IsError, activation.StatusMessage);
-        Assert.Equal("Activate 2 mods: Eyes, Nails", activation.PlanTitle);
+        Assert.Equal("Turn on 2 mods: Eyes, Nails", activation.PlanTitle);
         Assert.Contains("  Copy      2 files", activation.PlanLines);
         ModsTabScenario.Show<LibraryPanel>(window);
         Screenshots.Save(window, "29-activate-selected");
@@ -71,7 +71,7 @@ public sealed class LibrarySelectionScreenTests : IDisposable
 
         await selection.DeactivateSelectedCommand.ExecuteAsync(null);
 
-        Assert.Equal("Deactivate 2 mods: Eyes, Nails", activation.PlanTitle);
+        Assert.Equal("Turn off 2 mods: Eyes, Nails", activation.PlanTitle);
         await activation.ApplyCommand.ExecuteAsync(null);
 
         Assert.False(activation.IsError, activation.StatusMessage);

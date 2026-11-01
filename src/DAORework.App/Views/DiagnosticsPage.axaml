@@ -13,8 +13,8 @@
         <controls:RuneDivider />
       </StackPanel>
       <StackPanel Orientation="Horizontal" Spacing="12">
-        <Button Name="RunButton" Content="Run diagnostics" Command="{Binding RunDiagnosticsCommand}" />
-        <Button Name="BundleButton" Content="Export support bundle" Command="{Binding ExportSupportBundleCommand}" />
+        <Button Name="RunButton" Content="Check the game" Command="{Binding RunDiagnosticsCommand}" />
+        <Button Name="BundleButton" Content="Save a support bundle" Command="{Binding ExportSupportBundleCommand}" />
         <TextBlock VerticalAlignment="Center" Classes="Secondary" Text="{Binding ProfileName, TargetNullValue='No profile selected'}" />
       </StackPanel>
       <TextBlock Name="Status" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" />
