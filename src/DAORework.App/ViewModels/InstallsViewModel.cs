@@ -62,7 +62,7 @@ public sealed partial class InstallsViewModel : PageViewModel
                 Replace(DocumentsFolders, documents.Candidates);
 
                 HasDetected = true;
-                ReportSuccess(installations.Count == 0
+                ReportStatus(installations.Count == 0
                     ? "No installation was detected. Use the Browse buttons above."
                     : $"Found {Counted.Of(installations.Count, "installation")}.");
             },

@@ -159,7 +159,7 @@ public sealed partial class HandInstalledViewModel : PageViewModel
 
         var official = scan.Exclusions.Count(e => e.Reason == AdoptionExclusionReason.Official);
         OfficialSummary = official == 0 ? null : $"Official DLC ({Counted.Of(official, "add-in")}) is left as it is.";
-        ReportSuccess(scan.Candidates.Count == 0
+        ReportStatus(scan.Candidates.Count == 0
             ? "Nothing found in your game needs managing."
             : $"{Counted.Of(scan.Candidates.Count, "mod")} found in your game. Manage one, or tick several and manage them together; a preview shows first.");
     }

@@ -1,13 +1,12 @@
-using System.Globalization;
 using DAORework.Core.Mods.Backups;
 
 namespace DAORework.App.ViewModels;
 
 /// <summary>
-/// One backup on the Mods tab's <i>Changes</i> panel or the Fixes tab: when the change it undoes was made, what that
-/// change did (P2.5-19), and what was active before it.
+/// One change in <i>History</i> on the Mods tab or the Fixes tab: when it was made (shown by
+/// <see cref="Views.FriendlyTimeConverter"/>), what it did (P2.5-19), and what was on before it.
 /// </summary>
-public sealed record BackupRow(string Id, string When, string Before, string? Change = null)
+public sealed record BackupRow(string Id, DateTimeOffset At, string Before, string? Change = null)
 {
     /// <param name="backup">The backup.</param>
     /// <param name="after">What was active after its change, or null when that is not known.</param>
@@ -24,10 +23,9 @@ public sealed record BackupRow(string Id, string When, string Before, string? Ch
             return null;
         }
 
-        var when = backup.CreatedAtUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
         var before = previous.ActiveModIds.Count == 0 ? none : string.Join(", ", previous.ActiveModIds.Select(name));
         var moved = backup.Entries.Any(e => e.MovedFrom is not null);
         var change = after is null ? null : DeploymentChangeText.Describe(previous.ActiveModIds, after, moved, words, name);
-        return new BackupRow(backup.Id, when, $"Before it: {before}", change);
+        return new BackupRow(backup.Id, backup.CreatedAtUtc, $"Before it: {before}", change);
     }
 }

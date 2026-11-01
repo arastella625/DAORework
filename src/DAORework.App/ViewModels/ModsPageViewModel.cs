@@ -81,7 +81,7 @@ public sealed partial class ModsPageViewModel : PageViewModel
                 Folders.Clear();
                 Folders.Add(report.OverrideFolder);
                 Folders.Add(report.AddInsFolder);
-                ReportSuccess($"Inspected the mod folders under {report.UserDocumentsDirectory}.");
+                ReportStatus($"Inspected the mod folders under {report.UserDocumentsDirectory}.");
             },
             cancellationToken);
 
@@ -105,7 +105,7 @@ public sealed partial class ModsPageViewModel : PageViewModel
 
                 InventoryPath = await _inventoryWriter.WriteAsync(inventory, token);
                 Inventory = inventory;
-                ReportSuccess($"Inventory written to {InventoryPath}.");
+                ReportStatus($"Inventory written to {InventoryPath}.");
             },
             cancellationToken);
 

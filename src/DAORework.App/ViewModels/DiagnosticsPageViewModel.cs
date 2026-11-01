@@ -81,7 +81,7 @@ public sealed partial class DiagnosticsPageViewModel : PageViewModel
                 }
 
                 BundlePath = path;
-                ReportSuccess("Support bundle written. Your user name is replaced with <user>; check the contents before sharing it.");
+                ReportStatus("Support bundle written. Your user name is replaced with <user>; check the contents before sharing it.");
             },
             cancellationToken);
 
@@ -113,7 +113,7 @@ public sealed partial class DiagnosticsPageViewModel : PageViewModel
 
                 CanLaunch = report.CanLaunch;
                 HasReport = true;
-                ReportSuccess(report.CanLaunch ? "The profile can launch." : "The profile cannot launch until the errors are fixed.");
+                ReportStatus(report.CanLaunch ? "The profile can launch." : "The profile cannot launch until the errors are fixed.");
                 if (AfterReportAsync is not null)
                 {
                     await AfterReportAsync(ProfileName, report.Issues, token);

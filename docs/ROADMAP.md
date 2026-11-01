@@ -256,7 +256,10 @@ unchanged.
 
 - P2.5-24 The words: [VOICE.md](VOICE.md) applied to every view and message (*Turn on*, *Manage*, *Undo*, *Found in
   your game*, *Preview*), ids, codes and paths moved behind *Details*, success messages that fade, plurals and local
-  times. No layout change.
+  times. No layout change. *Done: the new words on every button, tab and message, ids gone from rows and codes put
+  after their messages, *1 file* and *2 files*, success messages that fade after a few seconds (what stands, such as
+  a count or a verdict, stays), times like *Today, 18:05*, and one footer line in place of the repeated reassurance.
+  A few notes the command line shares keep their wording until the CLI gets its own.*
 - P2.5-25 Home, the first tab: ready to play or not, the readiness strip for add-ins, override mods and combined
   files, the last change with *Undo*, and at most three suggestions (P2.5-07's Next steps move here).
 - P2.5-26 Mods as one list: an on/off switch per mod, the three cards that filter it, *Found in your game* in the

@@ -102,7 +102,7 @@ public sealed class FixesScreenTests : IDisposable
 
         await status.RollBackToCommand.ExecuteAsync(backup);
 
-        Assert.StartsWith("Undo back to before \u201cTurned on 4 GB patch\u201d (", status.PendingRollback, StringComparison.Ordinal);
+        Assert.StartsWith("Undo back to before \u201cTurned on 4 GB patch\u201d? ", status.PendingRollback, StringComparison.Ordinal);
         Assert.EndsWith("the fixes that were on before it are on again.", status.PendingRollback, StringComparison.Ordinal);
         Assert.True(FixFixtures.LargeAddressAware(_host.FileSystem.File.ReadAllBytes(Exe)));
         Screenshots.Save(window, "20-fixes-rollback");

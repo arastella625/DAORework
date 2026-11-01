@@ -27,6 +27,7 @@ public sealed partial class App : Avalonia.Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var services = AppComposition.Build();
+            FriendlyTimeConverter.Clock = services.GetRequiredService<TimeProvider>(); // Times read "Today, 18:05" (docs/VOICE.md).
             var window = services.GetRequiredService<MainWindowViewModel>();
             var looks = services.GetRequiredService<LookPresenter>();
             window.Profiles.SelectionChanged += (_, profile) => _ = looks.ShowForProfileAsync(profile); // A profile can have its own look (ADR-0017).

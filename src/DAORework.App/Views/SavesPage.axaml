@@ -15,7 +15,7 @@
       <TextBlock TextWrapping="Wrap" Classes="Secondary"
                  Text="Backups copy your saves into DAORework's own folder. Your saves folder is only ever read, never changed." />
       <StackPanel Orientation="Horizontal" Spacing="12">
-        <Button Name="BackUpButton" Content="Back up saves now" Classes="accent" Command="{Binding BackUpCommand}" />
+        <Button Name="BackUpButton" Content="Back up now" Classes="accent" Command="{Binding BackUpCommand}" />
         <TextBlock VerticalAlignment="Center" Text="Keep the newest" />
         <NumericUpDown Name="KeepLatest" Value="{Binding KeepLatest}" Minimum="1" Maximum="1000" Increment="1" FormatString="0" Width="130" />
         <TextBlock VerticalAlignment="Center" Text="backups" />
@@ -29,7 +29,7 @@
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="saves:SaveBackup">
             <Grid ColumnDefinitions="210,110,*" Margin="0,2">
-              <TextBlock Grid.Column="0" Text="{Binding CreatedAtUtc, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss} UTC'}" />
+              <TextBlock Grid.Column="0" Text="{Binding CreatedAtUtc, Converter={x:Static views:FriendlyTimeConverter.Instance}}" />
               <TextBlock Grid.Column="1" Text="{Binding SizeBytes, Converter={x:Static views:ByteSizeConverter.Instance}}" />
               <SelectableTextBlock Grid.Column="2" Text="{Binding Path}" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" />
             </Grid>

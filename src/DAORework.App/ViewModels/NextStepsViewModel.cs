@@ -83,7 +83,7 @@ public sealed partial class NextStepsViewModel : PageViewModel
                 }
                 else if (Steps.Count == 0)
                 {
-                    ReportSuccess("Nothing needs you. The 4 GB patch and DXVK are on, and every mod is managed.");
+                    ReportStatus("Nothing needs you. The 4 GB patch and DXVK are on, and every mod is managed.");
                 }
 
                 HasContent = true;

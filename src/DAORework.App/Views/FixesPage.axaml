@@ -62,7 +62,7 @@
                   <StackPanel Spacing="2">
                     <TextBlock FontWeight="SemiBold" Text="{Binding Change}" TextWrapping="Wrap"
                                IsVisible="{Binding Change, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                    <TextBlock Classes="Mono" Text="{Binding When}" />
+                    <TextBlock Classes="Secondary" Text="{Binding At, Converter={x:Static views:FriendlyTimeConverter.Instance}}" />
                     <TextBlock Classes="Secondary" Text="{Binding Before}" TextWrapping="Wrap" />
                   </StackPanel>
                   <Button Grid.Column="1" VerticalAlignment="Top" Content="Undo to here" CommandParameter="{Binding}"
