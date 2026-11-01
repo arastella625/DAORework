@@ -11,6 +11,9 @@ public static class GamePaths
     public const string BinShipDirectoryName = "bin_ship";
     public const string AddInsDirectoryName = "AddIns";
 
+    /// <summary>The character creator's list of heads, hairs, beards and colours (ADR-0025); the game reads one copy.</summary>
+    public const string ChargenMorphFileName = "chargenmorphcfg.xml";
+
     /// <summary>Where the game keeps user data, relative to the user's Documents folder.</summary>
     public static readonly string DocumentsRelativePath = Path.Combine("BioWare", "Dragon Age");
 
