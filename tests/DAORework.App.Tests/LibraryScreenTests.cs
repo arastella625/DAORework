@@ -41,15 +41,15 @@ public sealed class LibraryScreenTests : IDisposable
         await viewModel.Library.ImportFileCommand.ExecuteAsync(null);
 
         Assert.False(viewModel.Library.IsError, viewModel.Library.StatusMessage);
-        Assert.Equal("Imported Extra Dog Slot. Nothing was installed; the game folders are unchanged.", viewModel.Library.StatusMessage);
+        Assert.Equal("Added Extra Dog Slot. Turn it on when you want it in your game.", viewModel.Library.StatusMessage);
         var row = Assert.Single(viewModel.Library.Mods);
         Assert.Equal("Extra Dog Slot", row.Title);
-        Assert.Contains("add-in Extra_Dog_Slot · 2 file(s)", row.Details, StringComparison.Ordinal);
+        Assert.Contains("add-in Extra_Dog_Slot · 2 files", row.Details, StringComparison.Ordinal);
         Assert.Contains("Not scanned: The Windows antimalware scan (AMSI) is only on Windows.", row.Notes);
         Assert.Equal(
             $"Extra Dog Slot.dazip differs from the known downloads of Extra Dog Slot. Unless it is a newer version, get it from https://www.nexusmods.com/dragonage/mods/664 ({DiagnosticCodes.ModSafetyDownloadDiffers})",
             row.Warning);
-        Assert.Equal("Import mods", Assert.Single(_host.Picker.Titles));
+        Assert.Equal("Add mods", Assert.Single(_host.Picker.Titles));
         Assert.False(Panel(window).FindControl<TextBlock>("LibraryEmpty")!.IsVisible);
         ShowPanel(window);
         Screenshots.Save(window, "13-library");
@@ -69,9 +69,9 @@ public sealed class LibraryScreenTests : IDisposable
         await viewModel.Library.ImportFileCommand.ExecuteAsync(null);
 
         Assert.False(viewModel.Library.IsError, viewModel.Library.StatusMessage);
-        Assert.Equal("Imported Eyes, Nails. Nothing was installed; the game folders are unchanged.", viewModel.Library.StatusMessage);
+        Assert.Equal("Added Eyes, Nails. Turn them on when you want them in your game.", viewModel.Library.StatusMessage);
         Assert.Equal(["Eyes", "Nails"], viewModel.Library.Mods.Select(m => m.Title).Order());
-        Assert.Equal("Import mods", Assert.Single(_host.Picker.Titles));
+        Assert.Equal("Add mods", Assert.Single(_host.Picker.Titles));
     }
 
     [AvaloniaFact]
@@ -97,7 +97,7 @@ public sealed class LibraryScreenTests : IDisposable
         await viewModel.Library.ImportPathsAsync([pack, broken], TestContext.Current.CancellationToken);
 
         Assert.True(viewModel.Library.IsError);
-        Assert.StartsWith("Imported Hair Pack, but ", viewModel.Library.StatusMessage, StringComparison.Ordinal);
+        Assert.StartsWith("Added Hair Pack, but ", viewModel.Library.StatusMessage, StringComparison.Ordinal);
         Assert.EndsWith($"({DiagnosticCodes.ModImportInvalid})", viewModel.Library.StatusMessage, StringComparison.Ordinal);
         var row = Assert.Single(viewModel.Library.Mods);
         Assert.Contains("It holds 1 program file(s) (tools/setup.exe). They stay in the library and are never installed into the game's folders.", row.Notes);
@@ -113,7 +113,7 @@ public sealed class LibraryScreenTests : IDisposable
 
         Assert.Empty(viewModel.Library.Mods);
         Assert.Equal(string.Empty, viewModel.Library.StatusMessage);
-        Assert.Equal("Import an extracted mod folder", Assert.Single(_host.Picker.Titles));
+        Assert.Equal("Add an extracted mod folder", Assert.Single(_host.Picker.Titles));
     }
 
     private static byte[] Archive(params (string Name, string Content)[] entries)

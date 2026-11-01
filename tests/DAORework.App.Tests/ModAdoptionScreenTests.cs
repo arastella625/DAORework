@@ -30,7 +30,7 @@ public sealed class ModAdoptionScreenTests : IDisposable
         await handInstalled.Adoption.AdoptCommand.ExecuteAsync(textures);
 
         Assert.False(handInstalled.Adoption.IsError, handInstalled.Adoption.StatusMessage);
-        Assert.Equal("Adopt textures", handInstalled.Adoption.PlanTitle);
+        Assert.Equal("Manage textures", handInstalled.Adoption.PlanTitle);
         Assert.Contains(handInstalled.Adoption.PlanLines, l => l.StartsWith("  Move      1 file", StringComparison.Ordinal));
         Assert.True(handInstalled.Adoption.ApplyCommand.CanExecute(null));
         Assert.False(Assert.Single(viewModel.Library.Mods).IsActive);
@@ -41,11 +41,11 @@ public sealed class ModAdoptionScreenTests : IDisposable
         await handInstalled.Adoption.ApplyCommand.ExecuteAsync(null);
 
         Assert.False(handInstalled.Adoption.IsError, handInstalled.Adoption.StatusMessage);
-        Assert.StartsWith("Adopted textures: ", handInstalled.Adoption.StatusMessage, StringComparison.Ordinal);
+        Assert.StartsWith("Now managing textures.", handInstalled.Adoption.StatusMessage, StringComparison.Ordinal);
         var adopted = Assert.Single(viewModel.Library.Mods);
         Assert.Equal("textures", adopted.Title);
         Assert.True(adopted.IsActive);
-        Assert.Contains("Adopted from packages/core/override/textures.", adopted.Notes);
+        Assert.Contains("Was in packages/core/override/textures before DAORework managed it.", adopted.Notes);
         Assert.DoesNotContain(handInstalled.Candidates, c => c.Title == "textures");
         Assert.Single(viewModel.ModsTab.Changes.Backups);
         Assert.False(_host.FileSystem.File.Exists(Path.Combine(GamePaths.OverrideDirectory(_scenario.DocumentsDirectory), "textures", "hair_01.dds")));
@@ -69,7 +69,7 @@ public sealed class ModAdoptionScreenTests : IDisposable
         await handInstalled.Adoption.AdoptCommand.ExecuteAsync(loose);
 
         Assert.False(handInstalled.Adoption.IsError, handInstalled.Adoption.StatusMessage);
-        Assert.Equal("Adopt Loose files in override", handInstalled.Adoption.PlanTitle);
+        Assert.Equal("Manage Loose files in override", handInstalled.Adoption.PlanTitle);
         Assert.True(handInstalled.Adoption.ApplyCommand.CanExecute(null));
     }
 
@@ -128,7 +128,7 @@ public sealed class ModAdoptionScreenTests : IDisposable
         await handInstalled.AdoptSelectedCommand.ExecuteAsync(null);
 
         Assert.False(handInstalled.Adoption.IsError, handInstalled.Adoption.StatusMessage);
-        Assert.StartsWith($"Adopt {count} mods: ", handInstalled.Adoption.PlanTitle, StringComparison.Ordinal);
+        Assert.StartsWith($"Manage {count} mods: ", handInstalled.Adoption.PlanTitle, StringComparison.Ordinal);
         Assert.True(handInstalled.Adoption.ApplyCommand.CanExecute(null));
         ModsTabScenario.Show<HandInstalledPanel>(window);
         Screenshots.Save(window, "28-adopt-selected");

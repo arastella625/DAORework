@@ -48,7 +48,7 @@ public sealed class ModActivationScreenTests : IDisposable
         await activation.ActivateCommand.ExecuteAsync(mod);
 
         Assert.False(activation.IsError, activation.StatusMessage);
-        Assert.Equal("Activate Hair Pack", activation.PlanTitle);
+        Assert.Equal("Turn on Hair Pack", activation.PlanTitle);
         Assert.Equal("Copies 1 file. Writes 8 B.", activation.Preview.Summary);
         Assert.False(activation.Preview.ShowDetails);
         Assert.Contains(activation.PlanLines, l => l == "Mods: no mods -> 1 (Hair Pack)");
@@ -62,8 +62,7 @@ public sealed class ModActivationScreenTests : IDisposable
         await activation.ApplyCommand.ExecuteAsync(null);
 
         Assert.False(activation.IsError, activation.StatusMessage);
-        Assert.StartsWith("Done: ", activation.StatusMessage, StringComparison.Ordinal);
-        Assert.Contains("Backup ", activation.StatusMessage, StringComparison.Ordinal);
+        Assert.StartsWith("Done.", activation.StatusMessage, StringComparison.Ordinal);
         Assert.Null(activation.PlanTitle);
         Assert.True(viewModel.Library.Mods[0].IsActive);
         Assert.Single(_scenario.DeployedHair());

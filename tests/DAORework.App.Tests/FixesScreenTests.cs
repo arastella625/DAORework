@@ -43,7 +43,7 @@ public sealed class FixesScreenTests : IDisposable
         await change.ApplyCommand.ExecuteAsync(null);
 
         Assert.False(change.IsError, change.StatusMessage);
-        Assert.StartsWith("Done: ", change.StatusMessage, StringComparison.Ordinal);
+        Assert.StartsWith("Done.", change.StatusMessage, StringComparison.Ordinal);
         Assert.True(FixFixtures.LargeAddressAware(_host.FileSystem.File.ReadAllBytes(Exe)));
         var applied = Assert.Single(viewModel.Fixes.Status.Applied);
         Assert.True(applied.InEffect);
@@ -98,19 +98,19 @@ public sealed class FixesScreenTests : IDisposable
         var status = viewModel.Fixes.Status;
         var backup = Assert.Single(status.Backups);
         Assert.Equal("Before it: no fixes", backup.Before);
-        Assert.Equal("Applied 4 GB patch", backup.Change);
+        Assert.Equal("Turned on 4 GB patch", backup.Change);
 
         await status.RollBackToCommand.ExecuteAsync(backup);
 
-        Assert.StartsWith("Undo \u201cApplied 4 GB patch\u201d (", status.PendingRollback, StringComparison.Ordinal);
-        Assert.EndsWith("the fixes applied before it are the applied ones again.", status.PendingRollback, StringComparison.Ordinal);
+        Assert.StartsWith("Undo back to before \u201cTurned on 4 GB patch\u201d (", status.PendingRollback, StringComparison.Ordinal);
+        Assert.EndsWith("the fixes that were on before it are on again.", status.PendingRollback, StringComparison.Ordinal);
         Assert.True(FixFixtures.LargeAddressAware(_host.FileSystem.File.ReadAllBytes(Exe)));
         Screenshots.Save(window, "20-fixes-rollback");
 
         await status.ConfirmRollbackCommand.ExecuteAsync(null);
 
         Assert.False(status.IsError, status.StatusMessage);
-        Assert.StartsWith("Rolled back: 1 file(s) put back", status.StatusMessage, StringComparison.Ordinal);
+        Assert.StartsWith("Undone: 1 file put back", status.StatusMessage, StringComparison.Ordinal);
         Assert.Equal(_original, _host.FileSystem.File.ReadAllBytes(Exe));
         Assert.Empty(status.Applied);
     }

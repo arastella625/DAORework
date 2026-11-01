@@ -106,7 +106,7 @@ public abstract partial class RecoverableChangesViewModel : PageViewModel
 
                 _pending = (folder, backup.Id);
                 var what = backup.Change is null ? $"the change backed up as {backup.Id}" : $"\u201c{backup.Change}\u201d";
-                PendingRollback = $"Undo {what} ({backup.When}) in {folder}? The files that change wrote are put back as they were before it, and {RollbackConsequence}";
+                PendingRollback = $"Undo back to before {what} ({backup.When})? The files it changed are put back as they were, and {RollbackConsequence}";
                 ReportSuccess(string.Empty);
             },
             cancellationToken);
@@ -126,12 +126,12 @@ public abstract partial class RecoverableChangesViewModel : PageViewModel
                 await AfterAsync(token);
                 if (!result.TryGetValue(out var report, out var error))
                 {
-                    ReportError(error with { Message = $"Rollback failed: {error.Message}" });
+                    ReportError(error with { Message = $"Couldn't undo it: {error.Message}" });
                     return;
                 }
 
-                var left = report.LeftInPlace.Count == 0 ? string.Empty : $" Left in place, changed since: {string.Join(", ", report.LeftInPlace)}.";
-                ReportSuccess($"Rolled back: {report.Restored} file(s) put back, {report.Removed} removed.{left}");
+                var left = report.LeftInPlace.Count == 0 ? string.Empty : $" Left as they are, since they changed afterwards: {string.Join(", ", report.LeftInPlace)}.";
+                ReportSuccess($"Undone: {Counted.Of(report.Restored, "file")} put back, {report.Removed} removed.{left}");
             },
             cancellationToken);
 
@@ -163,13 +163,13 @@ public abstract partial class RecoverableChangesViewModel : PageViewModel
                 await AfterAsync(token);
                 if (!result.TryGetValue(out var report, out error))
                 {
-                    ReportError(error with { Message = $"Recovery failed: {error.Message}" });
+                    ReportError(error with { Message = $"Couldn't settle the unfinished change: {error.Message}" });
                     return;
                 }
 
                 ReportSuccess(choice == RecoveryChoice.Finish
-                    ? $"Finished the interrupted change: {report.StepsRun} step(s) run, {report.StepsAlreadyDone} were already done."
-                    : $"Rolled the interrupted change back to backup {report.BackupId}.");
+                    ? "Finished the change that was cut short."
+                    : "Undid the change that was cut short. Your game is as it was before it.");
             },
             cancellationToken);
 

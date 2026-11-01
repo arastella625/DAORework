@@ -23,13 +23,18 @@
           <TextBlock Grid.Column="5" Text="New" VerticalAlignment="Center" Margin="0,0,8,0" />
           <TextBox Grid.Column="6" Name="NewProfileName" Text="{Binding Profiles.NewProfileName}" PlaceholderText="Profile name" />
           <Button Grid.Column="8" Name="CreateProfileButton" Content="Create" Command="{Binding Profiles.CreateProfileCommand}" />
-          <Button Grid.Column="10" Name="LaunchButton" Content="Launch game" Classes="accent" Command="{Binding Launch.LaunchCommand}" />
+          <Button Grid.Column="10" Name="LaunchButton" Content="Play" Classes="accent" Command="{Binding Launch.LaunchCommand}" />
         </Grid>
         <TextBlock Name="ProfilesStatus" Classes="Status" Classes.Error="{Binding Profiles.IsError}" Text="{Binding Profiles.StatusMessage}"
                    IsVisible="{Binding Profiles.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
         <TextBlock Name="LaunchStatus" Classes="Status" Classes.Error="{Binding Launch.IsError}" Text="{Binding Launch.StatusMessage}"
                    IsVisible="{Binding Launch.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       </StackPanel>
+    </Border>
+    <!-- Said once here instead of on every panel (docs/VOICE.md rule 3). -->
+    <Border DockPanel.Dock="Bottom" Padding="16,8" Background="{DynamicResource SurfaceBrush}"
+            BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
+      <TextBlock Name="UndoPromise" Classes="Secondary" Text="Every change can be undone in History, on the Mods and Fixes tabs." />
     </Border>
     <controls:Backdrop>
       <TabControl Name="Pages" Margin="8" SelectedIndex="{Binding SelectedPage}">
@@ -52,12 +57,12 @@
                 <views:HandInstalledPanel DataContext="{Binding HandInstalled}" />
               </ScrollViewer>
             </TabItem>
-            <TabItem Header="Load order">
+            <TabItem Header="Arrange">
               <ScrollViewer>
                 <views:LoadOrderPanel DataContext="{Binding ModsTab.LoadOrder}" />
               </ScrollViewer>
             </TabItem>
-            <TabItem Header="Changes">
+            <TabItem Header="History">
               <ScrollViewer>
                 <views:ChangesPanel DataContext="{Binding ModsTab.Changes}" />
               </ScrollViewer>

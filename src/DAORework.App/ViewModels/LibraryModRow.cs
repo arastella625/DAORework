@@ -55,7 +55,7 @@ public sealed partial class LibraryModRow : ObservableObject
 
         if (entry.Origin.Kind == ModOriginKind.Adopted)
         {
-            notes.Add($"Adopted from {entry.Origin.AdoptedPath}.");
+            notes.Add($"Was in {entry.Origin.AdoptedPath} before DAORework managed it.");
         }
 
         string? warning = null;
@@ -75,7 +75,7 @@ public sealed partial class LibraryModRow : ObservableObject
         return new LibraryModRow(
             entry.Mod.Id,
             entry.Mod.Name,
-            $"{entry.Mod.Id} · {kind} · {entry.Mod.Files.Count} file(s) · {new ByteSize(entry.SizeBytes)} · imported {imported} from {entry.SourceName}",
+            $"{kind} · {Counted.Of(entry.Mod.Files.Count, "file")} · {new ByteSize(entry.SizeBytes)} · added {imported} from {entry.SourceName}",
             notes,
             warning);
     }

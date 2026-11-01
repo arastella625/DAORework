@@ -32,7 +32,7 @@ public sealed class ModChangesScreenTests : IDisposable
         await viewModel.ModsTab.Activation.DeactivateCommand.ExecuteAsync(viewModel.Library.Mods.Single(m => m.Title == "Hair Pack"));
         await viewModel.ModsTab.Activation.ApplyCommand.ExecuteAsync(null);
 
-        Assert.Equal(["Deactivated Hair Pack", "Activated Hair Pack"], viewModel.ModsTab.Changes.Backups.Select(b => b.Change));
+        Assert.Equal(["Turned off Hair Pack", "Turned on Hair Pack"], viewModel.ModsTab.Changes.Backups.Select(b => b.Change));
     }
 
     [AvaloniaFact]
@@ -44,14 +44,14 @@ public sealed class ModChangesScreenTests : IDisposable
         var changes = viewModel.ModsTab.Changes;
 
         // Mods are named by their Library names, and each backup says what its change did (P2.5-19).
-        Assert.Equal($"Active in {_scenario.DocumentsDirectory}, lowest priority first: Hair Pack (1 file(s)).", changes.Summary);
+        Assert.Equal("On now, in order: Hair Pack (1 file).", changes.Summary);
         var backup = Assert.Single(changes.Backups);
-        Assert.Equal("Activated Hair Pack", backup.Change);
+        Assert.Equal("Turned on Hair Pack", backup.Change);
         Assert.Equal("Before it: no mods", backup.Before);
 
         await changes.RollBackToCommand.ExecuteAsync(backup);
 
-        Assert.StartsWith("Undo \u201cActivated Hair Pack\u201d (", changes.PendingRollback, StringComparison.Ordinal);
+        Assert.StartsWith("Undo back to before \u201cTurned on Hair Pack\u201d (", changes.PendingRollback, StringComparison.Ordinal);
         Assert.Single(_scenario.DeployedHair());
         ModsTabScenario.Show<ChangesPanel>(window);
         Screenshots.Save(window, "15-changes-rollback");
@@ -59,11 +59,11 @@ public sealed class ModChangesScreenTests : IDisposable
         await changes.ConfirmRollbackCommand.ExecuteAsync(null);
 
         Assert.False(changes.IsError, changes.StatusMessage);
-        Assert.Equal("Rolled back: 0 file(s) put back, 1 removed.", changes.StatusMessage);
+        Assert.Equal("Undone: 0 files put back, 1 removed.", changes.StatusMessage);
         Assert.Null(changes.PendingRollback);
         Assert.Empty(_scenario.DeployedHair());
         Assert.False(viewModel.Library.Mods[0].IsActive);
-        Assert.Equal($"No mods are active through DAORework in {_scenario.DocumentsDirectory}.", changes.Summary);
+        Assert.Equal("No mods are on yet.", changes.Summary);
     }
 
     [AvaloniaFact]
@@ -96,7 +96,7 @@ public sealed class ModChangesScreenTests : IDisposable
         await changes.FinishInterruptedCommand.ExecuteAsync(null);
 
         Assert.False(changes.IsError, changes.StatusMessage);
-        Assert.Equal("Finished the interrupted change: 1 step(s) run, 0 were already done.", changes.StatusMessage);
+        Assert.Equal("Finished the change that was cut short.", changes.StatusMessage);
         Assert.False(changes.ChangeUnfinished);
         Assert.Single(_scenario.DeployedHair());
         Assert.True(viewModel.Library.Mods[0].IsActive);
@@ -113,7 +113,7 @@ public sealed class ModChangesScreenTests : IDisposable
         await changes.RollBackInterruptedCommand.ExecuteAsync(null);
 
         Assert.False(changes.IsError, changes.StatusMessage);
-        Assert.Equal($"Rolled the interrupted change back to backup {backupId}.", changes.StatusMessage);
+        Assert.Equal("Undid the change that was cut short. Your game is as it was before it.", changes.StatusMessage);
         Assert.False(changes.ChangeUnfinished);
         Assert.Empty(_scenario.DeployedHair());
         Assert.False(viewModel.Library.Mods[0].IsActive);

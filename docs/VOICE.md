@@ -21,7 +21,7 @@ summary follows these rules. The command line keeps its own words; see the end.
 
 | Say | Not | Notes |
 |---|---|---|
-| Turn on / Turn off | Activate / Deactivate | For a mod or a fix. The switch says *On* or *Off* beside it. |
+| Turn on / Turn off | Activate / Deactivate, Apply / Remove | For a mod or a fix. The switch says *On* or *Off* beside it. |
 | Manage | Adopt | Taking over a mod the player installed by hand. |
 | Found in your game | Installed by hand, unmanaged | A tag on the mod, and a filter. |
 | Undo, Undo to here | Roll back, Roll back to before this | *Undo* is always confirmed first. |
@@ -29,12 +29,13 @@ summary follows these rules. The command line keeps its own words; see the end.
 | Preview | Plan | What a change will do, shown before *Apply*. |
 | Arrange | Load order, priority | *When two mods change the same file, the lower one wins.* |
 | Add mods | Import | Adding never changes the game. |
+| Play | Launch game | The one large button. |
 | Add-in | addin, DAZIP mod | A packaged `.dazip` mod; the game lists it under Downloadable Content. |
 | Override mod | override folder mod | Files that replace the game's own. |
 | Combined files | merged files, conflicts | Files several mods need at once. |
 | Your game folder, your documents folder | install directory, `UserDocumentsDirectory` | The folder names appear only in *Game folders*. |
-| Check again | Run diagnostics | Diagnostics are *Troubleshooting* in Settings. |
-| Copy details for a bug report | Export support bundle | The bundle itself is still offered beside it. |
+| Check the game, Check again | Run diagnostics | Diagnostics are *Troubleshooting* in Settings. |
+| Copy details for a bug report, Save a support bundle | Export support bundle | Copying comes with the Settings move (P2.5-27). |
 
 ## Patterns
 

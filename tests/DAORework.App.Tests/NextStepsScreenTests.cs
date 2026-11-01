@@ -24,7 +24,7 @@ public sealed class NextStepsScreenTests : IDisposable
         Assert.Equal(
             [NextStepKind.ApplyLargeAddressAware, NextStepKind.InstallDxvk, NextStepKind.AdoptHandInstalled],
             viewModel.NextSteps.Steps.Select(s => s.Kind));
-        Assert.StartsWith("Adopt 4 mod(s)", viewModel.NextSteps.Steps[2].Title, StringComparison.Ordinal);
+        Assert.StartsWith("Manage 4 mods", viewModel.NextSteps.Steps[2].Title, StringComparison.Ordinal);
         Assert.Equal(0, viewModel.SelectedPage);
         Screenshots.Save(window, "21-next-steps");
     }
@@ -51,7 +51,7 @@ public sealed class NextStepsScreenTests : IDisposable
         Assert.Equal(MainWindowViewModel.ModsPage, viewModel.SelectedPage);
         Assert.Equal(MainWindowViewModel.InstalledByHandSection, viewModel.ModsSection);
         Assert.Equal(4, viewModel.HandInstalled.Candidates.Count);
-        Assert.Equal("Installed by hand (4)", viewModel.HandInstalled.SectionHeader);
+        Assert.Equal("Found in your game (4)", viewModel.HandInstalled.SectionHeader);
     }
 
     [AvaloniaFact]

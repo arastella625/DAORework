@@ -71,9 +71,9 @@ public sealed partial class NextStepsViewModel : PageViewModel
                 {
                     Steps.Add(new NextStep(
                         NextStepKind.ApplyLargeAddressAware,
-                        "Apply the 4 GB patch",
+                        "Turn on the 4 GB patch",
                         "The game can use only 2 GB of memory, which large mods and texture packs run out of.",
-                        "Show the plan"));
+                        "Preview"));
                 }
 
                 var failure = await AddDxvkStepAsync(profile, token) ?? await AddAdoptStepAsync(profile, token);
@@ -83,7 +83,7 @@ public sealed partial class NextStepsViewModel : PageViewModel
                 }
                 else if (Steps.Count == 0)
                 {
-                    ReportSuccess("Nothing to suggest: the 4 GB patch is on, DXVK is installed, and no mod installed by hand is waiting.");
+                    ReportSuccess("Nothing needs you. The 4 GB patch and DXVK are on, and every mod is managed.");
                 }
 
                 HasContent = true;
@@ -126,8 +126,8 @@ public sealed partial class NextStepsViewModel : PageViewModel
         {
             Steps.Add(new NextStep(
                 NextStepKind.AdoptHandInstalled,
-                $"Adopt {adoption.Candidates.Count} mod(s) you installed by hand",
-                "DAORework can take them over without reinstalling them, so they can be turned off and rolled back like any other.",
+                $"Manage {Counted.Of(adoption.Candidates.Count, "mod")} found in your game",
+                "DAORework can take them over without reinstalling them, so you can turn them off or undo them like any other mod.",
                 "See them"));
         }
 

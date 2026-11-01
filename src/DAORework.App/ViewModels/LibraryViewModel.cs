@@ -67,11 +67,11 @@ public sealed partial class LibraryViewModel : PageViewModel
                 await RefreshAsync(token);
                 if (failure is not null)
                 {
-                    ReportError(imported.Count == 0 ? failure : failure with { Message = $"Imported {string.Join(", ", imported)}, but {failure.Message}" });
+                    ReportError(imported.Count == 0 ? failure : failure with { Message = $"Added {string.Join(", ", imported)}, but {failure.Message}" });
                     return;
                 }
 
-                ReportSuccess(imported.Count == 0 ? string.Empty : $"Imported {string.Join(", ", imported)}. Nothing was installed; the game folders are unchanged.");
+                ReportSuccess(imported.Count == 0 ? string.Empty : $"Added {string.Join(", ", imported)}. Turn {(imported.Count == 1 ? "it" : "them")} on when you want {(imported.Count == 1 ? "it" : "them")} in your game.");
             },
             cancellationToken);
 
@@ -79,7 +79,7 @@ public sealed partial class LibraryViewModel : PageViewModel
     private async Task ImportFileAsync(CancellationToken cancellationToken)
     {
         // Several downloads can be picked at once, as several can be dropped (P2.5-15); each is imported in turn.
-        var paths = await _picker.PickFilesAsync("Import mods", "Mod downloads", _downloadPatterns, cancellationToken);
+        var paths = await _picker.PickFilesAsync("Add mods", "Mod downloads", _downloadPatterns, cancellationToken);
         if (paths.Count > 0)
         {
             await ImportPathsAsync(paths, cancellationToken);
@@ -89,7 +89,7 @@ public sealed partial class LibraryViewModel : PageViewModel
     [RelayCommand]
     private async Task ImportFolderAsync(CancellationToken cancellationToken)
     {
-        var path = await _picker.PickFolderAsync("Import an extracted mod folder", cancellationToken);
+        var path = await _picker.PickFolderAsync("Add an extracted mod folder", cancellationToken);
         if (path is not null)
         {
             await ImportPathsAsync([path], cancellationToken);

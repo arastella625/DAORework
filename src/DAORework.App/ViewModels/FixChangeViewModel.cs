@@ -94,13 +94,13 @@ public sealed partial class FixChangeViewModel : PageViewModel
 
                 if (!result.TryGetValue(out var outcome, out var error))
                 {
-                    ReportError(error with { Message = $"The change did not complete: {error.Message}" });
+                    ReportError(error with { Message = $"The change didn't finish: {error.Message}" });
                     return;
                 }
 
-                ReportSuccess(outcome.Report is { } report
-                    ? $"Done: {report.StepsRun} step(s) applied. Backup {report.BackupId} holds what was there before."
-                    : "Nothing on disk needed changing; DAORework's record of the install folder is up to date.");
+                ReportSuccess(outcome.Report is not null
+                    ? "Done. You can undo it in History."
+                    : "Nothing needed changing in your game folder.");
             },
             cancellationToken);
 

@@ -97,8 +97,7 @@ public sealed partial class ModActivationViewModel : PageViewModel
                     await AfterChangeAsync(token);
                 }
 
-                var already = report.StepsAlreadyDone > 0 ? $", {report.StepsAlreadyDone} already done" : string.Empty;
-                ReportSuccess($"Done: {report.StepsRun} step(s) applied{already}. Backup {report.BackupId} holds what was there before.");
+                ReportSuccess("Done. You can undo it in History.");
             },
             cancellationToken);
 
@@ -131,7 +130,7 @@ public sealed partial class ModActivationViewModel : PageViewModel
                     return;
                 }
 
-                var verb = kind == ModChangeKind.Activate ? "Activate" : "Deactivate";
+                var verb = kind == ModChangeKind.Activate ? "Turn on" : "Turn off";
                 var names = string.Join(", ", mods.Select(m => m.Title));
                 Preview.Show(mods.Count == 1 ? $"{verb} {names}" : $"{verb} {mods.Count} mods: {names}", plan);
 

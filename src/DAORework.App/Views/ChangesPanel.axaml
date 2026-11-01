@@ -7,7 +7,7 @@
              x:DataType="vm:ModChangesViewModel">
   <controls:Card Margin="12,0,12,12">
     <StackPanel Spacing="10">
-      <TextBlock Classes="SectionTitle" Text="Changes" />
+      <TextBlock Classes="SectionTitle" Text="History" />
       <TextBlock Name="ChangesSummary" Text="{Binding Summary}" TextWrapping="Wrap"
                  IsVisible="{Binding Summary, Converter={x:Static ObjectConverters.IsNotNull}}" />
       <Border Name="Unfinished" Padding="12" CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource BorderSoftBrush}"
@@ -29,14 +29,14 @@
         <StackPanel Spacing="8">
           <TextBlock Text="{Binding PendingRollback}" TextWrapping="Wrap" />
           <StackPanel Orientation="Horizontal" Spacing="12">
-            <Button Name="ConfirmRollbackButton" Classes="accent" Content="Roll back" Command="{Binding ConfirmRollbackCommand}" />
+            <Button Name="ConfirmRollbackButton" Classes="accent" Content="Undo" Command="{Binding ConfirmRollbackCommand}" />
             <Button Name="CancelRollbackButton" Content="Cancel" Command="{Binding CancelRollbackCommand}" />
           </StackPanel>
         </StackPanel>
       </Border>
       <TextBlock Name="ChangesStatus" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" TextWrapping="Wrap"
                  IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-      <TextBlock Classes="Label" Text="Backups, most recent first"
+      <TextBlock Classes="Label" Text="Changes, newest first"
                  IsVisible="{Binding Backups.Count, Converter={x:Static views:CountConverters.IsPositive}}" />
       <ItemsControl Name="Backups" ItemsSource="{Binding Backups}">
         <ItemsControl.ItemTemplate>
@@ -49,7 +49,7 @@
                   <TextBlock Classes="Mono" Text="{Binding When}" />
                   <TextBlock Classes="Secondary" Text="{Binding Before}" TextWrapping="Wrap" />
                 </StackPanel>
-                <Button Grid.Column="1" VerticalAlignment="Top" Content="Roll back to before this" CommandParameter="{Binding}"
+                <Button Grid.Column="1" VerticalAlignment="Top" Content="Undo to here" CommandParameter="{Binding}"
                         Command="{Binding $parent[views:ChangesPanel].((vm:ModChangesViewModel)DataContext).RollBackToCommand}" />
               </Grid>
             </Border>

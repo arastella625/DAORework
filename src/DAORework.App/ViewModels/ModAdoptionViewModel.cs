@@ -95,7 +95,7 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
                 }
 
                 // Shown once the library has been read again, so the mods planning just imported are named.
-                Preview.Show(candidates.Count == 1 ? $"Adopt {names}" : $"Adopt {candidates.Count} mods: {names}", plan);
+                Preview.Show(candidates.Count == 1 ? $"Manage {names}" : $"Manage {candidates.Count} mods: {names}", plan);
             },
             cancellationToken);
 
@@ -121,11 +121,11 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
 
                 if (!result.TryGetValue(out var report, out var error))
                 {
-                    ReportError(error with { Message = $"The adoption did not complete: {error.Message}" });
+                    ReportError(error with { Message = $"Couldn't finish managing {pending.Name}: {error.Message}" });
                     return;
                 }
 
-                ReportSuccess($"Adopted {pending.Name}: {report.StepsRun} step(s) applied. Backup {report.BackupId} holds what was there before; it is in the Library now.");
+                ReportSuccess($"Now managing {pending.Name}. It is in the Library, and you can undo this in History.");
             },
             cancellationToken);
 
