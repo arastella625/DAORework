@@ -1,4 +1,5 @@
 using DAORework.Application.Abstractions;
+using DAORework.Application.Mods.Combining;
 using DAORework.Core.Common;
 using DAORework.Core.Diagnostics;
 using DAORework.Core.Mods.Library;
@@ -46,8 +47,15 @@ public sealed class PlanModChange
             return Result.Failure<ModActivationPlan>(error);
         }
 
+        // Copies of chargenmorphcfg.xml from several mods are combined into one file (ADR-0025).
+        if (!(await CombineChargenMorph.PrepareAsync(_library, targets, cancellationToken)).TryGetValue(out var combine, out error))
+        {
+            return Result.Failure<ModActivationPlan>(error);
+        }
+
         var paths = record.Files.Select(f => f.TargetPath)
             .Concat(targets.SelectMany(m => ModLayout.Map(m).TryGetValue(out var files, out _) ? files.Select(f => f.TargetPath) : []))
+            .Concat(combine.TargetPaths)
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToList();
         if (!(await _scanner.ScanAsync(documents, paths, cancellationToken)).TryGetValue(out var disk, out error))
@@ -55,7 +63,11 @@ public sealed class PlanModChange
             return Result.Failure<ModActivationPlan>(error);
         }
 
-        return ModActivationPlanner.Plan(new PlanInput(record, targets, disk.UnmanagedOverridePaths, disk.Hashes, disk.RegisteredAddInUids));
+        return ModActivationPlanner.Plan(new PlanInput(record, targets, disk.UnmanagedOverridePaths, disk.Hashes, disk.RegisteredAddInUids)
+        {
+            Combined = combine.Combined,
+            CombineProblems = combine.Problems,
+        });
     }
 
     private static Result<ModActivationPlan> Failure(string code, string message, string? recommendation = null) =>

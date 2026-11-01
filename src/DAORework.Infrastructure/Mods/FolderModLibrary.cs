@@ -26,6 +26,7 @@ public sealed class FolderModLibrary : IModLibrary
     private readonly IFileSystem _fileSystem;
     private readonly string _root;
     private readonly LibraryImporter _importer;
+    private readonly LibraryCombinedFiles _combined;
 
     /// <summary>Every import goes through <paramref name="scanner"/>, the antivirus scan (ADR-0018); without one, imports are recorded as not scanned.</summary>
     public FolderModLibrary(IFileSystem fileSystem, IOptions<DaoReworkOptions> options, TimeProvider clock, IMalwareScanner? scanner = null)
@@ -34,7 +35,14 @@ public sealed class FolderModLibrary : IModLibrary
         _fileSystem = fileSystem;
         _root = options.Value.LibraryDirectory;
         _importer = new LibraryImporter(fileSystem, _root, clock, scanner);
+        _combined = new LibraryCombinedFiles(fileSystem, _root);
     }
+
+    public Task<Result<string>> ReadTextAsync(string modId, string relativePath, CancellationToken cancellationToken = default) =>
+        _combined.ReadTextAsync(modId, relativePath, cancellationToken);
+
+    public Task<Result<LibraryModFile>> StoreCombinedAsync(string fileName, string text, CancellationToken cancellationToken = default) =>
+        _combined.StoreAsync(fileName, text, cancellationToken);
 
     public async Task<Result<LibraryImport>> ImportAsync(string sourcePath, CancellationToken cancellationToken = default)
     {

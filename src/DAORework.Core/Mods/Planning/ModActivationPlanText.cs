@@ -11,7 +11,7 @@ public static class ModActivationPlanText
     public static IReadOnlyList<string> Render(ModActivationPlan plan, bool listFiles = false, Func<string, string>? nameOf = null)
     {
         ArgumentNullException.ThrowIfNull(plan);
-        nameOf ??= id => id;
+        nameOf = ModActivationPlanWarnings.CombinedAware(nameOf ?? (id => id));
         var lines = new List<string>
         {
             $"Mods: {Describe(plan.CurrentModIds, nameOf)} -> {Describe(plan.TargetModIds, nameOf)}",
@@ -62,6 +62,11 @@ public static class ModActivationPlanText
         foreach (var change in plan.AddInsChanges)
         {
             lines.Add($"  AddIns.xml: {(change.Add ? "add" : "remove")} {change.Uid} ({nameOf(change.ModId)})");
+        }
+
+        foreach (var combined in plan.Combined)
+        {
+            lines.Add($"  Combines {combined.FileName} from {string.Join(", ", combined.FromModIds.Distinct(StringComparer.OrdinalIgnoreCase).Select(nameOf))} ({combined.EntryCount} entries)");
         }
 
         lines.Add($"  Writes {plan.BytesToWrite}; that much must be free on the documents folder's drive.");

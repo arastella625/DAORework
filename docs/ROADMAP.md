@@ -231,7 +231,9 @@ tasks combine what can safely be combined and say plainly what each remaining ov
 read the game's file formats wait for P3-01 (P3-07 to P3-09).
 
 - P2.5-20 Combine `chargenmorphcfg.xml` from every active mod into one file DAORework owns, so every hair, head and
-  colour mod shows in the character creator ([ADR-0025](adr/0025-combining-chargenmorphcfg.md)).
+  colour mod shows in the character creator ([ADR-0025](adr/0025-combining-chargenmorphcfg.md)). *Done: combined in
+  every plan (activate, deactivate, reorder, adopt), kept in the library under its hash, an unreadable copy named
+  ([screenshot](screenshots/p2.5-20/01-combined.png)).*
 - P2.5-21 Say what a shared file means, by its kind: textures and models (*one look wins*), `.gda` tables (*one
   mod's table changes are lost unless it extends the table (M2DA); look for a compatibility patch*), scripts (`.ncs`:
   *one mod's behaviour is lost*), talk tables (`.tlk`), archives (`.erf`: *their contents are not compared yet*), and

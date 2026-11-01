@@ -17,7 +17,7 @@ public static class ModActivationPlanner
     public static Result<ModActivationPlan> Plan(PlanInput input)
     {
         ArgumentNullException.ThrowIfNull(input);
-        if (!ConflictScanner.Scan(input.Mods, input.UnmanagedOverridePaths).TryGetValue(out var conflicts, out var error))
+        if (!ConflictScanner.Scan(input.Mods, input.UnmanagedOverridePaths, input.Combined).TryGetValue(out var conflicts, out var error))
         {
             return Result.Failure<ModActivationPlan>(error);
         }
@@ -54,6 +54,8 @@ public static class ModActivationPlanner
         {
             CurrentRecord = input.Current,
             NextRecord = NextRecord(input, desired, state.AddInsChanges),
+            Combined = input.Combined,
+            CombineProblems = input.CombineProblems,
         });
     }
 

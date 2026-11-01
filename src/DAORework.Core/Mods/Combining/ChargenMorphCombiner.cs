@@ -73,7 +73,7 @@ public static class ChargenMorphCombiner
     private static Result<XElement> Unreadable(ChargenMorphCopy copy, string why) =>
         Result.Failure<XElement>(new Error(
             DiagnosticCodes.ModChargenMorphUnreadable,
-            $"{GamePaths.ChargenMorphFileName} from {copy.ModId} cannot be read: {why}.",
+            $"{GamePaths.ChargenMorphFileName} from {copy.ModName ?? copy.ModId} cannot be read: {why}.",
             "The copies are not combined; the one from the mod last in the load order is used, as without combining."));
 
     private static void AddMissing(XElement target, XElement source)

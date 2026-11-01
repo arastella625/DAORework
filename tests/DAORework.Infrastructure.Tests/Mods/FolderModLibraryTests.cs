@@ -179,4 +179,33 @@ public sealed class FolderModLibraryTests
 
     private string Library(string id, string relative) =>
         _fileSystem.File.ReadAllText(Path.Combine(_appData, "library", id, relative.Replace('/', Path.DirectorySeparatorChar)));
+
+    [Fact]
+    public async Task StoreCombined_KeepsEachVersionUnderItsHash_AndStoringItAgainWritesNothing()
+    {
+        var first = (await _library.StoreCombinedAsync("chargenmorphcfg.xml", "<morph_config />")).Value;
+        var path = Path.Combine(_appData, "library", "_combined", first.Sha256, "chargenmorphcfg.xml");
+        var written = _fileSystem.File.GetLastWriteTimeUtc(path);
+
+        var again = (await _library.StoreCombinedAsync("chargenmorphcfg.xml", "<morph_config />")).Value;
+        var other = (await _library.StoreCombinedAsync("chargenmorphcfg.xml", "<morph_config><x /></morph_config>")).Value;
+
+        Assert.Equal($"{first.Sha256}/chargenmorphcfg.xml", first.RelativePath);
+        Assert.Equal(first, again);
+        Assert.Equal(written, _fileSystem.File.GetLastWriteTimeUtc(path));
+        Assert.NotEqual(first.Sha256, other.Sha256);
+        Assert.Equal("<morph_config />", _fileSystem.File.ReadAllText(path));
+        Assert.Empty(await _library.ListAsync());
+    }
+
+    [Fact]
+    public async Task ReadText_OutsideTheLibrary_IsRefused()
+    {
+        _fileSystem.AddFile(Path.Combine(_appData, "secret.txt"), new MockFileData("no"));
+
+        var result = await _library.ReadTextAsync("..", "secret.txt");
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(DiagnosticCodes.FileReadFailed, result.Error!.Code);
+    }
 }

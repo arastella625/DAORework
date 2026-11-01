@@ -79,6 +79,13 @@ public sealed class ScanForAdoptionTests
         public Task<Result<LibraryImport>> ImportAsync(string sourcePath, CancellationToken cancellationToken = default) => throw new NotSupportedException();
 
         public Task<IReadOnlyList<LibraryEntry>> ListAsync(CancellationToken cancellationToken = default) => Task.FromResult(entries ?? []);
+
+        // No chargenmorphcfg.xml in these tests: combining never reads or stores anything.
+        public Task<Result<string>> ReadTextAsync(string modId, string relativePath, CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
+        public Task<Result<LibraryModFile>> StoreCombinedAsync(string fileName, string text, CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
     }
 
     private sealed class FakeHasher(IReadOnlyDictionary<string, string>? hashes = null) : IDocumentsScanner

@@ -37,7 +37,7 @@ public sealed partial class PlanPreview : ObservableObject
         ArgumentNullException.ThrowIfNull(plan);
         Clear();
         Title = title;
-        Summary = summary ?? ModActivationPlanSummary.Line(plan);
+        Summary = summary ?? ModActivationPlanSummary.Line(plan, NameOf);
         foreach (var warning in ModActivationPlanWarnings.For(plan, NameOf))
         {
             Notes.Add(warning);
