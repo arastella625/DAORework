@@ -36,7 +36,7 @@ internal sealed class ModsTabScenario(AppTestHost host)
         await viewModel.Profiles.CreateProfileCommand.ExecuteAsync(null);
         await viewModel.SelectProfileAsync("Default", TestContext.Current.CancellationToken);
         var tabs = window.FindControl<TabControl>("Pages") ?? throw new InvalidOperationException("No tab control named Pages.");
-        tabs.SelectedIndex = 2;
+        tabs.SelectedIndex = MainWindowViewModel.ModsPage;
         window.UpdateLayout();
         return (window, viewModel);
     }

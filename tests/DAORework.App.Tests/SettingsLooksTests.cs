@@ -12,7 +12,7 @@ namespace DAORework.App.Tests;
 /// <summary>Making and editing custom looks on the Settings page (ADR-0017).</summary>
 public sealed class SettingsLooksTests : IDisposable
 {
-    private const int SettingsTab = 5;
+    private const int SettingsTab = MainWindowViewModel.SettingsPage;
 
     private readonly AppTestHost _host = new();
 

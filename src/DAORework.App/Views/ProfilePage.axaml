@@ -54,7 +54,6 @@
         </StackPanel>
         <TextBlock Name="Status" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" />
       </StackPanel>
-      <views:NextStepsPanel Margin="-12,0" DataContext="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).NextSteps}" />
 
       <controls:Card DataContext="{Binding Look}" x:DataType="vm:ProfileLookViewModel">
         <StackPanel Spacing="8">

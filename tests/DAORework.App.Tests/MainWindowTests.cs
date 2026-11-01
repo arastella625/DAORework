@@ -46,6 +46,8 @@ public sealed class MainWindowTests : IDisposable
         Assert.Equal(AppTestHost.InstallDirectory, detected.InstallDirectory);
         var documents = Assert.Single(viewModel.Profile.Installs.DocumentsFolders);
         Assert.True(documents.Exists);
+        SelectTab(window, MainWindowViewModel.ProfilePage);
+        window.UpdateLayout();
         Screenshots.Save(window, "01-profile");
     }
 
@@ -64,6 +66,8 @@ public sealed class MainWindowTests : IDisposable
 
         Assert.False(viewModel.Profile.Installs.IsError);
         Assert.Equal(folder.Path, viewModel.Profile.Paths.UserDocumentsDirectory);
+        SelectTab(window, MainWindowViewModel.ProfilePage);
+        window.UpdateLayout();
         Screenshots.Save(window, "07-documents-folder");
     }
 
@@ -84,6 +88,8 @@ public sealed class MainWindowTests : IDisposable
         Assert.Equal(GamePaths.GameExecutable(AppTestHost.InstallDirectory), viewModel.Profile.Paths.GameExecutablePath);
         Assert.Equal(GamePaths.LauncherExecutable(AppTestHost.InstallDirectory), viewModel.Profile.Paths.LauncherExecutablePath);
         Assert.True(_host.FileSystem.File.Exists(Path.Combine(_host.ProfilesDirectory, "Fresh.json")));
+        SelectTab(window, MainWindowViewModel.ProfilePage);
+        window.UpdateLayout();
         Screenshots.Save(window, "06-detected-install");
     }
 
@@ -93,7 +99,7 @@ public sealed class MainWindowTests : IDisposable
         _host.SeedRealisticInstall();
         var (window, viewModel) = await OpenAsync();
         await CreateAndPointAtInstallAsync(viewModel);
-        SelectTab(window, 1);
+        SelectTab(window, MainWindowViewModel.DiagnosticsPage);
 
         await viewModel.Diagnostics.RunDiagnosticsCommand.ExecuteAsync(null);
 
@@ -110,7 +116,7 @@ public sealed class MainWindowTests : IDisposable
         _host.SeedRealisticInstall();
         var (window, viewModel) = await OpenAsync();
         await CreateAndPointAtInstallAsync(viewModel);
-        SelectTab(window, 1);
+        SelectTab(window, MainWindowViewModel.DiagnosticsPage);
 
         await viewModel.Diagnostics.ExportSupportBundleCommand.ExecuteAsync(null);
 
@@ -125,7 +131,7 @@ public sealed class MainWindowTests : IDisposable
         _host.SeedRealisticInstall();
         var (window, viewModel) = await OpenAsync();
         await CreateAndPointAtInstallAsync(viewModel);
-        SelectTab(window, 2);
+        SelectTab(window, MainWindowViewModel.ModsPage);
 
         await viewModel.Mods.InspectCommand.ExecuteAsync(null);
         viewModel.Mods.IncludeHashes = true;
@@ -148,7 +154,7 @@ public sealed class MainWindowTests : IDisposable
         _host.SeedRealisticInstall();
         var (window, viewModel) = await OpenAsync();
         await CreateAndPointAtInstallAsync(viewModel);
-        SelectTab(window, 3);
+        SelectTab(window, MainWindowViewModel.SavesPage);
         viewModel.Saves.KeepLatest = 1;
 
         await viewModel.Saves.BackUpCommand.ExecuteAsync(null);

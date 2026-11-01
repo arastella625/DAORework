@@ -122,7 +122,7 @@ public sealed class LookPresenterTests : IDisposable
         await viewModel.Profiles.CreateProfileCommand.ExecuteAsync(null);
         await viewModel.SelectProfileAsync(Profile, TestContext.Current.CancellationToken);
         var pages = window.FindControl<TabControl>("Pages") ?? throw new InvalidOperationException("No tab control named Pages.");
-        pages.SelectedIndex = 2;
+        pages.SelectedIndex = MainWindowViewModel.ModsPage;
         return (window, viewModel);
     }
 }

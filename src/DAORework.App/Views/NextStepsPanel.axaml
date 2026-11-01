@@ -5,9 +5,9 @@
              xmlns:controls="using:DAORework.App.Controls"
              x:Class="DAORework.App.Views.NextStepsPanel"
              x:DataType="vm:NextStepsViewModel">
-  <controls:Card Margin="12,0,12,12" IsVisible="{Binding HasContent}">
+  <controls:Card IsVisible="{Binding HasContent}">
     <StackPanel Spacing="10">
-      <TextBlock Classes="SectionTitle" Text="Next steps" />
+      <TextBlock Classes="SectionTitle" Text="Worth a look" />
       <TextBlock Name="NextStepsStatus" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" TextWrapping="Wrap"
                  IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       <ItemsControl Name="Steps" ItemsSource="{Binding Steps}">

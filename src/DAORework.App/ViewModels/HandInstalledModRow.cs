@@ -26,6 +26,9 @@ public sealed partial class HandInstalledModRow : ObservableObject
 
     public AdoptionCandidate? Candidate { get; }
 
+    /// <summary>Gets a value indicating whether this is an add-in found in the game, rather than override files.</summary>
+    public bool IsAddIn => Candidate?.Kind == AdoptionCandidateKind.AddIn;
+
     /// <summary>Gets or sets a value indicating whether it is ticked to be adopted with the others by <i>Adopt selected</i>.</summary>
     [ObservableProperty]
     public partial bool IsSelected { get; set; }

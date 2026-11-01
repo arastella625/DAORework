@@ -38,6 +38,9 @@
     </Border>
     <controls:Backdrop>
       <TabControl Name="Pages" Margin="8" SelectedIndex="{Binding SelectedPage}">
+        <TabItem Header="Home">
+          <views:HomePage DataContext="{Binding Home}" />
+        </TabItem>
         <TabItem Header="Profile">
           <views:ProfilePage DataContext="{Binding Profile}" />
         </TabItem>

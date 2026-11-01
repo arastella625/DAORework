@@ -41,6 +41,7 @@ public static class AppServices
         services.AddTransient<LookPictureViewModel>();
         services.AddTransient<SettingsPageViewModel>();
         services.AddTransient<NextStepsViewModel>();
+        services.AddTransient<HomeViewModel>();
         services.AddTransient<PagesViewModel>();
         services.AddTransient<LaunchViewModel>();
         services.AddTransient<MainWindowViewModel>();

@@ -149,7 +149,7 @@ public sealed class LibraryScreenTests : IDisposable
         await viewModel.SelectProfileAsync("Default", TestContext.Current.CancellationToken);
 
         var tabs = window.FindControl<TabControl>("Pages") ?? throw new InvalidOperationException("No tab control named Pages.");
-        tabs.SelectedIndex = 2;
+        tabs.SelectedIndex = MainWindowViewModel.ModsPage;
         window.UpdateLayout();
         return (window, viewModel);
     }

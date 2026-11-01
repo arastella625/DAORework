@@ -26,6 +26,9 @@ public sealed partial class LibraryModRow : ObservableObject
 
     public string Title { get; }
 
+    /// <summary>Gets a value indicating whether the mod is an add-in (a <c>.dazip</c>), rather than an override mod (ADR-0026).</summary>
+    public bool IsAddIn { get; private init; }
+
     public string Details { get; }
 
     public IReadOnlyList<string> Notes { get; }
@@ -77,6 +80,7 @@ public sealed partial class LibraryModRow : ObservableObject
             entry.Mod.Name,
             $"{kind} · {Counted.Of(entry.Mod.Files.Count, "file")} · {new ByteSize(entry.SizeBytes)} · added {imported} from {entry.SourceName}",
             notes,
-            warning);
+            warning)
+        { IsAddIn = entry.Mod.AddInUid is not null };
     }
 }

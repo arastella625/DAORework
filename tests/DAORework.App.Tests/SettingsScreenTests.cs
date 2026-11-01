@@ -10,7 +10,7 @@ namespace DAORework.App.Tests;
 /// <summary>The Settings page's theme picker (ADR-0016): a pick shows at once and is saved; the saved theme shows as picked.</summary>
 public sealed class SettingsScreenTests : IDisposable
 {
-    private const int SettingsTab = 5;
+    private const int SettingsTab = MainWindowViewModel.SettingsPage;
 
     private readonly AppTestHost _host = new();
 

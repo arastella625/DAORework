@@ -25,7 +25,7 @@ public sealed class NextStepsScreenTests : IDisposable
             [NextStepKind.ApplyLargeAddressAware, NextStepKind.InstallDxvk, NextStepKind.AdoptHandInstalled],
             viewModel.NextSteps.Steps.Select(s => s.Kind));
         Assert.StartsWith("Manage 4 mods", viewModel.NextSteps.Steps[2].Title, StringComparison.Ordinal);
-        Assert.Equal(0, viewModel.SelectedPage);
+        Assert.Equal(MainWindowViewModel.HomePage, viewModel.SelectedPage);
         Screenshots.Save(window, "21-next-steps");
     }
 
