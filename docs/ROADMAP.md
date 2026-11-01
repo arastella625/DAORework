@@ -225,6 +225,24 @@ window up to the command line. Each change still shows its plan first and is app
   was active before and after each change, so older backups are labelled too
   ([screenshot](screenshots/p2.5-19/01-backup-labels.png)).*
 
+**Mods that touch the same thing** *(added 2026-11-01, from the owner's question about combining
+`chargenmorphcfg.xml`)*. Today a file two mods ship is reported once by name, and the last mod's copy wins. These
+tasks combine what can safely be combined and say plainly what each remaining overlap means. The ones that need to
+read the game's file formats wait for P3-01 (P3-07 to P3-09).
+
+- P2.5-20 Combine `chargenmorphcfg.xml` from every active mod into one file DAORework owns, so every hair, head and
+  colour mod shows in the character creator ([ADR-0025](adr/0025-combining-chargenmorphcfg.md)).
+- P2.5-21 Say what a shared file means, by its kind: textures and models (*one look wins*), `.gda` tables (*one
+  mod's table changes are lost unless it extends the table (M2DA); look for a compatibility patch*), scripts (`.ncs`:
+  *one mod's behaviour is lost*), talk tables (`.tlk`), archives (`.erf`: *their contents are not compared yet*), and
+  `chargenmorphcfg.xml` (*combined*). In the plan's warnings, the Load order's shared files and the diagnostics.
+- P2.5-22 The install folder's override: read `<install>/packages/core/override`, where older guides put mods and
+  which the game loads too. List what is there under *Installed by hand* as *in the install folder*, and include it
+  in the shared-file warnings. Adopting from there needs ADR-0015 amended first.
+- P2.5-23 Add-ins against each other: show the active add-ins with their `Priority` from `AddIns.xml`, and warn when
+  two add-ins ship a file with the same name. How the game ranks add-ins is checked on the owner's install first;
+  DAORework changes no priority until it is.
+
 **Not in this phase:** Nexus "Mod Manager Download" (`nxm://`) links and any other network access (SDD §12 and
 ADR-0009 need an ADR first); hard links for large texture packs (ADR-0012 leaves that to its own ADR); any format
 reader.
@@ -279,6 +297,12 @@ reader.
   opt-in, and why GitHub rather than the Nexus API, which needs each player's own key. Installing an update itself
   (download, verify the SHA-256 and the build attestation, replace the running executables) is not part of this task
   and would need its own ADR and threat model.
+
+- P3-07 Conflicts inside `.erf` archives, over the P3-01 reader: the resource names inside each mod's override
+  archives, compared with loose files and with each other, so a shared resource is found however it is packed.
+- P3-08 `.gda` tables row by row, over the P3-01 reader: when two mods ship the same table, which rows each
+  changes. Combining tables whose changes do not overlap is its own ADR, with the M2DA mechanism as the first answer.
+- P3-09 Talk table string ids two mods both use, over the P3-01 reader.
 
 **Exit gate:** each reader round-trips every file in a real install without exceptions (verified by a local-only test that runs on the developer's machine against their own install; no game files are committed).
 
