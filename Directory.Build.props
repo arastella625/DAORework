@@ -7,7 +7,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
 
     <!-- Release identity (P1-06). Bump Version together with a CHANGELOG section, then tag v<Version>. -->
-    <Version>0.3.1</Version>
+    <Version>0.3.2</Version>
     <Product>DAORework</Product>
     <Authors>DAORework contributors</Authors>
     <Copyright>Copyright (c) 2026 DAORework contributors</Copyright>

@@ -56,7 +56,7 @@ delete the folder you unzipped and `%LOCALAPPDATA%\DAORework`.
 From 0.3.1 the executables are code-signed, so Windows names the publisher; SmartScreen may still warn on early
 releases while the publisher builds up reputation: **More info**, then **Run anyway**. Each release also has a build
 attestation (`gh attestation verify`) and a `.sha256` file to check the download against:
-`Get-FileHash DAORework-0.3.1-win-x64.zip` in PowerShell, compared with `DAORework-0.3.1-win-x64.zip.sha256`.
+`Get-FileHash DAORework-0.3.2-win-x64.zip` in PowerShell, compared with `DAORework-0.3.2-win-x64.zip.sha256`.
 
 **Source and support**
 Free and source-available under the PolyForm Noncommercial License 1.0.0 (nobody may sell it): https://github.com/arastella625/DAORework. Bugs and questions go to the GitHub
