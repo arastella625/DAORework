@@ -6,16 +6,20 @@ All notable changes to DAORework are recorded here. The format follows
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-11-01
+
+Quality of life, from the owner's own use: the Mods tab handles several mods at once, is split into sections, and its plans and backups say in plain words what they do. Nothing changes in how mods are installed, backed up or rolled back.
+
+### Added
+- Adopt several mods at once (P2.5-13): each mod in *Installed by hand* on the Mods tab has a tick box, with *Select all* and *Clear*. *Adopt selected* shows one plan for every ticked mod, applied with one backup and undone by one rollback, as `mods adopt <id>...` does on the command line.
+- Activate or deactivate several Library mods at once (P2.5-14): each mod in the Library has a tick box, with *Select all* and *Clear*. *Activate selected* plans every ticked mod that is not active, and *Deactivate selected* every ticked mod that is, each as one change with one backup, as `mods activate <id>...` does on the command line.
+- Import several downloads at once (P2.5-15): *Import a mod* on the Mods tab lets you pick several files in one go, as dropping several already did. Each is scanned and checked as before, and one message lists what was imported.
+- *Installed by hand* fills in by itself (P2.5-16): the Mods tab lists the mods you installed by hand as soon as a profile is chosen, and again after every change, without pressing a button. It only reads. *Look again* reads it once more after you add files by hand.
+
 ### Changed
 - The Mods tab is in sections (P2.5-17): *Library*, *Installed by hand* (with how many mods it found), *Load order*, *Changes* and *Folders*, one at a time instead of one long page. Each plan shows in the section you asked for it, and the *Adopt* next step opens *Installed by hand*.
 - Plans in the window are easier to read (P2.5-18): each opens with one sentence saying what it does (*Copies 1 file and deletes 1. Writes 3 B.*), its warnings follow in full, and the file-by-file detail is behind *Show details*. Mods are named by their names instead of ids like `eyes-bd85c991`. The command line's plans are unchanged.
 - Each backup says what its change did (P2.5-19): the Mods tab's *Changes* and the Fixes tab name each backup by its change (*Activated Eyes and Nails*, *Adopted 4 mods: …*, *Changed the load order*, *Applied 4 GB patch*), and asking to roll one back names it too. Mods are named by their Library names there, and fixes by theirs (*4 GB patch*, *DXVK*), instead of their ids.
-
-### Added
-- *Installed by hand* fills in by itself (P2.5-16): the Mods tab lists the mods you installed by hand as soon as a profile is chosen, and again after every change, without pressing a button. It only reads. *Look again* reads it once more after you add files by hand.
-- Adopt several mods at once (P2.5-13): each mod in *Installed by hand* on the Mods tab has a tick box, with *Select all* and *Clear*. *Adopt selected* shows one plan for every ticked mod, applied with one backup and undone by one rollback, as `mods adopt <id>...` does on the command line.
-- Activate or deactivate several Library mods at once (P2.5-14): each mod in the Library has a tick box, with *Select all* and *Clear*. *Activate selected* plans every ticked mod that is not active, and *Deactivate selected* every ticked mod that is, each as one change with one backup, as `mods activate <id>...` does on the command line.
-- Import several downloads at once (P2.5-15): *Import a mod* on the Mods tab lets you pick several files in one go, as dropping several already did. Each is scanned and checked as before, and one message lists what was imported.
 
 ## [0.3.1] - 2026-10-31
 
@@ -134,6 +138,7 @@ CLI does what it did before, with the fixes listed under *Fixed*.
 - Report JSON uses one consistent camelCase naming (P0-06).
 - The README tree and command list are correct again (P0-14).
 
-[Unreleased]: https://github.com/arastella625/DAORework/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/arastella625/DAORework/compare/v0.3.2...HEAD
+[0.3.2]: https://github.com/arastella625/DAORework/releases/tag/v0.3.2
 [0.3.1]: https://github.com/arastella625/DAORework/releases/tag/v0.3.1
 [0.3.0]: https://github.com/arastella625/DAORework/releases/tag/v0.3.0
