@@ -8,8 +8,9 @@ namespace DAORework.Application.Mods.Combining;
 /// <summary>
 /// Before a plan (ADR-0025): when two or more of the mods to have active ship <c>chargenmorphcfg.xml</c>, their copies
 /// are read from the library, combined, and the combined file is kept in the library to be deployed in their place.
-/// A copy that cannot be read, or a combined file that cannot be kept, means nothing is combined; the reason becomes a
-/// warning in the plan and the copy from the mod last in the load order is used, as without combining.
+/// A copy that cannot be read is left out and named in a warning, and the others are still combined. Only when no copy
+/// can be read, or the combined file cannot be kept, is nothing combined: the copy from the mod last in the load order
+/// is then used, as without combining.
 /// </summary>
 public static class CombineChargenMorph
 {
@@ -30,25 +31,37 @@ public static class CombineChargenMorph
         }
 
         var names = orderedMods.ToDictionary(m => m.Id, m => m.Name, StringComparer.OrdinalIgnoreCase);
+
+        // A copy that cannot be read is left out and named; the others are still combined (ADR-0025).
         var texts = new List<ChargenMorphCopy>();
+        var problems = new List<string>();
         foreach (var copy in copies)
         {
-            if (!(await library.ReadTextAsync(copy.ModId, copy.Source.RelativePath, cancellationToken)).TryGetValue(out var text, out error))
+            if ((await library.ReadTextAsync(copy.ModId, copy.Source.RelativePath, cancellationToken)).TryGetValue(out var text, out error))
             {
-                return Result.Success(NotCombined(error));
+                texts.Add(new ChargenMorphCopy(copy.ModId, text, names.GetValueOrDefault(copy.ModId)));
             }
-
-            texts.Add(new ChargenMorphCopy(copy.ModId, text, names.GetValueOrDefault(copy.ModId)));
+            else
+            {
+                problems.Add(LeftOut(error));
+            }
         }
 
-        if (!ChargenMorphCombiner.Combine(texts).TryGetValue(out var combined, out error)
-            || !(await library.StoreCombinedAsync(GamePaths.ChargenMorphFileName, combined.Xml, cancellationToken)).TryGetValue(out var stored, out error))
+        if (texts.Count == 0 || !ChargenMorphCombiner.Combine(texts).TryGetValue(out var combined, out error))
+        {
+            return Result.Success(texts.Count == 0 ? new CombineOutcome([], problems) : NotCombined(error!));
+        }
+
+        problems.AddRange(combined.LeftOut.Select(LeftOut));
+        if (!(await library.StoreCombinedAsync(GamePaths.ChargenMorphFileName, combined.Xml, cancellationToken)).TryGetValue(out var stored, out error))
         {
             return Result.Success(NotCombined(error));
         }
 
-        return Result.Success(new CombineOutcome([new CombinedOverride(CombinedFiles.Deployed(stored), combined.ModIds, combined.EntryCount)], []));
+        return Result.Success(new CombineOutcome([new CombinedOverride(CombinedFiles.Deployed(stored), combined.ModIds, combined.EntryCount)], problems));
     }
+
+    private static string LeftOut(Error error) => $"{error.Message} {error.Recommendation} ({error.Code})";
 
     private static CombineOutcome NotCombined(Error error) =>
         new([], [$"{error.Message} The copies of {GamePaths.ChargenMorphFileName} are not combined; the one from the mod last in the load order is used. ({error.Code})"]);

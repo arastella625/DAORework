@@ -12,7 +12,8 @@ namespace DAORework.Core.Mods.Combining;
 /// An entry is an element without child elements; it is already there when one with the same name and the same
 /// attributes is (compared without letter case), so the same hair with another <c>cut</c> is kept. Nothing is removed
 /// or reordered, and elements DAORework does not know are kept. A copy that is not well-formed or whose root is not
-/// <c>morph_config</c> stops the combining. Pure.
+/// <c>morph_config</c> is left out and named in <see cref="CombinedChargenMorph.LeftOut"/>, since the game could not
+/// read it either; only when no copy can be read is there nothing to combine. Pure.
 /// </summary>
 public static class ChargenMorphCombiner
 {
@@ -29,13 +30,17 @@ public static class ChargenMorphCombiner
         }
 
         XElement? combined = null;
+        var used = new List<string>();
+        var leftOut = new List<Error>();
         foreach (var copy in copies)
         {
             if (!Parse(copy).TryGetValue(out var root, out var error))
             {
-                return Result.Failure<CombinedChargenMorph>(error);
+                leftOut.Add(error);
+                continue;
             }
 
+            used.Add(copy.ModId);
             if (combined is null)
             {
                 combined = new XElement(root);
@@ -46,13 +51,16 @@ public static class ChargenMorphCombiner
             }
         }
 
-        return Result.Success(new CombinedChargenMorph(Write(combined!), combined!.Descendants().Count(IsEntry), [.. copies.Select(c => c.ModId)]));
+        return combined is null
+            ? Result.Failure<CombinedChargenMorph>(leftOut[0])
+            : Result.Success(new CombinedChargenMorph(Write(combined), combined.Descendants().Count(IsEntry), used) { LeftOut = leftOut });
     }
 
     private static Result<XElement> Parse(ChargenMorphCopy copy)
     {
         // No DTDs and no external resources: a mod's file can never make DAORework read anything else.
-        var settings = new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = null, MaxCharactersInDocument = MaxCharacters };
+        // Whitespace is dropped on reading, so the combined file is indented the same throughout.
+        var settings = new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = null, MaxCharactersInDocument = MaxCharacters, IgnoreWhitespace = true };
         try
         {
             using var reader = XmlReader.Create(new StringReader(copy.Xml), settings);
@@ -66,7 +74,7 @@ public static class ChargenMorphCombiner
         }
         catch (XmlException ex)
         {
-            return Unreadable(copy, ex.Message);
+            return Unreadable(copy, ex.Message.TrimEnd('.'));
         }
     }
 
@@ -74,7 +82,7 @@ public static class ChargenMorphCombiner
         Result.Failure<XElement>(new Error(
             DiagnosticCodes.ModChargenMorphUnreadable,
             $"{GamePaths.ChargenMorphFileName} from {copy.ModName ?? copy.ModId} cannot be read: {why}.",
-            "The copies are not combined; the one from the mod last in the load order is used, as without combining."));
+            "It is left out of the combined file; the game could not have read it either. Ask the mod's author for a fixed file."));
 
     private static void AddMissing(XElement target, XElement source)
     {

@@ -85,13 +85,36 @@ public sealed class ChargenMorphCombinerTests
     [InlineData("<morph_config><hairs>", "unclosed")]
     [InlineData("<config><hairs /></config>", "root")]
     [InlineData("<!DOCTYPE morph_config [<!ENTITY x SYSTEM \"file:///c:/secret.txt\">]><morph_config>&x;</morph_config>", "DTD")]
-    public void Combine_ACopyItCannotRead_StopsAndNamesTheMod(string xml, string why)
+    public void Combine_ACopyItCannotRead_IsLeftOutAndNamed_AndTheOthersAreCombined(string xml, string why)
     {
-        var result = ChargenMorphCombiner.Combine([new ChargenMorphCopy("good-1", Base), new ChargenMorphCopy("broken-2", xml)]);
+        var result = ChargenMorphCombiner.Combine([new ChargenMorphCopy("good-1", Base), new ChargenMorphCopy("broken-2", xml, "Broken Hair"), new ChargenMorphCopy("good-3", Base)]);
 
-        Assert.False(result.IsSuccess, why);
+        Assert.True(result.IsSuccess, why);
+        Assert.Equal(["good-1", "good-3"], result.Value.ModIds);
+        var leftOut = Assert.Single(result.Value.LeftOut);
+        Assert.Equal(DiagnosticCodes.ModChargenMorphUnreadable, leftOut.Code);
+        Assert.StartsWith("chargenmorphcfg.xml from Broken Hair cannot be read: ", leftOut.Message, StringComparison.Ordinal);
+        Assert.DoesNotContain("..", leftOut.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Combine_NoCopyItCanRead_HasNothingToCombine()
+    {
+        var result = ChargenMorphCombiner.Combine([new ChargenMorphCopy("broken-1", "<morph_config>"), new ChargenMorphCopy("broken-2", "<x />")]);
+
+        Assert.False(result.IsSuccess);
         Assert.Equal(DiagnosticCodes.ModChargenMorphUnreadable, result.Error!.Code);
-        Assert.Contains("broken-2", result.Error.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Combine_EntriesAddedLater_AreIndentedLikeTheRest()
+    {
+        var other = Base.Replace("""<resource name="t3_har_test_1" />""", """<resource name="t3_har_test_1" /><resource name="t3_har_mod_2" />""", StringComparison.Ordinal);
+
+        var lines = Combine(("a-1", Base), ("b-2", other)).Xml.Split("\r\n");
+
+        Assert.Contains("    <resource name=\"t3_har_mod_2\" />", lines);
+        Assert.Equal(5, lines.Count(l => l.TrimStart().StartsWith("<resource", StringComparison.Ordinal)));
     }
 
     private static CombinedChargenMorph Combine(params (string ModId, string Xml)[] copies)

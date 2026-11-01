@@ -28,8 +28,11 @@ a `name` (hairs also a `cut`; the same hair with two cuts is two entries the gam
   same as another when its element name and all its attributes match (names compared without letter case), so the
   same hair with another `cut` is kept. Entries are never removed or reordered. Elements and attributes DAORework does
   not know are kept as they are.
-- **No guessing:** if any copy is not well-formed XML or its root is not `morph_config`, nothing is combined. The plan
-  falls back to the copy from the mod last in the load order, as before, and warns which mod's file could not be read.
+- **A copy that cannot be read is left out:** a copy that is not well-formed XML, or whose root is not `morph_config`,
+  is left out of the combined file and named in a warning; the others are still combined. The game could not have read
+  it either, so nothing is guessed. Only when no copy can be read is nothing combined, and the copy from the mod last in
+  the load order is used, as before. *(Amended 2026-11-01 after a real run: falling back to the last copy installed the
+  broken one when it was last, though good copies were there.)*
 - **Owned like any deployed file:** the combined file is kept in the library under `library/_combined/<sha256>/`,
   never overwritten once written, and deployed from there like any mod file. It is in the deployment record under the
   reserved id `_combined`, backed up before it is written or removed, and rolled back with the change. Each plan
