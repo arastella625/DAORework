@@ -7,6 +7,7 @@ Guidance for AI assistants working in this repository.
 2. `docs/SDD.md`: layering (§4), prescribed patterns (§5) and cross-cutting rules (§8).
 3. `docs/ENGINEERING_STANDARDS.md`: hard limits and the PR checklist. These are mandatory.
 4. `docs/LEGAL_BOUNDARIES.md`: never add game assets, decompiled code or DRM workarounds.
+5. `docs/VOICE.md` for any text the window shows, and [ADR-0026](docs/adr/0026-workflow-first-layout.md) section 5 before adding any art.
 
 ## Non-negotiables
 - No file over 300 lines, no method over 50 lines, and no class with more than 5 constructor dependencies.

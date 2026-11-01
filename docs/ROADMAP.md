@@ -249,6 +249,24 @@ read the game's file formats wait for P3-01 (P3-07 to P3-09).
   two add-ins ship a file with the same name. How the game ranks add-ins is checked on the owner's install first;
   DAORework changes no priority until it is.
 
+**A workflow-first window** *(added 2026-11-01, from the owner's review of a clickable mock: six tabs instead of 11
+places, plain words, mods told apart by how the game loads them, and a richer on-theme look;
+[ADR-0026](adr/0026-workflow-first-layout.md))*. Each task is its own PR with screenshots; the command line is
+unchanged.
+
+- P2.5-24 The words: [VOICE.md](VOICE.md) applied to every view and message (*Turn on*, *Manage*, *Undo*, *Found in
+  your game*, *Preview*), ids, codes and paths moved behind *Details*, success messages that fade, plurals and local
+  times. No layout change.
+- P2.5-25 Home, the first tab: ready to play or not, the readiness strip for add-ins, override mods and combined
+  files, the last change with *Undo*, and at most three suggestions (P2.5-07's Next steps move here).
+- P2.5-26 Mods as one list: an on/off switch per mod, the three cards that filter it, *Found in your game* in the
+  same list with *Manage*, *Arrange* for the load order, and Combined files listing each shared file as combined,
+  one wins, or needs a patch (P2.5-21's meanings). Agreed with the P2.5-21 to P2.5-23 work before it starts.
+- P2.5-27 History and Settings: every change from Mods and Fixes in one timeline with *Undo*; the profile's folders,
+  the look and Troubleshooting (diagnostics and the support bundle) move into Settings.
+- P2.5-28 The gilded-tome style: button, frame, switch and seal templates from tokens, Kenney's *Fantasy UI Borders*
+  (CC0) as tinted masks, and the screenshots for the README, the Nexus page and the website retaken.
+
 **Not in this phase:** Nexus "Mod Manager Download" (`nxm://`) links and any other network access (SDD §12 and
 ADR-0009 need an ADR first); hard links for large texture packs (ADR-0012 leaves that to its own ADR); any format
 reader.
