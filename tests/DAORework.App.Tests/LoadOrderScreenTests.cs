@@ -31,7 +31,7 @@ public sealed class LoadOrderScreenTests : IDisposable
         var conflict = Assert.Single(order.Conflicts);
         Assert.Equal("hair.dds", conflict.FileName);
         Assert.Equal("Blue Hair wins", conflict.Winner);
-        Assert.Equal("Also in Red Hair, whose copy is not used.", conflict.Detail);
+        Assert.Equal("Also in Red Hair, whose copy is not used. It is a texture or model, so only that mod's look shows.", conflict.Detail);
         Assert.Equal("blue", _scenario.DeployedContent("hair.dds"));
 
         await order.MoveUpCommand.ExecuteAsync(order.Order[1]);
@@ -42,7 +42,7 @@ public sealed class LoadOrderScreenTests : IDisposable
         Assert.Contains("  Copy      1 file", order.PlanLines);
         Assert.Contains("  Delete    1 file", order.PlanLines);
         Assert.Equal("Copies 1 file and deletes 1. Writes 3 B.", order.Preview.Summary);
-        Assert.Equal("hair.dds is in Blue Hair and Red Hair; Red Hair's copy is used.", Assert.Single(order.Preview.Notes));
+        Assert.Equal("hair.dds is in Blue Hair and Red Hair; Red Hair's copy is used. It is a texture or model, so only that mod's look shows.", Assert.Single(order.Preview.Notes));
         Assert.True(order.ApplyCommand.CanExecute(null));
         Assert.Equal("blue", _scenario.DeployedContent("hair.dds"));
         ModsTabScenario.Show<LoadOrderPanel>(window);

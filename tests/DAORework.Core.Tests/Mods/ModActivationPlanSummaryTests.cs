@@ -45,7 +45,7 @@ public sealed class ModActivationPlanSummaryTests
         Assert.Equal("Mods: 1 (Old UI) -> 3 (Hair A, Hair B, Qwinn's Fixpack)", lines[0]);
         Assert.Contains("  AddIns.xml: add qwinn_fixpack_3 (Qwinn's Fixpack)", lines);
         Assert.Contains("  Old UI: delete 1", lines);
-        Assert.Contains("  ! hair.dds is in Hair A and Hair B; Hair B's copy is used.", lines);
+        Assert.Contains("  ! hair.dds is in Hair A and Hair B; Hair B's copy is used. It is a texture or model, so only that mod's look shows.", lines);
         Assert.DoesNotContain(lines, l => l.Contains("hair-a", StringComparison.Ordinal));
     }
 
@@ -55,7 +55,7 @@ public sealed class ModActivationPlanSummaryTests
         var warnings = ModActivationPlanWarnings.For(Switch(), id => _names[id]);
 
         Assert.Equal(2, warnings.Count);
-        Assert.Equal("hair.dds is in Hair A and Hair B; Hair B's copy is used.", warnings[0]);
+        Assert.Equal("hair.dds is in Hair A and Hair B; Hair B's copy is used. It is a texture or model, so only that mod's look shows.", warnings[0]);
     }
 
     private static ModActivationPlan Switch()

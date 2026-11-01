@@ -238,6 +238,8 @@ read the game's file formats wait for P3-01 (P3-07 to P3-09).
   mod's table changes are lost unless it extends the table (M2DA); look for a compatibility patch*), scripts (`.ncs`:
   *one mod's behaviour is lost*), talk tables (`.tlk`), archives (`.erf`: *their contents are not compared yet*), and
   `chargenmorphcfg.xml` (*combined*). In the plan's warnings, the Load order's shared files and the diagnostics.
+  *Done in plans and the Load order (`SharedFileMeaning`); the diagnostics follow with P2.5-22, which brings the
+  install folder's override into them.*
 - P2.5-22 The install folder's override: read `<install>/packages/core/override`, where older guides put mods and
   which the game loads too. List what is there under *Installed by hand* as *in the install folder*, and include it
   in the shared-file warnings. Adopting from there needs ADR-0015 amended first.

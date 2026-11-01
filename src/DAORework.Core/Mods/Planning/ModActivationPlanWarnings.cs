@@ -1,5 +1,6 @@
 using System.Globalization;
 using DAORework.Core.Mods.Combining;
+using DAORework.Core.Mods.Conflicts;
 
 namespace DAORework.Core.Mods.Planning;
 
@@ -19,7 +20,7 @@ public static class ModActivationPlanWarnings
         nameOf = CombinedAware(nameOf);
         var conflicts = plan.Conflicts;
         var warnings = conflicts.OverrideConflicts.Select(c =>
-                $"{c.FileName} is in {string.Join(", ", c.Overridden.Select(o => nameOf(o.ModId)))} and {nameOf(c.Winner.ModId)}; {nameOf(c.Winner.ModId)}'s copy is used{(c.SameContent ? " (identical content)" : string.Empty)}.")
+                $"{c.FileName} is in {string.Join(", ", c.Overridden.Select(o => nameOf(o.ModId)))} and {nameOf(c.Winner.ModId)}; {nameOf(c.Winner.ModId)}'s copy is used{(c.SameContent ? " (identical content)" : string.Empty)}.{Meaning(c)}")
             .Concat(conflicts.UnmanagedShadows.Select(s =>
                 $"{s.Managed.FileName} from {nameOf(s.Managed.ModId)} has the same name as {string.Join(", ", s.UnmanagedPaths)} in the override folder, which DAORework does not manage; the game picks one."))
             .Concat(conflicts.AddInFilesOverridden.Select(a =>
@@ -41,6 +42,10 @@ public static class ModActivationPlanWarnings
         warnings.AddRange(plan.CombineProblems);
         return warnings;
     }
+
+    /// <summary>What sharing the file means, by its kind (P2.5-21); nothing for identical copies.</summary>
+    private static string Meaning(OverrideConflict conflict) =>
+        !conflict.SameContent && SharedFileMeaning.For(conflict.FileName) is { } meaning ? " " + meaning : string.Empty;
 
     /// <summary>Names the combined files' record id in words (ADR-0025), and every other id as <paramref name="nameOf"/> does.</summary>
     public static Func<string, string> CombinedAware(Func<string, string> nameOf) =>
