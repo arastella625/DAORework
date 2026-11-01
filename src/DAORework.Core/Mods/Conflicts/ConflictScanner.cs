@@ -1,5 +1,6 @@
 using DAORework.Core.Common;
 using DAORework.Core.Diagnostics;
+using DAORework.Core.Mods.Combining;
 using DAORework.Core.Mods.Library;
 using DAORework.Core.Mods.Safety;
 
@@ -18,7 +19,8 @@ public static class ConflictScanner
 
     /// <param name="orderedMods">The mods to activate, lowest priority first.</param>
     /// <param name="unmanagedOverridePaths">Files under the override folder that DAORework did not place, any separators.</param>
-    public static Result<ConflictReport> Scan(IReadOnlyList<LibraryMod> orderedMods, IReadOnlyList<string> unmanagedOverridePaths)
+    /// <param name="combined">Files combined from several mods' copies (ADR-0025): deployed instead of every override file of the same name.</param>
+    public static Result<ConflictReport> Scan(IReadOnlyList<LibraryMod> orderedMods, IReadOnlyList<string> unmanagedOverridePaths, IReadOnlyList<CombinedOverride>? combined = null)
     {
         ArgumentNullException.ThrowIfNull(orderedMods);
         ArgumentNullException.ThrowIfNull(unmanagedOverridePaths);
@@ -41,7 +43,11 @@ public static class ConflictScanner
         }
 
         var programs = mapped.Where(f => ProgramFiles.IsProgram(f.Source)).ToList();
-        var data = mapped.Where(f => !ProgramFiles.IsProgram(f.Source)).ToList();
+        var standIns = (combined ?? []).Select(c => c.FileName).ToHashSet(_names);
+        var data = mapped
+            .Where(f => !ProgramFiles.IsProgram(f.Source) && !(f.IsOverride && standIns.Contains(f.FileName)))
+            .Concat((combined ?? []).Select(c => c.File))
+            .ToList();
         return Result.Success(Report(data, unmanagedOverridePaths) with { ProgramFiles = programs });
     }
 

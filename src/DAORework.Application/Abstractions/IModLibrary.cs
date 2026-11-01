@@ -14,4 +14,13 @@ public interface IModLibrary
 
     /// <summary>Every mod in the library, sorted by name.</summary>
     Task<IReadOnlyList<LibraryEntry>> ListAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>Reads one of a mod's files as text, such as its <c>chargenmorphcfg.xml</c> to combine (ADR-0025).</summary>
+    Task<Result<string>> ReadTextAsync(string modId, string relativePath, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Keeps a combined file (ADR-0025) under <c>_combined/&lt;sha256&gt;/</c>, where it is never overwritten, and
+    /// returns it as the library file it is deployed from. Storing the same text again writes nothing.
+    /// </summary>
+    Task<Result<LibraryModFile>> StoreCombinedAsync(string fileName, string text, CancellationToken cancellationToken = default);
 }

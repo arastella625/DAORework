@@ -1,4 +1,5 @@
 using DAORework.Core.Common;
+using DAORework.Core.Mods.Combining;
 using DAORework.Core.Mods.Conflicts;
 
 namespace DAORework.Core.Mods.Planning;
@@ -26,6 +27,12 @@ public sealed record ModActivationPlan(
 
     /// <summary>Gets the files an adoption takes over where they already are, which it only records (ADR-0015).</summary>
     public int AdoptedInPlaceCount { get; init; }
+
+    /// <summary>Gets the files the plan deploys combined from several mods' copies (ADR-0025).</summary>
+    public IReadOnlyList<CombinedOverride> Combined { get; init; } = [];
+
+    /// <summary>Gets why copies that would have been combined were not; the copy from the mod last in the load order is used.</summary>
+    public IReadOnlyList<string> CombineProblems { get; init; } = [];
 
     /// <summary>Gets a value indicating whether the plan must not be applied until its blockers are resolved.</summary>
     public bool IsBlocked => Blockers.Count > 0;

@@ -1,4 +1,5 @@
 using DAORework.Application.Abstractions;
+using DAORework.Application.Mods.Combining;
 using DAORework.Core.Common;
 using DAORework.Core.Diagnostics;
 using DAORework.Core.Mods.Adoption;
@@ -67,20 +68,29 @@ public sealed class PlanAdoption
 
     private async Task<Result<ModActivationPlan>> PlanAsync(string documents, DeploymentRecord record, List<LibraryMod> active, List<AdoptedMod> adopted, CancellationToken cancellationToken)
     {
+        // The adopted mods come after the active ones, so their copies of chargenmorphcfg.xml combine last (ADR-0025).
+        if (!(await CombineChargenMorph.PrepareAsync(_library, [.. active, .. adopted.Select(a => a.Mod)], cancellationToken)).TryGetValue(out var combine, out var error))
+        {
+            return Failure(error);
+        }
+
         var sources = adopted.SelectMany(a => a.SourceByLibraryPath.Values).ToHashSet(StringComparer.OrdinalIgnoreCase);
         var paths = record.Files.Select(f => f.TargetPath)
             .Concat(active.Concat(adopted.Select(a => a.Mod)).SelectMany(m => ModLayout.Map(m).TryGetValue(out var files, out _) ? files.Select(f => f.TargetPath) : []))
             .Concat(sources)
+            .Concat(combine.TargetPaths)
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToList();
-        if (!(await _scanner.ScanAsync(documents, paths, cancellationToken)).TryGetValue(out var disk, out var error))
+        if (!(await _scanner.ScanAsync(documents, paths, cancellationToken)).TryGetValue(out var disk, out error))
         {
             return Failure(error);
         }
 
         // The adopted files become DAORework's, so they are no longer the user's own override files.
         var unmanaged = disk.UnmanagedOverridePaths.Where(p => !sources.Contains(ModLayout.OverridePrefix + p)).ToList();
-        return AdoptionPlanner.Plan(new PlanInput(record, active, unmanaged, disk.Hashes, disk.RegisteredAddInUids), adopted);
+        return AdoptionPlanner.Plan(
+            new PlanInput(record, active, unmanaged, disk.Hashes, disk.RegisteredAddInUids) { Combined = combine.Combined, CombineProblems = combine.Problems },
+            adopted);
     }
 
     private async Task<Result<AdoptedMod>> AdoptedAsync(

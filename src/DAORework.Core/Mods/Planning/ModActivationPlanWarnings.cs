@@ -1,4 +1,5 @@
 using System.Globalization;
+using DAORework.Core.Mods.Combining;
 
 namespace DAORework.Core.Mods.Planning;
 
@@ -15,6 +16,7 @@ public static class ModActivationPlanWarnings
     {
         ArgumentNullException.ThrowIfNull(plan);
         ArgumentNullException.ThrowIfNull(nameOf);
+        nameOf = CombinedAware(nameOf);
         var conflicts = plan.Conflicts;
         var warnings = conflicts.OverrideConflicts.Select(c =>
                 $"{c.FileName} is in {string.Join(", ", c.Overridden.Select(o => nameOf(o.ModId)))} and {nameOf(c.Winner.ModId)}; {nameOf(c.Winner.ModId)}'s copy is used{(c.SameContent ? " (identical content)" : string.Empty)}.")
@@ -36,8 +38,13 @@ public static class ModActivationPlanWarnings
             warnings.Add($"{Files(count)} DAORework placed earlier {(count == 1 ? "is" : "are")} missing; any still needed are copied again.");
         }
 
+        warnings.AddRange(plan.CombineProblems);
         return warnings;
     }
+
+    /// <summary>Names the combined files' record id in words (ADR-0025), and every other id as <paramref name="nameOf"/> does.</summary>
+    public static Func<string, string> CombinedAware(Func<string, string> nameOf) =>
+        id => string.Equals(id, CombinedFiles.ModId, StringComparison.OrdinalIgnoreCase) ? CombinedFiles.DisplayName : nameOf(id);
 
     internal static string Files(int count) =>
         string.Create(CultureInfo.InvariantCulture, $"{count} {(count == 1 ? "file" : "files")}");

@@ -1,3 +1,4 @@
+using DAORework.Core.Mods.Combining;
 using DAORework.Core.Mods.Library;
 
 namespace DAORework.Core.Mods.Planning;
@@ -12,4 +13,11 @@ public sealed record PlanInput(
     IReadOnlyList<LibraryMod> Mods,
     IReadOnlyList<string> UnmanagedOverridePaths,
     IReadOnlyDictionary<string, string> DiskHashes,
-    IReadOnlyCollection<string> RegisteredAddInUids);
+    IReadOnlyCollection<string> RegisteredAddInUids)
+{
+    /// <summary>Gets the files combined from several mods' copies (ADR-0025), deployed in place of those copies.</summary>
+    public IReadOnlyList<CombinedOverride> Combined { get; init; } = [];
+
+    /// <summary>Gets why copies that would have been combined were not, such as a copy that cannot be read.</summary>
+    public IReadOnlyList<string> CombineProblems { get; init; } = [];
+}

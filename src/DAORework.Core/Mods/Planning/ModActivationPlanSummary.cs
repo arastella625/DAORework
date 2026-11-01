@@ -6,9 +6,12 @@ namespace DAORework.Core.Mods.Planning;
 /// </summary>
 public static class ModActivationPlanSummary
 {
-    public static string Line(ModActivationPlan plan)
+    /// <param name="plan">The plan.</param>
+    /// <param name="nameOf">How a mod is named in the sentence on combined files; by its id when not given.</param>
+    public static string Line(ModActivationPlan plan, Func<string, string>? nameOf = null)
     {
         ArgumentNullException.ThrowIfNull(plan);
+        nameOf ??= id => id;
         if (plan.IsBlocked)
         {
             return "Blocked: nothing changes until the problems below are resolved.";
@@ -34,6 +37,12 @@ public static class ModActivationPlanSummary
         if (plan.BytesToWrite.Bytes > 0)
         {
             sentence += $" Writes {plan.BytesToWrite}.";
+        }
+
+        foreach (var combined in plan.Combined)
+        {
+            var mods = combined.FromModIds.Distinct(StringComparer.OrdinalIgnoreCase).Select(nameOf).ToList();
+            sentence += $" Combines {combined.FileName} from {Join(mods)}: {combined.EntryCount} entries.";
         }
 
         return sentence;
