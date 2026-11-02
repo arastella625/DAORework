@@ -1,7 +1,7 @@
 # Nexus Mods page, ready to paste
 
 This page describes the six-tab window ([ADR-0026](../../adr/0026-workflow-first-layout.md): Home, Mods, Fixes, Saves,
-History, Settings) and its plain words (*Turn on*, *Manage*, *Undo*). **Paste it when the first release with that
+History, Settings) in the gilded-tome style, with its plain words (*Turn on*, *Manage*, *Undo*). **Paste it when the first release with that
 window is on Nexus**; until then the live page keeps describing 0.3.2. Its pictures are in their own folder, so
 merging this changes nothing on the live page.
 
@@ -32,8 +32,8 @@ Where the pictures come from:
   where the Windows scan is not available.
 - `00-cover.png` is [cover.html](cover.html) at 1920x1080, built from `01-home.png` and `02-mods.png`.
 
-When P2.5-28 (the gilded-tome style) lands, the window changes look again: retake `01` to `08` from the same tests and
-the cover from `cover.html`.
+They show the gilded-tome style (P2.5-28), taken from its pull request. If the window's look changes again, retake
+`01` to `08` from the same tests and the cover from `cover.html`.
 
 ## On upload day
 
