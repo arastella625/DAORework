@@ -1,10 +1,11 @@
-Nexus image captions (paste each into the image's description when uploading)
+Nexus image captions (paste each into the image's description when uploading). The files are in site/public/images/nexus.
 
-00-cover.png                  DAORework: mod manager, launcher and diagnostics for Dragon Age: Origins. (Set as the main image.)
-01-first-run-next-steps.png   First run: DAORework finds your install, checks it, and lists your next steps.
-02-activate-plan.png          Activating a mod shows exactly what will be copied, replaced or removed. Nothing changes until you press Apply, and a backup is taken first.
-03-load-order.png             Load order: for every file two mods share, see whose copy the game uses, and reorder them.
-04-adopt-hand-installed.png   Already modded by hand? DAORework takes over those mods without reinstalling anything.
-05-fixes.png                  DXVK, and the 4 GB patch where the copy allows it (not Steam's protected copy), applied and removed safely. It notices when Steam's Verify integrity has undone a fix.
-06-rollback.png               Every change is backed up. Roll back to before any change, with one more confirmation first.
-07-themes.png                 Four built-in themes, plus your own looks with your own accent and background picture.
+00-cover.png        DAORework: mod manager, launcher and troubleshooter for Dragon Age: Origins. (Set as the main image.)
+01-home.png         Home: whether the game is ready to play, your add-ins, override mods and combined files at a glance, and a few suggestions worth a look.
+02-mods.png         Mods: one list with a switch for each mod. Add .dazip, .zip, .7z or .rar files, or drop them on the window.
+03-manage.png       Already modded by hand? Mods found in your game are managed without reinstalling anything, one or several at once.
+04-preview.png      A preview before every change. Hair, head and colour mods are combined, so every one of them shows in the character creator.
+05-arrange.png      Arrange: when two mods change the same file, see whose copy the game uses and what that means, and reorder them.
+06-fixes.png        Fixes: DXVK, and the 4 GB patch where your copy allows it. DAORework notices when Steam's Verify integrity has undone one.
+07-history.png      History: every change DAORework made, with Undo. It asks first.
+08-your-look.png    Four dark themes, or your own accent colour and background picture.
