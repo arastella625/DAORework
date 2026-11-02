@@ -20,7 +20,6 @@
       <Setter Property="Margin" Value="0,0,12,0" />
     </Style>
   </UserControl.Styles>
-  <ScrollViewer>
     <StackPanel Margin="12" Spacing="12">
       <StackPanel DataContext="{Binding Paths}" x:DataType="vm:ProfilePathsViewModel" Spacing="12">
         <StackPanel Spacing="6">
@@ -120,5 +119,4 @@
         </StackPanel>
       </controls:Card>
     </StackPanel>
-  </ScrollViewer>
 </UserControl>

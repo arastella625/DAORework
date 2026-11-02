@@ -21,7 +21,6 @@
       <Setter Property="BoxShadow" Value="{DynamicResource GlowShadow}" />
     </Style>
   </UserControl.Styles>
-  <ScrollViewer>
     <StackPanel Margin="12" Spacing="12">
       <StackPanel Spacing="6">
         <TextBlock Classes="PageTitle" Text="Settings" />
@@ -64,5 +63,4 @@
       </controls:Card>
       <views:LooksPanel />
     </StackPanel>
-  </ScrollViewer>
 </UserControl>

@@ -34,49 +34,57 @@
     <!-- Said once here instead of on every panel (docs/VOICE.md rule 3). -->
     <Border DockPanel.Dock="Bottom" Padding="16,8" Background="{DynamicResource SurfaceBrush}"
             BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
-      <TextBlock Name="UndoPromise" Classes="Secondary" Text="Every change can be undone in History, on the Mods and Fixes tabs." />
+      <TextBlock Name="UndoPromise" Classes="Secondary" Text="Every change can be undone in History." />
     </Border>
     <controls:Backdrop>
       <TabControl Name="Pages" Margin="8" SelectedIndex="{Binding SelectedPage}">
         <TabItem Header="Home">
           <views:HomePage DataContext="{Binding Home}" />
         </TabItem>
-        <TabItem Header="Profile">
-          <views:ProfilePage DataContext="{Binding Profile}" />
-        </TabItem>
-        <TabItem Header="Diagnostics">
-          <views:DiagnosticsPage DataContext="{Binding Diagnostics}" />
-        </TabItem>
         <TabItem Header="Mods">
-          <!-- One page for every mod (P2.5-26); History and the folder figures move out with P2.5-27. -->
-          <TabControl Name="ModsSections" Classes="Sections" SelectedIndex="{Binding ModsSection}">
-            <TabItem Header="Mods">
-              <ScrollViewer>
-                <views:ModsListPanel DataContext="{Binding ModsTab}" />
-              </ScrollViewer>
-            </TabItem>
-            <TabItem Header="History">
-              <ScrollViewer>
-                <views:ChangesPanel DataContext="{Binding ModsTab.Changes}" />
-              </ScrollViewer>
-            </TabItem>
-            <TabItem Header="Folders">
-              <ScrollViewer>
-                <views:ModsPage DataContext="{Binding Mods}" />
-              </ScrollViewer>
-            </TabItem>
-          </TabControl>
-        </TabItem>
-        <TabItem Header="Saves">
-          <views:SavesPage DataContext="{Binding Saves}" />
+          <ScrollViewer>
+            <views:ModsListPanel Margin="0,12,0,0" DataContext="{Binding ModsTab}" />
+          </ScrollViewer>
         </TabItem>
         <TabItem Header="Fixes">
           <ScrollViewer>
             <views:FixesPage DataContext="{Binding Fixes}" />
           </ScrollViewer>
         </TabItem>
+        <TabItem Header="Saves">
+          <views:SavesPage DataContext="{Binding Saves}" />
+        </TabItem>
+        <TabItem Header="History">
+          <!-- Every change DAORework made, from Mods and Fixes, each undoable (ADR-0026, P2.5-27). -->
+          <ScrollViewer>
+            <StackPanel Spacing="12">
+              <StackPanel Margin="12,12,12,0" Spacing="6">
+                <TextBlock Classes="PageTitle" Text="History" />
+                <controls:RuneDivider />
+                <TextBlock Classes="Secondary" TextWrapping="Wrap"
+                           Text="Every change DAORework made to your game, newest first. Undo goes back to just before it, and asks first." />
+              </StackPanel>
+              <views:ChangesPanel DataContext="{Binding ModsTab.Changes}" />
+              <views:FixHistoryPanel DataContext="{Binding Fixes.Status}" />
+            </StackPanel>
+          </ScrollViewer>
+        </TabItem>
         <TabItem Header="Settings">
-          <views:SettingsPage DataContext="{Binding Settings}" />
+          <!-- The look first; the profile's folders and Troubleshooting stay closed until wanted (ADR-0026 §1). -->
+          <ScrollViewer>
+            <StackPanel Spacing="12">
+              <views:SettingsPage DataContext="{Binding Settings}" />
+              <Expander Name="GameFolders" Margin="12,0" Header="Game folders" IsExpanded="{Binding GameFoldersOpen}" HorizontalAlignment="Stretch">
+                <views:ProfilePage DataContext="{Binding Profile}" />
+              </Expander>
+              <Expander Name="Troubleshooting" Margin="12,0,12,12" Header="Troubleshooting" IsExpanded="{Binding TroubleshootingOpen}" HorizontalAlignment="Stretch">
+                <StackPanel Spacing="12">
+                  <views:DiagnosticsPage DataContext="{Binding Diagnostics}" />
+                  <views:ModsPage DataContext="{Binding Mods}" />
+                </StackPanel>
+              </Expander>
+            </StackPanel>
+          </ScrollViewer>
         </TabItem>
       </TabControl>
     </controls:Backdrop>

@@ -28,16 +28,6 @@
             </StackPanel>
           </StackPanel>
         </Border>
-        <Border Name="FixRollbackConfirm" Padding="12" CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource BorderSoftBrush}"
-                IsVisible="{Binding Status.PendingRollback, Converter={x:Static ObjectConverters.IsNotNull}}">
-          <StackPanel Spacing="8">
-            <TextBlock Text="{Binding Status.PendingRollback}" TextWrapping="Wrap" />
-            <StackPanel Orientation="Horizontal" Spacing="12">
-              <Button Name="ConfirmFixRollbackButton" Classes="accent" Content="Undo" Command="{Binding Status.ConfirmRollbackCommand}" />
-              <Button Name="CancelFixRollbackButton" Content="Cancel" Command="{Binding Status.CancelRollbackCommand}" />
-            </StackPanel>
-          </StackPanel>
-        </Border>
         <TextBlock Classes="Status" Classes.Error="{Binding Status.IsError}" Text="{Binding Status.StatusMessage}" TextWrapping="Wrap"
                    IsVisible="{Binding Status.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
         <ItemsControl Name="AppliedFixes" ItemsSource="{Binding Status.Applied}">
@@ -48,26 +38,6 @@
                   <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
                   <TextBlock Text="{Binding State}" TextWrapping="Wrap" Classes.Warning="{Binding !InEffect}" />
                 </StackPanel>
-              </Border>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
-        <TextBlock Classes="Label" Text="Changes, newest first"
-                   IsVisible="{Binding Status.Backups.Count, Converter={x:Static views:CountConverters.IsPositive}}" />
-        <ItemsControl Name="FixBackups" ItemsSource="{Binding Status.Backups}">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate x:DataType="vm:BackupRow">
-              <Border Padding="0,8" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                  <StackPanel Spacing="2">
-                    <TextBlock FontWeight="SemiBold" Text="{Binding Change}" TextWrapping="Wrap"
-                               IsVisible="{Binding Change, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                    <TextBlock Classes="Secondary" Text="{Binding At, Converter={x:Static views:FriendlyTimeConverter.Instance}}" />
-                    <TextBlock Classes="Secondary" Text="{Binding Before}" TextWrapping="Wrap" />
-                  </StackPanel>
-                  <Button Grid.Column="1" VerticalAlignment="Top" Content="Undo to here" CommandParameter="{Binding}"
-                          Command="{Binding $parent[views:FixesPage].((vm:FixesTabViewModel)DataContext).Status.RollBackToCommand}" />
-                </Grid>
               </Border>
             </DataTemplate>
           </ItemsControl.ItemTemplate>

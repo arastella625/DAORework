@@ -8,7 +8,7 @@
              x:DataType="vm:ModsPageViewModel">
   <StackPanel Margin="12" Spacing="12">
     <StackPanel Spacing="6">
-      <TextBlock Classes="PageTitle" Text="Mods" />
+      <TextBlock Classes="PageTitle" Text="Mod folders" />
       <controls:RuneDivider />
     </StackPanel>
     <StackPanel Orientation="Horizontal" Spacing="12">

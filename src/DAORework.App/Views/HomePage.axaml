@@ -21,6 +21,8 @@
               <Button Name="CheckGameButton" Classes="accent" Content="Check the game" Command="{Binding CheckGameCommand}" IsVisible="{Binding CanCheck}" />
               <Button Name="SeeProblemsButton" Content="See what's wrong" Command="{Binding OpenCommand}"
                       CommandParameter="{x:Static vm:HomeTarget.Diagnostics}" IsVisible="{Binding HasProblems}" />
+              <Button Name="GameFoldersButton" Content="Game folders" Command="{Binding OpenCommand}"
+                      CommandParameter="{x:Static vm:HomeTarget.GameFolders}" />
             </StackPanel>
           </StackPanel>
         </controls:Card>

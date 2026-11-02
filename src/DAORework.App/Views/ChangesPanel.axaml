@@ -7,7 +7,7 @@
              x:DataType="vm:ModChangesViewModel">
   <controls:Card Margin="12,0,12,12">
     <StackPanel Spacing="10">
-      <TextBlock Classes="SectionTitle" Text="History" />
+      <TextBlock Classes="SectionTitle" Text="Mods" />
       <TextBlock Name="ChangesSummary" Text="{Binding Summary}" TextWrapping="Wrap"
                  IsVisible="{Binding Summary, Converter={x:Static ObjectConverters.IsNotNull}}" />
       <Border Name="Unfinished" Padding="12" CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource BorderSoftBrush}"
