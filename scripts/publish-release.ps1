@@ -42,6 +42,7 @@ else {
 
 Copy-Item README.md, LICENSE, CHANGELOG.md -Destination $staging
 Copy-Item 'src/DAORework.App/Assets/Fonts/OFL.txt' (Join-Path $staging 'Cinzel-OFL.txt')
+Copy-Item 'src/DAORework.App/Assets/Kenney/License.txt' (Join-Path $staging 'Kenney-License.txt')
 ./scripts/third-party-licenses.ps1 -AssetsFiles 'src/DAORework.App/obj/project.assets.json', 'src/DAORework.Cli/obj/project.assets.json' -Runtime $Runtime -OutFile (Join-Path $staging 'THIRD-PARTY-LICENSES.md')
 
 $cache = ((Get-Content 'src/DAORework.Cli/obj/project.assets.json' -Raw | ConvertFrom-Json).packageFolders.PSObject.Properties | Select-Object -First 1).Name

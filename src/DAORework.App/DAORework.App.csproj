@@ -8,6 +8,7 @@
   <ItemGroup>
     <!-- Cinzel (SIL OFL 1.1, ADR-0016) for headings. Its license ships beside it and in the release zip. -->
     <AvaloniaResource Include="Assets\Fonts\*.ttf" />
+    <AvaloniaResource Include="Assets\Kenney\*.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DAORework.Core\DAORework.Core.csproj" />

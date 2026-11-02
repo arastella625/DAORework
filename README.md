@@ -15,8 +15,8 @@ Windows builds are on the [Releases page](https://github.com/arastella625/DAORew
 website, <https://daorework.dilly-world.net/>, lists each release's checksum. Unzip anywhere and run
 `DAORework.exe` for the window or `dao.exe` for the command line; both are self-contained, so no .NET install is
 needed. Profiles, the mod library, reports and backups go to `%LOCALAPPDATA%\DAORework`. Your game and Documents
-folders change only when you activate a mod or apply a fix, always after showing the plan and taking a backup you can
-roll back to.
+folders change only when you turn on a mod or a fix, always after showing a preview and taking a backup, so every
+change can be undone.
 
 From 0.3.1, `DAORework.exe` and `dao.exe` are code-signed: right-click > Properties > Digital Signatures shows the
 publisher. A new publisher still builds up reputation with Windows SmartScreen, so it may warn on the first releases
@@ -29,7 +29,7 @@ publisher. A new publisher still builds up reputation with Windows SmartScreen, 
 
 ## What it does
 
-![Next steps after creating a profile](docs/screenshots/readme/01-next-steps.png)
+![Home after creating a profile: ready to play, the setup at a glance, and what is worth a look](docs/screenshots/readme/01-next-steps.png)
 
 - **Takes over the mods you already installed by hand**, in `override` and `AddIns`, without reinstalling them.
   Official DLC is never touched.
@@ -92,20 +92,23 @@ way, the research on AI and programming, and the water question are in
 dotnet run --project src/DAORework.App
 ```
 
-Create a profile in the header: DAORework finds your install and documents folder, checks them, and lists next steps
-on the **Profile** tab. The **Mods** tab holds your library, the load order, your changes and backups, and the mods you
-installed by hand; **Fixes** installs DXVK, and the 4 GB patch where the copy allows it; **Saves** backs up your saves; **Settings** picks a theme
-or your own look. Every change shows its plan before anything is written, and **Launch game** starts the game. The
-window and the CLI below use the same use cases and app-data folders, so the two can be mixed freely.
+Create a profile in the header: DAORework finds your install and documents folder, checks them, and **Home** says
+whether the game is ready to play, shows your add-ins, override mods and combined files at a glance, and lists what is
+worth a look. **Mods** is one page for every mod, with a switch for each, the ones found in your game, *Arrange* for
+the load order and the files mods share; **Fixes** installs DXVK, and the 4 GB patch where the copy allows it;
+**Saves** backs up your saves; **History** lists every change, each with *Undo*; and **Settings** holds your theme or
+look, the game folders and Troubleshooting. Every change shows a preview before anything is written, and **Play**
+starts the game. The window and the CLI below use the same use cases and app-data folders, so the two can be mixed
+freely; the CLI keeps its own words (`activate`, `adopt`, `rollback`).
 
 | | |
 |---|---|
 | ![The Library on the Mods tab](docs/screenshots/readme/02-library.png) | ![The plan shown before activating a mod](docs/screenshots/readme/03-activate-plan.png) |
-| **Library:** import by button or drop; each mod's antivirus result and program files | **Activate:** the plan first, nothing written until Apply |
-| ![The load order and the files mods share](docs/screenshots/readme/04-load-order.png) | ![Adopting a mod installed by hand](docs/screenshots/readme/05-adopt-plan.png) |
-| **Load order:** whose copy of a shared file wins, reordered through a plan | **Adopt:** a mod you installed by hand, taken over without reinstalling |
-| ![The Fixes tab](docs/screenshots/readme/06-fixes.png) | ![Rolling back to a backup](docs/screenshots/readme/07-rollback.png) |
-| **Fixes:** DXVK, the 4 GB patch on copies that allow it, and when Steam's Verify integrity undid one | **Changes:** any change rolled back from its backup, asked once more |
+| **Mods:** add by button or drop; each mod's antivirus result and program files | **Turn on:** a preview first, nothing written until Apply |
+| ![Arranging the load order and the files mods share](docs/screenshots/readme/04-load-order.png) | ![Managing a mod found in the game](docs/screenshots/readme/05-adopt-plan.png) |
+| **Arrange:** whose copy of a shared file wins, reordered through a preview | **Manage:** a mod you installed by hand, taken over without reinstalling |
+| ![The Fixes tab](docs/screenshots/readme/06-fixes.png) | ![Undoing a change in History](docs/screenshots/readme/07-rollback.png) |
+| **Fixes:** DXVK, the 4 GB patch on copies that allow it, and when Steam's Verify integrity undid one | **History:** any change undone, asked once more |
 | ![Four themes on the Settings tab](docs/screenshots/readme/08-themes.png) | ![A custom look with a picture](docs/screenshots/readme/09-custom-look.png) |
 | **Themes:** four dark themes | **Your looks:** your own accent and background picture |
 

@@ -48,10 +48,7 @@
               <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                 <CheckBox VerticalAlignment="Top" IsChecked="{Binding IsSelected}" ToolTip.Tip="Tick to activate or deactivate it with the others" />
                 <StackPanel Grid.Column="1" Spacing="3">
-                  <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
-                    <TextBlock Classes="Info" Text="On" IsVisible="{Binding IsActive}" />
-                  </StackPanel>
+                  <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
                   <TextBlock Classes="Mono Secondary" Text="{Binding Details}" TextWrapping="Wrap" />
                   <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" IsVisible="{Binding Warning, Converter={x:Static ObjectConverters.IsNotNull}}">
                     <PathIcon Classes="Warning" Data="{StaticResource IconWarning}" VerticalAlignment="Top" />
@@ -66,9 +63,12 @@
                   </ItemsControl>
                 </StackPanel>
                 <StackPanel Grid.Column="2" VerticalAlignment="Top">
-                  <Button Content="Turn on" IsVisible="{Binding !IsActive}" CommandParameter="{Binding}"
+                  <!-- A switch (ADR-0026 §4): clicking it shows the preview; it moves once the change is applied. -->
+                  <Button Classes="switch" Content="Off" IsVisible="{Binding !IsActive}" CommandParameter="{Binding}"
+                          AutomationProperties.Name="{Binding Title, StringFormat='Turn on {0}'}" ToolTip.Tip="Turn on"
                           Command="{Binding $parent[views:LibraryPanel].((vm:ModsTabViewModel)DataContext).Activation.ActivateCommand}" />
-                  <Button Content="Turn off" IsVisible="{Binding IsActive}" CommandParameter="{Binding}"
+                  <Button Classes="switch on" Content="On" IsVisible="{Binding IsActive}" CommandParameter="{Binding}"
+                          AutomationProperties.Name="{Binding Title, StringFormat='Turn off {0}'}" ToolTip.Tip="Turn off"
                           Command="{Binding $parent[views:LibraryPanel].((vm:ModsTabViewModel)DataContext).Activation.DeactivateCommand}" />
                 </StackPanel>
               </Grid>

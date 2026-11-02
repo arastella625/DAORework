@@ -282,6 +282,11 @@ unchanged.
   Fixes; one timeline mixing both waits for a reason to merge them.*
 - P2.5-28 The gilded-tome style: button, frame, switch and seal templates from tokens, Kenney's *Fantasy UI Borders*
   (CC0) as tinted masks, and the screenshots for the README, the Nexus page and the website retaken.
+  *Done: gold-edged buttons with Cinzel labels and inner rules, cards with a double rule and filigree in every corner,
+  gem on/off switches, readiness seals, a sunburst behind *Ready to play*, and Kenney's border (CC0) around Home's cards,
+  all drawn from the theme's tokens, with no ornaments in Korcari ([Home](screenshots/p2.5-28/01-home.png),
+  [Mods](screenshots/p2.5-28/02-mods-switches.png)); the README's screenshots are retaken. The website's and the Nexus
+  page's are retaken with the next release, so they show what can be downloaded.*
 
 **Not in this phase:** Nexus "Mod Manager Download" (`nxm://`) links and any other network access (SDD §12 and
 ADR-0009 need an ADR first); hard links for large texture packs (ADR-0012 leaves that to its own ADR); any format

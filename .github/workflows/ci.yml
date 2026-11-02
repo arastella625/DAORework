@@ -21,14 +21,21 @@ env:
   COVERAGE_FLOOR: 80
   # The App tests render every page headlessly and save PNGs here, inside the uploaded TestResults folder.
   DAOREWORK_SCREENSHOT_DIR: ${{ github.workspace }}/TestResults/screenshots
+  SONAR_ORGANIZATION: arastella625
+  SONAR_PROJECT_KEY: arastella625_DAORework
 
 jobs:
   build:
     name: Format, build, test, gates
     runs-on: ubuntu-latest
+    env:
+      # Fork PRs get no secrets, so Sonar is skipped there instead of failing the build.
+      SONAR_ENABLED: ${{ secrets.SONAR_TOKEN != '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # Sonar needs full history for blame and new-code detection
 
       - name: Set up .NET (from global.json)
         uses: actions/setup-dotnet@v6
@@ -41,6 +48,21 @@ jobs:
       - name: Format check
         run: dotnet format DAORework.sln --no-restore --verify-no-changes
 
+      - name: Install SonarScanner for .NET
+        if: env.SONAR_ENABLED == 'true'
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: Sonar begin
+        if: env.SONAR_ENABLED == 'true'
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: >
+          dotnet sonarscanner begin
+          /o:"$SONAR_ORGANIZATION" /k:"$SONAR_PROJECT_KEY"
+          /d:sonar.token="$SONAR_TOKEN"
+          /d:sonar.host.url="https://sonarcloud.io"
+          /d:sonar.cs.opencover.reportsPaths="TestResults/**/coverage.opencover.xml"
+
       - name: Build (warnings are errors)
         run: dotnet build DAORework.sln --no-restore --configuration Release
 
@@ -49,6 +71,13 @@ jobs:
           dotnet test DAORework.sln --no-build --configuration Release
           --collect:"XPlat Code Coverage" --results-directory TestResults
           --logger "trx;LogFileName=test-results.trx"
+          -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura,opencover
+
+      - name: Sonar end
+        if: env.SONAR_ENABLED == 'true'
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: dotnet sonarscanner end /d:sonar.token="$SONAR_TOKEN"
 
       - name: Coverage gate
         shell: pwsh
