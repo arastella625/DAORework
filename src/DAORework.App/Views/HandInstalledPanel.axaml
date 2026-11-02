@@ -78,7 +78,7 @@
         <TextBlock VerticalAlignment="Center" Classes="Secondary" TextWrapping="Wrap"
                    Text="Ticked mods are managed together, in one change you can undo." />
       </StackPanel>
-      <ItemsControl Name="Candidates" ItemsSource="{Binding Candidates}" ItemTemplate="{StaticResource Candidate}" />
+      <ItemsControl Name="Candidates" ItemsSource="{Binding $parent[views:ModsListPanel].((vm:ModsTabViewModel)DataContext).Filter.VisibleFound}" ItemTemplate="{StaticResource Candidate}" />
       <TextBlock Classes="Label" Text="Cannot be adopted" Margin="0,6,0,0"
                  IsVisible="{Binding NotAdoptable.Count, Converter={x:Static views:CountConverters.IsPositive}}" />
       <ItemsControl Name="NotAdoptable" ItemsSource="{Binding NotAdoptable}" ItemTemplate="{StaticResource Row}" />

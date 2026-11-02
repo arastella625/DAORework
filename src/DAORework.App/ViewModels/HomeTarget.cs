@@ -6,6 +6,7 @@ public enum HomeTarget
     Diagnostics,
     ModsLibrary,
     ModsArrange,
+    ModsCombined,
     ModsHistory,
     FixesHistory,
 }

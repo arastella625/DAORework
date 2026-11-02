@@ -268,6 +268,11 @@ unchanged.
 - P2.5-26 Mods as one list: an on/off switch per mod, the three cards that filter it, *Found in your game* in the
   same list with *Manage*, *Arrange* for the load order, and Combined files listing each shared file as combined,
   one wins, or needs a patch (P2.5-21's meanings). Agreed with the P2.5-21 to P2.5-23 work before it starts.
+  *Done: Library, Found in your game and Arrange are one page under the three kind cards, with All, On, Off and Found
+  chips, *Arrange* as a toggle, and Combined files listing each merged file and each file one mod wins
+  ([screenshot](screenshots/p2.5-26/01-mods-one-page.png)); the Mods tab keeps History and Folders as sections until
+  P2.5-27. The on/off switches come with P2.5-28's templates; P2.5-22's install-folder mods and P2.5-23's add-in
+  priority land in this page as a tag and a filter (owner, 2026-11-01).*
 - P2.5-27 History and Settings: every change from Mods and Fixes in one timeline with *Undo*; the profile's folders,
   the look and Troubleshooting (diagnostics and the support bundle) move into Settings.
 - P2.5-28 The gilded-tome style: button, frame, switch and seal templates from tokens, Kenney's *Fantasy UI Borders*

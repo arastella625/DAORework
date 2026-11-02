@@ -90,7 +90,12 @@ internal sealed class ModsTabScenario(AppTestHost host)
     public static void Show<TPanel>(MainWindow window)
         where TPanel : Control
     {
-        // The Mods tab shows one section at a time (P2.5-17): select the panel's section, then scroll to the panel.
+        // The Mods page shows the load order only while arranging, and the combined files only on their card (P2.5-26).
+        var filter = ((MainWindowViewModel)window.DataContext!).ModsTab.Filter;
+        filter.Arranging = typeof(TPanel) == typeof(LoadOrderPanel);
+        filter.Kind = typeof(TPanel) == typeof(CombinedFilesPanel) ? ModKindFilter.CombinedFiles : ModKindFilter.All;
+
+        // The Mods tab shows one section at a time: select the panel's section, then scroll to the panel.
         window.UpdateLayout();
         var panel = window.GetLogicalDescendants().OfType<TPanel>().Distinct().Single();
         var section = panel.FindLogicalAncestorOfType<TabItem>() ?? throw new InvalidOperationException("The panel is not in a section.");

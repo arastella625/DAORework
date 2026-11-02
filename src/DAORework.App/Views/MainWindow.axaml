@@ -48,21 +48,11 @@
           <views:DiagnosticsPage DataContext="{Binding Diagnostics}" />
         </TabItem>
         <TabItem Header="Mods">
-          <!-- P2.5-17: one section at a time, each plan shown in the section it was asked for. -->
+          <!-- One page for every mod (P2.5-26); History and the folder figures move out with P2.5-27. -->
           <TabControl Name="ModsSections" Classes="Sections" SelectedIndex="{Binding ModsSection}">
-            <TabItem Header="Library">
+            <TabItem Header="Mods">
               <ScrollViewer>
-                <views:LibraryPanel DataContext="{Binding ModsTab}" />
-              </ScrollViewer>
-            </TabItem>
-            <TabItem Header="{Binding HandInstalled.SectionHeader}">
-              <ScrollViewer>
-                <views:HandInstalledPanel DataContext="{Binding HandInstalled}" />
-              </ScrollViewer>
-            </TabItem>
-            <TabItem Header="Arrange">
-              <ScrollViewer>
-                <views:LoadOrderPanel DataContext="{Binding ModsTab.LoadOrder}" />
+                <views:ModsListPanel DataContext="{Binding ModsTab}" />
               </ScrollViewer>
             </TabItem>
             <TabItem Header="History">

@@ -49,14 +49,15 @@ public sealed partial class SetupSummary : ObservableObject
         var combined = _mods.LoadOrder.CombinedCount;
         SetupPart[] parts =
         [
-            new("Add-ins", Count(library.Count(m => m.IsAddIn && m.IsActive), found.Count(m => m.IsAddIn)), "Ready", true, HomeTarget.ModsLibrary),
+            new("Add-ins", Count(library.Count(m => m.IsAddIn && m.IsActive), found.Count(m => m.IsAddIn)), "Ready", true, HomeTarget.ModsLibrary, ModKindFilter.AddIns),
             new(
                 "Override mods",
                 Count(library.Count(m => !m.IsAddIn && m.IsActive), found.Count(m => !m.IsAddIn)),
                 overlaps == 0 ? "Ready" : Counted.Of(overlaps, "overlap"),
                 overlaps == 0,
-                overlaps == 0 ? HomeTarget.ModsLibrary : HomeTarget.ModsArrange),
-            new("Combined files", combined == 0 ? "None needed" : $"{combined} combined", "Ready", true, HomeTarget.ModsArrange),
+                overlaps == 0 ? HomeTarget.ModsLibrary : HomeTarget.ModsArrange,
+                ModKindFilter.OverrideMods),
+            new("Combined files", combined == 0 ? "None needed" : $"{combined} combined", "Ready", true, HomeTarget.ModsCombined, ModKindFilter.CombinedFiles),
         ];
         Parts.Clear();
         foreach (var part in parts)

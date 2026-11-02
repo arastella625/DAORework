@@ -65,7 +65,7 @@ public sealed partial class HomeViewModel : ObservableObject
     {
         ArgumentNullException.ThrowIfNull(mods);
         ArgumentNullException.ThrowIfNull(fixes);
-        Setup = new SetupSummary(mods);
+        Setup = mods.Setup;
         NotifyCollectionChangedEventHandler changed = (_, _) => ShowLastChange(mods.Changes.Backups, fixes.Status.Backups);
         mods.Changes.Backups.CollectionChanged += changed;
         fixes.Status.Backups.CollectionChanged += changed;

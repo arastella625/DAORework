@@ -5,8 +5,9 @@ namespace DAORework.App.ViewModels;
 /// <param name="Count">What is there, such as *3 on · 2 found in your game*.</param>
 /// <param name="Status">*Ready*, or what needs a look, such as *1 overlap*.</param>
 /// <param name="IsReady">Whether nothing about this kind needs a look.</param>
-/// <param name="Target">Where the part opens.</param>
-public sealed record SetupPart(string Title, string Count, string Status, bool IsReady, HomeTarget Target)
+/// <param name="Target">Where the part opens from Home.</param>
+/// <param name="Kind">The kind the part filters the Mods tab to.</param>
+public sealed record SetupPart(string Title, string Count, string Status, bool IsReady, HomeTarget Target, ModKindFilter Kind)
 {
     public bool NeedsALook => !IsReady;
 }
