@@ -5,6 +5,7 @@ using DAORework.Application.Mods.Apply;
 using DAORework.Application.Mods.Changes;
 using DAORework.Application.Mods.Library;
 using DAORework.Application.Profiles;
+using DAORework.Core.Mods.Combining;
 using DAORework.Core.Mods.Planning;
 using Microsoft.Extensions.Logging;
 
@@ -45,6 +46,9 @@ public sealed partial class LoadOrderViewModel : PageViewModel
     /// <summary>Gets how many files are combined from several mods' copies (ADR-0025), such as <c>chargenmorphcfg.xml</c>.</summary>
     [ObservableProperty]
     public partial int CombinedCount { get; set; }
+
+    /// <summary>Gets the files combined from several mods' copies, each with the mods it came from.</summary>
+    public ObservableCollection<FileConflictRow> CombinedFiles { get; } = [];
 
     /// <summary>Gets the plan for the edited order, empty while it is the saved one.</summary>
     /// <summary>Gets the plan for the new order: a summary, its warnings, and its full text behind Show details (P2.5-18).</summary>
@@ -182,7 +186,7 @@ public sealed partial class LoadOrderViewModel : PageViewModel
             plan.IsEmpty && !plan.IsBlocked ? "No file changes: none of these mods ships a file another one does, so their order makes no difference." : null);
     }
 
-    private void Show(IReadOnlyList<LoadOrderRow> rows, ModActivationPlan? plan, IReadOnlyDictionary<string, string>? names = null)
+    private void Show(IReadOnlyList<LoadOrderRow> rows, ModActivationPlan? plan, Dictionary<string, string>? names = null)
     {
         Order.Clear();
         foreach (var row in rows)
@@ -190,7 +194,7 @@ public sealed partial class LoadOrderViewModel : PageViewModel
             Order.Add(row);
         }
 
-        CombinedCount = plan?.Combined.Count ?? 0;
+        ShowCombined(plan?.Combined ?? [], id => names is not null && names.TryGetValue(id, out var name) ? name : id);
         Conflicts.Clear();
         foreach (var conflict in plan?.Conflicts.OverrideConflicts ?? [])
         {
@@ -198,5 +202,17 @@ public sealed partial class LoadOrderViewModel : PageViewModel
         }
 
         IsReordered = false;
+    }
+
+    private void ShowCombined(IReadOnlyList<CombinedOverride> combined, Func<string, string> nameOf)
+    {
+        CombinedFiles.Clear();
+        foreach (var file in combined)
+        {
+            var from = string.Join(", ", file.FromModIds.Select(nameOf));
+            CombinedFiles.Add(new FileConflictRow(file.FileName, "Combined", $"Merged from {from}, so every mod's part works."));
+        }
+
+        CombinedCount = CombinedFiles.Count;
     }
 }

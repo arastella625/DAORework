@@ -8,13 +8,13 @@
              DragDrop.AllowDrop="True">
   <controls:Card Margin="12,0,12,12">
     <StackPanel Spacing="10">
-      <TextBlock Classes="SectionTitle" Text="Library" />
-      <StackPanel Orientation="Horizontal" Spacing="12">
+      <TextBlock Classes="SectionTitle" Text="Your mods" />
+      <Grid ColumnDefinitions="Auto,12,Auto,12,*">
         <Button Name="ImportFileButton" Content="Add mods" Command="{Binding Library.ImportFileCommand}" />
-        <Button Name="ImportFolderButton" Content="Add a folder" Command="{Binding Library.ImportFolderCommand}" />
-        <TextBlock VerticalAlignment="Center" Classes="Secondary"
+        <Button Grid.Column="2" Name="ImportFolderButton" Content="Add a folder" Command="{Binding Library.ImportFolderCommand}" />
+        <TextBlock Grid.Column="4" VerticalAlignment="Center" Classes="Secondary" TextWrapping="Wrap"
                    Text="Or drop .dazip, .zip, .7z or .rar files here. Adding a mod doesn't change your game until you turn it on." />
-      </StackPanel>
+      </Grid>
       <TextBlock Name="LibraryStatus" Classes="Status" Classes.Error="{Binding Library.IsError}" Text="{Binding Library.StatusMessage}" TextWrapping="Wrap"
                  IsVisible="{Binding Library.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       <Border Name="PlanPreview" Padding="12" CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource BorderSoftBrush}"
@@ -41,7 +41,7 @@
         <Button Name="SelectAllModsButton" Content="Select all" Command="{Binding Selection.SelectAllCommand}" />
         <Button Name="ClearModsSelectionButton" Content="Clear" Command="{Binding Selection.ClearSelectionCommand}" />
       </StackPanel>
-      <ItemsControl Name="LibraryMods" ItemsSource="{Binding Library.Mods}">
+      <ItemsControl Name="LibraryMods" ItemsSource="{Binding Filter.VisibleMods}">
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="vm:LibraryModRow">
             <Border Padding="0,10" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">

@@ -1,0 +1,59 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DAORework.App.ViewModels"
+             xmlns:views="using:DAORework.App.Views"
+             x:Class="DAORework.App.Views.ModsListPanel"
+             x:DataType="vm:ModsTabViewModel">
+  <!-- The Mods tab as one page (ADR-0026, P2.5-26): the kind cards and chips filter it; Arrange turns it into the load order. -->
+  <StackPanel Spacing="12">
+    <ItemsControl Name="KindCards" Margin="12,0" ItemsSource="{Binding Setup.Parts}">
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <UniformGrid Columns="3" />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+      <ItemsControl.ItemTemplate>
+        <DataTemplate x:DataType="vm:SetupPart">
+          <Button Margin="0,0,10,0" Padding="14,12" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                  Command="{Binding $parent[views:ModsListPanel].((vm:ModsTabViewModel)DataContext).Filter.PickKindCommand}" CommandParameter="{Binding Kind}">
+            <Grid ColumnDefinitions="Auto,12,*">
+              <PathIcon Classes="Ok" Width="20" Height="20" VerticalAlignment="Top" Data="{StaticResource IconOk}" IsVisible="{Binding IsReady}" />
+              <PathIcon Classes="Warning" Width="20" Height="20" VerticalAlignment="Top" Data="{StaticResource IconWarning}" IsVisible="{Binding NeedsALook}" />
+              <StackPanel Grid.Column="2" Spacing="2">
+                <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
+                <TextBlock Classes="Secondary" TextWrapping="Wrap" Text="{Binding Count}" />
+                <TextBlock Classes="Status" Text="{Binding Status}" IsVisible="{Binding IsReady}" />
+                <TextBlock Classes="Warning" Text="{Binding Status}" IsVisible="{Binding NeedsALook}" />
+              </StackPanel>
+            </Grid>
+          </Button>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+
+    <WrapPanel Margin="12,0" DataContext="{Binding Filter}" x:DataType="vm:ModListFilter">
+      <StackPanel Orientation="Horizontal" Spacing="14" Margin="0,0,24,0" IsVisible="{Binding !Arranging}">
+        <RadioButton Name="ShowAll" GroupName="show" Content="{Binding AllLabel}" IsChecked="{Binding IsAll, Mode=OneWay}"
+                     Command="{Binding ShowOnlyCommand}" CommandParameter="{x:Static vm:ModShowFilter.All}" />
+        <RadioButton Name="ShowOn" GroupName="show" Content="{Binding OnLabel}" IsChecked="{Binding IsOn, Mode=OneWay}"
+                     Command="{Binding ShowOnlyCommand}" CommandParameter="{x:Static vm:ModShowFilter.On}" />
+        <RadioButton Name="ShowOff" GroupName="show" Content="{Binding OffLabel}" IsChecked="{Binding IsOff, Mode=OneWay}"
+                     Command="{Binding ShowOnlyCommand}" CommandParameter="{x:Static vm:ModShowFilter.Off}" />
+        <RadioButton Name="ShowFound" GroupName="show" Content="{Binding FoundLabel}" IsChecked="{Binding IsFound, Mode=OneWay}"
+                     Command="{Binding ShowOnlyCommand}" CommandParameter="{x:Static vm:ModShowFilter.Found}" />
+      </StackPanel>
+      <Button Name="ArrangeButton" Content="{Binding ArrangeLabel}" Command="{Binding ToggleArrangeCommand}" />
+    </WrapPanel>
+
+    <StackPanel Margin="12,0" Orientation="Horizontal" Spacing="8" DataContext="{Binding Filter}" x:DataType="vm:ModListFilter"
+                IsVisible="{Binding HasKind}">
+      <TextBlock Name="KindNote" Classes="Secondary" VerticalAlignment="Center" Text="{Binding KindNote}" />
+      <Button Name="ShowEveryKindButton" Content="Show every kind" Command="{Binding ShowEveryKindCommand}" />
+    </StackPanel>
+
+    <views:LibraryPanel IsVisible="{Binding Filter.ShowsMods}" />
+    <views:HandInstalledPanel DataContext="{Binding HandInstalled}" IsVisible="{Binding $parent[views:ModsListPanel].((vm:ModsTabViewModel)DataContext).Filter.ShowsFound}" />
+    <views:LoadOrderPanel DataContext="{Binding LoadOrder}" IsVisible="{Binding $parent[views:ModsListPanel].((vm:ModsTabViewModel)DataContext).Filter.Arranging}" />
+    <views:CombinedFilesPanel DataContext="{Binding LoadOrder}" IsVisible="{Binding $parent[views:ModsListPanel].((vm:ModsTabViewModel)DataContext).Filter.ShowsCombined}" />
+  </StackPanel>
+</UserControl>

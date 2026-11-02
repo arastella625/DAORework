@@ -26,17 +26,11 @@ public sealed partial class MainWindowViewModel : ObservableObject
     /// <summary>The index of the Settings tab.</summary>
     public const int SettingsPage = 6;
 
-    /// <summary>The index of the Mods tab's <i>Library</i> section.</summary>
-    public const int LibrarySection = 0;
-
-    /// <summary>The index of the Mods tab's <i>Found in your game</i> section (P2.5-17).</summary>
-    public const int InstalledByHandSection = 1;
-
-    /// <summary>The index of the Mods tab's <i>Arrange</i> section.</summary>
-    public const int ArrangeSection = 2;
+    /// <summary>The index of the Mods tab's one page of mods (P2.5-26): the list, Found in your game, Arrange and Combined files.</summary>
+    public const int ListSection = 0;
 
     /// <summary>The index of the Mods tab's <i>History</i> section.</summary>
-    public const int HistorySection = 3;
+    public const int HistorySection = 1;
 
     private Task? _initialization;
 
@@ -125,7 +119,8 @@ public sealed partial class MainWindowViewModel : ObservableObject
                 break;
             default:
                 SelectedPage = ModsPage;
-                ModsSection = InstalledByHandSection;
+                ModsSection = ListSection;
+                ModsTab.Filter.ShowOnlyCommand.Execute(ModShowFilter.Found);
                 await HandInstalled.ScanCommand.ExecuteAsync(null);
                 break;
         }
@@ -149,12 +144,8 @@ public sealed partial class MainWindowViewModel : ObservableObject
                 break;
             default:
                 SelectedPage = ModsPage;
-                ModsSection = target switch
-                {
-                    HomeTarget.ModsArrange => ArrangeSection,
-                    HomeTarget.ModsHistory => HistorySection,
-                    _ => LibrarySection,
-                };
+                ModsSection = target == HomeTarget.ModsHistory ? HistorySection : ListSection;
+                ShowOnModsPage(target);
                 if (change is not null)
                 {
                     await ModsTab.Changes.RollBackToCommand.ExecuteAsync(change);
@@ -162,5 +153,14 @@ public sealed partial class MainWindowViewModel : ObservableObject
 
                 break;
         }
+    }
+
+    // Home's cards open the Mods page as they say: Arrange for an overlap, the combined files, or every mod.
+    private void ShowOnModsPage(HomeTarget target)
+    {
+        var filter = ModsTab.Filter;
+        filter.Kind = target == HomeTarget.ModsCombined ? ModKindFilter.CombinedFiles : ModKindFilter.All;
+        filter.Show = ModShowFilter.All;
+        filter.Arranging = target == HomeTarget.ModsArrange;
     }
 }
