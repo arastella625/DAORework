@@ -79,7 +79,7 @@ public sealed partial class HomeViewModel : ObservableObject
         CanCheck = profileName is not null;
         ReadyTitle = profileName is null ? "Welcome" : "Not checked yet";
         ReadyBody = profileName is null
-            ? "Create a profile in the header and point it at your game to get started."
+            ? "Create a profile in the header, then point it at your game in Game folders."
             : "Check the game to see whether it is ready to play.";
         NextSteps.Clear();
     }

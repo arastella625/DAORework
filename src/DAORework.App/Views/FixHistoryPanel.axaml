@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DAORework.App.ViewModels"
+             xmlns:views="using:DAORework.App.Views"
+             xmlns:controls="using:DAORework.App.Controls"
+             x:Class="DAORework.App.Views.FixHistoryPanel"
+             x:DataType="vm:FixStatusViewModel">
+  <!-- The fix changes in History (ADR-0026, P2.5-27): each with Undo to here, confirmed first. -->
+  <controls:Card Margin="12,0,12,12">
+    <StackPanel Spacing="10">
+      <TextBlock Classes="SectionTitle" Text="Fixes" />
+      <TextBlock Classes="Secondary" Text="No fix changes yet." IsVisible="{Binding !Backups.Count}" />
+        <Border Name="FixRollbackConfirm" Padding="12" CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource BorderSoftBrush}"
+                IsVisible="{Binding PendingRollback, Converter={x:Static ObjectConverters.IsNotNull}}">
+          <StackPanel Spacing="8">
+            <TextBlock Text="{Binding PendingRollback}" TextWrapping="Wrap" />
+            <StackPanel Orientation="Horizontal" Spacing="12">
+              <Button Name="ConfirmFixRollbackButton" Classes="accent" Content="Undo" Command="{Binding ConfirmRollbackCommand}" />
+              <Button Name="CancelFixRollbackButton" Content="Cancel" Command="{Binding CancelRollbackCommand}" />
+            </StackPanel>
+          </StackPanel>
+        </Border>
+        <TextBlock Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" TextWrapping="Wrap"
+                   IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        <TextBlock Classes="Label" Text="Newest first"
+                   IsVisible="{Binding Backups.Count, Converter={x:Static views:CountConverters.IsPositive}}" />
+        <ItemsControl Name="FixBackups" ItemsSource="{Binding Backups}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:BackupRow">
+              <Border Padding="0,8" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                  <StackPanel Spacing="2">
+                    <TextBlock FontWeight="SemiBold" Text="{Binding Change}" TextWrapping="Wrap"
+                               IsVisible="{Binding Change, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    <TextBlock Classes="Secondary" Text="{Binding At, Converter={x:Static views:FriendlyTimeConverter.Instance}}" />
+                    <TextBlock Classes="Secondary" Text="{Binding Before}" TextWrapping="Wrap" />
+                  </StackPanel>
+                  <Button Grid.Column="1" VerticalAlignment="Top" Content="Undo to here" CommandParameter="{Binding}"
+                          Command="{Binding $parent[views:FixHistoryPanel].((vm:FixStatusViewModel)DataContext).RollBackToCommand}" />
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+  </controls:Card>
+</UserControl>

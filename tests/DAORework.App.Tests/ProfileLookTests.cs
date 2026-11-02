@@ -1,4 +1,3 @@
-using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using DAORework.App.Themes;
 using DAORework.App.ViewModels;
@@ -93,8 +92,7 @@ public sealed class ProfileLookTests : IDisposable
         viewModel.Profiles.NewProfileName = Profile;
         await viewModel.Profiles.CreateProfileCommand.ExecuteAsync(null);
         await viewModel.SelectProfileAsync(Profile, TestContext.Current.CancellationToken);
-        var tabs = window.FindControl<TabControl>("Pages") ?? throw new InvalidOperationException("No tab control named Pages.");
-        tabs.SelectedIndex = MainWindowViewModel.ProfilePage;
+        ModsTabScenario.Show<ProfilePage>(window);
         return (window, viewModel);
     }
 }

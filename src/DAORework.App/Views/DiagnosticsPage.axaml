@@ -23,8 +23,7 @@
                            Foreground="{DynamicResource TextSecondaryBrush}"
                            IsVisible="{Binding BundlePath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
     </StackPanel>
-    <ScrollViewer Margin="0,12,0,0">
-      <ItemsControl Name="Issues" ItemsSource="{Binding Issues}">
+      <ItemsControl Name="Issues" Margin="0,12,0,0" ItemsSource="{Binding Issues}">
         <ItemsControl.ItemTemplate>
           <!-- Each row shows its severity as an icon and a word as well as the stripe's color (ADR-0016 rule 4). -->
           <DataTemplate x:DataType="diagnostics:DiagnosticIssue">
@@ -54,6 +53,5 @@
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>
-    </ScrollViewer>
   </DockPanel>
 </UserControl>

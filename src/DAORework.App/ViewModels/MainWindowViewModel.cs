@@ -8,29 +8,20 @@ public sealed partial class MainWindowViewModel : ObservableObject
     /// <summary>The index of Home, the first tab (ADR-0026).</summary>
     public const int HomePage = 0;
 
-    /// <summary>The index of the Profile tab.</summary>
-    public const int ProfilePage = 1;
-
-    /// <summary>The index of the Diagnostics tab.</summary>
-    public const int DiagnosticsPage = 2;
-
     /// <summary>The index of the Mods tab.</summary>
-    public const int ModsPage = 3;
-
-    /// <summary>The index of the Saves tab.</summary>
-    public const int SavesPage = 4;
+    public const int ModsPage = 1;
 
     /// <summary>The index of the Fixes tab.</summary>
-    public const int FixesPage = 5;
+    public const int FixesPage = 2;
 
-    /// <summary>The index of the Settings tab.</summary>
-    public const int SettingsPage = 6;
+    /// <summary>The index of the Saves tab.</summary>
+    public const int SavesPage = 3;
 
-    /// <summary>The index of the Mods tab's one page of mods (P2.5-26): the list, Found in your game, Arrange and Combined files.</summary>
-    public const int ListSection = 0;
+    /// <summary>The index of the History tab.</summary>
+    public const int HistoryPage = 4;
 
-    /// <summary>The index of the Mods tab's <i>History</i> section.</summary>
-    public const int HistorySection = 1;
+    /// <summary>The index of the Settings tab, which also holds the game folders and Troubleshooting.</summary>
+    public const int SettingsPage = 5;
 
     private Task? _initialization;
 
@@ -57,9 +48,13 @@ public sealed partial class MainWindowViewModel : ObservableObject
     [ObservableProperty]
     public partial int SelectedPage { get; set; }
 
-    /// <summary>Gets or sets the Mods tab's section shown (P2.5-17); the <i>Adopt</i> next step opens <i>Installed by hand</i>.</summary>
+    /// <summary>Gets or sets whether Settings shows the profile's game folders (P2.5-27).</summary>
     [ObservableProperty]
-    public partial int ModsSection { get; set; }
+    public partial bool GameFoldersOpen { get; set; }
+
+    /// <summary>Gets or sets whether Settings shows Troubleshooting: the diagnostics and the folder figures.</summary>
+    [ObservableProperty]
+    public partial bool TroubleshootingOpen { get; set; }
 
     /// <summary>Gets Home, the first tab (P2.5-25).</summary>
     public HomeViewModel Home { get; }
@@ -119,38 +114,37 @@ public sealed partial class MainWindowViewModel : ObservableObject
                 break;
             default:
                 SelectedPage = ModsPage;
-                ModsSection = ListSection;
                 ModsTab.Filter.ShowOnlyCommand.Execute(ModShowFilter.Found);
                 await HandInstalled.ScanCommand.ExecuteAsync(null);
                 break;
         }
     }
 
-    // A Home button: the tab and section it names, and for the last change, its Undo asked there, confirmed first.
+    // A Home button: the tab and section it names, and for the last change, its Undo asked in History, confirmed first.
     private async Task OpenFromHomeAsync(HomeTarget target, BackupRow? change, CancellationToken cancellationToken)
     {
         switch (target)
         {
             case HomeTarget.Diagnostics:
-                SelectedPage = DiagnosticsPage;
+                SelectedPage = SettingsPage;
+                TroubleshootingOpen = true;
                 break;
-            case HomeTarget.FixesHistory:
-                SelectedPage = FixesPage;
+            case HomeTarget.GameFolders:
+                SelectedPage = SettingsPage;
+                GameFoldersOpen = true;
+                break;
+            case HomeTarget.ModsHistory or HomeTarget.FixesHistory:
+                SelectedPage = HistoryPage;
                 if (change is not null)
                 {
-                    await Fixes.Status.RollBackToCommand.ExecuteAsync(change);
+                    var changes = target == HomeTarget.ModsHistory ? (RecoverableChangesViewModel)ModsTab.Changes : Fixes.Status;
+                    await changes.RollBackToCommand.ExecuteAsync(change);
                 }
 
                 break;
             default:
                 SelectedPage = ModsPage;
-                ModsSection = target == HomeTarget.ModsHistory ? HistorySection : ListSection;
                 ShowOnModsPage(target);
-                if (change is not null)
-                {
-                    await ModsTab.Changes.RollBackToCommand.ExecuteAsync(change);
-                }
-
                 break;
         }
     }

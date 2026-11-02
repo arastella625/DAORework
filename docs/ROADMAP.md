@@ -275,6 +275,11 @@ unchanged.
   priority land in this page as a tag and a filter (owner, 2026-11-01).*
 - P2.5-27 History and Settings: every change from Mods and Fixes in one timeline with *Undo*; the profile's folders,
   the look and Troubleshooting (diagnostics and the support bundle) move into Settings.
+  *Done: the window has six tabs and no tab inside another; History holds the mod and fix changes with *Undo to here*
+  ([screenshot](screenshots/p2.5-27/01-history.png)); Settings holds the look, then *Game folders* (the Profile tab)
+  and *Troubleshooting* (diagnostics, the support bundle and the mod folders), closed until opened, and Home's buttons
+  open them ([screenshot](screenshots/p2.5-27/02-settings-troubleshooting.png)). The changes are two lists, Mods then
+  Fixes; one timeline mixing both waits for a reason to merge them.*
 - P2.5-28 The gilded-tome style: button, frame, switch and seal templates from tokens, Kenney's *Fantasy UI Borders*
   (CC0) as tinted masks, and the screenshots for the README, the Nexus page and the website retaken.
 

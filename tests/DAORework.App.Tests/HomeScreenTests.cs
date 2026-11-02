@@ -60,8 +60,7 @@ public sealed class HomeScreenTests : IDisposable
 
         await home.UndoLastCommand.ExecuteAsync(null);
 
-        Assert.Equal(MainWindowViewModel.ModsPage, viewModel.SelectedPage);
-        Assert.Equal(MainWindowViewModel.HistorySection, viewModel.ModsSection);
+        Assert.Equal(MainWindowViewModel.HistoryPage, viewModel.SelectedPage);
         Assert.StartsWith("Undo back to before “Turned on Hair Pack”?", viewModel.ModsTab.Changes.PendingRollback, StringComparison.Ordinal);
         Assert.Single(_scenario.DeployedHair()); // Nothing is undone until it is confirmed there.
     }

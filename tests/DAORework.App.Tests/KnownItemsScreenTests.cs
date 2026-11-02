@@ -100,8 +100,7 @@ public sealed class KnownItemsScreenTests : IDisposable
         _host.Picker.Enqueue(GamePaths.GameExecutable(AppTestHost.InstallDirectory));
         await viewModel.Profile.Paths.BrowseCommand.ExecuteAsync(ProfilePathKind.Game);
 
-        var tabs = window.FindControl<TabControl>("Pages") ?? throw new InvalidOperationException("No tab control named Pages.");
-        tabs.SelectedIndex = MainWindowViewModel.DiagnosticsPage;
+        ModsTabScenario.Show<DiagnosticsPage>(window);
         return (window, viewModel);
     }
 }

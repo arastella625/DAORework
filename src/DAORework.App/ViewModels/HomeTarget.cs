@@ -4,6 +4,7 @@ namespace DAORework.App.ViewModels;
 public enum HomeTarget
 {
     Diagnostics,
+    GameFolders,
     ModsLibrary,
     ModsArrange,
     ModsCombined,
