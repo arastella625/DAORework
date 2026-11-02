@@ -9,3 +9,5 @@ reports/*.json
 TestResults/
 artifacts/
 .wrangler/
+
+.sonar/
