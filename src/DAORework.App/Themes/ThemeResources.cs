@@ -6,8 +6,8 @@ namespace DAORework.App.Themes;
 
 /// <summary>
 /// Completes a theme's color file (ADR-0016): a brush for every token, the brushes derived from them (soft tints,
-/// fades, the emphasis gradient, the smoke, the veil and the glow) and Fluent's accent-button and tab brushes. Fluent's
-/// other colors come from its palette (<see cref="FluentPalette"/>).
+/// fades, the emphasis gradient, the smoke, the veil, the glow and the gilded style's, <see cref="GildedResources"/>)
+/// and Fluent's accent-button and tab brushes. Fluent's other colors come from its palette (<see cref="FluentPalette"/>).
 /// </summary>
 internal static class ThemeResources
 {
@@ -74,6 +74,7 @@ internal static class ThemeResources
 
         var glow = ColorOf(theme, "FocusGlow");
         theme[ThemeTokens.GlowShadow] = new BoxShadows(new BoxShadow { Blur = GlowRadiusOf(theme), Color = WithAlpha(glow, 0x99) });
+        GildedResources.Add(theme, GlowRadiusOf(theme));
     }
 
     private static LinearGradientBrush Horizontal(Color start, Color end) => new()

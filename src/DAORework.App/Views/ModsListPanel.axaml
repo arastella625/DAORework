@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:DAORework.App.ViewModels"
              xmlns:views="using:DAORework.App.Views"
+             xmlns:controls="using:DAORework.App.Controls"
              x:Class="DAORework.App.Views.ModsListPanel"
              x:DataType="vm:ModsTabViewModel">
   <!-- The Mods tab as one page (ADR-0026, P2.5-26): the kind cards and chips filter it; Arrange turns it into the load order. -->
@@ -17,8 +18,12 @@
           <Button Margin="0,0,10,0" Padding="14,12" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
                   Command="{Binding $parent[views:ModsListPanel].((vm:ModsTabViewModel)DataContext).Filter.PickKindCommand}" CommandParameter="{Binding Kind}">
             <Grid ColumnDefinitions="Auto,12,*">
-              <PathIcon Classes="Ok" Width="20" Height="20" VerticalAlignment="Top" Data="{StaticResource IconOk}" IsVisible="{Binding IsReady}" />
-              <PathIcon Classes="Warning" Width="20" Height="20" VerticalAlignment="Top" Data="{StaticResource IconWarning}" IsVisible="{Binding NeedsALook}" />
+              <controls:Seal VerticalAlignment="Top" Classes.warning="{Binding NeedsALook}">
+                <Panel>
+                  <PathIcon Classes="Ok" Width="13" Height="13" Data="{StaticResource IconOk}" IsVisible="{Binding IsReady}" />
+                  <PathIcon Classes="Warning" Width="13" Height="13" Data="{StaticResource IconWarning}" IsVisible="{Binding NeedsALook}" />
+                </Panel>
+              </controls:Seal>
               <StackPanel Grid.Column="2" Spacing="2">
                 <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
                 <TextBlock Classes="Secondary" TextWrapping="Wrap" Text="{Binding Count}" />

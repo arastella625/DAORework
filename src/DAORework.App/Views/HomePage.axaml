@@ -10,6 +10,12 @@
     <StackPanel Margin="12" Spacing="12">
       <Grid ColumnDefinitions="3*,12,2*">
         <controls:Card>
+          <Panel ClipToBounds="True">
+          <!-- A soft burst of gold behind the good news; a plain theme draws none (ADR-0026 §4). -->
+          <Canvas Opacity="{DynamicResource OrnamentOpacity}" IsVisible="{Binding IsReady}" IsHitTestVisible="False">
+            <controls:Sunburst Width="260" Height="260" Canvas.Right="-90" Canvas.Top="-110"
+                               Opacity="0.4" Brush="{DynamicResource HeadingBrush}" />
+          </Canvas>
           <StackPanel Spacing="8">
             <StackPanel Orientation="Horizontal" Spacing="10">
               <PathIcon Classes="Ok" Width="22" Height="22" Data="{StaticResource IconOk}" IsVisible="{Binding IsReady}" />
@@ -25,6 +31,7 @@
                       CommandParameter="{x:Static vm:HomeTarget.GameFolders}" />
             </StackPanel>
           </StackPanel>
+          </Panel>
         </controls:Card>
         <controls:Card Grid.Column="2">
           <StackPanel Spacing="6">
@@ -39,7 +46,7 @@
         </controls:Card>
       </Grid>
 
-      <controls:Card DataContext="{Binding Setup}" x:DataType="vm:SetupSummary" IsVisible="{Binding $parent[UserControl].((vm:HomeViewModel)DataContext).Setup, Converter={x:Static ObjectConverters.IsNotNull}}">
+      <controls:Card Classes="framed" DataContext="{Binding Setup}" x:DataType="vm:SetupSummary" IsVisible="{Binding $parent[UserControl].((vm:HomeViewModel)DataContext).Setup, Converter={x:Static ObjectConverters.IsNotNull}}">
         <StackPanel Spacing="10">
           <TextBlock Name="SetupTitle" Classes="SectionTitle" Text="{Binding Title}" />
           <TextBlock Classes="Secondary" TextWrapping="Wrap" Text="{Binding Body}" />
@@ -54,8 +61,12 @@
                 <Button Margin="0,0,10,0" Padding="14,12" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
                         Command="{Binding $parent[UserControl].((vm:HomeViewModel)DataContext).OpenCommand}" CommandParameter="{Binding Target}">
                   <Grid ColumnDefinitions="Auto,12,*">
-                    <PathIcon Classes="Ok" Width="20" Height="20" VerticalAlignment="Top" Data="{StaticResource IconOk}" IsVisible="{Binding IsReady}" />
-                    <PathIcon Classes="Warning" Width="20" Height="20" VerticalAlignment="Top" Data="{StaticResource IconWarning}" IsVisible="{Binding NeedsALook}" />
+                    <controls:Seal VerticalAlignment="Top" Classes.warning="{Binding NeedsALook}">
+                      <Panel>
+                        <PathIcon Classes="Ok" Width="13" Height="13" Data="{StaticResource IconOk}" IsVisible="{Binding IsReady}" />
+                        <PathIcon Classes="Warning" Width="13" Height="13" Data="{StaticResource IconWarning}" IsVisible="{Binding NeedsALook}" />
+                      </Panel>
+                    </controls:Seal>
                     <StackPanel Grid.Column="2" Spacing="2">
                       <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
                       <TextBlock Classes="Secondary" TextWrapping="Wrap" Text="{Binding Count}" />
