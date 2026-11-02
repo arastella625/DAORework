@@ -125,7 +125,8 @@ If the board is ever lost, or a fork needs one:
    ([docs/release/nexus-upload.md](docs/release/nexus-upload.md)); otherwise upload it by hand.
 5. Put the zip's SHA-256 (from its `.sha256` file) and the version in the *Check your download* section of
    `site/public/index.html` and merge it, so the website ([ADR-0021](docs/adr/0021-project-website.md)) shows the
-   checksum from a second host.
+   checksum from a second host. If the release changes how the window looks, copy the retaken README screenshots to
+   `site/public/images/app/` in the same change ([docs/release/website.md](docs/release/website.md)).
 
 To build the zip locally: `./scripts/publish-release.ps1` (output in `./artifacts`).
 

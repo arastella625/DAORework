@@ -285,8 +285,8 @@ unchanged.
   *Done: gold-edged buttons with Cinzel labels and inner rules, cards with a double rule and filigree in every corner,
   gem on/off switches, readiness seals, a sunburst behind *Ready to play*, and Kenney's border (CC0) around Home's cards,
   all drawn from the theme's tokens, with no ornaments in Korcari ([Home](screenshots/p2.5-28/01-home.png),
-  [Mods](screenshots/p2.5-28/02-mods-switches.png)); the README's screenshots are retaken. The website's and the Nexus
-  page's are retaken with the next release, so they show what can be downloaded.*
+  [Mods](screenshots/p2.5-28/02-mods-switches.png)); the README's and the website's screenshots are retaken, the website saying the pictures
+  show the next release. The Nexus page's are retaken with that release, so they show what can be downloaded.*
 
 **Not in this phase:** Nexus "Mod Manager Download" (`nxm://`) links and any other network access (SDD §12 and
 ADR-0009 need an ADR first); hard links for large texture packs (ADR-0012 leaves that to its own ADR); any format

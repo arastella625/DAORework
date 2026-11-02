@@ -45,13 +45,26 @@ code { font: 0.9em ui-monospace, Consolas, monospace; background: var(--surface-
 .tagline { font-size: 1.3rem; margin: 0.4em 0 0; }
 .promise { color: var(--muted); font-family: "Cinzel", Georgia, serif; }
 .actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 1.5em 0 2em; }
+/* The gilded tome (ADR-0026 §4): a gold edge and an inner dark rule, the main button's label in Cinzel. */
 .button {
   display: inline-block; padding: 0.6em 1.3em; border-radius: 6px; text-decoration: none;
-  background: var(--accent); color: #fff; border: 1px solid var(--accent);
+  background: var(--accent); color: #fff; border: 1px solid var(--gold);
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.35), inset 0 0 0 3px rgba(201, 169, 110, 0.25);
+  font-family: "Cinzel", Georgia, serif; font-weight: 600; letter-spacing: 0.03em;
 }
-.button.ghost { background: transparent; color: var(--text); border-color: var(--line); }
+.button.ghost { background: var(--surface); color: var(--text); border-color: var(--line); font-family: inherit; font-weight: 400; letter-spacing: 0; }
 .button:hover { color: #fff; filter: brightness(1.15); }
-.cover, .gallery img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 6px; }
+.cover, .gallery img {
+  display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 6px;
+  box-shadow: 0 0 0 3px var(--bg), 0 0 0 4px rgba(201, 169, 110, 0.35);
+}
+.cover-note { color: var(--muted); font-size: 0.9rem; margin: 0.9em 0 0; }
+
+/* A card with a double rule: the gold line and a faint one inside it. */
+.panel {
+  background: linear-gradient(var(--surface-2), var(--surface)); border: 1px solid var(--line); border-radius: 6px;
+  padding: 4px 20px; box-shadow: inset 0 0 0 4px var(--surface), inset 0 0 0 5px rgba(201, 169, 110, 0.25);
+}
 
 section { padding: 40px 0 8px; }
 .points { padding-left: 1.2em; }
