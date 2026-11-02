@@ -1,44 +1,67 @@
 [center][size=6][b]DAORework[/b][/size]
-[size=4]A free mod manager, launcher and diagnostics tool for Dragon Age: Origins[/size][/center]
+[size=4]A free mod manager, launcher and troubleshooter for Dragon Age: Origins[/size]
 
-[img]https://daorework.dilly-world.net/images/00-cover.png[/img]
+[img]https://daorework.dilly-world.net/images/nexus/00-cover.png[/img]
 
-Already have mods installed by hand? DAORework takes them over [b]without reinstalling anything[/b], and from then on every change shows you exactly what it will do first, takes a backup, and can be rolled back.
+[size=3][b]Every change can be undone.[/b] Every mod is checked. Your hand-built setup comes along without reinstalling.[/size][/center]
 
 [line]
 
-[size=5][b]What it does[/b][/size]
+[size=5][b]Why DAORework[/b][/size]
 
 [list]
-[*][b]Adopts the mods you installed by hand[/b] in [i]override[/i] and [i]AddIns[/i], without reinstalling them. Official DLC is never touched.
-[*][b]Installs mods safely.[/b] Import a .dazip, .zip, .7z or .rar, or drop it on the window. Activating shows exactly what will be copied, replaced or removed before anything changes, takes a backup first, and any change can be rolled back.
-[*][b]Shows conflicts.[/b] For every file two mods share, it shows whose copy the game uses, and lets you reorder them.
-[*][b]Checks every mod.[/b] Programs inside a mod are named and never installed. Every mod is scanned by your own antivirus (Microsoft Defender or whichever you use) before it is kept, and a mod it flags is refused. A download that differs from the known official one is pointed out.
-[*][b]Fixes.[/b] Installs and removes DXVK, and the 4 GB (large address aware) patch on copies that allow it, and notices when Steam's Verify integrity has undone a fix. The 4 GB patch is for copies without Steam's copy protection, such as GOG and EA App: Steam refuses to start its own daorigins.exe once it is patched, so DAORework does not patch the Steam copy, and tells you how to undo it if it was patched before.
-[*][b]Diagnoses your install[/b] and suggests next steps, each with its own button.
-[*][b]Backs up your saves[/b], keeping the newest backups, and launches the game.
+[*][b]Bring the mods you already have.[/b] Mods you installed by hand in [i]override[/i] and [i]AddIns[/i] show up as [i]Found in your game[/i]. Press [b]Manage[/b] and DAORework looks after them from then on, without reinstalling anything. Official DLC is never touched.
+[*][b]See what a change does before it happens.[/b] Turning a mod on or off opens a short preview: what it copies, replaces or removes, and any file another mod also changes. Nothing is written until you press [b]Apply[/b].
+[*][b]Undo anything.[/b] A backup is taken before every change. [b]History[/b] lists every change DAORework made to your mods and your game folder, and [b]Undo to here[/b] puts it back exactly as it was.
+[*][b]Hair, head and colour mods work together.[/b] The game reads only one [i]chargenmorphcfg.xml[/i], so normally only one such mod shows in the character creator. DAORework combines them into one file, so every mod's hairs, heads, beards and colours show.
+[*][b]Know what a shared file means.[/b] When two mods ship the same file, DAORework says whose copy the game uses and what that means: one texture wins, a data table's changes are lost (look for a compatibility patch), a script's behaviour is lost. [b]Arrange[/b] picks the winner.
+[*][b]Every mod is checked.[/b] Programs inside a mod are named and never installed. Your own antivirus (Microsoft Defender or whichever you use) scans every mod before it is kept, and a mod it flags is refused. A download that differs from the known official one is pointed out.
 [/list]
-
-[b]What it does not do:[/b] it does not include or download any game files or mods, and it never sends anything over the internet. It only changes the game's own files for the two fixes, each behind a plan and a backup.
 
 [line]
 
-[size=5][b]Screenshots[/b][/size]
+[size=5][b]A quick tour[/b][/size]
 
-[b]Already modded by hand? It takes those mods over without reinstalling[/b]
-[img]https://daorework.dilly-world.net/images/04-adopt-hand-installed.png[/img]
+[b]Home: is the game ready to play?[/b] Your add-ins, override mods and combined files at a glance, your last change with Undo, and a few suggestions worth a look.
+[img]https://daorework.dilly-world.net/images/nexus/01-home.png[/img]
 
-[b]The plan, before anything is written[/b]
-[img]https://daorework.dilly-world.net/images/02-activate-plan.png[/img]
+[b]Mods: one list, with a switch for each.[/b] Add a .dazip, .zip, .7z or .rar with [i]Add mods[/i] or by dropping it on the window. Filter by add-ins, override mods, on, off, or found in your game.
+[img]https://daorework.dilly-world.net/images/nexus/02-mods.png[/img]
 
-[b]Load order and the files mods share[/b]
-[img]https://daorework.dilly-world.net/images/03-load-order.png[/img]
+[b]Found in your game: manage what you installed by hand[/b], one mod or several at once.
+[img]https://daorework.dilly-world.net/images/nexus/03-manage.png[/img]
 
-[b]DXVK, and the 4 GB patch where the copy allows it[/b]
-[img]https://daorework.dilly-world.net/images/05-fixes.png[/img]
+[b]A preview before every change.[/b] One line says what it does; the file list is behind Show details.
+[img]https://daorework.dilly-world.net/images/nexus/04-preview.png[/img]
 
-[b]Every change is backed up and can be rolled back[/b]
-[img]https://daorework.dilly-world.net/images/06-rollback.png[/img]
+[b]Arrange and combined files:[/b] which mod wins a shared file, and which files were merged.
+[img]https://daorework.dilly-world.net/images/nexus/05-arrange.png[/img]
+
+[b]Fixes: DXVK, and the 4 GB patch where your copy allows it.[/b] It also notices when Steam's Verify integrity has undone one.
+[img]https://daorework.dilly-world.net/images/nexus/06-fixes.png[/img]
+
+[b]History: every change, with Undo.[/b]
+[img]https://daorework.dilly-world.net/images/nexus/07-history.png[/img]
+
+[b]Your look:[/b] four dark themes, or your own accent colour and background picture, per profile if you like.
+[img]https://daorework.dilly-world.net/images/nexus/08-your-look.png[/img]
+
+[i]Screenshots come from DAORework's automated window tests, with made-up mods. They were taken where the Windows antivirus scan isn't available, so mods say "Not scanned"; on Windows they show what your antivirus found.[/i]
+
+[line]
+
+[size=5][b]Everything it does[/b][/size]
+
+[list]
+[*][b]Mods:[/b] add, turn on and off (one or many at once), manage mods found in your game, arrange the load order, combine [i]chargenmorphcfg.xml[/i], and undo any change.
+[*][b]Fixes:[/b] installs and removes DXVK from a release you download, and the 4 GB (large address aware) patch on copies that allow it, such as GOG and EA App. Steam's own [i]daorigins.exe[/i] carries Steam's copy protection and Steam will not start it once patched, so DAORework leaves the Steam copy alone, and tells you how to undo it if it was patched before.
+[*][b]Saves:[/b] [i]Back up now[/i] copies your saves into DAORework's own folder and keeps the newest ones. Your saves folder is only ever read.
+[*][b]Checks:[/b] finds your install (Steam, GOG, EA App or a folder you pick) and your documents folder, including a OneDrive one, and checks the 4 GB patch, DirectX and Visual C++ runtimes, your settings file, your saves, your DLC, known community fixes, and mods in the install folder's own override that older guides used.
+[*][b]Play:[/b] the big button starts the game. A Steam copy is started through Steam, with the overlay and playtime.
+[*][b]Command line:[/b] [i]dao.exe[/i] does all of the above for scripts, if you want it.
+[/list]
+
+[b]What it does not do:[/b] it does not include or download any game files or mods, and it never sends anything over the internet. It only changes files in the game folder for the two fixes, each behind a preview and a backup.
 
 [line]
 
@@ -54,21 +77,23 @@ Already have mods installed by hand? DAORework takes them over [b]without reinst
 [list=1]
 [*]Unzip anywhere.
 [*]Run [b]DAORework.exe[/b].
-[*]Create a profile at the top of the window. It finds your install and documents folder, checks them, and lists your next steps.
+[*]Choose [i]New profile[/i] at the top of the window. DAORework finds your game and documents folder, checks them, and Home tells you whether you are ready to play and what is worth a look.
 [/list]
 
-Your profiles, mod library and backups are kept in [i]%LOCALAPPDATA%\DAORework[/i]. [i]dao.exe[/i] is the same tool on the command line, if you want it.
+Your profiles, mod library and backups are kept in [i]%LOCALAPPDATA%\DAORework[/i].
+
+[b]Coming from 0.3.x?[/b] The window now has six tabs (Home, Mods, Fixes, Saves, History, Settings) and plainer words: [i]Adopt[/i] is now [b]Manage[/b], [i]Activate[/i] and [i]Deactivate[/i] are [b]Turn on[/b] and [b]Turn off[/b], [i]Roll back[/i] is [b]Undo[/b], [i]Installed by hand[/i] is [b]Found in your game[/b], and the load order is [b]Arrange[/b]. Diagnostics, the support bundle and your game folders are under Settings. Your library, mods and backups carry over as they are.
 
 [size=5][b]Uninstall[/b][/size]
 
-Deactivate or roll back the mods you activated through it (Mods tab), remove the fixes (Fixes tab), then delete the folder you unzipped and [i]%LOCALAPPDATA%\DAORework[/i].
+Turn off the mods you turned on through DAORework (or undo back to the first change in History), turn off the fixes on the Fixes tab, then delete the folder you unzipped and [i]%LOCALAPPDATA%\DAORework[/i].
 
 [size=5][b]Windows SmartScreen[/b][/size]
 
-From 0.3.1, DAORework.exe and dao.exe are code-signed: right-click > Properties > Digital Signatures shows who published them. A new publisher still builds up reputation with SmartScreen, so on early releases Windows may still say it protected your PC: choose [b]More info[/b], then [b]Run anyway[/b]. You can also check that your download is the real one in two ways:
+DAORework.exe and dao.exe are code-signed: right-click > Properties > Digital Signatures shows who published them. A new publisher still builds up reputation with SmartScreen, so Windows may still say it protected your PC: choose [b]More info[/b], then [b]Run anyway[/b]. You can also check that your download is the real one in two ways:
 [list]
-[*][b]Checksum:[/b] run [i]Get-FileHash DAORework-0.3.2-win-x64.zip[/i] in PowerShell and compare it with the .sha256 file on the [url=https://github.com/arastella625/DAORework/releases]GitHub release[/url].
-[*][b]Build attestation:[/b] with the GitHub CLI, [i]gh attestation verify DAORework-0.3.2-win-x64.zip --repo arastella625/DAORework[/i] proves the zip was built by the project's own release workflow from its published source, and not changed since.
+[*][b]Checksum:[/b] run [i]Get-FileHash[/i] on the zip in PowerShell and compare it with the .sha256 file on the [url=https://github.com/arastella625/DAORework/releases]GitHub release[/url], or with the checksum on the [url=https://daorework.dilly-world.net/]website[/url].
+[*][b]Build attestation:[/b] with the GitHub CLI, [i]gh attestation verify <the zip> --repo arastella625/DAORework[/i] proves the zip was built by the project's own release workflow from its published source, and not changed since.
 [/list]
 
 [line]
@@ -99,7 +124,7 @@ Free, with its source public, under the PolyForm Noncommercial License 1.0.0: us
 
 Website, with the checksum of every release: [url=https://daorework.dilly-world.net/]daorework.dilly-world.net[/url]
 
-Please report bugs on the [url=https://github.com/arastella625/DAORework/issues]GitHub issues page[/url]. The [b]Export support bundle[/b] button on the Diagnostics tab makes a zip of your setup with your Windows user name removed, which helps a lot.
+Please report bugs on the [url=https://github.com/arastella625/DAORework/issues]GitHub issues page[/url]. [b]Settings > Troubleshooting > Save a support bundle[/b] makes a zip of your setup with your Windows user name removed, which helps a lot.
 
 [size=5][b]Credits[/b][/size]
 
