@@ -97,7 +97,8 @@ and proves it recovers to either the before-state or the after-state, never a mi
 
 ## Phase 2.5: Launch-ready mod manager
 
-**Status: release 0.3.0 prepared; the owner's real-install checks remain** (see the exit gate and
+**Status: in progress. Releases 0.3.0 to 0.4.0 are out; P2.5-22 (in part), P2.5-23 and the SonarCloud findings
+(P2.5-29 to P2.5-35) remain, and so do two exit-gate items** (see the exit gate and
 [docs/testing/phase-2.5-matrix.md](testing/phase-2.5-matrix.md)). Added on 2026-10-28, ahead of Phase 3.
 
 **Goal:** the first public release (Nexus Mods). A player who already mods by hand can switch to DAORework without
@@ -287,6 +288,29 @@ unchanged.
   all drawn from the theme's tokens, with no ornaments in Korcari ([Home](screenshots/p2.5-28/01-home.png),
   [Mods](screenshots/p2.5-28/02-mods-switches.png)); the README's and the website's screenshots are retaken, the website saying the pictures
   show the next release. The Nexus page's are retaken with that release, so they show what can be downloaded.*
+
+**SonarCloud's first findings** *(added 2026-11-02, from the first analyses after
+[ADR-0027](adr/0027-sonarcloud-analysis-in-ci.md); 113 open findings and a red, report-only quality gate)*. Each task
+is one issue and one PR. The analyzers and ENGINEERING_STANDARDS stay the authority: a finding is fixed when it is
+right and marked in SonarCloud, with the reason, when it is not. Making the gate blocking is a later, separate
+decision.
+
+- P2.5-29 Pin the workflow dependencies: `azure/login` and `Azure/artifact-signing-action` in `release.yml` to full
+  commit SHAs with the version in a comment, as the Nexus upload action already is (`githubactions:S7637`), and
+  `dotnet-sonarscanner` to an exact version in `ci.yml` (ADR-0027's follow-up).
+- P2.5-30 Open zip entries asynchronously (`OpenAsync`) in `FixSourceReader`, `ZipSaveBackupStore` and
+  `ZipSupportBundleWriter` (`csharpsquid:S6966`). A refactor: no behavior changes.
+- P2.5-31 `scripts/verify-real-install.ps1`: put `$null` on the left of its two comparisons (`powershelldre:S8641`),
+  so a comparison against an array cannot filter instead of compare.
+- P2.5-32 Source-generated interop: `LibraryImport` for the AMSI calls in `AmsiNativeMethods`
+  (`SYSLIB1054`), and `GeneratedRegex` in `DiagnosticCodesTests` (`SYSLIB1045`).
+- P2.5-33 The Nexus cover page (`docs/release/nexus/cover.html`) gets a `<title>` and `lang`.
+- P2.5-34 The collection-expression hints (about 85, mostly `IDE0305` and `IDE0028`, set to *suggestion* in
+  `.editorconfig`): either raise them to *warning* and apply them in one refactor PR, or keep them as suggestions and
+  stop SonarCloud reporting them. The owner decides in the issue.
+- P2.5-35 Mark the findings that are wrong, in SonarCloud, with the reason: `LookColor`'s exact comparisons
+  (`csharpsquid:S1244`; `max` is always exactly one of r, g and b) and `GrainTexture`'s seeded `Random`
+  (`csharpsquid:S2245`; seeded on purpose so the screenshots stay the same). No code changes.
 
 **Not in this phase:** Nexus "Mod Manager Download" (`nxm://`) links and any other network access (SDD §12 and
 ADR-0009 need an ADR first); hard links for large texture packs (ADR-0012 leaves that to its own ADR); any format
