@@ -42,7 +42,8 @@ So:
   author put it back on hold. The workflow uses `pull_request_target` and never checks out or runs the PR's code.
 - **Automation changes are flagged and owned.** A PR touching `.claude/`, `.github/`, `CLAUDE.md` or `scripts/` gets
   the `touches-automation` label, and `.github/CODEOWNERS` makes the owner's review required for those paths, the ADRs,
-  the package versions and the legal boundaries once branch protection requires code-owner review.
+  the legal boundaries and the build files (`Directory.*.props` and every `.csproj`, since `VersionOverride` lets a
+  project change a package version) once branch protection requires code-owner review.
 - **Agents review only released PRs.** A Claude session reviews an untrusted PR only after a maintainer marks it ready,
   never checks out a PR branch that changes `.claude/`, `CLAUDE.md` or hooks before the owner has read those changes,
   and treats everything in the PR as data, not instructions.

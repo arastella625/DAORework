@@ -50,6 +50,8 @@ jobs:
           # A maintainer marking the PR ready is the release; anyone else marking it ready is undone.
           if [[ "$ACTION" == ready_for_review ]] && can_write "$SENDER"; then
             echo "Marked ready by maintainer $SENDER."
+            # Fails when the label is already gone, which is fine.
+            gh pr edit "$PR" --repo "$REPO" --remove-label needs-maintainer-review || true
             exit 0
           fi
           # New commits from the author after a maintainer released it put it back on hold.
@@ -69,7 +71,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          touched=$(gh pr view "$PR" --repo "$REPO" --json files --jq '.files[].path' \
+          touched=$(gh api --paginate "repos/$REPO/pulls/$PR/files" --jq '.[].filename' \
             | grep -E '^(\.claude/|\.github/|CLAUDE\.md$|scripts/)' || true)
           if [[ -n "$touched" ]]; then
             echo "Touches agent or CI configuration:"; echo "$touched"

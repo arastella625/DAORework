@@ -7,4 +7,8 @@
 /docs/adr/              @arastella625
 /docs/LEGAL_BOUNDARIES.md @arastella625
 /Directory.Packages.props @arastella625
+/Directory.Build.props   @arastella625
+/tests/Directory.Build.props @arastella625
+# VersionOverride lets any project change a package version.
+*.csproj                @arastella625
 /global.json            @arastella625
