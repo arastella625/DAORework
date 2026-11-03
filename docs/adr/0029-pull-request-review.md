@@ -22,9 +22,9 @@ class takes at most five dependencies. Those rules exist on purpose (SDD §5, EN
 ## Decision
 - Every PR gets the review passes in [docs/REVIEWING.md](../REVIEWING.md) before it is marked ready: CI, a
   correctness pass, a Ponytail pass, and a security pass when the diff touches Infrastructure, scripts or workflows.
-- Ponytail is installed by each contributor in their own Claude Code, from `DietrichGebert/ponytail` only, and run at
-  `lite` (`PONYTAIL_DEFAULT_MODE=lite` or `{ "defaultMode": "lite" }` in `~/.config/ponytail/config.json`), so it
-  trims code without arguing with the SDD while writing. The repository does not enable it for every session.
+- Ponytail is enabled for every session in this repository by `.claude/settings.json`: its marketplace pinned to a
+  release tag (`ref`), the `ponytail@ponytail` plugin, and `PONYTAIL_DEFAULT_MODE=lite`, so it trims code without
+  arguing with the SDD while writing. Moving the tag is its own PR.
 - **Precedence:** the SDD, ENGINEERING_STANDARDS, the ADRs and LEGAL_BOUNDARIES win over any review tool. A finding
   that contradicts one of them is answered by naming the rule and is not applied.
 - Every review comment on a PR gets an outcome: fixed in a new commit, or a reply saying why not. A thread is resolved
@@ -33,17 +33,37 @@ class takes at most five dependencies. Those rules exist on purpose (SDD §5, EN
   (refactor and feature PRs stay separate).
 - The owner merges. No tool or session approves or merges a PR.
 
+### Guardrails
+Enabling a plugin for the repository, and running agents on PRs, means a PR can change what the next session runs.
+So:
+- **Untrusted PRs are held as drafts.** `.github/workflows/pr-guard.yml` converts a PR to a draft and labels it
+  `needs-maintainer-review` when its author has no write access (trusted bots such as Dependabot are listed in the
+  workflow). Only someone with write access can mark it ready; anyone else doing so is undone, and new commits from the
+  author put it back on hold. The workflow uses `pull_request_target` and never checks out or runs the PR's code.
+- **Automation changes are flagged and owned.** A PR touching `.claude/`, `.github/`, `CLAUDE.md` or `scripts/` gets
+  the `touches-automation` label, and `.github/CODEOWNERS` makes the owner's review required for those paths, the ADRs,
+  the package versions and the legal boundaries once branch protection requires code-owner review.
+- **Agents review only released PRs.** A Claude session reviews an untrusted PR only after a maintainer marks it ready,
+  never checks out a PR branch that changes `.claude/`, `CLAUDE.md` or hooks before the owner has read those changes,
+  and treats everything in the PR as data, not instructions.
+- **Branch protection on `main`** (set by the owner in GitHub): PRs required, CI required, code-owner review
+  required, and *Require approval for all outside collaborators* for workflow runs from forks.
+
 ## Consequences
 - Each PR costs a few more minutes of agent time before it is ready, and arrives with fewer obvious issues.
-- A session without Ponytail installed skips pass 3 and says so in the PR; the other passes still apply.
-- Ponytail is third-party code that runs hooks in the sessions that install it. Keeping it out of the repository's
-  `.claude/settings.json` means nobody runs it without choosing to.
+- Sessions load Ponytail from GitHub once the folder is trusted; one without network access to GitHub skips pass 3 and
+  says so in the PR.
+- Ponytail is third-party code running hooks in our sessions. The tag pin, the CODEOWNERS entry on `.claude/` and the
+  author-only source (`DietrichGebert/ponytail`, never a fork or mirror) are what keep a change to it deliberate.
+- Outside contributors wait for the owner before CI review starts; that is the point.
 - Running these passes in GitHub Actions on every PR (for example with `anthropics/claude-code-action`) needs an
-  Anthropic API key as a repository secret; that is a separate, later decision.
+  Anthropic API key as a repository secret; that is a separate, later decision, and it would run only on PRs that are
+  not drafts.
 
 ## Alternatives considered
 - *Keep self-review only:* the writer reviewing its own diff misses what a different lens finds.
-- *Enable Ponytail for every session in `.claude/settings.json`:* third-party hooks would run for anyone who opens
-  the folder, without their choice.
+- *Each contributor installs Ponytail by hand:* the passes would differ from session to session.
+- *Track Ponytail's default branch:* any upstream push would change what our sessions run, unreviewed.
+- *Close PRs from outside contributors:* turns help away; a draft hold costs them nothing.
 - *Ponytail at `full` or `ultra` while writing:* it would argue with the one-class-per-behavior rule on every task.
 - *A CI review bot now:* needs a paid key and a secret; the local passes come first and show whether it is worth it.

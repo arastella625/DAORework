@@ -1,0 +1,79 @@
+name: PR guard
+
+# Holds PRs from people without write access as drafts until a maintainer marks them ready,
+# and flags any PR that changes what CI or Claude sessions run (ADR-0029, docs/REVIEWING.md).
+# pull_request_target runs this file from main with a write token, so it must never check out
+# or run the PR's code. It only reads the PR through the API and edits its state, labels and comments.
+
+on:
+  pull_request_target:
+    types: [opened, reopened, ready_for_review, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: pr-guard-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      REPO: ${{ github.repository }}
+      PR: ${{ github.event.pull_request.number }}
+      ACTION: ${{ github.event.action }}
+      AUTHOR: ${{ github.event.pull_request.user.login }}
+      SENDER: ${{ github.event.sender.login }}
+      IS_DRAFT: ${{ github.event.pull_request.draft }}
+      # Bots that open PRs here on their own and are trusted like a maintainer.
+      TRUSTED_BOTS: "dependabot[bot]"
+    steps:
+      - name: Hold untrusted PRs as drafts
+        shell: bash
+        run: |
+          set -euo pipefail
+          can_write() {
+            case " $TRUSTED_BOTS " in *" $1 "*) return 0 ;; esac
+            local perm
+            perm=$(gh api "repos/$REPO/collaborators/$1/permission" --jq .permission 2>/dev/null || echo none)
+            [[ "$perm" == admin || "$perm" == write ]]
+          }
+
+          if can_write "$AUTHOR"; then
+            echo "Author $AUTHOR has write access; nothing to hold."
+            exit 0
+          fi
+          # A maintainer marking the PR ready is the release; anyone else marking it ready is undone.
+          if [[ "$ACTION" == ready_for_review ]] && can_write "$SENDER"; then
+            echo "Marked ready by maintainer $SENDER."
+            exit 0
+          fi
+          # New commits from the author after a maintainer released it put it back on hold.
+          held=false
+          if [[ "$IS_DRAFT" != true || "$ACTION" == ready_for_review ]]; then
+            gh pr ready "$PR" --repo "$REPO" --undo
+            held=true
+          fi
+          if [[ "$held" == true || "$ACTION" == opened || "$ACTION" == reopened ]]; then
+            gh label create needs-maintainer-review --repo "$REPO" --color D93F0B \
+              --description "Held as a draft until a maintainer has read it" --force
+            gh pr edit "$PR" --repo "$REPO" --add-label needs-maintainer-review
+            gh pr comment "$PR" --repo "$REPO" --body "Thanks for the PR. It is held as a draft until a maintainer has read the changes and marks it ready for review; new commits put it back on hold. The review process is in docs/REVIEWING.md."
+          fi
+
+      - name: Flag changes to CI and agent configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          touched=$(gh pr view "$PR" --repo "$REPO" --json files --jq '.files[].path' \
+            | grep -E '^(\.claude/|\.github/|CLAUDE\.md$|scripts/)' || true)
+          if [[ -n "$touched" ]]; then
+            echo "Touches agent or CI configuration:"; echo "$touched"
+            gh label create touches-automation --repo "$REPO" --color FBCA04 \
+              --description "Changes CI, scripts or Claude session configuration" --force
+            gh pr edit "$PR" --repo "$REPO" --add-label touches-automation
+          fi
