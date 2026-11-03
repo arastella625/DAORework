@@ -97,8 +97,8 @@ and proves it recovers to either the before-state or the after-state, never a mi
 
 ## Phase 2.5: Launch-ready mod manager
 
-**Status: in progress. Releases 0.3.0 to 0.4.0 are out; P2.5-22 (in part), P2.5-23 and the SonarCloud findings
-(P2.5-29 to P2.5-35) remain, and so do two exit-gate items** (see the exit gate and
+**Status: in progress. Releases 0.3.0 to 0.4.0 are out; P2.5-22 (in part), P2.5-23, the Vortex handover
+(P2.5-29 to P2.5-31) and the SonarCloud findings (P2.5-32 to P2.5-38) remain, and so do two exit-gate items** (see the exit gate and
 [docs/testing/phase-2.5-matrix.md](testing/phase-2.5-matrix.md)). Added on 2026-10-28, ahead of Phase 3.
 
 **Goal:** the first public release (Nexus Mods). A player who already mods by hand can switch to DAORework without
@@ -305,20 +305,20 @@ is one issue and one PR. The analyzers and ENGINEERING_STANDARDS stay the author
 right and marked in SonarCloud, with the reason, when it is not. Making the gate blocking is a later, separate
 decision.
 
-- P2.5-29 Pin the workflow dependencies: `azure/login` and `Azure/artifact-signing-action` in `release.yml` to full
+- P2.5-32 Pin the workflow dependencies: `azure/login` and `Azure/artifact-signing-action` in `release.yml` to full
   commit SHAs with the version in a comment, as the Nexus upload action already is (`githubactions:S7637`), and
   `dotnet-sonarscanner` to an exact version in `ci.yml` (ADR-0027's follow-up).
-- P2.5-30 Open zip entries asynchronously (`OpenAsync`) in `FixSourceReader`, `ZipSaveBackupStore` and
+- P2.5-33 Open zip entries asynchronously (`OpenAsync`) in `FixSourceReader`, `ZipSaveBackupStore` and
   `ZipSupportBundleWriter` (`csharpsquid:S6966`). A refactor: no behavior changes.
-- P2.5-31 `scripts/verify-real-install.ps1`: put `$null` on the left of its two comparisons (`powershelldre:S8641`),
+- P2.5-34 `scripts/verify-real-install.ps1`: put `$null` on the left of its two comparisons (`powershelldre:S8641`),
   so a comparison against an array cannot filter instead of compare.
-- P2.5-32 Source-generated interop: `LibraryImport` for the AMSI calls in `AmsiNativeMethods`
+- P2.5-35 Source-generated interop: `LibraryImport` for the AMSI calls in `AmsiNativeMethods`
   (`SYSLIB1054`), and `GeneratedRegex` in `DiagnosticCodesTests` (`SYSLIB1045`).
-- P2.5-33 The Nexus cover page (`docs/release/nexus/cover.html`) gets a `<title>` and `lang`.
-- P2.5-34 The collection-expression hints (about 85, mostly `IDE0305` and `IDE0028`, set to *suggestion* in
+- P2.5-36 The Nexus cover page (`docs/release/nexus/cover.html`) gets a `<title>` and `lang`.
+- P2.5-37 The collection-expression hints (about 85, mostly `IDE0305` and `IDE0028`, set to *suggestion* in
   `.editorconfig`): either raise them to *warning* and apply them in one refactor PR, or keep them as suggestions and
   stop SonarCloud reporting them. The owner decides in the issue.
-- P2.5-35 Mark the findings that are wrong, in SonarCloud, with the reason: `LookColor`'s exact comparisons
+- P2.5-38 Mark the findings that are wrong, in SonarCloud, with the reason: `LookColor`'s exact comparisons
   (`csharpsquid:S1244`; `max` is always exactly one of r, g and b) and `GrainTexture`'s seeded `Random`
   (`csharpsquid:S2245`; seeded on purpose so the screenshots stay the same). No code changes.
 
