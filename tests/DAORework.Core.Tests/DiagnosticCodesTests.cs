@@ -5,9 +5,10 @@ using Xunit;
 
 namespace DAORework.Core.Tests;
 
-public sealed class DiagnosticCodesTests
+public sealed partial class DiagnosticCodesTests
 {
-    private static readonly Regex _codeFormat = new("^DAO_[A-Z0-9]+(_[A-Z0-9]+)+$", RegexOptions.CultureInvariant);
+    [GeneratedRegex("^DAO_[A-Z0-9]+(_[A-Z0-9]+)+$", RegexOptions.CultureInvariant)]
+    private static partial Regex CodeFormat();
 
     private static List<(string Name, string Value)> AllCodes() =>
         typeof(DiagnosticCodes)
@@ -19,7 +20,7 @@ public sealed class DiagnosticCodesTests
     [Fact]
     public void AllCodes_FollowTheDaoAreaConditionFormat()
     {
-        var offenders = AllCodes().Where(c => !_codeFormat.IsMatch(c.Value)).ToList();
+        var offenders = AllCodes().Where(c => !CodeFormat().IsMatch(c.Value)).ToList();
 
         Assert.Empty(offenders);
     }
