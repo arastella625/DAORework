@@ -50,7 +50,7 @@ jobs:
 
       - name: Install SonarScanner for .NET
         if: env.SONAR_ENABLED == 'true'
-        run: dotnet tool install --global dotnet-sonarscanner
+        run: dotnet tool install --global dotnet-sonarscanner --version 12.0.0
 
       - name: Sonar begin
         if: env.SONAR_ENABLED == 'true'
