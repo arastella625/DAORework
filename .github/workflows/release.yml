@@ -42,12 +42,12 @@ jobs:
       folder: ${{ steps.build.outputs.folder }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.tag || github.ref }}
 
       - name: Set up .NET (from global.json)
-        uses: actions/setup-dotnet@v6
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         with:
           global-json-file: global.json
 
@@ -96,7 +96,7 @@ jobs:
 
       - name: Upload the unsigned zip
         if: ${{ !(startsWith(github.ref, 'refs/tags/v') || startsWith(inputs.tag, 'v')) }}
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: DAORework-win-x64-unsigned
           path: |
@@ -106,7 +106,7 @@ jobs:
 
       - name: Upload the folder for signing
         if: startsWith(github.ref, 'refs/tags/v') || startsWith(inputs.tag, 'v')
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: release-folder
           path: artifacts/${{ steps.build.outputs.folder }}/
@@ -127,12 +127,12 @@ jobs:
       FOLDER: artifacts/${{ needs.package.outputs.folder }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.tag || github.ref }}
 
       - name: Download the built folder
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: release-folder
           path: ${{ env.FOLDER }}
@@ -244,7 +244,7 @@ jobs:
       # GitHub offers it free for public repositories only, so a release from the private repository goes without.
       - name: Attest the build provenance
         if: ${{ !github.event.repository.private }}
-        uses: actions/attest-build-provenance@v4
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
           subject-path: |
             artifacts/*.zip
@@ -252,7 +252,7 @@ jobs:
             ${{ env.FOLDER }}/dao.exe
 
       - name: Upload the release zip
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: DAORework-win-x64
           path: |
