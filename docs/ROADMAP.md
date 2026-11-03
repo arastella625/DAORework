@@ -232,8 +232,8 @@ platform item was carried into Phase 2.*
 ## Phase 2.6: After launch
 
 **Status: in progress.** Releases `v0.3.1` to `v0.4.0` came from this work (see [CHANGELOG.md](../CHANGELOG.md)). Open:
-P2.5-22 (in part), P2.5-23, P2.5-31, the SonarCloud findings (P2.5-35, P2.5-37, P2.5-38), P2.6-01 and
-P2.6-02, and the two items carried from Phase 2.5's exit gate. Opened on 2026-11-03 for the work that had been added to
+P2.5-22 (in part), P2.5-23, P2.5-31, the SonarCloud findings (P2.5-35, P2.5-37, P2.5-38), P2.6-01 to
+P2.6-03, and the two items carried from Phase 2.5's exit gate. Opened on 2026-11-03 for the work that had been added to
 Phase 2.5 after 0.3.0.
 
 **Goal:** a player who switched to DAORework stays. What the owner and the first players find in real use is fixed
@@ -397,13 +397,20 @@ decision.
   and App tests fail on the owner's PC while CI (Linux) is green on the same commit. First, find which tests fail
   and why.
 
+**Review setup** *(added 2026-11-03, from a `/ponytail-review` of PRs #76 and #78)*.
+
+- P2.6-03 The PR guard holds up ([#80](https://github.com/arastella625/DAORework/issues/80)): `pr-guard.yml` labels a
+  PR from its full file list, not the first 100 files, and clears `needs-maintainer-review` when a maintainer releases
+  the PR. CODEOWNERS also owns `Directory.Build.props` and every `.csproj`, since `VersionOverride` lets a project
+  change a package version.
+
 **Not in this phase:** the same as Phase 2.5's.
 
 **Exit gate:**
 - [ ] P2.5-22, P2.5-23 and P2.5-31 are done.
 - [ ] The SonarCloud tasks (P2.5-32 to P2.5-38) are done, and the quality gate is green. It stays report-only
   unless a separate decision makes it blocking.
-- [ ] P2.6-01 and P2.6-02 are done, and `scripts/verify-real-install.ps1` reports no FAIL on the owner's PC.
+- [ ] P2.6-01 to P2.6-03 are done, and `scripts/verify-real-install.ps1` reports no FAIL on the owner's PC.
 - [ ] Carried from Phase 2.5: Steam, GOG and EA App each have a real run in `docs/testing/phase-2.5-matrix.md`, and
   at least one beta tester from outside the project completes adopt, import, activate and rollback in the GUI
   (P2.5-08, [#70](https://github.com/arastella625/DAORework/issues/70)). The owner may carry these forward again.
