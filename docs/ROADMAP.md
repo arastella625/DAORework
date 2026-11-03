@@ -97,9 +97,11 @@ and proves it recovers to either the before-state or the after-state, never a mi
 
 ## Phase 2.5: Launch-ready mod manager
 
-**Status: in progress. Releases 0.3.0 to 0.4.0 are out; P2.5-22 (in part), P2.5-23, the Vortex handover
-(P2.5-29 to P2.5-31) and the SonarCloud findings (P2.5-32 to P2.5-38) remain, and so do two exit-gate items** (see the exit gate and
-[docs/testing/phase-2.5-matrix.md](testing/phase-2.5-matrix.md)). Added on 2026-10-28, ahead of Phase 3.
+**Status: closed on 2026-10-31 with release `v0.3.0` and two gate items carried forward.** Its goal, the first
+public release, was met: P2.5-01 to P2.5-07, P2.5-09 to P2.5-12 and P3-04 are done. The GOG and EA App runs and an
+outside beta tester (P2.5-08, [#70](https://github.com/arastella625/DAORework/issues/70) and
+[#5](https://github.com/arastella625/DAORework/issues/5)) are carried into [Phase 2.6](#phase-26-after-launch), and so
+is everything added after 0.3.0 (P2.5-13 to P2.5-38), with their IDs unchanged. Added on 2026-10-28, ahead of Phase 3.
 
 **Goal:** the first public release (Nexus Mods). A player who already mods by hand can switch to DAORework without
 reinstalling anything and without opening a command line, and has a clear reason to stay.
@@ -196,6 +198,51 @@ Task IDs use the `P2.5-` prefix (branch `feat/P2.5-02-adopt-scan`). P3-04 moves 
   and [Nexus Mods](https://www.nexusmods.com/dragonage/mods/7083), with its build attestation, and its checksum on
   the [website](https://daorework.dilly-world.net/).*
 
+**Not in this phase:** Nexus "Mod Manager Download" (`nxm://`) links and any other network access (SDD §12 and
+ADR-0009 need an ADR first); hard links for large texture packs (ADR-0012 leaves that to its own ADR); any format
+reader.
+
+**Exit gate:**
+- [x] Every `mods`, `fixes` and `saves` capability is reachable in the GUI. Normal use needs no command line.
+  *(Library, activation, Changes, Load order, Installed by hand and Adopt on the Mods tab; the Fixes tab with its
+  rollback and recovery; the Saves tab.)*
+- [x] On the owner's real install, a hand-built mod setup (at least Qwinn's Ultimate DAO Fixpack, one other add-in
+  and one multi-folder override mod) is adopted without reinstalling, and deactivating and rolling back leave it
+  as it was. *(Steam, 2026-10-31, owner's report: [matrix](testing/phase-2.5-matrix.md).)*
+- [x] The fault-injection suite covers adopt and is green. *(Four adoption scenarios beside Phase 2's eight.)*
+- [ ] Steam, GOG and EA App each have a real run recorded in `docs/testing/phase-2.5-matrix.md`. No platform is
+  carried forward. *Steam is recorded (2026-10-31). GOG and EA App are still open as
+  [#5](https://github.com/arastella625/DAORework/issues/5): nobody on the project has either copy, so 0.3.0 says
+  plainly that only Steam has been run on a real install.*
+- [ ] At least one beta tester who is not on the project completes adopt, import, activate and rollback in the GUI
+  without the docs or help from the owner. *The owner decided on 2026-10-31 to release 0.3.0 without one, since
+  nobody outside the project is available yet; the first public users take that role, and their reports are
+  tracked as issues.*
+- [x] The headless screenshot tests are green and cover every new page. *(Library, activation plan, Changes,
+  adoption plan, load order, Fixes and its rollback, next steps.)*
+- [x] On the owner's Windows machine, a zip holding the EICAR test file (made on the spot, never committed) is refused
+  at import, and a mod with an `.exe` inside imports with the program named and is never deployed. *(2026-10-31,
+  owner's report.)*
+
+*Carried forward (owner, 2026-11-03): the two open items stay open in Phase 2.6's exit gate, as Phase 1's
+platform item was carried into Phase 2.*
+
+---
+
+## Phase 2.6: After launch
+
+**Status: in progress.** Releases `v0.3.1` to `v0.4.0` came from this work (see [CHANGELOG.md](../CHANGELOG.md)). Open:
+P2.5-22 (in part), P2.5-23, P2.5-31, the SonarCloud findings (P2.5-35, P2.5-37, P2.5-38), P2.6-01 and
+P2.6-02, and the two items carried from Phase 2.5's exit gate. Opened on 2026-11-03 for the work that had been added to
+Phase 2.5 after 0.3.0.
+
+**Goal:** a player who switched to DAORework stays. What the owner and the first players find in real use is fixed
+or smoothed: several mods at once, mods that touch the same files, a window organised around what a player does,
+taking over from Vortex, and the code health SonarCloud reports.
+
+**Task IDs:** the tasks added to Phase 2.5 after 0.3.0 move here with their IDs unchanged (P2.5-13 to P2.5-38),
+as P3-04 moved into Phase 2.5. New tasks use the `P2.6-` prefix (branch `fix/P2.6-01-documents-anywhere`).
+
 **Quality of life** *(added 2026-10-31, from the owner's own use after 0.3.0: adopting a real setup one mod at a time
 is cumbersome)*. The command line already takes several mods at once (`mods adopt <id>...`, `mods activate
 <id>...`) and the use cases plan them as one change; the window offers one mod at a time. These tasks bring the
@@ -288,6 +335,9 @@ unchanged.
   all drawn from the theme's tokens, with no ornaments in Korcari ([Home](screenshots/p2.5-28/01-home.png),
   [Mods](screenshots/p2.5-28/02-mods-switches.png)); the README's and the website's screenshots are retaken, the website saying the pictures
   show the next release. The Nexus page's are retaken with that release, so they show what can be downloaded.*
+
+**Taking over from Vortex** *(added 2026-11-03, [ADR-0028](adr/0028-taking-over-from-vortex.md))*.
+
 - P2.5-29 Taking over from Vortex: an ADR and a real check. Players who installed with Vortex switch without finding
   their downloads again, and Vortex is never left half-managing the game.
   *Done: [ADR-0028](adr/0028-taking-over-from-vortex.md) is accepted. The owner chose a guided handover (DAORework
@@ -315,14 +365,19 @@ decision.
 
 - P2.5-32 Pin the workflow dependencies: `azure/login` and `Azure/artifact-signing-action` in `release.yml` to full
   commit SHAs with the version in a comment, as the Nexus upload action already is (`githubactions:S7637`), and
-  `dotnet-sonarscanner` to an exact version in `ci.yml` (ADR-0027's follow-up).
+  `dotnet-sonarscanner` to an exact version in `ci.yml` (ADR-0027's follow-up). *Done
+  ([#64](https://github.com/arastella625/DAORework/pull/64)): `azure/login` at v3.1.0's commit, the signing action at
+  v2.0.0's, and the scanner at 12.0.0.*
 - P2.5-33 Open zip entries asynchronously (`OpenAsync`) in `FixSourceReader`, `ZipSaveBackupStore` and
-  `ZipSupportBundleWriter` (`csharpsquid:S6966`). A refactor: no behavior changes.
+  `ZipSupportBundleWriter` (`csharpsquid:S6966`). A refactor: no behavior changes. *Done
+  ([#67](https://github.com/arastella625/DAORework/pull/67)), every test unchanged.*
 - P2.5-34 `scripts/verify-real-install.ps1`: put `$null` on the left of its two comparisons (`powershelldre:S8641`),
-  so a comparison against an array cannot filter instead of compare.
+  so a comparison against an array cannot filter instead of compare. *Done
+  ([#68](https://github.com/arastella625/DAORework/pull/68)); both checks pass on the owner's install (2026-11-03).*
 - P2.5-35 Source-generated interop: `LibraryImport` for the AMSI calls in `AmsiNativeMethods`
   (`SYSLIB1054`), and `GeneratedRegex` in `DiagnosticCodesTests` (`SYSLIB1045`).
-- P2.5-36 The Nexus cover page (`docs/release/nexus/cover.html`) gets a `<title>` and `lang`.
+- P2.5-36 The Nexus cover page (`docs/release/nexus/cover.html`) gets a `<title>` and `lang`. *Done
+  ([#66](https://github.com/arastella625/DAORework/pull/66)); the cover's screenshot is byte-for-byte the same.*
 - P2.5-37 The collection-expression hints (about 85, mostly `IDE0305` and `IDE0028`, set to *suggestion* in
   `.editorconfig`): either raise them to *warning* and apply them in one refactor PR, or keep them as suggestions and
   stop SonarCloud reporting them. The owner decides in the issue.
@@ -330,31 +385,27 @@ decision.
   (`csharpsquid:S1244`; `max` is always exactly one of r, g and b) and `GrainTexture`'s seeded `Random`
   (`csharpsquid:S2245`; seeded on purpose so the screenshots stay the same). No code changes.
 
-**Not in this phase:** Nexus "Mod Manager Download" (`nxm://`) links and any other network access (SDD §12 and
-ADR-0009 need an ADR first); hard links for large texture packs (ADR-0012 leaves that to its own ADR); any format
-reader.
+**Found on the owner's PC** *(added 2026-11-03, from `scripts/verify-real-install.ps1` run for P2.5-34)*.
+
+- P2.6-01 Find the documents folder wherever it is ([#74](https://github.com/arastella625/DAORework/issues/74)):
+  `detect` looks only in the Documents folder Windows reports and its OneDrive copy, and misses the owner's, which
+  is on `D:`. It also reads the folders the profiles name and searches the drives, as `scripts/check-vortex.ps1`
+  does, and the user can still name it. The verify script finds it the same way.
+- P2.6-02 The tests pass on Windows ([#75](https://github.com/arastella625/DAORework/issues/75)): Cli, Infrastructure
+  and App tests fail on the owner's PC while CI (Linux) is green on the same commit. First, find which tests fail
+  and why.
+
+**Not in this phase:** the same as Phase 2.5's.
 
 **Exit gate:**
-- [x] Every `mods`, `fixes` and `saves` capability is reachable in the GUI. Normal use needs no command line.
-  *(Library, activation, Changes, Load order, Installed by hand and Adopt on the Mods tab; the Fixes tab with its
-  rollback and recovery; the Saves tab.)*
-- [x] On the owner's real install, a hand-built mod setup (at least Qwinn's Ultimate DAO Fixpack, one other add-in
-  and one multi-folder override mod) is adopted without reinstalling, and deactivating and rolling back leave it
-  as it was. *(Steam, 2026-10-31, owner's report: [matrix](testing/phase-2.5-matrix.md).)*
-- [x] The fault-injection suite covers adopt and is green. *(Four adoption scenarios beside Phase 2's eight.)*
-- [ ] Steam, GOG and EA App each have a real run recorded in `docs/testing/phase-2.5-matrix.md`. No platform is
-  carried forward. *Steam is recorded (2026-10-31). GOG and EA App are still open as
-  [#5](https://github.com/arastella625/DAORework/issues/5): nobody on the project has either copy, so 0.3.0 says
-  plainly that only Steam has been run on a real install.*
-- [ ] At least one beta tester who is not on the project completes adopt, import, activate and rollback in the GUI
-  without the docs or help from the owner. *The owner decided on 2026-10-31 to release 0.3.0 without one, since
-  nobody outside the project is available yet; the first public users take that role, and their reports are
-  tracked as issues.*
-- [x] The headless screenshot tests are green and cover every new page. *(Library, activation plan, Changes,
-  adoption plan, load order, Fixes and its rollback, next steps.)*
-- [x] On the owner's Windows machine, a zip holding the EICAR test file (made on the spot, never committed) is refused
-  at import, and a mod with an `.exe` inside imports with the program named and is never deployed. *(2026-10-31,
-  owner's report.)*
+- [ ] P2.5-22, P2.5-23 and P2.5-31 are done.
+- [ ] The SonarCloud tasks (P2.5-32 to P2.5-38) are done, and the quality gate is green. It stays report-only
+  unless a separate decision makes it blocking.
+- [ ] P2.6-01 and P2.6-02 are done, and `scripts/verify-real-install.ps1` reports no FAIL on the owner's PC.
+- [ ] Carried from Phase 2.5: Steam, GOG and EA App each have a real run in `docs/testing/phase-2.5-matrix.md`, and
+  at least one beta tester from outside the project completes adopt, import, activate and rollback in the GUI
+  (P2.5-08, [#70](https://github.com/arastella625/DAORework/issues/70)). The owner may carry these forward again.
+- [ ] Released as a tagged version, with the audit re-run and this roadmap updated.
 
 ---
 
