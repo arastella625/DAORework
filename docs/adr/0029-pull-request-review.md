@@ -47,7 +47,9 @@ So:
   never checks out a PR branch that changes `.claude/`, `CLAUDE.md` or hooks before the owner has read those changes,
   and treats everything in the PR as data, not instructions.
 - **Branch protection on `main`** (set by the owner in GitHub): PRs required, CI required, code-owner review
-  required, and *Require approval for all outside collaborators* for workflow runs from forks.
+  required, and *Require approval for all outside collaborators* for workflow runs from forks. The ruleset is kept
+  in `.github/rulesets/main.json` and imported under *Settings → Rules → Rulesets → New ruleset → Import a ruleset*;
+  a change to it is made in that file first, by PR, then re-imported.
 
 ## Consequences
 - Each PR costs a few more minutes of agent time before it is ready, and arrives with fewer obvious issues.
