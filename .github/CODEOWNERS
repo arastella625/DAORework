@@ -1,0 +1,10 @@
+# Paths that change what CI, releases or Claude sessions do. A change here needs the owner's review
+# (docs/REVIEWING.md, ADR-0029). Branch protection must have "Require review from Code Owners" on for this to bind.
+/.claude/               @arastella625
+/CLAUDE.md              @arastella625
+/.github/               @arastella625
+/scripts/               @arastella625
+/docs/adr/              @arastella625
+/docs/LEGAL_BOUNDARIES.md @arastella625
+/Directory.Packages.props @arastella625
+/global.json            @arastella625

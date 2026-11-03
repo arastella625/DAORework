@@ -25,6 +25,8 @@ Issue (Backlog) → Ready → branch → PR → review + CI → squash-merge →
    coverage, `scripts/check-coverage.ps1` and `scripts/check-file-size.ps1`. Run the same
    commands locally before pushing (PowerShell 7 is needed for the two scripts).
    With one maintainer, self-review still means reading the diff top to bottom.
+   The review passes to run first, and how to answer a review comment, are in
+   [docs/REVIEWING.md](docs/REVIEWING.md).
 7. **Squash-merge.** The squash message keeps the Conventional Commit title.
    The issue closes and its card moves to *Done* automatically.
 
