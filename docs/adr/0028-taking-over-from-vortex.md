@@ -28,8 +28,12 @@ The owner chose a guided handover (2026-11-03) over DAORework editing Vortex's f
 ## Decision
 
 ### 1. Vortex's record is read, never written
+- **Where it looks:** nothing is assumed to be on `C:` or in its default place. The game folder and documents folder
+  are the profile's. Vortex's staging folder is the one its record names (`stagingPath`), whatever drive it is on.
+  The owner's game is on `D:`. A hard link cannot cross drives, so a staging folder on another drive than the
+  documents folder means Vortex deployed by another method, and the record's `deploymentMethod` says which.
 - **The reader:** a new reader (Infrastructure) parses every `vortex.deployment*.json` that the check in §6 finds in
-  the documents folder. For each placed file it reads `relPath` and `source` (the Vortex mod it came from). From the
+  the documents folder or the game folder. For each placed file it reads `relPath` and `source` (the Vortex mod it came from). From the
   record it reads `stagingPath` and `deploymentMethod`. Other fields are ignored.
 - **A record that can't be read:** it gets a new diagnostic code, and its folder is treated as it is today.
 - **Hands off Vortex:** DAORework never writes, renames or deletes Vortex's records, its staging folder or its
@@ -82,12 +86,17 @@ If a record lists files again after the handover, because Vortex was left managi
 
 ### 6. A real check comes first
 `scripts/check-vortex.ps1` is run on the owner's PC, where Vortex has deployed Dragon Age mods. It only reads. It
-reports:
+finds the game, its documents folder and Vortex's staging folder wherever they are: DAORework's profiles, the
+registry, Steam's libraries, Vortex's records, and four folders deep on every fixed drive. It reports:
 - where the record files are, their fields, and the mods they name;
 - whether the placed files are still links;
 - the staging folder's mod folders;
 - what Vortex set aside (`*.vortex_backup`);
 - how many add-ins `AddIns.xml` lists.
+
+The first run (2026-11-03) found Vortex set up for Dragon Age with an empty staging folder and no records, so
+nothing was deployed yet. That run looked only on `C:`; the script now looks on every drive. The check is run again
+once Vortex has deployed a small override mod and a `.dazip`, and once more after a purge.
 
 This ADR is amended with what the check finds, and then accepted:
 - whether there is a record for add-ins or for `Settings\AddIns.xml`, and where;

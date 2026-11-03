@@ -17,6 +17,9 @@ Guidance for AI assistants working in this repository.
 - Diagnostic codes come from `DiagnosticCodes` constants, and a released code is never renamed.
 - A design choice not covered by the SDD needs an ADR in `docs/adr/` (`0000-template.md`) first.
 - Refactor PRs change no behavior, and feature PRs contain no unrelated refactors.
+- Never assume a folder is on `C:` or in its default place. Find the game, its documents folder and other tools'
+  folders where they really are (the profile, the registry, Steam's libraries, the tool's own records), and let the
+  user name them.
 
 ## Commands
 ```bash
