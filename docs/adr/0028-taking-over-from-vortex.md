@@ -1,6 +1,6 @@
 # ADR-0028: Taking over from Vortex
 
-- **Status:** Proposed (waiting on the real check in §6)
+- **Status:** Accepted (§3's add-in details are confirmed by a later check, §6)
 - **Date:** 2026-11-03
 
 ## Context
@@ -18,7 +18,8 @@ What Vortex does, from its public source and documentation (GPL-3: behaviour onl
 - **AddIns.xml:** it merges the `AddInItem`s from each `.dazip`'s `Manifest.xml` into `Settings\AddIns.xml`. Forum
   reports say it can replace the file, so official DLC disappears from the game.
 - **Its record:** Vortex lists what it placed, and from which mod, in a record file (`vortex.deployment.json`, or
-  `vortex.deployment.<type>.json`) in the folder it deploys to. It also keeps a backup of that record.
+  `vortex.deployment.<type>.json`) in the folder it deploys to. It also keeps a backup of each record beside its
+  staging folder, as `vortex.deployment[.<type>].msgpack`.
 - **It puts things back:** before every deploy, Vortex compares the game with its record. If a placed file was deleted
   or moved, its default answer is to put the link back. So moving Vortex's files away, as adopting does, lasts only
   until Vortex next deploys.
@@ -28,22 +29,31 @@ The owner chose a guided handover (2026-11-03) over DAORework editing Vortex's f
 ## Decision
 
 ### 1. Vortex's record is read, never written
-- **Where it looks:** nothing is assumed to be on `C:` or in its default place. The game folder and documents folder
-  are the profile's. Vortex's staging folder is the one its record names (`stagingPath`), whatever drive it is on.
-  The owner's game is on `D:`. A hard link cannot cross drives, so a staging folder on another drive than the
-  documents folder means Vortex deployed by another method, and the record's `deploymentMethod` says which.
-- **The reader:** a new reader (Infrastructure) parses every `vortex.deployment*.json` that the check in §6 finds in
-  the documents folder or the game folder. For each placed file it reads `relPath` and `source` (the Vortex mod it came from). From the
-  record it reads `stagingPath` and `deploymentMethod`. Other fields are ignored.
-- **A record that can't be read:** it gets a new diagnostic code, and its folder is treated as it is today.
+- **Where it looks:** nothing is assumed to be on `C:` or in its default place. The documents folder is the profile's,
+  and the record is read where it sits there (`packages\core\override\vortex.deployment*.json`). Vortex's staging
+  folder is the one the record names (`stagingPath`), whatever drive it is on.
+- **The reader:** a new reader (Infrastructure) parses each record. For each placed file it reads `relPath` (below
+  the record's folder) and `source` (the Vortex mod it came from). From the record it reads `targetPath` and
+  `stagingPath`. Other fields are ignored.
+- **A record that can't be read:** its folder is treated as it is today, with the warning that Vortex manages it.
 - **Hands off Vortex:** DAORework never writes, renames or deletes Vortex's records, its staging folder or its
   settings. It never starts Vortex.
 
 ### 2. *Found in your game* names Vortex's mods
-- **By name:** mods Vortex placed are listed under their Vortex names, tagged *Placed by Vortex*, with how many files
-  each placed. They replace today's one warning per folder.
-- **Not with *Manage*:** these mods do not offer *Manage*, because Vortex would undo the move. They offer the handover
-  below instead.
+- **By name:** mods Vortex placed are listed under their Vortex names, tagged *Placed by Vortex*, with how many of
+  their files are still there. They replace today's one warning per folder. A Vortex mod's folder name ends in its
+  Nexus id and version (`Anto Hairstyles 2-3480-1-2-3`), which the window leaves off (*Anto Hairstyles 2*); its id is
+  `vortex:` and the whole name.
+- **Its files:** a Vortex mod is the files its record lists that are still in `override`, wherever they sit; a mod's
+  files are often spread over folders that other mods use too. Those files are left out of the folder and loose-file
+  candidates, so no file belongs to two.
+- **Live or left behind:** each mod is one or the other.
+  - **Live:** the record sits in the folder its `targetPath` names, and the staging folder still holds the mod. Vortex
+    can put the files back, so the mod does not offer *Manage*. It offers the handover (§3) instead.
+  - **Left behind:** the record sits somewhere else (the documents folder was moved since Vortex deployed), or the
+    staging folder no longer holds the mod. Vortex can no longer put the files back or purge them, so the mod offers
+    *Manage* like any mod found in the game, under its Vortex name. The note says to stop managing the game in Vortex
+    too.
 
 ### 3. The handover, in three steps
 A card on the Mods page, *Move from Vortex*, shows the three steps and where the player is. Each step can be left
@@ -80,7 +90,8 @@ If a record lists files again after the handover, because Vortex was left managi
 - **Words:** *Move from Vortex*, *Placed by Vortex*, *Copy*, *Purge in Vortex*, *Turn them on* (VOICE.md gains the
   first two).
 - **Command line:**
-  - `mods vortex` lists the record's mods and the current step.
+  - `mods adopt --dry-run` lists Vortex's mods with the rest, and `mods adopt vortex:<name>` manages one left behind.
+  - `mods vortex` lists the record's live mods and the current step.
   - `mods vortex copy` does step 1.
   - Step 3 is `mods activate` with the copied mods, in the order `mods vortex` prints.
 
@@ -98,12 +109,22 @@ The first run (2026-11-03) found Vortex set up for Dragon Age with an empty stag
 nothing was deployed yet. That run looked only on `C:`; the script now looks on every drive. The check is run again
 once Vortex has deployed a small override mod and a `.dazip`, and once more after a purge.
 
-This ADR is amended with what the check finds, and then accepted:
+The second run (2026-11-03), on every drive, found:
+- the documents folder at `D:\BioWare\Dragon Age`, from the DAORework profile, and the game in a Steam library on
+  `D:`;
+- one record, `packages\core\override\vortex.deployment.json`: `hardlink_activator`, 6,687 files from 70 mods, file
+  entries with `relPath`, `source`, `target` and `time`, and no merged entries;
+- its `targetPath` is the old `C:\Users\...\Documents\BioWare\Dragon Age\packages\core\override`. The folder was
+  moved to `D:` after Vortex deployed, which turned the links into plain files;
+- Vortex's Dragon Age staging folder is empty, and holds no backup record;
+- `Settings\AddIns.xml.vortex_backup`, so Vortex did replace `AddIns.xml` once;
+- for Inquisition, a staging folder on `D:` with one `.msgpack` backup record per mod type beside the mods.
+
+So the owner's Vortex mods are all left behind (§2), and they are built first (P2.5-30). Still open, for the live
+handover (§3, P2.5-31), from a PC where Vortex has deployed a small override mod and a `.dazip`:
 - whether there is a record for add-ins or for `Settings\AddIns.xml`, and where;
 - how a `.dazip` sits in the staging folder;
 - whether the merged `AddIns.xml` is a placed file.
-
-Only then are the reader and the handover built.
 
 ## Consequences
 - A Vortex player switches without finding their downloads again, and Vortex is never left half-managing the game.
@@ -118,7 +139,8 @@ Only then are the reader and the handover built.
 ## Alternatives considered
 - **DAORework removes Vortex's links and edits its record:** one click, but it writes into another program's files,
   and Vortex keeps a backup of its record and puts links back by default.
-- **Adopt (move) the placed files as today:** Vortex puts them back on its next deploy.
+- **Adopt (move) a live mod's files as today:** Vortex puts them back on its next deploy. A mod left behind (§2) is
+  the exception, since Vortex can no longer reach it.
 - **Read Vortex's own database for mod names and order:** it is an undocumented LevelDB that Vortex locks while it
   runs. The record and the staging folder hold what is needed.
 - **Tell the player to purge, then re-add every mod by hand:** the problem this ADR exists to solve.

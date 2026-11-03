@@ -12,7 +12,10 @@ public sealed record AdoptionCandidate(string Id, AdoptionCandidateKind Kind, st
     /// <summary>Gets the known-items catalog entry one of its fingerprints matches, if any.</summary>
     public KnownItem? CatalogItem { get; init; }
 
-    /// <summary>Gets a value indicating whether Vortex has deployed into its folder, so Vortex may undo a move unless the mod is purged there first.</summary>
+    /// <summary>
+    /// Gets a value indicating whether Vortex can still put its files back, so a move would not last: a live Vortex mod
+    /// (ADR-0028 §2), or a folder where Vortex left a record that could not be read.
+    /// </summary>
     public bool DeployedByVortex { get; init; }
 
     /// <summary>Gets the library mod it is, or is closest to, when the library holds one with files in common.</summary>

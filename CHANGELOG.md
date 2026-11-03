@@ -6,6 +6,9 @@ All notable changes to DAORework are recorded here. The format follows
 
 ## [Unreleased]
 
+### Added
+- Mods Vortex installed are listed by name (P2.5-30, [ADR-0028](docs/adr/0028-taking-over-from-vortex.md)): *Found in your game* reads Vortex's record in `override` and shows each Vortex mod under its own name (*Anto Hairstyles 2*), tagged *placed by Vortex*, with the files it placed that are still there, instead of one warning for the whole folder. A mod Vortex can no longer change, because the documents folder has moved since or Vortex's own copy is gone, can be managed like any other mod. One Vortex still manages stays in Vortex for now, since Vortex would put its files back; taking those over comes later. DAORework never changes Vortex's own files. `mods adopt --dry-run` lists them as `vortex:<name>`.
+
 ## [0.4.0] - 2026-11-02
 
 A new window, and mods that touch the same thing. The window has six tabs (Home, Mods, Fixes, Saves, History and Settings), speaks plainly (*Turn on*, *Manage*, *Undo*), and takes the gilded-tome style. Hair, head and colour mods that each ship `chargenmorphcfg.xml` are combined, so all of them show in the character creator, and a file two mods share says what that means. Nothing changes in how mods are installed, backed up or undone, and the command line keeps its words. Words that changed in the window: *Adopt* is *Manage*, *Activate* and *Deactivate* are *Turn on* and *Turn off*, *Roll back* is *Undo*, *Installed by hand* is *Found in your game*, and the load order is *Arrange*.

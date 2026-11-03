@@ -100,6 +100,14 @@ public sealed class PlanAdoption
         Dictionary<string, LibraryMod> library,
         CancellationToken cancellationToken)
     {
+        if (candidate is { Kind: AdoptionCandidateKind.VortexMod, DeployedByVortex: true })
+        {
+            return Result.Failure<AdoptedMod>(new Error(
+                DiagnosticCodes.ModAdoptVortexManages,
+                $"Vortex still manages {candidate.Name}, and would put its files back if they were moved.",
+                "Leave it in Vortex for now: taking a mod over from Vortex comes with the handover (ADR-0028)."));
+        }
+
         if (candidate.LibraryMatch is { IsExact: true } match && library.TryGetValue(match.ModId, out var matched))
         {
             return Result.Success(new AdoptedMod(matched, match.Sources));

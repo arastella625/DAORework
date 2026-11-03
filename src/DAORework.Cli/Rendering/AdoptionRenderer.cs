@@ -52,6 +52,7 @@ public sealed class AdoptionRenderer
     {
         AdoptionCandidateKind.AddIn => "add-in",
         AdoptionCandidateKind.OverrideFolder => "override folder",
+        AdoptionCandidateKind.VortexMod => "placed by Vortex",
         _ => "loose override files, named when adopted",
     };
 
@@ -83,10 +84,9 @@ public sealed class AdoptionRenderer
             _console.WriteLine($"    {ProgramNote(candidate.Programs.Count, candidate.Programs.Select(p => p.Path[(p.Path.LastIndexOf('/') + 1)..]))}");
         }
 
-        if (candidate.DeployedByVortex)
+        foreach (var note in VortexNotes.For(candidate, "adopting"))
         {
-            var folder = candidate.Kind == AdoptionCandidateKind.AddIn ? "AddIns" : "override";
-            _console.WriteLine($"    Vortex manages files in {folder}. Purge this mod in Vortex before adopting it, or Vortex may undo the move.");
+            _console.WriteLine($"    {note}");
         }
 
         if (listFiles)

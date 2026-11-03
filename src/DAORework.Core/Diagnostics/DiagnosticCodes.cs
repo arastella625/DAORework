@@ -126,6 +126,10 @@ public static class DiagnosticCodes
     public const string ModAdoptNameRequired = "DAO_MOD_ADOPT_NAME_REQUIRED";
     public const string ModAdoptNotACandidate = "DAO_MOD_ADOPT_NOT_A_CANDIDATE";
 
+    // P2.5-30: the mods Vortex placed (ADR-0028).
+    public const string VortexRecordUnreadable = "DAO_VORTEX_RECORD_UNREADABLE";
+    public const string ModAdoptVortexManages = "DAO_MOD_ADOPT_VORTEX_MANAGES";
+
     // P2.5-12: mod safety (ADR-0018).
     public const string ModSafetyThreatFound = "DAO_MOD_SAFETY_THREAT_FOUND";
     public const string ModSafetyDownloadDiffers = "DAO_MOD_SAFETY_DOWNLOAD_DIFFERS";

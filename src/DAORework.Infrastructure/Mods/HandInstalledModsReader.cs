@@ -12,15 +12,18 @@ namespace DAORework.Infrastructure.Mods;
 /// <summary>
 /// Reads a documents folder for the adoption scan (ADR-0015): the add-ins <c>Settings\AddIns.xml</c> registers, the
 /// files in each <c>AddIns</c> folder and each top-level <c>override</c> folder, the loose files in <c>override</c>,
-/// and whether Vortex has left its <c>vortex.deployment*.json</c> in either. Never writes.
+/// and Vortex's <c>vortex.deployment*.json</c> records in <c>override</c> (ADR-0028), or whether one there could not be
+/// read or one is in <c>AddIns</c>. Never writes.
 /// </summary>
 public sealed class HandInstalledModsReader : IHandInstalledModsReader
 {
     private readonly IFileSystem _fileSystem;
+    private readonly VortexRecordReader _vortex;
 
     public HandInstalledModsReader(IFileSystem fileSystem)
     {
         _fileSystem = fileSystem;
+        _vortex = new VortexRecordReader(fileSystem);
     }
 
     public async Task<Result<HandInstalledSnapshot>> ReadAsync(string documentsDirectory, CancellationToken cancellationToken = default)
@@ -30,13 +33,26 @@ public sealed class HandInstalledModsReader : IHandInstalledModsReader
             var addIns = DocumentsPaths.Resolve(_fileSystem, documentsDirectory, GamePaths.AddInsDirectoryName);
             var overrideRoot = DocumentsPaths.Resolve(_fileSystem, documentsDirectory, ModLayout.OverridePrefix.TrimEnd('/'));
             var documents = _fileSystem.Path.GetFullPath(documentsDirectory);
+            var records = new List<VortexRecord>();
+            var unreadable = false;
+            foreach (var path in TopLevelFiles(overrideRoot).Where(IsVortexManifest))
+            {
+                var read = await _vortex.ReadAsync(documents, path, cancellationToken);
+                unreadable |= !read.IsSuccess;
+                if (read.IsSuccess)
+                {
+                    records.Add(read.Value);
+                }
+            }
+
             return Result.Success(new HandInstalledSnapshot(
                 await RegisteredAsync(documentsDirectory, cancellationToken),
                 Folders(documents, addIns),
                 Folders(documents, overrideRoot),
                 Files(documents, TopLevelFiles(overrideRoot).Where(f => !IsVortexManifest(f))))
             {
-                VortexDeployedOverride = TopLevelFiles(overrideRoot).Any(IsVortexManifest),
+                VortexDeployedOverride = unreadable,
+                VortexRecords = records,
                 VortexDeployedAddIns = TopLevelFiles(addIns).Any(IsVortexManifest),
             });
         }

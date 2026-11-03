@@ -107,7 +107,7 @@ public sealed partial class HandInstalledViewModel : PageViewModel
 
     private void SetSelected(bool selected)
     {
-        foreach (var candidate in Candidates)
+        foreach (var candidate in Candidates.Where(c => c.CanManage))
         {
             candidate.IsSelected = selected;
         }
