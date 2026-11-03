@@ -102,7 +102,7 @@ public sealed class FixSourceReader : IFixSourceReader
             return NotInRelease(path);
         }
 
-        await using var stream = entry.Open();
+        await using var stream = await entry.OpenAsync(cancellationToken);
         return await ReadAsync(stream, entry.Length, cancellationToken);
     }
 

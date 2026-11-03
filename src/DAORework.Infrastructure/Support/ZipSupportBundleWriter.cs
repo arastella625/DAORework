@@ -92,7 +92,7 @@ public sealed class ZipSupportBundleWriter : ISupportBundleWriter
     private static async Task AddTextAsync(ZipArchive zip, string entryName, string text, PathRedactor redactor, CancellationToken cancellationToken)
     {
         var entry = zip.CreateEntry(entryName, CompressionLevel.Optimal);
-        await using var writer = new StreamWriter(entry.Open(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        await using var writer = new StreamWriter(await entry.OpenAsync(cancellationToken), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
         await writer.WriteAsync(redactor.Redact(text).AsMemory(), cancellationToken);
     }
 

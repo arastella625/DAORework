@@ -116,12 +116,12 @@ public sealed class ZipSaveBackupStore : ISaveBackupStore
             cancellationToken.ThrowIfCancellationRequested();
             var entry = zip.CreateEntry("Characters/" + file.RelativePath.Replace('\\', '/'), CompressionLevel.Optimal);
             await using var source = _fileSystem.FileStream.New(file.SourcePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            await using var target = entry.Open();
+            await using var target = await entry.OpenAsync(cancellationToken);
             await source.CopyToAsync(target, cancellationToken);
         }
 
         var manifest = new { SchemaVersion = 1, ProfileName = profileName, CreatedAtUtc = now, Files = files.Select(f => new { Path = f.RelativePath, f.SizeBytes }) };
-        await using var manifestStream = zip.CreateEntry("manifest.json").Open();
+        await using var manifestStream = await zip.CreateEntry("manifest.json").OpenAsync(cancellationToken);
         await JsonSerializer.SerializeAsync(manifestStream, manifest, JsonDefaults.Options, cancellationToken);
     }
 }
