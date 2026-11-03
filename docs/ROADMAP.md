@@ -403,9 +403,9 @@ decision.
   PR from its full file list, not the first 100 files, and clears `needs-maintainer-review` when a maintainer releases
   the PR. CODEOWNERS also owns `Directory.Build.props` and every `.csproj`, since `VersionOverride` lets a project
   change a package version.
-- P2.6-04 CI starts again ([#84](https://github.com/arastella625/DAORework/issues/84)): every run ended in
-  `startup_failure` once actions had to be pinned to a full commit SHA. `ci.yml` and `release.yml` pin GitHub's own
-  actions that way too, with the version in a comment, as `release.yml` already did for outside actions.
+- P2.6-04 CI starts again ([#84](https://github.com/arastella625/DAORework/issues/84)): from 2026-11-03 every run
+  ended in `startup_failure` after a change to the repository's Actions settings, fixed there by the owner. The
+  SHA-pin setting was not the cause, but `ci.yml` and `release.yml` now pin GitHub's own actions to commit SHAs too.
 
 **Not in this phase:** the same as Phase 2.5's.
 
