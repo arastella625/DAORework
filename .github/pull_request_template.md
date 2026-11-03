@@ -17,6 +17,15 @@ Closes #
 - [ ] README/docs are updated if user-facing behavior changed.
 - [ ] Nothing here conflicts with LEGAL_BOUNDARIES.md.
 
+## Review (docs/REVIEWING.md)
+
+<!-- One line per pass: what it found and what was done. "Skipped: <why>" is allowed for 3 and 4. -->
+
+- Gates:
+- `/code-review`:
+- `/ponytail-review`:
+- `/security-review`:
+
 ## New packages
 
 <!-- One line of justification per new package, or "None". A framework-level package needs an ADR. -->

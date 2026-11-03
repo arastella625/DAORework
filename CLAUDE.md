@@ -9,6 +9,13 @@ Guidance for AI assistants working in this repository.
 4. `docs/LEGAL_BOUNDARIES.md`: never add game assets, decompiled code or DRM workarounds.
 5. `docs/VOICE.md` for any text the window shows, and [ADR-0026](docs/adr/0026-workflow-first-layout.md) section 5 before adding any art.
 
+## Reviews
+- Before a PR is ready, run the passes in `docs/REVIEWING.md` (`/code-review`, `/ponytail-review branch`, and
+  `/security-review` for Infrastructure, scripts or workflows) and record each under *Review* in the PR.
+- Every review comment gets a fix commit or a reply saying why not, then the thread is resolved. A Ponytail finding
+  that contradicts the SDD, ENGINEERING_STANDARDS or an ADR is answered with that rule, not applied.
+- Never approve or merge a PR. Findings outside the PR's own diff become issues.
+
 ## Non-negotiables
 - No file over 300 lines, no method over 50 lines, and no class with more than 5 constructor dependencies.
 - No `File`/`Directory`/`Registry`/`Process`/`Environment`/`DateTime.Now` usage outside `DAORework.Infrastructure`.
