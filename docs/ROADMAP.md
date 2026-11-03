@@ -288,6 +288,16 @@ unchanged.
   all drawn from the theme's tokens, with no ornaments in Korcari ([Home](screenshots/p2.5-28/01-home.png),
   [Mods](screenshots/p2.5-28/02-mods-switches.png)); the README's and the website's screenshots are retaken, the website saying the pictures
   show the next release. The Nexus page's are retaken with that release, so they show what can be downloaded.*
+- P2.5-29 Taking over from Vortex: an ADR and a real check. Players who installed with Vortex switch without finding
+  their downloads again, and Vortex is never left half-managing the game.
+  *In progress: [ADR-0028](adr/0028-taking-over-from-vortex.md) is proposed, and the owner chose a guided handover
+  (DAORework copies, the player purges in Vortex, DAORework turns the copies on). `scripts/check-vortex.ps1` reads
+  where Vortex keeps its records on a real PC; the ADR is amended with its report and accepted before P2.5-30.*
+- P2.5-30 Read Vortex's record (read-only): *Found in your game* names the mods Vortex placed, tagged *Placed by
+  Vortex*, in place of one warning per folder, and `mods vortex` lists them.
+- P2.5-31 The handover (ADR-0028 §3 and §4): the *Move from Vortex* card on the Mods page and `mods vortex copy`;
+  the copies, a check that the purge is done, one preview to turn them on in Vortex's order, and Home's suggestion
+  when Vortex deploys again.
 
 **SonarCloud's first findings** *(added 2026-11-02, from the first analyses after
 [ADR-0027](adr/0027-sonarcloud-analysis-in-ci.md); 113 open findings and a red, report-only quality gate)*. Each task
