@@ -9,7 +9,7 @@
     <DataTemplate x:Key="Candidate" x:DataType="vm:HandInstalledModRow">
       <Border Padding="0,10" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-          <CheckBox VerticalAlignment="Top" IsChecked="{Binding IsSelected}" ToolTip.Tip="Tick to adopt it with the others" />
+          <CheckBox VerticalAlignment="Top" IsChecked="{Binding IsSelected}" IsVisible="{Binding CanManage}" ToolTip.Tip="Tick to adopt it with the others" />
           <StackPanel Grid.Column="1" Spacing="3">
             <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
             <TextBlock Classes="Mono Secondary" Text="{Binding Details}" TextWrapping="Wrap" />
@@ -26,7 +26,7 @@
                        Text="{Binding $parent[views:HandInstalledPanel].((vm:HandInstalledViewModel)DataContext).Adoption.LooseFilesName}" />
             </StackPanel>
           </StackPanel>
-          <Button Grid.Column="2" VerticalAlignment="Top" Content="Manage" CommandParameter="{Binding}"
+          <Button Grid.Column="2" VerticalAlignment="Top" Content="Manage" CommandParameter="{Binding}" IsVisible="{Binding CanManage}"
                   Command="{Binding $parent[views:HandInstalledPanel].((vm:HandInstalledViewModel)DataContext).Adoption.AdoptCommand}" />
         </Grid>
       </Border>

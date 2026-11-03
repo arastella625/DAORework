@@ -48,6 +48,48 @@ public sealed class HandInstalledScreenTests : IDisposable
     }
 
     [AvaloniaFact]
+    public async Task ModsTab_VortexMods_AreNamed_AndOnlyTheOnesVortexLeftBehindOfferManage()
+    {
+        _host.SeedRealisticInstall();
+        var documents = GamePaths.DefaultDocumentsDirectory(_host.KnownFolders.MyDocuments);
+        var overrideFolder = Path.Combine(documents, "packages", "core", "override");
+        var staging = Path.Combine(Path.GetDirectoryName(_host.PreferencesFile)!, "Vortex", "dragonage", "mods");
+        _host.FileSystem.AddFile(Path.Combine(overrideFolder, "next part", "uh_hed_s76_0n.dds"), new MockFileData(new byte[2048]));
+        _host.FileSystem.AddFile(Path.Combine(overrideFolder, "uh_hed_s80_0d.dds"), new MockFileData(new byte[2048]));
+        _host.FileSystem.AddFile(Path.Combine(overrideFolder, "next part", "eyes.dds"), new MockFileData(new byte[512]));
+        _host.FileSystem.AddDirectory(Path.Combine(staging, "EyesssReplaceDAO by ViLiSSa-3537-1-0"));
+        _host.FileSystem.AddFile(Path.Combine(overrideFolder, "vortex.deployment.json"), new MockFileData(System.Text.Json.JsonSerializer.Serialize(new
+        {
+            targetPath = overrideFolder,
+            stagingPath = staging,
+            files = new[]
+            {
+                new { relPath = "next part\\uh_hed_s76_0n.dds", source = "Anto Hairstyles 2-3480-1-2-3" },
+                new { relPath = "uh_hed_s80_0d.dds", source = "Anto Hairstyles 2-3480-1-2-3" },
+                new { relPath = "next part\\eyes.dds", source = "EyesssReplaceDAO by ViLiSSa-3537-1-0" },
+            },
+        })));
+
+        var (window, viewModel) = await OpenModsTabAsync();
+
+        Assert.False(viewModel.HandInstalled.IsError, viewModel.HandInstalled.StatusMessage);
+        var hairs = viewModel.HandInstalled.Candidates.Single(c => c.Title == "Anto Hairstyles 2");
+        Assert.StartsWith("placed by Vortex · 2 files", hairs.Details, StringComparison.Ordinal);
+        Assert.True(hairs.CanManage);
+        Assert.Contains(hairs.Notes, n => n.StartsWith("Vortex placed this mod but can no longer change it", StringComparison.Ordinal));
+        var eyes = viewModel.HandInstalled.Candidates.Single(c => c.Title == "EyesssReplaceDAO by ViLiSSa");
+        Assert.False(eyes.CanManage);
+        Assert.DoesNotContain(viewModel.HandInstalled.Candidates, c => c.Title == "next part");
+        viewModel.HandInstalled.SelectAllCommand.Execute(null);
+        Assert.False(eyes.IsSelected);
+        viewModel.HandInstalled.ClearSelectionCommand.Execute(null);
+        ShowPanel(window);
+        window.Height = 1040; // Down to the two Vortex mods, which come after the folders.
+        window.UpdateLayout();
+        Screenshots.Save(window, "35-vortex-mods");
+    }
+
+    [AvaloniaFact]
     public async Task ModsTab_ProfileWithoutADocumentsFolder_ShowsAnEmptyListAndNoError()
     {
         _host.SeedRealisticInstall();

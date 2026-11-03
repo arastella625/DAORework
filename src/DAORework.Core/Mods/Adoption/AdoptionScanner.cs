@@ -8,7 +8,8 @@ namespace DAORework.Core.Mods.Adoption;
 /// <summary>
 /// Sorts what is hand-installed in a documents folder into adoption candidates and what cannot be adopted (ADR-0015,
 /// ROADMAP P2.5-02). Pure: the snapshot, the deployment record and the catalog come in; nothing is read or written.
-/// What the record holds is already managed and is left out. Official DLC is never a candidate.
+/// What the record holds is already managed and is left out. Official DLC is never a candidate. Each mod a Vortex
+/// record names is a candidate of its own (ADR-0028).
 /// </summary>
 public static class AdoptionScanner
 {
@@ -24,7 +25,9 @@ public static class AdoptionScanner
         var candidates = new List<AdoptionCandidate>();
         var exclusions = new List<AdoptionExclusion>();
         SortAddIns(snapshot, ManagedAddIns(record), known, candidates, exclusions);
-        candidates.AddRange(OverrideCandidates(snapshot, known));
+        var vortex = VortexCandidates.Build(snapshot, known);
+        candidates.AddRange(vortex.Candidates);
+        candidates.AddRange(OverrideCandidates(snapshot, vortex.Claimed, known));
         return new AdoptionScan(
             candidates.OrderBy(c => c.Id, StringComparer.OrdinalIgnoreCase).ToList(),
             exclusions.OrderBy(e => e.Id, StringComparer.OrdinalIgnoreCase).ToList());
@@ -80,23 +83,29 @@ public static class AdoptionScanner
         }
     }
 
-    private static List<AdoptionCandidate> OverrideCandidates(HandInstalledSnapshot snapshot, AdoptionCatalog known)
+    // The files a Vortex mod claimed are its own, so they leave the folder they sit in and the loose files.
+    private static List<AdoptionCandidate> OverrideCandidates(HandInstalledSnapshot snapshot, HashSet<string> claimed, AdoptionCatalog known)
     {
         var candidates = snapshot.OverrideFolders
-            .Where(f => f.Value.Count > 0 && !f.Key.Equals(ModLayout.OwnedOverrideFolder, StringComparison.OrdinalIgnoreCase))
-            .Select(f => Override(AdoptionIds.OverrideFolder(f.Key), AdoptionCandidateKind.OverrideFolder, f.Key, ModLayout.OverridePrefix + f.Key, f.Value))
+            .Where(f => !f.Key.Equals(ModLayout.OwnedOverrideFolder, StringComparison.OrdinalIgnoreCase))
+            .Select(f => (f.Key, Files: Unclaimed(f.Value)))
+            .Where(f => f.Files.Count > 0)
+            .Select(f => Override(AdoptionIds.OverrideFolder(f.Key), AdoptionCandidateKind.OverrideFolder, f.Key, ModLayout.OverridePrefix + f.Key, f.Files))
             .ToList();
-        if (snapshot.LooseOverrideFiles.Count > 0)
+        var loose = Unclaimed(snapshot.LooseOverrideFiles);
+        if (loose.Count > 0)
         {
             candidates.Add(Override(
                 AdoptionIds.LooseOverrideFiles,
                 AdoptionCandidateKind.LooseOverrideFiles,
                 "Loose files in override",
                 ModLayout.OverridePrefix.TrimEnd('/'),
-                snapshot.LooseOverrideFiles));
+                loose));
         }
 
         return candidates;
+
+        List<HandInstalledFile> Unclaimed(IReadOnlyList<HandInstalledFile> files) => files.Where(f => !claimed.Contains(f.Path)).ToList();
 
         AdoptionCandidate Override(string id, AdoptionCandidateKind kind, string name, string path, IReadOnlyList<HandInstalledFile> files) =>
             new(id, kind, name, path, files) { CatalogItem = known.ForOverrideFiles(files), DeployedByVortex = snapshot.VortexDeployedOverride };

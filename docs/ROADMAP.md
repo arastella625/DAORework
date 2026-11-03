@@ -290,11 +290,19 @@ unchanged.
   show the next release. The Nexus page's are retaken with that release, so they show what can be downloaded.*
 - P2.5-29 Taking over from Vortex: an ADR and a real check. Players who installed with Vortex switch without finding
   their downloads again, and Vortex is never left half-managing the game.
-  *In progress: [ADR-0028](adr/0028-taking-over-from-vortex.md) is proposed, and the owner chose a guided handover
-  (DAORework copies, the player purges in Vortex, DAORework turns the copies on). `scripts/check-vortex.ps1` reads
-  where Vortex keeps its records on a real PC; the ADR is amended with its report and accepted before P2.5-30.*
-- P2.5-30 Read Vortex's record (read-only): *Found in your game* names the mods Vortex placed, tagged *Placed by
-  Vortex*, in place of one warning per folder, and `mods vortex` lists them.
+  *Done: [ADR-0028](adr/0028-taking-over-from-vortex.md) is accepted. The owner chose a guided handover (DAORework
+  copies, the player purges in Vortex, DAORework turns the copies on) for mods Vortex still manages.
+  `scripts/check-vortex.ps1` finds the game, its documents folder and Vortex's staging folder on any drive. On the
+  owner's PC it found 70 Vortex mods left behind: the documents folder had moved to `D:` and the staging folder was
+  empty, so Vortex can no longer reach them. The live handover's add-in details wait on a PC where Vortex has deployed
+  a `.dazip`.*
+- P2.5-30 Read Vortex's record: *Found in your game* names the mods Vortex placed, tagged *Placed by Vortex*, in
+  place of one warning per folder; the ones Vortex left behind can be managed.
+  *Done: each Vortex mod is the files its record lists that are still in `override`, wherever they sit, named without
+  its Nexus id and version, and its files leave the folder and loose-file entries. A mod Vortex can no longer reach
+  offers *Manage*; one it still manages does not, and `mods adopt` refuses it (`DAO_MOD_ADOPT_VORTEX_MANAGES`). A
+  record that can't be read keeps today's warning. `mods adopt --dry-run` lists them as `vortex:<name>`
+  ([screenshot](screenshots/p2.5-30/01-vortex-mods.png)).*
 - P2.5-31 The handover (ADR-0028 §3 and §4): the *Move from Vortex* card on the Mods page and `mods vortex copy`;
   the copies, a check that the purge is done, one preview to turn them on in Vortex's order, and Home's suggestion
   when Vortex deploys again.

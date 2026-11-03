@@ -10,4 +10,7 @@ public enum AdoptionCandidateKind
 
     /// <summary>The files directly in <c>override</c>, together, adopted as one mod the user names.</summary>
     LooseOverrideFiles,
+
+    /// <summary>The files a Vortex record says one Vortex mod placed in <c>override</c>, wherever they sit (ADR-0028).</summary>
+    VortexMod,
 }

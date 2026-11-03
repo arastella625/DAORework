@@ -33,6 +33,7 @@ summary follows these rules. The command line keeps its own words; see the end.
 | Add-in | addin, DAZIP mod | A packaged `.dazip` mod; the game lists it under Downloadable Content. |
 | Override mod | override folder mod | Files that replace the game's own. |
 | Combined files | merged files, conflicts | Files several mods need at once. |
+| Placed by Vortex | Vortex-deployed | A tag on a mod Vortex installed ([ADR-0028](adr/0028-taking-over-from-vortex.md)), named as Vortex names it. |
 | Your game folder, your documents folder | install directory, `UserDocumentsDirectory` | The folder names appear only in *Game folders*. |
 | Check the game, Check again | Run diagnostics | Diagnostics are *Troubleshooting* in Settings. |
 | Copy details for a bug report, Save a support bundle | Export support bundle | Copying comes with the Settings move (P2.5-27). |

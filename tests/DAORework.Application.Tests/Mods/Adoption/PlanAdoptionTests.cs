@@ -59,6 +59,28 @@ public sealed class PlanAdoptionTests
     }
 
     [Fact]
+    public async Task Execute_AModVortexStillManages_IsRefusedBeforeImporting()
+    {
+        var live = _folder with { Id = AdoptionIds.VortexMod("Better Hair-12-1-0"), Kind = AdoptionCandidateKind.VortexMod, DeployedByVortex = true };
+
+        var result = await UseCase([]).ExecuteAsync(new PlanAdoptionRequest(_documents, [live]));
+
+        Assert.Equal(DiagnosticCodes.ModAdoptVortexManages, result.Error!.Code);
+        Assert.Empty(_importer.Imported);
+    }
+
+    [Fact]
+    public async Task Execute_AModVortexLeftBehind_IsImportedUnderItsName()
+    {
+        var leftBehind = _folder with { Id = AdoptionIds.VortexMod("Better Hair-12-1-0"), Kind = AdoptionCandidateKind.VortexMod };
+
+        var plan = (await UseCase([]).ExecuteAsync(new PlanAdoptionRequest(_documents, [leftBehind]))).Value;
+
+        Assert.Equal(PlanAction.Move, Assert.Single(plan.Operations).Action);
+        Assert.Equal(["Better Hair"], _importer.Imported);
+    }
+
+    [Fact]
     public async Task Execute_AnUnfinishedChange_IsSettledFirst()
     {
         await _stores.StartAsync(new Core.Mods.Apply.ApplyJournal(_documents, "b", [], [], DeploymentRecord.Empty, DeploymentRecord.Empty));

@@ -33,6 +33,9 @@ public sealed partial class HandInstalledModRow : ObservableObject
     [ObservableProperty]
     public partial bool IsSelected { get; set; }
 
+    /// <summary>Gets a value indicating whether it can be managed here: not a mod Vortex still manages (ADR-0028 §2).</summary>
+    public bool CanManage => Candidate is not { Kind: AdoptionCandidateKind.VortexMod, DeployedByVortex: true };
+
     /// <summary>Gets a value indicating whether adopting it needs a name: loose override files have none of their own.</summary>
     public bool NeedsName => Candidate?.Kind == AdoptionCandidateKind.LooseOverrideFiles;
 
@@ -43,6 +46,7 @@ public sealed partial class HandInstalledModRow : ObservableObject
         {
             AdoptionCandidateKind.AddIn => "add-in",
             AdoptionCandidateKind.OverrideFolder => "override folder",
+            AdoptionCandidateKind.VortexMod => "placed by Vortex",
             _ => "loose override files, named when you manage them",
         };
         var notes = new List<string>();
@@ -64,15 +68,11 @@ public sealed partial class HandInstalledModRow : ObservableObject
             notes.Add($"Holds {Counted.Of(candidate.Programs.Count, "program file")} ({names}): managing it leaves them where they are, and DAORework never installs programs.");
         }
 
-        if (candidate.DeployedByVortex)
-        {
-            var folder = candidate.Kind == AdoptionCandidateKind.AddIn ? "AddIns" : "override";
-            notes.Add($"Vortex manages files in {folder}. Purge this mod in Vortex before managing it here, or Vortex may undo the move.");
-        }
+        notes.AddRange(VortexNotes.For(candidate, "managing"));
 
         return new HandInstalledModRow(
             candidate.Name,
-            $"{kind} · {Counted.Of(candidate.Files.Count, "file")} · {new ByteSize(candidate.SizeBytes)} · in {candidate.Path}",
+            $"{kind} · {Counted.Of(candidate.Files.Count, "file")} · {new ByteSize(candidate.SizeBytes)} · in {(candidate.Kind == AdoptionCandidateKind.VortexMod ? "override" : candidate.Path)}",
             notes,
             candidate);
     }
