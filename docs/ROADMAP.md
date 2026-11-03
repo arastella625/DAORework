@@ -374,8 +374,10 @@ decision.
 - P2.5-34 `scripts/verify-real-install.ps1`: put `$null` on the left of its two comparisons (`powershelldre:S8641`),
   so a comparison against an array cannot filter instead of compare. *Done
   ([#68](https://github.com/arastella625/DAORework/pull/68)); both checks pass on the owner's install (2026-11-03).*
-- P2.5-35 Source-generated interop: `LibraryImport` for the AMSI calls in `AmsiNativeMethods`
-  (`SYSLIB1054`), and `GeneratedRegex` in `DiagnosticCodesTests` (`SYSLIB1045`).
+- P2.5-35 Source-generated code where it costs nothing: `GeneratedRegex` in `DiagnosticCodesTests` (`SYSLIB1045`).
+  The AMSI calls in `AmsiNativeMethods` keep `DllImport`, with `SYSLIB1054` suppressed and the reason given:
+  `LibraryImport` needs `AllowUnsafeBlocks`, which Infrastructure keeps off, and without trimming or AOT it gains
+  nothing (owner, 2026-11-03). It is reconsidered if the app is ever trimmed or compiled ahead of time.
 - P2.5-36 The Nexus cover page (`docs/release/nexus/cover.html`) gets a `<title>` and `lang`. *Done
   ([#66](https://github.com/arastella625/DAORework/pull/66)); the cover's screenshot is byte-for-byte the same.*
 - P2.5-37 The collection-expression hints (about 85, mostly `IDE0305` and `IDE0028`, set to *suggestion* in

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 
@@ -5,6 +6,10 @@ namespace DAORework.Infrastructure.Safety;
 
 /// <summary>The Windows Antimalware Scan Interface in <c>amsi.dll</c> (ADR-0018), loaded only from System32.</summary>
 [SupportedOSPlatform("windows")]
+[SuppressMessage(
+    "Interoperability",
+    "SYSLIB1054:Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time",
+    Justification = "LibraryImport needs AllowUnsafeBlocks, which Infrastructure keeps off; without trimming or AOT it gains nothing (P2.5-35).")]
 internal static class AmsiNativeMethods
 {
     [DllImport("amsi.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
