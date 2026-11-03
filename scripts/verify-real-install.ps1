@@ -148,7 +148,7 @@ $backupDir = Join-Path $env:LOCALAPPDATA "DAORework\save-backups\$savesProfile"
 $zips = @(Get-ChildItem $backupDir -Filter '*.zip' -ErrorAction SilentlyContinue)
 Check 'three backups with --keep 2 leave two' ($zips.Count -eq 2) "$($zips.Count) in $backupDir"
 $after = Get-ChildItem $fakeDocs -Recurse -File | ForEach-Object { "$($_.FullName)|$((Get-FileHash $_.FullName).Hash)" }
-Check 'the saves folder is byte-for-byte unchanged' ((Compare-Object @($before) @($after)) -eq $null)
+Check 'the saves folder is byte-for-byte unchanged' ($null -eq (Compare-Object @($before) @($after)))
 if ($zips.Count -gt 0) {
     Add-Type -AssemblyName System.IO.Compression.FileSystem
     $z = [System.IO.Compression.ZipFile]::OpenRead($zips[0].FullName)
@@ -230,7 +230,7 @@ if ($ModsDir) {
     }
 }
 $docsAfter = if (Test-Path $documents) { Get-ChildItem $documents -Recurse -File | ForEach-Object { "$($_.FullName)|$($_.Length)" } } else { @() }
-Check 'the documents folder is unchanged by importing' ((Compare-Object @($docsBefore) @($docsAfter)) -eq $null)
+Check 'the documents folder is unchanged by importing' ($null -eq (Compare-Object @($docsBefore) @($docsAfter)))
 if ($verifyId) {
     Remove-Item (Join-Path $libDir $verifyId) -Recurse -Force -ErrorAction SilentlyContinue
     Remove-Item (Join-Path $libDir "$verifyId.mod.json") -ErrorAction SilentlyContinue
