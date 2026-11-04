@@ -39,34 +39,20 @@ public sealed class CopyVortexMods
             return Result.Failure<VortexCopyReport>(error);
         }
 
-        var copied = (kept?.Copies ?? []).ToDictionary(c => c.VortexName, StringComparer.OrdinalIgnoreCase);
-        var entries = (await _library.ListAsync(cancellationToken)).ToDictionary(e => e.Mod.Id, StringComparer.OrdinalIgnoreCase);
-        var managed = VortexHandoverState.ManagedMods(snapshot, VortexHandoverState.PresentFiles(snapshot));
-        var failed = new List<(string Name, Error Error)>();
-        var leftOut = (kept?.LeftOut ?? []).ToHashSet(StringComparer.OrdinalIgnoreCase);
-        foreach (var mod in managed.Where(m => !copied.ContainsKey(m.VortexName) && !leftOut.Contains(m.VortexName)))
+        var run = new Run(
+            (kept?.Copies ?? []).ToDictionary(c => c.VortexName, StringComparer.OrdinalIgnoreCase),
+            (await _library.ListAsync(cancellationToken)).ToDictionary(e => e.Mod.Id, StringComparer.OrdinalIgnoreCase),
+            (kept?.LeftOut ?? []).ToHashSet(StringComparer.OrdinalIgnoreCase));
+        foreach (var mod in VortexHandoverState.ManagedMods(snapshot, VortexHandoverState.PresentFiles(snapshot)).Where(run.IsNew))
         {
-            var import = await CopyAsync(documentsDirectory, snapshot, mod, cancellationToken);
-            if (!import.TryGetValue(out var entry, out error))
-            {
-                failed.Add((mod.Name, error));
-            }
-            else if (entry.Mod.Kind == ModKind.GameProgram)
-            {
-                leftOut.Add(mod.VortexName);
-            }
-            else
-            {
-                copied[mod.VortexName] = new VortexCopy(mod.VortexName, entry.Mod.Id);
-                entries[entry.Mod.Id] = entry;
-            }
+            run.Add(mod, await CopyAsync(documentsDirectory, snapshot, mod, cancellationToken));
         }
 
         await _store.KeepAddInsListAsync(documentsDirectory, cancellationToken);
-        var (order, unsettled) = Arranged(snapshot, copied, entries);
-        var handover = new VortexHandover([.. order.Select(name => copied[name])], Placed(snapshot, kept)) { LeftOut = [.. leftOut] };
+        var (order, unsettled) = Arranged(snapshot, run.Copied, run.Entries);
+        var handover = new VortexHandover([.. order.Select(name => run.Copied[name])], Placed(snapshot, kept)) { LeftOut = [.. run.LeftOut] };
         await _store.SaveAsync(documentsDirectory, handover, cancellationToken);
-        return Result.Success(new VortexCopyReport(handover.Copies, failed, [.. leftOut.Select(VortexModNames.Display)], [.. unsettled.Select(VortexModNames.Display)]));
+        return Result.Success(new VortexCopyReport(handover.Copies, run.Failed, [.. run.LeftOut.Select(VortexModNames.Display)], [.. unsettled.Select(VortexModNames.Display)]));
     }
 
     private static (IReadOnlyList<string> Order, IReadOnlyList<string> Unsettled) Arranged(
@@ -115,5 +101,30 @@ public sealed class CopyVortexMods
         return scan.Candidates.FirstOrDefault(c => c.Id == AdoptionIds.VortexMod(mod.VortexName)) is { } candidate
             ? await _importer.ImportAsync(documentsDirectory, candidate, mod.Name, cancellationToken)
             : Result.Failure<LibraryEntry>(error);
+    }
+
+    /// <summary>What one run has so far: the copies, kept from before and new, what the library holds, and what didn't go in.</summary>
+    private sealed record Run(Dictionary<string, VortexCopy> Copied, Dictionary<string, LibraryEntry> Entries, HashSet<string> LeftOut)
+    {
+        public List<(string Name, Error Error)> Failed { get; } = [];
+
+        public bool IsNew(VortexManagedMod mod) => !Copied.ContainsKey(mod.VortexName) && !LeftOut.Contains(mod.VortexName);
+
+        public void Add(VortexManagedMod mod, Result<LibraryEntry> import)
+        {
+            if (!import.TryGetValue(out var entry, out var error))
+            {
+                Failed.Add((mod.Name, error));
+            }
+            else if (entry.Mod.Kind == ModKind.GameProgram)
+            {
+                LeftOut.Add(mod.VortexName);
+            }
+            else
+            {
+                Copied[mod.VortexName] = new VortexCopy(mod.VortexName, entry.Mod.Id);
+                Entries[entry.Mod.Id] = entry;
+            }
+        }
     }
 }
