@@ -13,7 +13,8 @@ namespace DAORework.Cli.Tests;
 
 /// <summary>
 /// The real composition (Program.cs minus Serilog) with the machine ports swapped for fakes:
-/// an in-memory file system for the game and mod folders, fake known folders, and a fake process launcher.
+/// an in-memory file system for the game and mod folders, fake known folders, a fake process launcher and a fake
+/// antivirus.
 /// Profiles and reports still go through the real JSON adapters into a temp directory.
 /// </summary>
 internal sealed class CliTestHost : IDisposable
@@ -40,6 +41,7 @@ internal sealed class CliTestHost : IDisposable
         services.Replace(ServiceDescriptor.Singleton<IProcessLauncher>(ProcessLauncher));
         services.Replace(ServiceDescriptor.Singleton<IUriLauncher>(UriLauncher));
         services.Replace(ServiceDescriptor.Singleton<IRegistry>(new EmptyRegistry()));
+        services.Replace(ServiceDescriptor.Singleton<IMalwareScanner>(new FakeMalwareScanner()));
 
         var tester = new CommandAppTester(new MicrosoftDependencyInjectionRegistrar(services));
         tester.Configure(CliConfiguration.Configure);

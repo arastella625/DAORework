@@ -14,8 +14,8 @@ namespace DAORework.App.Tests;
 
 /// <summary>
 /// The real composition with the machine ports swapped for fakes: an in-memory file system for the game and mod
-/// folders, fake known folders, a fake process launcher and a scripted path picker. Profiles and reports still go
-/// through the real JSON adapters into a temp directory.
+/// folders, fake known folders, a fake process launcher, a fake antivirus and a scripted path picker. Profiles and
+/// reports still go through the real JSON adapters into a temp directory.
 /// </summary>
 internal sealed class AppTestHost : IDisposable
 {
@@ -35,6 +35,7 @@ internal sealed class AppTestHost : IDisposable
         services.Replace(ServiceDescriptor.Singleton<IUriLauncher>(UriLauncher));
         services.Replace(ServiceDescriptor.Singleton<IPathPicker>(Picker));
         services.Replace(ServiceDescriptor.Singleton<IRegistry>(new EmptyRegistry()));
+        services.Replace(ServiceDescriptor.Singleton<IMalwareScanner>(new FakeMalwareScanner()));
         _services = services.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true });
     }
 
