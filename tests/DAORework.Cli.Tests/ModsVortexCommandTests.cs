@@ -67,6 +67,33 @@ public sealed class ModsVortexCommandTests : IDisposable
     }
 
     [Fact]
+    public void Copy_AgainAfterThePurge_KeepsTheOrder()
+    {
+        _host.Run("mods", "vortex", "copy");
+        _host.FileSystem.File.Delete(Path.Combine(_override, "hair.dds"));
+        _host.FileSystem.File.Delete(Path.Combine(_override, "red.dds"));
+        _host.FileSystem.File.Delete(Path.Combine(_override, "vortex.deployment.json"));
+
+        _host.Run("mods", "vortex", "copy");
+
+        var next = _host.Run("mods", "vortex").Output;
+        Assert.True(next.IndexOf("red-hair", StringComparison.OrdinalIgnoreCase) < next.IndexOf("blue-hair", StringComparison.OrdinalIgnoreCase), next);
+    }
+
+    [Fact]
+    public void Copy_ADottedFolderName_IsKeptWhole()
+    {
+        const string Dotted = "Green Hair v1.2-3-1-0";
+        _host.FileSystem.AddFile(Path.Combine(_staging, Dotted, "green.dds"), new MockFileData("green"));
+        _host.FileSystem.AddFile(Path.Combine(_override, "green.dds"), new MockFileData("green"));
+        _host.FileSystem.File.WriteAllText(Path.Combine(_override, "vortex.deployment.json"), Record(("hair.dds", Winner), ("green.dds", Dotted)));
+
+        _host.Run("mods", "vortex", "copy");
+
+        Assert.Contains("Green Hair v1.2", _host.Run("mods", "library").Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void Copy_AgainAfterItWorked_AddsNothingNew()
     {
         _host.Run("mods", "vortex", "copy");

@@ -20,6 +20,8 @@ internal sealed class FolderModSource : ModSource
 
     public override IReadOnlyList<string> Files { get; }
 
+    public override string Stem => Name;
+
     public override long TotalBytes => Files.Sum(f => _fileSystem.FileInfo.New(Full(f)).Length);
 
     public static async Task<FolderModSource> CreateAsync(IFileSystem fileSystem, string root, CancellationToken cancellationToken)

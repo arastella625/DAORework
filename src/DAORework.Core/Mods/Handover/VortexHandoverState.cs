@@ -53,7 +53,8 @@ public sealed record VortexHandoverState(VortexHandoverStep Step, IReadOnlyList<
             return VortexHandoverStep.Copy;
         }
 
-        if (snapshot.VortexRecords.Any(r => r.Files.Count > 0) || handover.PlacedPaths.Any(present.Contains))
+        // Only what Vortex can still reach: it can't purge a mod it has lost.
+        if (snapshot.VortexRecords.Any(r => r.Files.Any(f => r.IsLive(f.Mod))) || handover.PlacedPaths.Any(present.Contains))
         {
             return VortexHandoverStep.Purge;
         }

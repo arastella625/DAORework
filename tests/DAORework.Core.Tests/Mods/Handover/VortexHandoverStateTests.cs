@@ -48,6 +48,15 @@ public sealed class VortexHandoverStateTests
     }
 
     [Fact]
+    public void From_ARecordListingOnlyWhatVortexLost_DoesNotHoldThePurge()
+    {
+        var lost = new VortexRecord([new VortexPlacedFile("packages/core/override/gone.dds", "Gone-1-1")]) { AtItsTarget = true };
+        var snapshot = Snapshot(placed: false, live: false) with { VortexRecords = [lost] };
+
+        Assert.Equal(VortexHandoverStep.TurnOn, VortexHandoverState.From(snapshot, _handover, []).Step);
+    }
+
+    [Fact]
     public void From_ThePurgeIsDone_IsTheTurnOnStep_UntilEveryCopyIsOn()
     {
         var purged = Snapshot(placed: false, live: false) with { VortexRecords = [] };

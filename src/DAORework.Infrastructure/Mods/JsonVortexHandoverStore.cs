@@ -7,6 +7,7 @@ using DAORework.Core.Diagnostics;
 using DAORework.Core.Mods.Backups;
 using DAORework.Core.Mods.Handover;
 using DAORework.Infrastructure.Persistence;
+using DAORework.Infrastructure.Persistence.Migrations;
 using Microsoft.Extensions.Options;
 
 namespace DAORework.Infrastructure.Mods;
@@ -37,11 +38,10 @@ public sealed class JsonVortexHandoverStore : IVortexHandoverStore
 
         try
         {
-            await using var stream = _fileSystem.File.OpenRead(path);
-            var handover = await JsonSerializer.DeserializeAsync<VortexHandover>(stream, JsonDefaults.Options, cancellationToken);
+            var handover = await MigratingJsonFile.ReadAsync<VortexHandover>(_fileSystem, path, MigrationChains.VortexHandovers, cancellationToken);
             return handover is null ? Unreadable(path, "it is empty") : Result.Success<VortexHandover?>(handover);
         }
-        catch (JsonException exception)
+        catch (Exception exception) when (exception is JsonException or InvalidDataException)
         {
             return Unreadable(path, exception.Message);
         }

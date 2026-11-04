@@ -11,6 +11,9 @@ internal abstract class ModSource : IDisposable
 
     public string Name { get; }
 
+    /// <summary>Gets the name to give the mod: the file's without its extension, which a folder's name doesn't have.</summary>
+    public virtual string Stem => Path.GetFileNameWithoutExtension(Name);
+
     public string Sha256 { get; }
 
     public abstract IReadOnlyList<string> Files { get; }
