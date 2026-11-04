@@ -11,13 +11,11 @@ public sealed class ModsVortexCommand : AsyncCommand<ModsProfileSettings>
 {
     private readonly GetProfile _getProfile;
     private readonly ReadVortexHandover _read;
-    private readonly FindLostDlc _findLostDlc;
     private readonly VortexRenderer _renderer;
     private readonly ErrorRenderer _errors;
 
-    public ModsVortexCommand(GetProfile getProfile, ReadVortexHandover read, FindLostDlc findLostDlc, VortexRenderer renderer, ErrorRenderer errors)
+    public ModsVortexCommand(GetProfile getProfile, ReadVortexHandover read, VortexRenderer renderer, ErrorRenderer errors)
     {
-        _findLostDlc = findLostDlc;
         _getProfile = getProfile;
         _read = read;
         _renderer = renderer;
@@ -28,14 +26,13 @@ public sealed class ModsVortexCommand : AsyncCommand<ModsProfileSettings>
     {
         ArgumentNullException.ThrowIfNull(settings);
         if (!(await ModsDocuments.ForProfileAsync(_getProfile, settings.Profile, cancellationToken)).TryGetValue(out var documents, out var error)
-            || !(await _read.ExecuteAsync(documents, cancellationToken)).TryGetValue(out var state, out error)
-            || !(await _findLostDlc.ExecuteAsync(documents, cancellationToken)).TryGetValue(out var lost, out error))
+            || !(await _read.ExecuteAsync(documents, cancellationToken)).TryGetValue(out var state, out error))
         {
             _errors.Render(error);
             return ExitCodes.Failure;
         }
 
-        _renderer.RenderState(state, lost.Select(c => c.ModId).ToList());
+        _renderer.RenderState(state);
         return ExitCodes.Success;
     }
 }

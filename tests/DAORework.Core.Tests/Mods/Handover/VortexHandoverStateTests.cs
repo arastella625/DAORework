@@ -64,6 +64,15 @@ public sealed class VortexHandoverStateTests
     }
 
     [Fact]
+    public void From_EveryCopyOnButDlcStillLost_KeepsTheLastStepOpen()
+    {
+        var purged = Snapshot(placed: false, live: false) with { VortexRecords = [] };
+        var lost = new DAORework.Core.Mods.Planning.AddInsListChange("DAO_PRC_EP_1", "Awakening", Add: true) { Item = "<AddInItem />" };
+
+        Assert.Equal(VortexHandoverStep.TurnOn, VortexHandoverState.From(purged, _handover, ["anto-1"], [lost]).Step);
+    }
+
+    [Fact]
     public void From_ThePurgeIsDone_IsTheTurnOnStep_UntilEveryCopyIsOn()
     {
         var purged = Snapshot(placed: false, live: false) with { VortexRecords = [] };

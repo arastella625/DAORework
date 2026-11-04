@@ -5,7 +5,6 @@ using DAORework.Application.Mods.Handover;
 using DAORework.Application.Profiles;
 using DAORework.Core.Common;
 using DAORework.Core.Mods.Handover;
-using DAORework.Core.Mods.Planning;
 using Microsoft.Extensions.Logging;
 
 namespace DAORework.App.ViewModels;
@@ -20,23 +19,21 @@ public sealed partial class VortexHandoverViewModel : PageViewModel
     private readonly GetProfile _getProfile;
     private readonly ReadVortexHandover _read;
     private readonly CopyVortexMods _copy;
-    private readonly FindLostDlc _findLostDlc;
-    private IReadOnlyList<VortexCopy> _copies = [];
+    private VortexHandoverState? _state;
 
-    public VortexHandoverViewModel(GetProfile getProfile, ReadVortexHandover read, CopyVortexMods copy, FindLostDlc findLostDlc, ILogger<VortexHandoverViewModel> logger)
+    public VortexHandoverViewModel(GetProfile getProfile, ReadVortexHandover read, CopyVortexMods copy, ILogger<VortexHandoverViewModel> logger)
         : base(logger)
     {
         _getProfile = getProfile;
         _read = read;
         _copy = copy;
-        _findLostDlc = findLostDlc;
     }
 
     /// <summary>Gets or sets what runs after copying, such as reading the Library again.</summary>
     public Func<CancellationToken, Task>? AfterCopyAsync { get; set; }
 
     /// <summary>Gets or sets how the copies are turned on: the usual preview, in the order given.</summary>
-    public Func<IReadOnlyList<string>, IReadOnlyList<AddInsListChange>, CancellationToken, Task>? TurnOnAsync { get; set; }
+    public Func<IReadOnlyList<string>, IReadOnlyList<DAORework.Core.Mods.Planning.AddInsListChange>, CancellationToken, Task>? TurnOnAsync { get; set; }
 
     public ObservableCollection<string> Mods { get; } = [];
 
@@ -95,20 +92,8 @@ public sealed partial class VortexHandoverViewModel : PageViewModel
         cancellationToken);
 
     [RelayCommand]
-    private Task TurnOnAllAsync(CancellationToken cancellationToken) => GuardAsync(
-        async token =>
-        {
-            if (!(await DocumentsAsync(token)).TryGetValue(out var documents, out var error)
-                || !(await _findLostDlc.ExecuteAsync(documents, token)).TryGetValue(out var lost, out error))
-            {
-                ReportError(error);
-            }
-            else if (TurnOnAsync is { } turnOn)
-            {
-                await turnOn([.. _copies.Select(c => c.ModId)], lost, token);
-            }
-        },
-        cancellationToken);
+    private Task TurnOnAllAsync(CancellationToken cancellationToken) =>
+        _state is null ? Task.CompletedTask : TurnOnAsync?.Invoke([.. _state.Copies.Select(c => c.ModId)], _state.LostDlc, cancellationToken) ?? Task.CompletedTask;
 
     private Task<Result<string>> DocumentsAsync(CancellationToken cancellationToken) => ProfileDocuments.ForAsync(_getProfile, ProfileName, cancellationToken);
 
@@ -116,11 +101,11 @@ public sealed partial class VortexHandoverViewModel : PageViewModel
     {
         if (!(await DocumentsAsync(cancellationToken)).TryGetValue(out var documents, out _))
         {
-            Show(VortexHandoverStep.NothingToDo, [], []);
+            Show(new VortexHandoverState(VortexHandoverStep.NothingToDo, [], []));
         }
         else if ((await _read.ExecuteAsync(documents, cancellationToken)).TryGetValue(out var state, out var error))
         {
-            Show(state.Step, state.Managed, state.Copies);
+            Show(state);
         }
         else
         {
@@ -128,12 +113,12 @@ public sealed partial class VortexHandoverViewModel : PageViewModel
         }
     }
 
-    private void Show(VortexHandoverStep step, IReadOnlyList<VortexManagedMod> managed, IReadOnlyList<VortexCopy> copies)
+    private void Show(VortexHandoverState state)
     {
-        Step = step;
-        _copies = copies;
+        Step = state.Step;
+        _state = state;
         Mods.Clear();
-        foreach (var mod in managed)
+        foreach (var mod in state.Managed)
         {
             Mods.Add($"{mod.Name} · {Counted.Of(mod.FilesInGame, "file")}");
         }

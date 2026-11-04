@@ -1,4 +1,5 @@
 using DAORework.Core.Mods.Adoption;
+using DAORework.Core.Mods.Planning;
 
 namespace DAORework.Core.Mods.Handover;
 
@@ -10,16 +11,22 @@ public sealed record VortexHandoverState(VortexHandoverStep Step, IReadOnlyList<
     /// <summary>Gets a value indicating whether Vortex is placing mods again though the copies are on (ADR-0028 §4).</summary>
     public bool PlacingAgain { get; init; }
 
-    public static VortexHandoverState From(HandInstalledSnapshot snapshot, VortexHandover? handover, IReadOnlyCollection<string> activeModIds)
+    /// <summary>Gets the official DLC to put back in <c>AddIns.xml</c> (ADR-0028 §3).</summary>
+    public IReadOnlyList<AddInsListChange> LostDlc { get; init; } = [];
+
+    /// <summary>Works out the state; DLC still to put back keeps the last step open, even with every copy on.</summary>
+    public static VortexHandoverState From(HandInstalledSnapshot snapshot, VortexHandover? handover, IReadOnlyCollection<string> activeModIds, IReadOnlyList<AddInsListChange>? lostDlc = null)
     {
         ArgumentNullException.ThrowIfNull(snapshot);
         ArgumentNullException.ThrowIfNull(activeModIds);
         var present = PresentFiles(snapshot);
         var managed = ManagedMods(snapshot, present);
         var copies = handover?.Copies ?? [];
-        return new VortexHandoverState(StepOf(snapshot, handover, managed, present, activeModIds), managed, copies)
+        var step = StepOf(snapshot, handover, managed, present, activeModIds);
+        return new VortexHandoverState(step == VortexHandoverStep.Done && lostDlc is { Count: > 0 } ? VortexHandoverStep.TurnOn : step, managed, copies)
         {
             PlacingAgain = managed.Count > 0 && copies.Any(c => activeModIds.Contains(c.ModId, _names)),
+            LostDlc = lostDlc ?? [],
         };
     }
 
