@@ -71,6 +71,11 @@ public sealed class ModChangeRenderer
     {
         ArgumentNullException.ThrowIfNull(status);
         _console.WriteLine($"Documents folder: {documents}");
+        if (status.PrefixGone)
+        {
+            _console.WriteLine("The game's Proton prefix has gone, and this folder and the mods in it with it. Start the game once from Steam, then turn your mods on again.");
+        }
+
         _console.WriteLine(status.Record.ActiveModIds.Count == 0
             ? "No mods are active through DAORework."
             : $"Active, lowest priority first: {string.Join(", ", status.Record.ActiveModIds)} ({status.Record.Files.Count} file(s), {status.Record.AddedAddIns.Count} add-in entr{(status.Record.AddedAddIns.Count == 1 ? "y" : "ies")})");

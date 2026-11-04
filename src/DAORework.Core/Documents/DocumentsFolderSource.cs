@@ -17,4 +17,7 @@ public enum DocumentsFolderSource
 
     /// <summary>A folder found by searching the drives, when no other source found one (ADR-0032).</summary>
     DriveSearch = 4,
+
+    /// <summary>A folder inside the game's Proton prefix, on Linux (ADR-0031).</summary>
+    ProtonPrefix = 5,
 }

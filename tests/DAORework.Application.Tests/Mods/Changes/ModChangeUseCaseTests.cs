@@ -159,7 +159,7 @@ public sealed class ModChangeUseCaseTests
         await _stores.StartAsync(new(Documents, "b0", [], [], DeploymentRecord.Empty, DeploymentRecord.Empty));
         _backups.Backups.Add(new("b0", DateTimeOffset.UnixEpoch, Documents, []));
 
-        var status = (await new GetModStatus(_stores, _stores, _backups).ExecuteAsync(Documents)).Value;
+        var status = (await new GetModStatus(_stores, _stores, _backups, new MockFileSystem()).ExecuteAsync(Documents)).Value;
 
         Assert.Equal(["hair"], status.Record.ActiveModIds);
         Assert.True(status.ChangeUnfinished);

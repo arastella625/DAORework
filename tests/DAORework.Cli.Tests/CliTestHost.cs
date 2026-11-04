@@ -41,6 +41,7 @@ internal sealed class CliTestHost : IDisposable
         services.Replace(ServiceDescriptor.Singleton<IProcessLauncher>(ProcessLauncher));
         services.Replace(ServiceDescriptor.Singleton<IUriLauncher>(UriLauncher));
         services.Replace(ServiceDescriptor.Singleton<IRegistry>(new EmptyRegistry()));
+        services.Replace(ServiceDescriptor.Singleton<IHostPlatform>(new WindowsHost()));
         services.Replace(ServiceDescriptor.Singleton<IMalwareScanner>(new FakeMalwareScanner()));
 
         var tester = new CommandAppTester(new MicrosoftDependencyInjectionRegistrar(services));
@@ -54,5 +55,11 @@ internal sealed class CliTestHost : IDisposable
         {
             Directory.Delete(_appData, recursive: true);
         }
+    }
+
+    /// <summary>The tests run on Windows and on Linux CI; their made-up installs are Windows ones.</summary>
+    private sealed class WindowsHost : IHostPlatform
+    {
+        public bool IsLinux => false;
     }
 }

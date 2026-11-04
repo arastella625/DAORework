@@ -18,5 +18,6 @@ internal static class TestDocumentsDetection
             fileSystem,
             knownFolders,
             new ProfileDocumentsFolders(profiles ?? new InMemoryProfileRepository(), NullLogger<ProfileDocumentsFolders>.Instance),
-            search ?? new FakeDocumentsFolderSearch());
+            search ?? new FakeDocumentsFolderSearch(),
+            new FakeProtonPrefixLocator());
 }
