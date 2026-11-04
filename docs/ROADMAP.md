@@ -457,6 +457,9 @@ made-up mods, which is how it got through.)*
   markers, Mac leftovers and documents stay in the library and are never deployed, and a folder of nothing else isn't
   offered as a mod.
 
+- P2.6-15 The library reads clean: names read as words, `loose` reads *Loose files*, a mod with nothing for the game
+  isn't listed, and *Combined files* counts shared files, not only merged ones.
+
 **Not in this phase:** the same as Phase 2.5's.
 
 **Exit gate:**

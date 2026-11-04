@@ -43,7 +43,7 @@ public sealed class RealScalePreviewTests : IDisposable
 
         var activation = viewModel.ModsTab.Activation;
         var preview = activation.Preview;
-        Assert.Equal("Turn on 63 mods", preview.Title);
+        Assert.Equal("Turn on 62 mods", preview.Title);
         Assert.StartsWith("Can't go ahead yet: 3 problems", preview.Summary, StringComparison.Ordinal);
         Assert.Contains(preview.Problems, p => p.Title.StartsWith(RealScaleLibrary.BlockedProgram, StringComparison.Ordinal));
         Assert.Contains(preview.Problems, p => p.Title.StartsWith(RealScaleLibrary.BlockedRegistered, StringComparison.Ordinal));
@@ -90,7 +90,7 @@ public sealed class RealScalePreviewTests : IDisposable
         await activation.LeaveOutCommand.ExecuteAsync(null);
 
         Assert.False(activation.IsError, activation.StatusMessage);
-        Assert.Equal("Turn on 60 mods", activation.Preview.Title);
+        Assert.Equal("Turn on 59 mods", activation.Preview.Title);
         Assert.Empty(activation.Preview.Problems);
         Assert.StartsWith("Left out: ", activation.Preview.Notes[0], StringComparison.Ordinal);
         Assert.True(activation.ApplyCommand.CanExecute(null));

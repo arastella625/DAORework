@@ -57,7 +57,7 @@ public sealed partial class SetupSummary : ObservableObject
                 overlaps == 0,
                 overlaps == 0 ? HomeTarget.ModsLibrary : HomeTarget.ModsArrange,
                 ModKindFilter.OverrideMods),
-            new("Combined files", combined == 0 ? "None needed" : $"{combined} combined", "Ready", true, HomeTarget.ModsCombined, ModKindFilter.CombinedFiles),
+            new("Combined files", CombinedCount(combined, overlaps), "Ready", true, HomeTarget.ModsCombined, ModKindFilter.CombinedFiles),
         ];
         Parts.Clear();
         foreach (var part in parts)
@@ -71,6 +71,15 @@ public sealed partial class SetupSummary : ObservableObject
             ? "Your add-ins, override mods and combined files are all set."
             : "Some mods change the same file. Arrange them to choose which one wins.";
     }
+
+    /// <summary>The card lists files mods share as well as merged ones, so "None needed" is only true of neither.</summary>
+    private static string CombinedCount(int combined, int shared) => (combined, shared) switch
+    {
+        (0, 0) => "None needed",
+        (0, _) => $"{shared} shared",
+        (_, 0) => $"{combined} combined",
+        _ => $"{combined} combined · {shared} shared",
+    };
 
     private static string Count(int on, int found) =>
         found == 0 ? $"{on} on" : $"{on} on · {found} found in your game";
