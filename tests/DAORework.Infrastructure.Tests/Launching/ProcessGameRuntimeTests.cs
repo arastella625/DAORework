@@ -17,7 +17,18 @@ public sealed class ProcessGameRuntimeTests
     private readonly MockFileSystem _fileSystem = new();
     private readonly FakeProcessLauncher _launcherPort = new();
 
-    private ProcessGameRuntime CreateRuntime() => new(_fileSystem, _launcherPort, NullLogger<ProcessGameRuntime>.Instance);
+    [Fact]
+    public async Task LaunchAsync_OnLinux_SaysToUseThePlayersLauncher_AndStartsNothing()
+    {
+        var processes = new FakeProcessLauncher();
+        var runtime = new ProcessGameRuntime(_fileSystem, processes, new FakeHostPlatform { IsLinux = true }, NullLogger<ProcessGameRuntime>.Instance);
+
+        var result = await runtime.LaunchAsync(new RuntimeProfile { GameExecutablePath = "daorigins.exe" });
+
+        Assert.Equal(DiagnosticCodes.LaunchNotSupported, result.Error!.Code);
+    }
+
+    private ProcessGameRuntime CreateRuntime() => new(_fileSystem, _launcherPort, new FakeHostPlatform(), NullLogger<ProcessGameRuntime>.Instance);
 
     [Fact]
     public async Task LaunchAsync_GameTargetWithoutPath_FailsMissing()
@@ -58,7 +69,7 @@ public sealed class ProcessGameRuntimeTests
     public async Task LaunchAsync_ProcessFailsToStart_PassesTheFailureThrough()
     {
         _fileSystem.AddFile(_exe, new MockFileData("exe"));
-        var runtime = new ProcessGameRuntime(_fileSystem, new FakeProcessLauncher { Fail = true }, NullLogger<ProcessGameRuntime>.Instance);
+        var runtime = new ProcessGameRuntime(_fileSystem, new FakeProcessLauncher { Fail = true }, new FakeHostPlatform(), NullLogger<ProcessGameRuntime>.Instance);
 
         var result = await runtime.LaunchAsync(new RuntimeProfile { GameExecutablePath = _exe });
 

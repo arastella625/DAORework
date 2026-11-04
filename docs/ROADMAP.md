@@ -520,7 +520,8 @@ back up saves and press Play, from a `linux-x64` download. Windows players see n
   and `DAO_PROTON_PREFIX_MISSING`. Diagnostics and `mods status` say plainly when the prefix, and the mods in it, have
   gone. *Done; `IHostPlatform`, named in P2.7-06, comes in here.*
 - P2.7-05 Play on Linux: a Steam copy starts through `xdg-open`; any other copy fails with `DAO_LAUNCH_NOT_SUPPORTED`
-  and points to the player's launcher. Launch messages stop saying *Windows*.
+  and points to the player's launcher. Launch messages stop saying *Windows*. *Done; the real `xdg-open` waits for
+  P2.7-09.*
 - P2.7-06 Advice that fits Linux: `IHostPlatform`, and DXVK is no longer suggested there. A DXVK already in the game
   folder is still recognised and can be removed.
 - P2.7-07 The window opens: `Program.Main` names the missing library in one line instead of a stack trace, and a CI

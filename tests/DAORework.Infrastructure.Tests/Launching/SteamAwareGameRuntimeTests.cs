@@ -77,6 +77,6 @@ public sealed class SteamAwareGameRuntimeTests
     private SteamAwareGameRuntime Runtime(FakeUriLauncher links) => new(
         new SteamGameInstall(_fileSystem),
         links,
-        new ProcessGameRuntime(_fileSystem, _processes, NullLogger<ProcessGameRuntime>.Instance),
+        new ProcessGameRuntime(_fileSystem, _processes, new FakeHostPlatform(), NullLogger<ProcessGameRuntime>.Instance),
         NullLogger<SteamAwareGameRuntime>.Instance);
 }

@@ -77,6 +77,7 @@ public static class DiagnosticCodes
     // P2-02: the mod library and conflict scanner (ADR-0012).
     public const string ModPathInvalid = "DAO_MOD_PATH_INVALID";
     public const string ModPageLinkRefused = "DAO_MOD_PAGE_LINK_REFUSED";
+    public const string LaunchNotSupported = "DAO_LAUNCH_NOT_SUPPORTED";
     public const string ProtonPrefixMissing = "DAO_PROTON_PREFIX_MISSING";
     public const string DownloadsFolderMissing = "DAO_DOWNLOADS_FOLDER_MISSING";
     public const string DownloadsUnreadable = "DAO_DOWNLOADS_UNREADABLE";
