@@ -35,6 +35,12 @@ public sealed class PackedConflictsTests
     }
 
     [Fact]
+    public void Find_EachAddInsOwnManifest_IsNoConflict()
+    {
+        Assert.Empty(PackedConflicts.Find([new("a", ["manifest.xml"]), new("b", ["Manifest.XML"])], [("c", "manifest.xml")]));
+    }
+
+    [Fact]
     public void Find_TwoLooseFiles_AreTheScannersJob()
     {
         Assert.Empty(PackedConflicts.Find([], [("a", "x.dds"), ("b", "x.dds")]));

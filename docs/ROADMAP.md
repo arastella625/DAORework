@@ -577,8 +577,9 @@ Flatpak, AppImage or distribution packages; macOS; malware scanning on Linux; ch
   (download, verify the SHA-256 and the build attestation, replace the running executables) is not part of this task
   and would need its own ADR and threat model.
 
-- P3-07 Conflicts inside `.erf` archives, over the P3-01 reader: the resource names inside each mod's override
-  archives, compared with loose files and with each other, so a shared resource is found however it is packed.
+- P3-07 Conflicts inside `.erf` archives, over the P3-01 reader: the resource names inside each mod's archives, in
+  override and in add-ins, compared with loose override files and with each other, so a shared resource is found however
+  it is packed. An add-in's own `manifest.xml` doesn't count.
   *Done: on the Combined files card ([screenshot](screenshots/p3-07/01-packed.png)). No mod is said to win: which copy
   the game uses isn't known.*
 - P3-08 `.gda` tables row by row, over the P3-01 reader: when two mods ship the same table, which rows each

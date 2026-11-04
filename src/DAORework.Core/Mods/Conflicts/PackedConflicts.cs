@@ -7,6 +7,9 @@ namespace DAORework.Core.Mods.Conflicts;
 /// </summary>
 public static class PackedConflicts
 {
+    /// <summary>Add-ins each carry one in their archives to describe themselves, so sharing the name is no clash.</summary>
+    private const string AddInManifest = "manifest.xml";
+
     /// <param name="archives">The archives in the active mods.</param>
     /// <param name="looseFiles">Each active mod's loose override files, by file name.</param>
     public static IReadOnlyList<PackedConflict> Find(IReadOnlyList<PackedArchive> archives, IReadOnlyList<(string ModId, string FileName)> looseFiles)
@@ -14,7 +17,7 @@ public static class PackedConflicts
         ArgumentNullException.ThrowIfNull(archives);
         ArgumentNullException.ThrowIfNull(looseFiles);
         var names = StringComparer.OrdinalIgnoreCase;
-        var packed = archives.SelectMany(a => a.Resources.Select(r => (a.ModId, FileName: r))).ToList();
+        var packed = archives.SelectMany(a => a.Resources.Where(r => !names.Equals(r, AddInManifest)).Select(r => (a.ModId, FileName: r))).ToList();
         var inArchive = packed.Select(p => p.FileName).ToHashSet(names);
         return [.. packed.Concat(looseFiles.Where(l => inArchive.Contains(l.FileName)))
             .GroupBy(p => p.FileName, names)

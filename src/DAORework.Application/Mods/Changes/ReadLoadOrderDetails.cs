@@ -6,8 +6,10 @@ using DAORework.Core.Mods.Safety;
 namespace DAORework.Application.Mods.Changes;
 
 /// <summary>
-/// Reads what the load order shows beside its plan (ROADMAP P3-07). An archive that can't be read is left out: it hides
-/// its contents from this list and changes nothing else.
+/// Reads what the load order shows beside its plan (ROADMAP P3-07). Every archive a mod deploys counts, in an add-in as
+/// much as in override, since add-ins are where the fix packs keep theirs. Only override files are compared as loose
+/// files: the game finds those by name alone. An archive that can't be read is left out: it hides its contents from this
+/// list and changes nothing else.
 /// </summary>
 public sealed class ReadLoadOrderDetails
 {
@@ -45,11 +47,14 @@ public sealed class ReadLoadOrderDetails
             return;
         }
 
-        foreach (var file in files.Where(f => f.IsOverride && !ProgramFiles.IsProgram(f.Source)))
+        foreach (var file in files.Where(f => !ProgramFiles.IsProgram(f.Source)))
         {
             if (!file.FileName.EndsWith(".erf", StringComparison.OrdinalIgnoreCase))
             {
-                loose.Add((mod.Id, file.FileName));
+                if (file.IsOverride)
+                {
+                    loose.Add((mod.Id, file.FileName));
+                }
             }
             else if (_erf.ReadNames(mod.Id, file.Source.RelativePath).TryGetValue(out var names, out _))
             {
