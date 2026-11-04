@@ -34,6 +34,7 @@ public static class DependencyInjection
         services.AddSingleton<IDiagnosticRule, LauncherExecutableRule>();
         services.AddSingleton<IDiagnosticRule, DocumentsDirectoryRule>();
         services.AddSingleton<IDiagnosticRule, DocumentsRedirectionRule>();
+        services.AddSingleton<IDiagnosticRule, ProtonPrefixRule>();
         services.AddSingleton<IDiagnosticRule, ModFoldersRule>();
         services.AddSingleton<IDiagnosticRule, InstallOverrideRule>();
         services.AddSingleton<IDiagnosticRule, BinShipProgramsRule>();

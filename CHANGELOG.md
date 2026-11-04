@@ -19,6 +19,7 @@ All notable changes to DAORework are recorded here. The format follows
 - `DAORework.exe` and `dao.exe` are no longer compressed inside (P2.6-07), since antivirus programs treat a compressed program like a packed one and Nexus holds every flagged upload for a check by hand. Each file is larger; the download grows much less, since the zip compresses them anyway. Nothing changes in how they work.
 
 ### Fixed
+- The documents folder is found in the game's Proton prefix on Linux (P2.7-04, [ADR-0031](docs/adr/0031-steam-on-linux-through-proton.md)), whatever the prefix calls its folders. Diagnostics say so if there's no prefix yet (`DAO_PROTON_PREFIX_MISSING`), or if it has gone with the mods in it, and `mods status` says the same. DAORework never creates a prefix. Nothing changes on Windows.
 - Steam is found on Linux (P2.7-03, [ADR-0031](docs/adr/0031-steam-on-linux-through-proton.md)): the native, Flatpak and Snap folders are read, and every library they list, wherever it is mounted. Nothing changes on Windows.
 - On a system without a Documents or Program Files folder, DAORework no longer looks in, or saves, a path relative to the folder it was started from (P2.7-02, [ADR-0031](docs/adr/0031-steam-on-linux-through-proton.md)). Nothing changes on Windows.
 - A Vortex record can no longer make DAORework look at a network share: a staging folder on one is ignored, as is any record that isn't where it says it belongs. Just looking at a network path makes Windows connect to it.

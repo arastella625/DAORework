@@ -518,7 +518,7 @@ back up saves and press Play, from a `linux-x64` download. Windows players see n
   the Flatpak and Snap paths are the ones ADR-0031 takes from community reports.*
 - P2.7-04 Find the documents folder in the Proton prefix: `IProtonPrefixLocator`, `DocumentsFolderSource.ProtonPrefix`
   and `DAO_PROTON_PREFIX_MISSING`. Diagnostics and `mods status` say plainly when the prefix, and the mods in it, have
-  gone.
+  gone. *Done; `IHostPlatform`, named in P2.7-06, comes in here.*
 - P2.7-05 Play on Linux: a Steam copy starts through `xdg-open`; any other copy fails with `DAO_LAUNCH_NOT_SUPPORTED`
   and points to the player's launcher. Launch messages stop saying *Windows*.
 - P2.7-06 Advice that fits Linux: `IHostPlatform`, and DXVK is no longer suggested there. A DXVK already in the game

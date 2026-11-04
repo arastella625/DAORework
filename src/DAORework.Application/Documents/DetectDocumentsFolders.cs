@@ -9,7 +9,8 @@ namespace DAORework.Application.Documents;
 /// Finds where the Dragon Age documents folder is, or could be: the Documents folder Windows reports (what the game
 /// uses), the classic <c>%UserProfile%\Documents</c>, and <c>%OneDrive%\Documents</c>. OneDrive's Known Folder Move
 /// silently changes the first, which is how saves and mods end up "missing" after a redirection. The folder can also
-/// be anywhere else, so the folders the profiles name come next, and a search of the drives last (ADR-0032).
+/// be anywhere else, so the folders the profiles name come next, then the game's Proton prefix on Linux (ADR-0031), and
+/// a search of the drives last (ADR-0032).
 /// </summary>
 public sealed class DetectDocumentsFolders
 {
@@ -17,13 +18,16 @@ public sealed class DetectDocumentsFolders
     private readonly IKnownFolders _knownFolders;
     private readonly ProfileDocumentsFolders _profileFolders;
     private readonly IDocumentsFolderSearch _search;
+    private readonly IProtonPrefixLocator _prefixes;
 
     public DetectDocumentsFolders(
         IFileSystem fileSystem,
         IKnownFolders knownFolders,
         ProfileDocumentsFolders profileFolders,
-        IDocumentsFolderSearch search)
+        IDocumentsFolderSearch search,
+        IProtonPrefixLocator prefixes)
     {
+        _prefixes = prefixes;
         _fileSystem = fileSystem;
         _knownFolders = knownFolders;
         _profileFolders = profileFolders;
@@ -39,6 +43,8 @@ public sealed class DetectDocumentsFolders
 
         // Only ones that exist: unlike the usual places, the game will never create a folder a profile names.
         candidates.AddRange((await _profileFolders.ReadAsync(cancellationToken)).Select(path => Describe(path, DocumentsFolderSource.Profile)).Where(c => c.Exists));
+
+        candidates.AddRange(_prefixes.FindDocumentsFolders().Select(path => Describe(path, DocumentsFolderSource.ProtonPrefix)));
 
         // Detection runs on every diagnose, so the drives are walked only when nothing cheaper found a folder.
         if (!candidates.Exists(c => c.Exists))

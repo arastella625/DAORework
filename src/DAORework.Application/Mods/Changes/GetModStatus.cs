@@ -1,5 +1,7 @@
+using System.IO.Abstractions;
 using DAORework.Application.Abstractions;
 using DAORework.Core.Common;
+using DAORework.Core.Documents;
 
 namespace DAORework.Application.Mods.Changes;
 
@@ -9,9 +11,11 @@ public sealed class GetModStatus
     private readonly IDeploymentRecordStore _records;
     private readonly IApplyJournalStore _journals;
     private readonly IDeploymentBackupStore _backups;
+    private readonly IFileSystem _fileSystem;
 
-    public GetModStatus(IDeploymentRecordStore records, IApplyJournalStore journals, IDeploymentBackupStore backups)
+    public GetModStatus(IDeploymentRecordStore records, IApplyJournalStore journals, IDeploymentBackupStore backups, IFileSystem fileSystem)
     {
+        _fileSystem = fileSystem;
         _records = records;
         _journals = journals;
         _backups = backups;
@@ -25,6 +29,9 @@ public sealed class GetModStatus
         }
 
         var unfinished = await _journals.LoadAsync(documentsDirectory, cancellationToken) is not null;
-        return Result.Success(new ModStatus(record, unfinished, await _backups.ListAsync(documentsDirectory, cancellationToken)));
+        return Result.Success(new ModStatus(record, unfinished, await _backups.ListAsync(documentsDirectory, cancellationToken))
+        {
+            PrefixGone = ProtonPaths.IsInPrefix(documentsDirectory) && !_fileSystem.Directory.Exists(documentsDirectory),
+        });
     }
 }

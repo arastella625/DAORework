@@ -35,6 +35,7 @@ internal sealed class AppTestHost : IDisposable
         services.Replace(ServiceDescriptor.Singleton<IUriLauncher>(UriLauncher));
         services.Replace(ServiceDescriptor.Singleton<IPathPicker>(Picker));
         services.Replace(ServiceDescriptor.Singleton<IRegistry>(new EmptyRegistry()));
+        services.Replace(ServiceDescriptor.Singleton<IHostPlatform>(new WindowsHost()));
         services.Replace(ServiceDescriptor.Singleton<IMalwareScanner>(new FakeMalwareScanner()));
         _services = services.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true });
     }
@@ -91,5 +92,11 @@ internal sealed class AppTestHost : IDisposable
         {
             Directory.Delete(_appData, recursive: true);
         }
+    }
+
+    /// <summary>The tests run on Windows and on Linux CI; their made-up installs are Windows ones.</summary>
+    private sealed class WindowsHost : IHostPlatform
+    {
+        public bool IsLinux => false;
     }
 }
