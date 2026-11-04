@@ -27,6 +27,8 @@ internal sealed class CandidateModSource : ModSource
 
     public override IReadOnlyList<string> Files { get; }
 
+    public override string Stem => Name;
+
     public override long TotalBytes => _disk.Values.Sum(p => _fileSystem.FileInfo.New(p).Length) + (_manifest?.Length ?? 0);
 
     /// <summary>Lists and hashes the candidate's files; <paramref name="manifest"/> is the add-in's <c>Manifest.xml</c>, or null for an override mod.</summary>

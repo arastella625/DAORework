@@ -38,6 +38,8 @@ public sealed class VortexRecordReader
             {
                 AtItsTarget = Normal(Text(root, "targetPath")).Equals(Normal(folder), StringComparison.OrdinalIgnoreCase),
                 StagedMods = Staged(Text(root, "stagingPath")),
+                StagingPath = Text(root, "stagingPath"),
+                RelativeFolder = relativeFolder + "/",
             });
         }
         catch (JsonException exception)

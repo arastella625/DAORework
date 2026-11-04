@@ -44,6 +44,12 @@ public static class CliConfiguration
             mods.AddCommand<ModsDeactivateCommand>("deactivate").WithDescription("Remove mods DAORework installed: shows the plan, asks, backs up, applies");
             mods.AddCommand<ModsRollbackCommand>("rollback").WithDescription("Undo the most recent mod change (or --backup <id>) from its backup");
             mods.AddCommand<ModsAdoptCommand>("adopt").WithDescription("Take over mods installed by hand: lists them, or with ids shows the plan, asks, backs up, applies");
+            mods.AddBranch<ModsProfileSettings>("vortex", vortex =>
+            {
+                vortex.SetDescription("Move from Vortex: list the mods it still manages and the next step, or copy them into the library");
+                vortex.SetDefaultCommand<ModsVortexCommand>();
+                vortex.AddCommand<ModsVortexCopyCommand>("copy").WithDescription("Add a copy of each mod Vortex manages to the library. Nothing in the game changes");
+            });
             mods.AddCommand<ModsRecoverCommand>("recover").WithDescription("Settle a mod change that was interrupted: --finish or --rollback");
         });
 

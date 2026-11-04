@@ -158,7 +158,7 @@ internal sealed class LibraryImporter
     }
 
     /// <summary>Checks the mod's size and finds its name, and its UID when it is an add-in.</summary>
-    private async Task<Result<(string Name, string? Uid)>> DescribeAsync(ModSource source, ArchiveShape shape)
+    private static async Task<Result<(string Name, string? Uid)>> DescribeAsync(ModSource source, ArchiveShape shape)
     {
         if (source.Files.Count > FolderModLibrary.MaxFiles || source.TotalBytes > FolderModLibrary.MaxBytes)
         {
@@ -169,7 +169,7 @@ internal sealed class LibraryImporter
 
         if (shape != ArchiveShape.AddIn)
         {
-            return Result.Success<(string Name, string? Uid)>((ModIds.NameFromFileName(_fileSystem.Path.GetFileNameWithoutExtension(source.Name)), null));
+            return Result.Success<(string Name, string? Uid)>((ModIds.NameFromFileName(source.Stem), null));
         }
 
         return AddInManifest.Parse(await ReadTextAsync(source, "Manifest.xml")).TryGetValue(out var manifest, out var error)

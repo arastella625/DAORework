@@ -28,5 +28,7 @@ public sealed class DaoReworkOptions
     public string LibraryDirectory => Path.Combine(AppDataDirectory, "library");
 
     /// <summary>Gets where each documents folder's deployment record and apply journal are kept (ADR-0012, P2-05).</summary>
+    public string VortexHandoversDirectory => Path.Combine(AppDataDirectory, "vortex-handovers");
+
     public string DeploymentsDirectory => Path.Combine(AppDataDirectory, "deployments");
 }
