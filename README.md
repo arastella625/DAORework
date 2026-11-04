@@ -37,11 +37,18 @@ publisher. A new publisher still builds up reputation with Windows SmartScreen, 
 
 - **Takes over the mods you already installed by hand**, in `override` and `AddIns`, without reinstalling them.
   Official DLC is never touched.
+- **Moves your mods over from Vortex.** *Move from Vortex* takes you through it a step at a time: copy them, purge in
+  Vortex, then turn them on in the same order. It has only been run on simulated Vortex records so far, and doesn't
+  cover add-ins Vortex placed yet.
+- **Picks up new downloads, if you turn it on.** When you come back from your browser, the mods you downloaded are
+  offered on the Mods page. Nothing is added without a click.
 - **Installs mods safely.** Import a `.dazip`, `.zip`, `.7z` or `.rar` (or drop it on the window). Activating shows
   exactly what will be copied, replaced or removed first, takes a backup, and can be rolled back.
-- **Shows conflicts.** For every file two mods share, whose copy the game uses, and lets you reorder them.
+- **Shows conflicts.** For every file two mods share, whose copy the game uses, and lets you reorder them. Files
+  inside `.erf` archives are compared too, though there DAORework can't tell which copy the game uses.
 - **Checks every mod.** Programs inside a mod are named and never installed, your own antivirus scans every mod before
-  it is kept, and a download that differs from the known official one is pointed out.
+  it is kept, and a download that differs from the known official one is pointed out. Mods that run inside the game,
+  such as DAO Lib and Luma, are recognised, but DAORework can't install them yet.
 - **Installs DXVK** from a release you download, and **the 4 GB patch on copies that allow it** (GOG, EA App).
   Steam's own `daorigins.exe` is protected, and Steam will not start it once patched, so DAORework leaves the Steam
   copy alone and tells you if it was patched before. It notices when Steam's Verify integrity has undone a fix.
@@ -61,8 +68,10 @@ every write and proves each change still ends fully before or fully after. Both 
 install; GOG and EA App installs still need a real run ([#5](https://github.com/arastella625/DAORework/issues/5)).
 Phase 2.5 (release 0.3.0, the first public one) puts all of it in the window and adds adopting the mods you installed
 by hand, `.7z` and `.rar` import, the load order and its conflicts, and mod safety checks (programs never installed,
-your antivirus scans every mod, downloads compared with the known official ones). Phase 3, the file-format toolkit,
-is next.
+your antivirus scans every mod, downloads compared with the known official ones). Phase 2.6 (releases 0.3.1 to 0.5.0)
+follows what real use shows: several mods at once, the six-tab window, combining hair and head mods, and moving from
+Vortex. 0.5.0 also carries the first parts of three later pieces of work: mods that run inside the game, Steam on
+Linux (there is no Linux download yet) and the file-format toolkit.
 
 ## How it is built
 
@@ -99,7 +108,7 @@ dotnet run --project src/DAORework.App
 Create a profile in the header: DAORework finds your install and documents folder, checks them, and **Home** says
 whether the game is ready to play, shows your add-ins, override mods and combined files at a glance, and lists what is
 worth a look. **Mods** is one page for every mod, with a switch for each, the ones found in your game, *Arrange* for
-the load order and the files mods share; **Fixes** installs DXVK, and the 4 GB patch where the copy allows it;
+the load order and the files mods share, and *Move from Vortex* and *New downloads* when they apply; **Fixes** installs DXVK, and the 4 GB patch where the copy allows it;
 **Saves** backs up your saves; **History** lists every change, each with *Undo*; and **Settings** holds your theme or
 look, the game folders and Troubleshooting. Every change shows a preview before anything is written, and **Play**
 starts the game. The window and the CLI below use the same use cases and app-data folders, so the two can be mixed
@@ -128,7 +137,7 @@ freely; the CLI keeps its own words (`activate`, `adopt`, `rollback`).
   ([ADR-0022](docs/adr/0022-launching-steam-installs-through-steam.md))
 - Summarizes the `override` and `AddIns` mod folders and writes a JSON inventory, optionally with SHA-256 hashes
 - Recognizes known community fixes and mods from a [catalog](catalog/README.md) kept in the repository: DXVK with its version (and a 64-bit DLL the game cannot load), the 4 GB patch, and known-incompatible combinations
-- Manages mods (`mods import`, `library`, `activate`, `deactivate`, `adopt`, `status`, `rollback`, `recover`), fixes (`fixes apply`, `remove`, `status`, `rollback`, `recover`) and save backups (`saves backup`, `list`), each change behind a plan, a backup and rollback
+- Manages mods (`mods import`, `library`, `downloads`, `activate`, `deactivate`, `adopt`, `vortex`, `status`, `rollback`, `recover`), fixes (`fixes apply`, `remove`, `status`, `rollback`, `recover`) and save backups (`saves backup`, `list`), each change behind a plan, a backup and rollback
 - Keeps the experimental runtime behind an explicit placeholder that fails on purpose
 
 The CLI is the scripting surface; the window above does the same things with buttons and pickers.
@@ -193,6 +202,9 @@ dotnet run --project src/DAORework.Cli -- mods rollback                # undo th
 dotnet run --project src/DAORework.Cli -- mods recover --finish        # or --rollback, after a change was cut short
 dotnet run --project src/DAORework.Cli -- mods adopt --dry-run         # mods installed by hand that DAORework could take over
 dotnet run --project src/DAORework.Cli -- mods adopt "override:Better Hair" addin:Extra_Dog_Slot   # shows the plan, then asks
+dotnet run --project src/DAORework.Cli -- mods vortex                   # the mods Vortex still manages, and the next step
+dotnet run --project src/DAORework.Cli -- mods vortex copy              # add a copy of each to your library; nothing in the game changes
+dotnet run --project src/DAORework.Cli -- mods downloads                # mods in your Downloads folder, or a folder you name with --folder
 ```
 
 Every change backs up what it will replace first, and a file DAORework did not put there is never
