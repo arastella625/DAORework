@@ -63,12 +63,6 @@ public sealed class ReadInstallOverrideTests
     {
         public bool Denied { get; set; }
 
-        public override IDirectory Directory => Denied ? new DeniedDirectory(this) : base.Directory;
-    }
-
-    private sealed class DeniedDirectory(MockFileSystem fileSystem) : MockDirectory(fileSystem, string.Empty)
-    {
-        public override IEnumerable<string> EnumerateFiles(string path, string searchPattern, SearchOption searchOption) =>
-            throw new UnauthorizedAccessException("denied");
+        public override IDirectoryInfoFactory DirectoryInfo => Denied ? throw new UnauthorizedAccessException("denied") : base.DirectoryInfo;
     }
 }

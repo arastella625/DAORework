@@ -18,7 +18,7 @@ internal static class InstallOverrideWarnings
         if (plan.InstallOverrideShadows.Count > NamesShown)
         {
             var more = plan.InstallOverrideShadows.Count - NamesShown;
-            warnings.Add($"{ModActivationPlanWarnings.Files(more)} more {(more == 1 ? "is" : "are")} in your game folder's override too.");
+            warnings.Add(more == 1 ? "1 more file is in your game folder's override too." : $"{more} more files are in your game folder's override too.");
         }
 
         if (plan.InstallOverrideProblem is { } problem)

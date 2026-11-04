@@ -168,7 +168,7 @@ public sealed partial class HandInstalledViewModel : PageViewModel
         OfficialSummary = official == 0 ? null : $"Official DLC ({Counted.Of(official, "add-in")}) is left as it is.";
         ReportStatus(scan.Candidates.Count == 0
             ? "Nothing found in your game needs managing."
-            : $"{Counted.Of(scan.Candidates.Count, "mod")} found in your game. Manage one, or tick several and manage them together; a preview shows first.");
+            : $"{Counted.Of(scan.Candidates.Count, "mod")} can be managed here. Manage one, or tick several and manage them together; a preview shows first.");
     }
 
     /// <summary>Adds what the game folder's override holds (P2.5-22): listed, and only moved by the player.</summary>

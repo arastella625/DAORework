@@ -1,6 +1,7 @@
 using System.IO.Abstractions.TestingHelpers;
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
+using Avalonia.VisualTree;
 using DAORework.App.ViewModels;
 using DAORework.App.Views;
 using DAORework.Core.Common;
@@ -114,7 +115,12 @@ public sealed class HandInstalledScreenTests : IDisposable
         Assert.Equal(rows, filter.VisibleFound);
         Assert.False(filter.ShowsMods);
         ShowPanel(window);
+        Assert.False(window.GetVisualDescendants().OfType<StackPanel>().Single(p => p.Name == "SelectionBar").IsVisible);
         Screenshots.Save(window, "36-game-folder-override");
+
+        filter.PickKindCommand.Execute(ModKindFilter.AddIns);
+        Assert.Equal(ModShowFilter.GameFolder, filter.Show);
+        filter.PickKindCommand.Execute(ModKindFilter.AddIns);
 
         _host.FileSystem.Directory.Delete(installOverride, recursive: true);
         await viewModel.HandInstalled.ScanCommand.ExecuteAsync(null);

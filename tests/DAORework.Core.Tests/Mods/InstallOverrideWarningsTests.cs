@@ -36,7 +36,7 @@ public sealed class InstallOverrideWarningsTests
         var warnings = ModActivationPlanWarnings.For(Plan(names, names), id => id);
 
         Assert.Equal(11, warnings.Count);
-        Assert.Equal("2 files more are in your game folder's override too.", warnings[^1]);
+        Assert.Equal("2 more files are in your game folder's override too.", warnings[^1]);
     }
 
     [Fact]

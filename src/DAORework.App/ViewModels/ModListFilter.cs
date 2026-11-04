@@ -160,7 +160,7 @@ public sealed partial class ModListFilter : ObservableObject
         FoundLabel = $"Found in your game ({found.Count})";
         var inGameFolder = found.Where(m => m.IsInGameFolder).ToList();
         GameFolderLabel = $"In your game folder ({inGameFolder.Count})";
-        HasGameFolder = inGameFolder.Count > 0;
+        HasGameFolder = _found.Any(m => m.IsInGameFolder);
         if (!HasGameFolder && Show == ModShowFilter.GameFolder)
         {
             Show = ModShowFilter.All; // The chip has gone, and nothing is left under it.

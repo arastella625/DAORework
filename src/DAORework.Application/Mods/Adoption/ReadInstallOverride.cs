@@ -40,6 +40,6 @@ public sealed class ReadInstallOverride
     }
 
     private List<InstallOverrideFile> Files(string folder) =>
-        [.. _fileSystem.Directory.EnumerateFiles(folder, "*", SearchOption.AllDirectories)
-            .Select(path => new InstallOverrideFile(_fileSystem.Path.GetRelativePath(folder, path).Replace('\\', '/'), _fileSystem.FileInfo.New(path).Length))];
+        [.. _fileSystem.DirectoryInfo.New(folder).EnumerateFiles("*", SearchOption.AllDirectories)
+            .Select(file => new InstallOverrideFile(_fileSystem.Path.GetRelativePath(folder, file.FullName).Replace('\\', '/'), file.Length))];
 }
