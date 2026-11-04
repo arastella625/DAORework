@@ -81,6 +81,7 @@
         </StackPanel>
       </controls:Card>
 
+      <views:NewDownloadsHomePanel DataContext="{Binding NewDownloads}" />
       <views:NextStepsPanel DataContext="{Binding NextSteps}" />
     </StackPanel>
   </ScrollViewer>

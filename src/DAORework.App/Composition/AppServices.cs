@@ -31,6 +31,8 @@ public static class AppServices
         services.AddTransient<ModChangesViewModel>();
         services.AddTransient<LoadOrderViewModel>();
         services.AddTransient<VortexHandoverViewModel>();
+        services.AddTransient<NewDownloadsSettingsViewModel>();
+        services.AddTransient<NewDownloadsViewModel>();
         services.AddTransient<DeployedModsViewModel>();
         services.AddTransient<ModPageViewModel>();
         services.AddTransient<ModsTabViewModel>();

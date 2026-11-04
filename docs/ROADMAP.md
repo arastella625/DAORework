@@ -584,7 +584,8 @@ work; scheduled here as P3-05 and P3-06 are. None of it goes online except what 
   DAORework looks in the player's Downloads folder, wherever it is, or a folder they name. Finished archives that look
   like a Dragon Age mod are offered on a *New downloads* card, with a suggestion on Home. *Add* is the existing import,
   so nothing is added without a click, and the download itself is only ever read. `mods downloads` lists the same files.
-  Needs `/security-review`: archive readers now run on files nobody chose.
+  Needs `/security-review`: archive readers now run on files nobody chose. *Done
+  ([screenshot](screenshots/p3-10/01-new-downloads.png)); run only on test folders so far.*
 - P3-11 Opening a mod's page: *Open the mod's page* wherever the window names a known item's source, in the player's
   default browser, `https` links only. `ShellUriLauncher`'s error stops mentioning Steam for a web page. *Done: on the
   Library's and *Found in your game*'s rows, through `OpenModPage`; a test holds every catalog source to `https`

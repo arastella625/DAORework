@@ -33,6 +33,7 @@ summary follows these rules. The command line keeps its own words; see the end.
 | Add-in | addin, DAZIP mod | A packaged `.dazip` mod; the game lists it under Downloadable Content. |
 | Override mod | override folder mod | Files that replace the game's own. |
 | Combined files | merged files, conflicts | Files several mods need at once. |
+| New downloads | download watcher, auto-import | Mods noticed in the player's Downloads folder ([ADR-0034](adr/0034-picking-up-new-downloads.md)). *Add*, *Not this one*, *Add all*. |
 | Move from Vortex | Vortex handover, migrate | The card that takes mods over from Vortex ([ADR-0028](adr/0028-taking-over-from-vortex.md)): *Copy*, *Purge in Vortex*, *Turn them on*. |
 | Placed by Vortex | Vortex-deployed | A tag on a mod Vortex installed ([ADR-0028](adr/0028-taking-over-from-vortex.md)), named as Vortex names it. |
 | Your game folder, your documents folder | install directory, `UserDocumentsDirectory` | The folder names appear only in *Game folders*. |
