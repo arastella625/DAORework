@@ -564,7 +564,7 @@ Flatpak, AppImage or distribution packages; macOS; malware scanning on Linux; ch
   needs an ADR and the ADR-0009 license check first.
 
 - P3-06 Knowing about new releases *(the owner's wish, 2026-10-31;
-  [#19](https://github.com/arastella625/DAORework/issues/19))*: an opt-in *Check for updates*, off by default and
+  [#19](https://github.com/arastella625/DAORework/issues/19); [ADR-0035](adr/0035-opt-in-update-check.md), proposed)*: an opt-in *Check for updates*, off by default and
   asked once, that makes one anonymous request to GitHub's public releases API (no account, no key, no profile or
   path sent), compares versions, and links to the GitHub release and the Nexus page with how to check the download.
   It is DAORework's first network access, so an ADR comes first (SDD §12): what is sent, where and how often, the
