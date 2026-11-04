@@ -1,5 +1,4 @@
 using System.IO.Abstractions;
-using DAORework.Application.Abstractions;
 using DAORework.Application.Installations;
 using DAORework.Core.Installations;
 using Microsoft.Extensions.Logging;
@@ -7,9 +6,8 @@ using Microsoft.Extensions.Logging;
 namespace DAORework.Infrastructure.Installations.Steam;
 
 /// <summary>
-/// Finds the Steam copy on any library drive: the Steam folder from the registry (or Program Files), every library in
-/// <c>steamapps/libraryfolders.vdf</c>, and in each one the app manifest for Dragon Age: Origins (app 47810) or the
-/// usual folder names.
+/// Finds the Steam copy in any library <see cref="SteamLibraries"/> knows: in each one, the app manifest for Dragon Age:
+/// Origins (app 47810) or the usual folder names.
 /// </summary>
 public sealed class SteamLibraryLocator : IInstallLocator
 {
@@ -19,21 +17,18 @@ public sealed class SteamLibraryLocator : IInstallLocator
     private static readonly string[] _fallbackFolderNames = ["Dragon Age Ultimate Edition", "Dragon Age Origins"];
 
     private readonly IFileSystem _fileSystem;
-    private readonly IRegistry _registry;
-    private readonly IKnownFolders _knownFolders;
+    private readonly SteamLibraries _libraries;
     private readonly InstallationProbe _probe;
     private readonly ILogger<SteamLibraryLocator> _logger;
 
     public SteamLibraryLocator(
         IFileSystem fileSystem,
-        IRegistry registry,
-        IKnownFolders knownFolders,
+        SteamLibraries libraries,
         InstallationProbe probe,
         ILogger<SteamLibraryLocator> logger)
     {
         _fileSystem = fileSystem;
-        _registry = registry;
-        _knownFolders = knownFolders;
+        _libraries = libraries;
         _probe = probe;
         _logger = logger;
     }
@@ -41,7 +36,7 @@ public sealed class SteamLibraryLocator : IInstallLocator
     public Task<IReadOnlyList<Installation>> LocateAsync(CancellationToken cancellationToken = default)
     {
         var installations = new List<Installation>();
-        foreach (var library in Libraries())
+        foreach (var library in _libraries.Find())
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (FindInLibrary(library) is { } installation)
@@ -52,57 +47,6 @@ public sealed class SteamLibraryLocator : IInstallLocator
 
         _logger.LogInformation("Steam libraries: found {Count} Dragon Age: Origins installation(s).", installations.Count);
         return Task.FromResult<IReadOnlyList<Installation>>(installations);
-    }
-
-    private IEnumerable<string> Libraries()
-    {
-        var steamRoot = SteamRoot();
-        if (steamRoot.Length == 0)
-        {
-            return [];
-        }
-
-        var libraries = new List<string> { steamRoot };
-
-        var manifest = Path.Combine(steamRoot, "steamapps", "libraryfolders.vdf");
-        if (_fileSystem.File.Exists(manifest))
-        {
-            libraries.AddRange(ReadLibraryPaths(manifest));
-        }
-
-        return libraries.Distinct(StringComparer.OrdinalIgnoreCase);
-    }
-
-    /// <summary>Where Steam is, or nothing when neither the registry nor the platform says.</summary>
-    private string SteamRoot()
-    {
-        var fromRegistry = _registry.GetStringValue(RegistryRoot.CurrentUser, @"Software\Valve\Steam", "SteamPath")
-            ?? _registry.GetStringValue(RegistryRoot.LocalMachine, @"SOFTWARE\WOW6432Node\Valve\Steam", "InstallPath");
-        if (!string.IsNullOrWhiteSpace(fromRegistry))
-        {
-            return fromRegistry.Replace('/', Path.DirectorySeparatorChar);
-        }
-
-        return string.IsNullOrWhiteSpace(_knownFolders.ProgramFilesX86) ? string.Empty : Path.Combine(_knownFolders.ProgramFilesX86, "Steam");
-    }
-
-    private IEnumerable<string> ReadLibraryPaths(string manifestPath)
-    {
-        VdfNode document;
-        try
-        {
-            document = VdfReader.Parse(_fileSystem.File.ReadAllText(manifestPath));
-        }
-        catch (InvalidDataException exception)
-        {
-            _logger.LogWarning(exception, "Could not read the Steam library list at {Path}.", manifestPath);
-            return [];
-        }
-
-        var folders = document.GetChild("libraryfolders");
-        return folders is null
-            ? []
-            : folders.Children.Values.Select(f => f.GetString("path")).OfType<string>().Select(p => p.Replace('/', Path.DirectorySeparatorChar));
     }
 
     private Installation? FindInLibrary(string library)

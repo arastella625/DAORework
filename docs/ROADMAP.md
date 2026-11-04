@@ -514,7 +514,8 @@ back up saves and press Play, from a `linux-x64` download. Windows players see n
   saves the relative path `BioWare/Dragon Age`. *Done: `DoNotVerify` on the three folders a home has, and the readers
   skip an empty one.*
 - P2.7-03 Find Steam on Linux: `SteamLibraries` reads the native, Flatpak and Snap Steam folders and every library
-  they list, wherever it is mounted, and `SteamLibraryLocator` uses it. The player can still name the folder.
+  they list, wherever it is mounted, and `SteamLibraryLocator` uses it. The player can still name the folder. *Done;
+  the Flatpak and Snap paths are the ones ADR-0031 takes from community reports.*
 - P2.7-04 Find the documents folder in the Proton prefix: `IProtonPrefixLocator`, `DocumentsFolderSource.ProtonPrefix`
   and `DAO_PROTON_PREFIX_MISSING`. Diagnostics and `mods status` say plainly when the prefix, and the mods in it, have
   gone.
