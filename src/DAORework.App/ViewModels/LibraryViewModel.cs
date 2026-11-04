@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using DAORework.App.Services;
 using DAORework.Application.Mods.Library;
 using DAORework.Core.Common;
+using DAORework.Core.Mods.Downloads;
 using Microsoft.Extensions.Logging;
 
 namespace DAORework.App.ViewModels;
@@ -13,7 +14,7 @@ namespace DAORework.App.ViewModels;
 /// </summary>
 public sealed partial class LibraryViewModel : PageViewModel
 {
-    private static readonly string[] _downloadPatterns = ["*.dazip", "*.zip", "*.7z", "*.rar"];
+    private static readonly string[] _downloadPatterns = [.. ModDownloadRule.Extensions.Select(e => "*" + e)];
 
     private readonly ListLibrary _listLibrary;
     private readonly ImportMod _importMod;

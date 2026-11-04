@@ -6,12 +6,13 @@ namespace DAORework.App.ViewModels;
 /// </summary>
 public sealed class DeployedModsViewModel
 {
-    public DeployedModsViewModel(ModActivationViewModel activation, ModChangesViewModel changes, LoadOrderViewModel loadOrder, VortexHandoverViewModel handover)
+    public DeployedModsViewModel(ModActivationViewModel activation, ModChangesViewModel changes, LoadOrderViewModel loadOrder, VortexHandoverViewModel handover, NewDownloadsViewModel newDownloads)
     {
         Activation = activation;
         Changes = changes;
         LoadOrder = loadOrder;
         Handover = handover;
+        NewDownloads = newDownloads;
     }
 
     public ModActivationViewModel Activation { get; }
@@ -21,4 +22,6 @@ public sealed class DeployedModsViewModel
     public LoadOrderViewModel LoadOrder { get; }
 
     public VortexHandoverViewModel Handover { get; }
+
+    public NewDownloadsViewModel NewDownloads { get; }
 }

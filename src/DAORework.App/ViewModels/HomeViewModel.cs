@@ -26,6 +26,10 @@ public sealed partial class HomeViewModel : ObservableObject
     [ObservableProperty]
     public partial SetupSummary? Setup { get; private set; }
 
+    /// <summary>Gets the question about new downloads and how many are waiting, once <see cref="Watch"/> has given it the Mods tab.</summary>
+    [ObservableProperty]
+    public partial NewDownloadsViewModel? NewDownloads { get; private set; }
+
     /// <summary>Gets or sets what a Home button does, set by the window: switch to a tab and open the right part.</summary>
     public Func<HomeTarget, BackupRow?, CancellationToken, Task>? NavigateAsync { get; set; }
 
@@ -66,10 +70,15 @@ public sealed partial class HomeViewModel : ObservableObject
         ArgumentNullException.ThrowIfNull(mods);
         ArgumentNullException.ThrowIfNull(fixes);
         Setup = mods.Setup;
+        NewDownloads = mods.NewDownloads;
         NotifyCollectionChangedEventHandler changed = (_, _) => ShowLastChange(mods.Changes.Backups, fixes.Status.Backups);
         mods.Changes.Backups.CollectionChanged += changed;
         fixes.Status.Backups.CollectionChanged += changed;
     }
+
+    [RelayCommand]
+    private Task SeeNewDownloadsAsync(CancellationToken cancellationToken) =>
+        NavigateAsync?.Invoke(HomeTarget.ModsLibrary, null, cancellationToken) ?? Task.CompletedTask;
 
     /// <summary>Starts over for <paramref name="profileName"/>: not checked yet, or nothing to check without a profile.</summary>
     public void Show(string? profileName)

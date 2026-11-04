@@ -25,6 +25,8 @@ public sealed class ModsTabViewModel
         LoadOrder = deployed.LoadOrder;
         Handover = deployed.Handover;
         Handover.AfterCopyAsync = library.LoadAsync;
+        NewDownloads = deployed.NewDownloads;
+        NewDownloads.AddAsync = library.ImportPathsAsync;
         Handover.TurnOnAsync = TurnOnAsync;
         Activation.ActiveModsChanged += (_, _) => Library.ShowActive(Activation.ActiveModIds);
         Filter = new ModListFilter(library.Mods, handInstalled.Candidates);
@@ -71,6 +73,9 @@ public sealed class ModsTabViewModel
     /// <summary>Gets the <i>Move from Vortex</i> card (ADR-0028 §3).</summary>
     public VortexHandoverViewModel Handover { get; }
 
+    /// <summary>Gets the <i>New downloads</i> card (ADR-0034 §5).</summary>
+    public NewDownloadsViewModel NewDownloads { get; }
+
     /// <summary>Gets the kind cards, the chips and Arrange, which filter the page (ADR-0026, P2.5-26).</summary>
     public ModListFilter Filter { get; }
 
@@ -88,6 +93,7 @@ public sealed class ModsTabViewModel
         await LoadOrder.LoadAsync(profileName, cancellationToken);
         await HandInstalled.RefreshAsync(cancellationToken);
         await Handover.LoadAsync(profileName, cancellationToken);
+        await NewDownloads.LoadAsync(cancellationToken);
     }
 
     private Task TurnOnAsync(IReadOnlyList<string> modIds, IReadOnlyList<AddInsListChange> restoredAddIns, CancellationToken cancellationToken)

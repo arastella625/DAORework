@@ -74,6 +74,7 @@
           <ScrollViewer>
             <StackPanel Spacing="12">
               <views:SettingsPage DataContext="{Binding Settings}" />
+              <views:NewDownloadsSettingsPanel DataContext="{Binding ModsTab.NewDownloads.Settings}" />
               <Expander Name="GameFolders" Margin="12,0" Header="Game folders" IsExpanded="{Binding GameFoldersOpen}" HorizontalAlignment="Stretch">
                 <views:ProfilePage DataContext="{Binding Profile}" />
               </Expander>
