@@ -17,7 +17,7 @@ permissions and the category stay manual.
 1. **On GitHub:** **Settings** → **Environments** → **New environment** `nexus-page`. Under **Deployment branches and
    tags**, choose **Selected branches and tags** and add `main` only.
 2. In `nexus-page`, add the secret `NEXUS_API_KEY` (the same personal key as the `release` environment's, from
-   [your API keys](https://www.nexusmods.com/settings/api-keys)) and the variable `NEXUS_MOD_ID` = `601295428523`, the
+   [your API keys](https://www.nexusmods.com/settings/api-keys)) and `NEXUS_MOD_ID` = `601295428523` (a variable or a secret), the
    Unique Mod ID ([nexus-upload.md](../nexus-upload.md)).
 3. **Check the files match what you want live**, since the first run replaces the page's summary and description.
    Then run it: **Actions** → **Nexus page** → **Run workflow** on `main`. The run's summary says what was sent; open
