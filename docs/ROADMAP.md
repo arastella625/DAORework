@@ -521,6 +521,21 @@ Flatpak, AppImage or distribution packages; macOS; malware scanning on Linux; ch
   changes. Combining tables whose changes do not overlap is its own ADR, with the M2DA mechanism as the first answer.
 - P3-09 Talk table string ids two mods both use, over the P3-01 reader.
 
+**New downloads** *(the owner's wish, 2026-11-03: a built-in browser so downloads are dealt with automatically;
+[ADR-0034](adr/0034-picking-up-new-downloads.md), proposed, meets the wish from the player's own browser)*. Not format
+work; scheduled here as P3-05 and P3-06 are. None of it goes online except what P3-12 decides.
+
+- P3-10 Picking up new downloads: an opt-in, asked once, off by default. When the window comes back into focus,
+  DAORework looks in the player's Downloads folder, wherever it is, or a folder they name. Finished archives that look
+  like a Dragon Age mod are offered on a *New downloads* card, with a suggestion on Home. *Add* is the existing import,
+  so nothing is added without a click, and the download itself is only ever read. `mods downloads` lists the same files.
+  Needs `/security-review`: archive readers now run on files nobody chose.
+- P3-11 Opening a mod's page: *Open the mod's page* wherever the window names a known item's source, in the player's
+  default browser, `https` links only. `ShellUriLauncher`'s error stops mentioning Steam for a web page.
+- P3-12 Asking Nexus about `nxm://` links: the owner asks Nexus how a registered app should handle *Mod Manager
+  Download*, for free and premium accounts. A go-ahead needs its own ADR before any code (SDD §12): the opt-in, what is
+  sent, registering the app, and sharing the link type with Vortex.
+
 **Exit gate:** each reader round-trips every file in a real install without exceptions (verified by a local-only test that runs on the developer's machine against their own install; no game files are committed).
 
 ---
