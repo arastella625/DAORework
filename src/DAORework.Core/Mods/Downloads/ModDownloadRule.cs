@@ -12,7 +12,7 @@ public static class ModDownloadRule
 {
     private static readonly HashSet<string> _dragonAgeData = new(StringComparer.OrdinalIgnoreCase)
     {
-        ".erf", ".gda", ".tlk", ".ncs", ".uti", ".utc", ".mmh", ".msh", ".mao",
+        ".erf", ".gda", ".tlk", ".ncs", ".uti", ".utc", ".mmh", ".msh", ".mao", ".mop", ".tnt", ".dlg", ".dlb", ".cut",
     };
 
     /// <summary>Gets the kinds of file <i>Add mods</i> takes.</summary>
