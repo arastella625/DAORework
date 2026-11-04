@@ -145,14 +145,15 @@ public sealed partial class LoadOrderViewModel : PageViewModel
         _pending = null;
         CanApply = false;
         Preview.Clear();
-        if (!(await ProfileDocuments.ForAsync(_getProfile, ProfileName, cancellationToken)).TryGetValue(out var documents, out var error))
+        if (!(await ProfileDocuments.FoldersAsync(_getProfile, ProfileName, cancellationToken)).TryGetValue(out var folders, out var error))
         {
             Show([], null);
             return;
         }
 
+        var documents = folders.Documents;
         var change = order is null ? new ModChange(ModChangeKind.Activate, []) : new ModChange(ModChangeKind.Set, order);
-        if (!(await _plan.ExecuteAsync(new PlanModChangeRequest(documents, change), cancellationToken)).TryGetValue(out var plan, out error))
+        if (!(await _plan.ExecuteAsync(new PlanModChangeRequest(documents, change, folders.Install), cancellationToken)).TryGetValue(out var plan, out error))
         {
             ReportError(error);
             return;

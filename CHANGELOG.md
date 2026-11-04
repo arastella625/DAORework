@@ -9,6 +9,8 @@ All notable changes to DAORework are recorded here. The format follows
 ### Added
 - Mods Vortex installed are listed by name (P2.5-30, [ADR-0028](docs/adr/0028-taking-over-from-vortex.md)): *Found in your game* reads Vortex's record in `override` and shows each Vortex mod under its own name (*Anto Hairstyles 2*), tagged *placed by Vortex*, with the files it placed that are still there, instead of one warning for the whole folder. A mod Vortex can no longer change, because the documents folder has moved since or Vortex's own copy is gone, can be managed like any other mod. One Vortex still manages stays in Vortex for now, since Vortex would put its files back; taking those over comes later. DAORework never changes Vortex's own files. `mods adopt --dry-run` lists them as `vortex:<name>`.
 
+- Mods in your game folder's own override are listed (P2.5-22): older guides put mods in `<game folder>\packages\core\override`, which the game loads too. *Found in your game* now shows what is there, tagged *in your game folder*, with a filter of its own, and says how to bring it under management. DAORework only reads that folder. A preview warns when a mod you turn on has a file of the same name there, since the game uses one copy, and the command line's plan says the same.
+
 ### Changed
 - `DAORework.exe` and `dao.exe` are no longer compressed inside (P2.6-07), since antivirus programs treat a compressed program like a packed one and Nexus holds every flagged upload for a check by hand. Each file is larger; the download grows much less, since the zip compresses them anyway. Nothing changes in how they work.
 

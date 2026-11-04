@@ -1,6 +1,7 @@
 using System.IO.Abstractions.TestingHelpers;
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
+using Avalonia.VisualTree;
 using DAORework.App.ViewModels;
 using DAORework.App.Views;
 using DAORework.Core.Common;
@@ -87,6 +88,58 @@ public sealed class HandInstalledScreenTests : IDisposable
         window.Height = 1040; // Down to the two Vortex mods, which come after the folders.
         window.UpdateLayout();
         Screenshots.Save(window, "35-vortex-mods");
+    }
+
+    [AvaloniaFact]
+    public async Task ModsTab_TheGameFoldersOverride_IsListedAndTagged_AndOffersNoManage()
+    {
+        _host.SeedRealisticInstall();
+        var installOverride = GamePaths.OverrideDirectory(AppTestHost.InstallDirectory);
+        _host.FileSystem.AddFile(Path.Combine(installOverride, "Old Hair", "hair.dds"), new MockFileData(new byte[4096]));
+        _host.FileSystem.AddFile(Path.Combine(installOverride, "fix.ncs"), new MockFileData(new byte[64]));
+
+        var (window, viewModel) = await OpenModsTabAsync();
+        var filter = viewModel.ModsTab.Filter;
+
+        var rows = viewModel.HandInstalled.Candidates.Where(c => c.IsInGameFolder).ToList();
+        Assert.Equal(["Old Hair", "Loose files"], rows.Select(r => r.Title));
+        Assert.All(rows, r => Assert.False(r.CanManage));
+        Assert.Contains("in your game folder", rows[0].Details, StringComparison.Ordinal);
+        Assert.True(filter.HasGameFolder);
+        Assert.Equal("In your game folder (2)", filter.GameFolderLabel);
+
+        viewModel.HandInstalled.SelectAllCommand.Execute(null);
+        Assert.All(rows, r => Assert.False(r.IsSelected));
+
+        filter.ShowOnlyCommand.Execute(ModShowFilter.GameFolder);
+        Assert.Equal(rows, filter.VisibleFound);
+        Assert.False(filter.ShowsMods);
+        ShowPanel(window);
+        Assert.False(window.GetVisualDescendants().OfType<StackPanel>().Single(p => p.Name == "SelectionBar").IsVisible);
+        Screenshots.Save(window, "36-game-folder-override");
+
+        filter.PickKindCommand.Execute(ModKindFilter.AddIns);
+        Assert.Equal(ModShowFilter.GameFolder, filter.Show);
+        filter.PickKindCommand.Execute(ModKindFilter.AddIns);
+
+        _host.FileSystem.Directory.Delete(installOverride, recursive: true);
+        await viewModel.HandInstalled.ScanCommand.ExecuteAsync(null);
+        Assert.False(filter.HasGameFolder);
+        Assert.Equal(ModShowFilter.All, filter.Show);
+    }
+
+    [AvaloniaFact]
+    public async Task ModsTab_OnlyTheGameFoldersOverride_ShowsNoSelectionButtons()
+    {
+        _host.SeedRealisticInstall();
+        var documents = GamePaths.DefaultDocumentsDirectory(_host.KnownFolders.MyDocuments);
+        _host.FileSystem.Directory.Delete(GamePaths.OverrideDirectory(documents), recursive: true);
+        _host.FileSystem.AddFile(Path.Combine(GamePaths.OverrideDirectory(AppTestHost.InstallDirectory), "fix.ncs"), new MockFileData(new byte[64]));
+
+        var (_, viewModel) = await OpenModsTabAsync();
+
+        Assert.Single(viewModel.HandInstalled.Candidates);
+        Assert.False(viewModel.HandInstalled.HasManageable);
     }
 
     [AvaloniaFact]

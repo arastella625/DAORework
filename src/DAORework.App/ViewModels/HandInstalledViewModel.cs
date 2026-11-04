@@ -19,12 +19,14 @@ public sealed partial class HandInstalledViewModel : PageViewModel
 {
     private readonly GetProfile _getProfile;
     private readonly ScanForAdoption _scan;
+    private readonly ReadInstallOverride _installOverride;
 
-    public HandInstalledViewModel(GetProfile getProfile, ScanForAdoption scan, ModAdoptionViewModel adoption, ILogger<HandInstalledViewModel> logger)
+    public HandInstalledViewModel(GetProfile getProfile, ScanForAdoption scan, ReadInstallOverride installOverride, ModAdoptionViewModel adoption, ILogger<HandInstalledViewModel> logger)
         : base(logger)
     {
         _getProfile = getProfile;
         _scan = scan;
+        _installOverride = installOverride;
         Adoption = adoption;
     }
 
@@ -38,6 +40,9 @@ public sealed partial class HandInstalledViewModel : PageViewModel
 
     /// <summary>Gets a value indicating whether any candidate is ticked for <i>Adopt selected</i> (P2.5-13).</summary>
     public bool HasSelection => Candidates.Any(c => c.IsSelected);
+
+    /// <summary>Gets a value indicating whether anything listed can be managed, so the selection buttons mean something.</summary>
+    public bool HasManageable => Candidates.Any(c => c.CanManage);
 
     public ObservableCollection<HandInstalledModRow> NotAdoptable { get; } = [];
 
@@ -102,6 +107,7 @@ public sealed partial class HandInstalledViewModel : PageViewModel
         else
         {
             Show(scan);
+            ShowGameFolder(profile.InstallDirectory);
         }
     }
 
@@ -125,6 +131,7 @@ public sealed partial class HandInstalledViewModel : PageViewModel
     {
         OnPropertyChanged(nameof(SectionHeader));
         OnPropertyChanged(nameof(HasSelection));
+        OnPropertyChanged(nameof(HasManageable));
         AdoptSelectedCommand.NotifyCanExecuteChanged();
     }
 
@@ -161,6 +168,23 @@ public sealed partial class HandInstalledViewModel : PageViewModel
         OfficialSummary = official == 0 ? null : $"Official DLC ({Counted.Of(official, "add-in")}) is left as it is.";
         ReportStatus(scan.Candidates.Count == 0
             ? "Nothing found in your game needs managing."
-            : $"{Counted.Of(scan.Candidates.Count, "mod")} found in your game. Manage one, or tick several and manage them together; a preview shows first.");
+            : $"{Counted.Of(scan.Candidates.Count, "mod")} can be managed here. Manage one, or tick several and manage them together; a preview shows first.");
+    }
+
+    /// <summary>Adds what the game folder's override holds (P2.5-22): listed, and only moved by the player.</summary>
+    private void ShowGameFolder(string? installDirectory)
+    {
+        if (!_installOverride.Execute(installDirectory).TryGetValue(out var contents, out var error))
+        {
+            ReportError(error);
+            return;
+        }
+
+        foreach (var mod in contents.Mods)
+        {
+            Candidates.Add(HandInstalledModRow.From(mod));
+        }
+
+        SelectionChanged();
     }
 }

@@ -48,6 +48,7 @@ public static class DependencyInjection
         services.AddSingleton<IFingerprintMatcher, GameFileMatcher>();
         services.AddSingleton<IFingerprintMatcher, LargeAddressAwareMatcher>();
 
+        services.AddSingleton<ReadInstallOverride>();
         services.AddSingleton<RunDiagnostics>();
         services.AddSingleton<InstallationProbe>();
         services.AddSingleton<DetectInstallations>();

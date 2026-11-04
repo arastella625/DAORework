@@ -123,8 +123,8 @@ public sealed partial class ModActivationViewModel : PageViewModel
                     return;
                 }
 
-                if (!(await DocumentsAsync(token)).TryGetValue(out var documents, out var error)
-                    || !(await _plan.ExecuteAsync(new PlanModChangeRequest(documents, new ModChange(kind, [.. mods.Select(m => m.Id)])), token)).TryGetValue(out var plan, out error))
+                if (!(await ProfileDocuments.FoldersAsync(_getProfile, ProfileName, token)).TryGetValue(out var folders, out var error)
+                    || !(await _plan.ExecuteAsync(new PlanModChangeRequest(folders.Documents, new ModChange(kind, [.. mods.Select(m => m.Id)]), folders.Install), token)).TryGetValue(out var plan, out error))
                 {
                     ReportError(error);
                     return;
@@ -134,7 +134,7 @@ public sealed partial class ModActivationViewModel : PageViewModel
                 var names = string.Join(", ", mods.Select(m => m.Title));
                 Preview.Show(mods.Count == 1 ? $"{verb} {names}" : $"{verb} {mods.Count} mods: {names}", plan);
 
-                _pending = (documents, plan);
+                _pending = (folders.Documents, plan);
                 CanApply = !plan.IsBlocked && !plan.IsEmpty;
             },
             cancellationToken);

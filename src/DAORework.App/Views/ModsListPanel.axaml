@@ -46,6 +46,9 @@
                      Command="{Binding ShowOnlyCommand}" CommandParameter="{x:Static vm:ModShowFilter.Off}" />
         <RadioButton Name="ShowFound" GroupName="show" Content="{Binding FoundLabel}" IsChecked="{Binding IsFound, Mode=OneWay}"
                      Command="{Binding ShowOnlyCommand}" CommandParameter="{x:Static vm:ModShowFilter.Found}" />
+        <RadioButton Name="ShowGameFolder" GroupName="show" Content="{Binding GameFolderLabel}" IsChecked="{Binding IsGameFolder, Mode=OneWay}"
+                     IsVisible="{Binding HasGameFolder}"
+                     Command="{Binding ShowOnlyCommand}" CommandParameter="{x:Static vm:ModShowFilter.GameFolder}" />
       </StackPanel>
       <Button Name="ArrangeButton" Content="{Binding ArrangeLabel}" Command="{Binding ToggleArrangeCommand}" />
     </WrapPanel>

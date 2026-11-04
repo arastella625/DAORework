@@ -34,13 +34,14 @@ public abstract class ModChangeCommand : AsyncCommand<ModChangeSettings>
     public override async Task<int> ExecuteAsync(CommandContext context, ModChangeSettings settings, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(settings);
-        if (!(await ModsDocuments.ForProfileAsync(_getProfile, settings.Profile, cancellationToken)).TryGetValue(out var documents, out var error))
+        if (!(await ModsDocuments.FoldersAsync(_getProfile, settings.Profile, cancellationToken)).TryGetValue(out var folders, out var error))
         {
             _errors.Render(error);
             return ExitCodes.Failure;
         }
 
-        if (!(await _plan.ExecuteAsync(new PlanModChangeRequest(documents, new ModChange(Kind, settings.ModIds)), cancellationToken)).TryGetValue(out var plan, out error))
+        var documents = folders.Documents;
+        if (!(await _plan.ExecuteAsync(new PlanModChangeRequest(documents, new ModChange(Kind, settings.ModIds), folders.Install), cancellationToken)).TryGetValue(out var plan, out error))
         {
             _errors.Render(error, "Cannot plan the change");
             return ExitCodes.Failure;

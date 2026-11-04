@@ -20,4 +20,10 @@ public sealed record PlanInput(
 
     /// <summary>Gets why copies that would have been combined were not, such as a copy that cannot be read.</summary>
     public IReadOnlyList<string> CombineProblems { get; init; } = [];
+
+    /// <summary>Gets the files in the install folder's override (P2.5-22), which the game loads too.</summary>
+    public IReadOnlyList<string> InstallOverridePaths { get; init; } = [];
+
+    /// <summary>Gets why the install folder's override could not be read, if it could not.</summary>
+    public string? InstallOverrideProblem { get; init; }
 }

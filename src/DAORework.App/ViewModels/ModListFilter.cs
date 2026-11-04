@@ -36,7 +36,7 @@ public sealed partial class ModListFilter : ObservableObject
     public partial ModKindFilter Kind { get; set; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ShowsMods), nameof(ShowsFound), nameof(IsAll), nameof(IsOn), nameof(IsOff), nameof(IsFound))]
+    [NotifyPropertyChangedFor(nameof(ShowsMods), nameof(ShowsFound), nameof(IsAll), nameof(IsOn), nameof(IsOff), nameof(IsFound), nameof(IsGameFolder))]
     public partial ModShowFilter Show { get; set; }
 
     [ObservableProperty]
@@ -55,11 +55,18 @@ public sealed partial class ModListFilter : ObservableObject
     [ObservableProperty]
     public partial string FoundLabel { get; set; } = string.Empty;
 
+    [ObservableProperty]
+    public partial string GameFolderLabel { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets a value indicating whether the game folder's override holds anything, so its chip shows (P2.5-22).</summary>
+    [ObservableProperty]
+    public partial bool HasGameFolder { get; set; }
+
     public bool ShowsList => Kind != ModKindFilter.CombinedFiles && !Arranging;
 
-    public bool ShowsMods => ShowsList && Show != ModShowFilter.Found;
+    public bool ShowsMods => ShowsList && Show is not (ModShowFilter.Found or ModShowFilter.GameFolder);
 
-    public bool ShowsFound => ShowsList && Show is ModShowFilter.All or ModShowFilter.Found;
+    public bool ShowsFound => ShowsList && Show is ModShowFilter.All or ModShowFilter.Found or ModShowFilter.GameFolder;
 
     public bool ShowsCombined => Kind == ModKindFilter.CombinedFiles && !Arranging;
 
@@ -70,6 +77,8 @@ public sealed partial class ModListFilter : ObservableObject
     public bool IsOff => Show == ModShowFilter.Off;
 
     public bool IsFound => Show == ModShowFilter.Found;
+
+    public bool IsGameFolder => Show == ModShowFilter.GameFolder;
 
     public string ArrangeLabel => Arranging ? "Done arranging" : "Arrange";
 
@@ -149,13 +158,21 @@ public sealed partial class ModListFilter : ObservableObject
         OnLabel = $"On ({on})";
         OffLabel = $"Off ({mods.Count - on})";
         FoundLabel = $"Found in your game ({found.Count})";
+        var inGameFolder = found.Where(m => m.IsInGameFolder).ToList();
+        GameFolderLabel = $"In your game folder ({inGameFolder.Count})";
+        HasGameFolder = _found.Any(m => m.IsInGameFolder);
+        if (!HasGameFolder && Show == ModShowFilter.GameFolder)
+        {
+            Show = ModShowFilter.All; // The chip has gone, and nothing is left under it.
+        }
+
         Refill(VisibleMods, mods.Where(m => Show switch
         {
             ModShowFilter.On => m.IsActive,
             ModShowFilter.Off => !m.IsActive,
             _ => true,
         }));
-        Refill(VisibleFound, found);
+        Refill(VisibleFound, Show == ModShowFilter.GameFolder ? inGameFolder : found);
     }
 
     private static void Refill<T>(ObservableCollection<T> target, IEnumerable<T> items)

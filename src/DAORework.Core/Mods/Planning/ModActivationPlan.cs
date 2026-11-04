@@ -1,6 +1,7 @@
 using DAORework.Core.Common;
 using DAORework.Core.Mods.Combining;
 using DAORework.Core.Mods.Conflicts;
+using DAORework.Core.Mods.Library;
 
 namespace DAORework.Core.Mods.Planning;
 
@@ -33,6 +34,12 @@ public sealed record ModActivationPlan(
 
     /// <summary>Gets why copies that would have been combined were not; the copy from the mod last in the load order is used.</summary>
     public IReadOnlyList<string> CombineProblems { get; init; } = [];
+
+    /// <summary>Gets the files the plan deploys that the install folder's override has too (P2.5-22).</summary>
+    public IReadOnlyList<DeployedFile> InstallOverrideShadows { get; init; } = [];
+
+    /// <summary>Gets why the install folder's override could not be read, if it could not.</summary>
+    public string? InstallOverrideProblem { get; init; }
 
     /// <summary>Gets a value indicating whether the plan must not be applied until its blockers are resolved.</summary>
     public bool IsBlocked => Blockers.Count > 0;

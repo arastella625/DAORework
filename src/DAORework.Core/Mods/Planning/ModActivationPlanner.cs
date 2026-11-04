@@ -56,6 +56,8 @@ public static class ModActivationPlanner
             NextRecord = NextRecord(input, desired, state.AddInsChanges),
             Combined = input.Combined,
             CombineProblems = input.CombineProblems,
+            InstallOverrideShadows = InstallOverrideOverlap.Find(conflicts.Deploy, input.InstallOverridePaths),
+            InstallOverrideProblem = input.InstallOverrideProblem,
         });
     }
 

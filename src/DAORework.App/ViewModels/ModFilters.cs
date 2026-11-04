@@ -16,4 +16,5 @@ public enum ModShowFilter
     On,
     Off,
     Found,
+    GameFolder,
 }
