@@ -27,6 +27,15 @@ public sealed class SteamLibraryLocatorTests
     }
 
     [Fact]
+    public async Task LocateAsync_NoProgramFilesAndNoRegistry_NeverLooksInARelativePath()
+    {
+        _fileSystem.AddFile(Path.Combine("Steam", "steamapps", "appmanifest_47810.acf"), new MockFileData("x"));
+        var locator = new SteamLibraryLocator(_fileSystem, _registry, new FakeKnownFolders { ProgramFilesX86 = string.Empty }, new InstallationProbe(_fileSystem), NullLogger<SteamLibraryLocator>.Instance);
+
+        Assert.Empty(await locator.LocateAsync());
+    }
+
+    [Fact]
     public async Task LocateAsync_GameOnASecondLibraryDrive_IsFoundThroughTheManifest()
     {
         AddLibraryFolders(DefaultSteam, DefaultSteam, _secondDrive);

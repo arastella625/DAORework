@@ -17,6 +17,15 @@ public sealed class WellKnownPathLocatorTests
     private WellKnownPathLocator CreateLocator() => new(new InstallationProbe(_fileSystem), _knownFolders, NullLogger<WellKnownPathLocator>.Instance);
 
     [Fact]
+    public async Task LocateAsync_NoProgramFilesFolders_NeverLooksInARelativePath()
+    {
+        _fileSystem.AddFile(GamePaths.GameExecutable(GamePaths.KnownInstallRelativePaths[0]), new MockFileData("exe"));
+        var folders = new FakeKnownFolders { ProgramFiles = string.Empty, ProgramFilesX86 = string.Empty };
+
+        Assert.Empty(await new WellKnownPathLocator(new InstallationProbe(_fileSystem), folders, NullLogger<WellKnownPathLocator>.Instance).LocateAsync());
+    }
+
+    [Fact]
     public async Task LocateAsync_NothingInstalled_ReturnsEmpty()
     {
         Assert.Empty(await CreateLocator().LocateAsync());

@@ -70,11 +70,16 @@ public sealed class DetectDocumentsFolders
     // the architecture tests forbid in this layer.
     private List<(string Root, DocumentsFolderSource Source)> Roots()
     {
-        var roots = new List<(string Root, DocumentsFolderSource Source)>
+        var roots = new List<(string Root, DocumentsFolderSource Source)>();
+        if (!string.IsNullOrWhiteSpace(_knownFolders.MyDocuments))
         {
-            (_knownFolders.MyDocuments, DocumentsFolderSource.KnownFolder),
-            (Path.Combine(_knownFolders.UserProfile, "Documents"), DocumentsFolderSource.UserProfile),
-        };
+            roots.Add((_knownFolders.MyDocuments, DocumentsFolderSource.KnownFolder));
+        }
+
+        if (!string.IsNullOrWhiteSpace(_knownFolders.UserProfile))
+        {
+            roots.Add((Path.Combine(_knownFolders.UserProfile, "Documents"), DocumentsFolderSource.UserProfile));
+        }
 
         if (!string.IsNullOrWhiteSpace(_knownFolders.OneDrive))
         {

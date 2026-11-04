@@ -34,10 +34,13 @@ public sealed class WellKnownPathLocator : IInstallLocator
 
     private IEnumerable<string> CandidateDirectories()
     {
+        var roots = new[] { _knownFolders.ProgramFilesX86, _knownFolders.ProgramFiles }.Where(r => !string.IsNullOrWhiteSpace(r)).ToList();
         foreach (var relativePath in GamePaths.KnownInstallRelativePaths)
         {
-            yield return Path.Combine(_knownFolders.ProgramFilesX86, relativePath);
-            yield return Path.Combine(_knownFolders.ProgramFiles, relativePath);
+            foreach (var root in roots)
+            {
+                yield return Path.Combine(root, relativePath);
+            }
         }
     }
 }

@@ -57,6 +57,11 @@ public sealed class SteamLibraryLocator : IInstallLocator
     private IEnumerable<string> Libraries()
     {
         var steamRoot = SteamRoot();
+        if (steamRoot.Length == 0)
+        {
+            return [];
+        }
+
         var libraries = new List<string> { steamRoot };
 
         var manifest = Path.Combine(steamRoot, "steamapps", "libraryfolders.vdf");
@@ -68,13 +73,17 @@ public sealed class SteamLibraryLocator : IInstallLocator
         return libraries.Distinct(StringComparer.OrdinalIgnoreCase);
     }
 
+    /// <summary>Where Steam is, or nothing when neither the registry nor the platform says.</summary>
     private string SteamRoot()
     {
         var fromRegistry = _registry.GetStringValue(RegistryRoot.CurrentUser, @"Software\Valve\Steam", "SteamPath")
             ?? _registry.GetStringValue(RegistryRoot.LocalMachine, @"SOFTWARE\WOW6432Node\Valve\Steam", "InstallPath");
-        return string.IsNullOrWhiteSpace(fromRegistry)
-            ? Path.Combine(_knownFolders.ProgramFilesX86, "Steam")
-            : fromRegistry.Replace('/', Path.DirectorySeparatorChar);
+        if (!string.IsNullOrWhiteSpace(fromRegistry))
+        {
+            return fromRegistry.Replace('/', Path.DirectorySeparatorChar);
+        }
+
+        return string.IsNullOrWhiteSpace(_knownFolders.ProgramFilesX86) ? string.Empty : Path.Combine(_knownFolders.ProgramFilesX86, "Steam");
     }
 
     private IEnumerable<string> ReadLibraryPaths(string manifestPath)
