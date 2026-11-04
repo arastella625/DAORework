@@ -231,9 +231,10 @@ platform item was carried into Phase 2.*
 
 ## Phase 2.6: After launch
 
-**Status: in progress.** Releases `v0.3.1` to `v0.4.0` came from this work (see [CHANGELOG.md](../CHANGELOG.md)). Open:
-P2.5-23, P2.5-31, the SonarCloud findings (P2.5-37, P2.5-38), and the two items carried from Phase
-2.5's exit gate. Opened on 2026-11-03 for the work that had been added to Phase 2.5 after 0.3.0.
+**Status: in progress.** Releases `v0.3.1` to `v0.5.0` came from this work (see [CHANGELOG.md](../CHANGELOG.md)). Open:
+P2.5-23, P2.5-31's add-ins ([#116](https://github.com/arastella625/DAORework/issues/116)), the SonarCloud findings
+(P2.5-37, P2.5-38), and the two items carried from Phase 2.5's exit gate. Opened on 2026-11-03 for the work that had
+been added to Phase 2.5 after 0.3.0.
 
 **Scheduled on 2026-11-04 (P2.6-11):** the owner accepted ADR-0031, ADR-0033 and ADR-0034 and asked for work towards a
 large next release without waiting for this phase's exit gate, whose open items need the owner or outside testers.
@@ -440,6 +441,8 @@ decision.
   the launch target does not apply. GOG and EA App installs keep it. *Done ([#100](https://github.com/arastella625/DAORework/pull/100)).*
 - P2.6-11 Schedule the next release: this roadmap brought up to date, and ADR-0031, ADR-0033 and ADR-0034 accepted, as
   the owner decided on 2026-11-04.
+- P2.6-12 Release 0.5.0: the version, the changelog's section, the audit re-run and this roadmap. The tag is the
+  owner's, after the hand checks. Phases 2.6, 2.7 and 2.8 stay open: 0.5.0 carries what is done of each.
 
 **Not in this phase:** the same as Phase 2.5's.
 
@@ -458,7 +461,8 @@ decision.
 
 ## Phase 2.8: Mods that run inside the game
 
-**Status: scheduled on 2026-11-04.** [ADR-0033](adr/0033-mods-that-run-inside-the-game.md) is accepted. Added
+**Status: in progress.** P2.8-01 to P2.8-03 are in `v0.5.0`, so these mods are recognised and never half-installed;
+installing them is P2.8-04 onward. [ADR-0033](adr/0033-mods-that-run-inside-the-game.md) is accepted. Added
 2026-11-03, after comparing DAORework with the tools on Nexus.
 The owner chose the same day to run it before Phase 2.7, so it comes first here; it keeps its number because Phase 2.7's
 task IDs were already published. Issues are opened when the phase is scheduled.
@@ -500,7 +504,8 @@ these mods on Linux; a replacement `daorigins.exe`, which is never in scope.
 
 ## Phase 2.7: Steam on Linux
 
-**Status: scheduled on 2026-11-04, after Phase 2.8.** [ADR-0031](adr/0031-steam-on-linux-through-proton.md) is
+**Status: in progress.** P2.7-01 to P2.7-06 are in `v0.5.0`, which has no Linux download yet (P2.7-08). Scheduled on
+2026-11-04, after Phase 2.8. [ADR-0031](adr/0031-steam-on-linux-through-proton.md) is
 accepted. Added 2026-11-04, after a trial build ran in Ubuntu under WSL.
 Issues are opened when the phase is scheduled.
 

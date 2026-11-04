@@ -122,3 +122,37 @@ These are not findings against the SDD, but they are the loose ends a future rea
 - **A document newer than the build throws** (`InvalidDataException`, exit 70) instead of returning a `Result`. The `IProfileRepository` port still returns `RuntimeProfile?`; if a Phase 1 feature needs to show that case in the GUI, change the port to `Result<RuntimeProfile>` then.
 - **`IDaoModProfileService` is registered but no use case uses it.** It waits for Phase 2 (P2-01, the mod storage ADR), which may replace it.
 - **`WellKnownPathLocator` only checks fixed folders.** P1-01 replaces it with the Steam library, GOG and EA App locators.
+
+---
+
+## 0.5.0 re-run
+
+**Date:** 2026-11-04
+**Commit:** `9c5584f` (`main`) with the version set to 0.5.0
+**Build:** succeeds, 0 warnings, with `TreatWarningsAsErrors`
+**Tests:** 1,425 total, 0 failing, 0 skipped (Core 507, Application 297, Infrastructure 356, Architecture 11, Cli 75,
+App 152, Formats 12, fault injection 15), on Windows
+
+Measured with the commands from the Phase 0 re-run, on the Release build. This re-run measures the code. It did not read
+the code against findings A to D again; the architecture tests and CI's gates are what keep those closed.
+
+| Measure | Phase 0 re-run | 0.5.0 | Gate |
+|---|---|---|---|
+| Line coverage, Core | 98.9% | 97.7% | Core and Application together ≥ 80% (CI); 96.7% |
+| Line coverage, Application | 94.1% | 95.6% | as above |
+| Line coverage, Infrastructure | 88.6% | 92.9% | none |
+| Line coverage, Cli | 75.6% | 89.4% | none |
+| Line coverage, App | not there yet | 93.4% | none |
+| Line coverage, Formats | not there yet | 100% | none |
+| Largest source file | `BuildModInventory.cs`, 130 lines | `LoadOrderViewModel.cs`, 240 lines | ≤ 300 (CI) |
+| Source files / lines under `src/` | 111 files, 3,132 lines | 629 files, 25,303 lines of C# | |
+| Exceptions to the file-size limit | not recorded | none | |
+| Architecture tests | 9, none skipped | 11, none skipped | must be green |
+
+**Open High/Blocker items:** none in this document. Open work is in [ROADMAP.md](ROADMAP.md) and the issues.
+
+Phase 0's observation about Cli coverage no longer holds: it is now 89.4%, though still not gated.
+
+**Not covered by these numbers:** tests use test folders, so they don't show a real install, the window on a real
+setup, or the game itself. What has and hasn't been run for real is recorded in the roadmap, task by task: *Move from
+Vortex* on simulated records only, and *New downloads* on test folders only.
