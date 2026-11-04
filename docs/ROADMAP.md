@@ -233,7 +233,7 @@ platform item was carried into Phase 2.*
 
 **Status: in progress.** Releases `v0.3.1` to `v0.4.0` came from this work (see [CHANGELOG.md](../CHANGELOG.md)). Open:
 P2.5-22 (in part), P2.5-23, P2.5-31, the SonarCloud findings (P2.5-35, P2.5-37, P2.5-38), P2.6-01, P2.6-02,
-P2.6-06 and P2.6-07, and the two items carried from Phase 2.5's exit gate. Opened on 2026-11-03 for the work that had
+P2.6-06 to P2.6-08, and the two items carried from Phase 2.5's exit gate. Opened on 2026-11-03 for the work that had
 been added to Phase 2.5 after 0.3.0.
 
 **Goal:** a player who switched to DAORework stays. What the owner and the first players find in real use is fixed
@@ -417,6 +417,10 @@ decision.
   longer compresses the single-file executables, which antivirus heuristics treat like packed programs, and each
   release run writes the filled-in review request to Nexus into its summary. A VirusTotal scan in CI waits until
   these two have been tried on a few releases.
+- P2.6-08 The Nexus page's text from the repository ([#91](https://github.com/arastella625/DAORework/issues/91),
+  [ADR-0030](adr/0030-nexus-page-text-from-the-repository.md)): a workflow sends `docs/release/nexus/summary.txt`
+  and `description.bbcode` to Nexus when they change on `main`, so the owner no longer pastes them. The gallery, the
+  name, permissions and the category stay manual. The description gains P2.6-06's note about Nexus's manual check.
 
 **Not in this phase:** the same as Phase 2.5's.
 
@@ -424,7 +428,7 @@ decision.
 - [ ] P2.5-22, P2.5-23 and P2.5-31 are done.
 - [ ] The SonarCloud tasks (P2.5-32 to P2.5-38) are done, and the quality gate is green. It stays report-only
   unless a separate decision makes it blocking.
-- [ ] P2.6-01 to P2.6-04, P2.6-06 and P2.6-07 are done, and `scripts/verify-real-install.ps1` reports no FAIL on
+- [ ] P2.6-01 to P2.6-04 and P2.6-06 to P2.6-08 are done, and `scripts/verify-real-install.ps1` reports no FAIL on
   the owner's PC.
 - [ ] Carried from Phase 2.5: Steam, GOG and EA App each have a real run in `docs/testing/phase-2.5-matrix.md`, and
   at least one beta tester from outside the project completes adopt, import, activate and rollback in the GUI
