@@ -1,5 +1,4 @@
 using System.IO.Abstractions.TestingHelpers;
-using DAORework.Application.Documents;
 using DAORework.Application.Installations;
 using DAORework.Application.Profiles;
 using DAORework.Application.Tests.Fakes;
@@ -21,7 +20,7 @@ public sealed class CreateProfileTests
     private CreateProfile CreateUseCase() => new(
         _repository,
         new DetectInstallations([_locator], new InstallationProbe(_fileSystem)),
-        new DetectDocumentsFolders(_fileSystem, _knownFolders));
+        TestDocumentsDetection.Create(_fileSystem, _knownFolders));
 
     [Fact]
     public async Task ExecuteAsync_InvalidName_FailsAndSavesNothing()
@@ -52,11 +51,25 @@ public sealed class CreateProfileTests
         var classic = GamePaths.DefaultDocumentsDirectory(Path.Combine(_knownFolders.UserProfile, "Documents"));
         _fileSystem.AddDirectory(classic);
         var redirected = new FakeKnownFolders { MyDocuments = TestPaths.Root("Users", "Me", "OneDrive", "Documents"), OneDrive = TestPaths.Root("Users", "Me", "OneDrive") };
-        var useCase = new CreateProfile(_repository, new DetectInstallations([], new InstallationProbe(_fileSystem)), new DetectDocumentsFolders(_fileSystem, redirected));
+        var useCase = new CreateProfile(_repository, new DetectInstallations([], new InstallationProbe(_fileSystem)), TestDocumentsDetection.Create(_fileSystem, redirected));
 
         var profile = (await useCase.ExecuteAsync(new CreateProfileRequest("Default"))).Value;
 
         Assert.Equal(classic, profile.UserDocumentsDirectory);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_FolderOnlyTheDriveSearchFound_UsesIt()
+    {
+        var moved = TestPaths.Root("Games", "BioWare", "Dragon Age");
+        _fileSystem.AddDirectory(moved);
+        var search = new FakeDocumentsFolderSearch();
+        search.Found.Add(moved);
+        var useCase = new CreateProfile(_repository, new DetectInstallations([], new InstallationProbe(_fileSystem)), TestDocumentsDetection.Create(_fileSystem, _knownFolders, _repository, search));
+
+        var profile = (await useCase.ExecuteAsync(new CreateProfileRequest("Default"))).Value;
+
+        Assert.Equal(moved, profile.UserDocumentsDirectory);
     }
 
     [Fact]

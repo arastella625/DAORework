@@ -8,32 +8,51 @@ namespace DAORework.Application.Documents;
 /// <summary>
 /// Finds where the Dragon Age documents folder is, or could be: the Documents folder Windows reports (what the game
 /// uses), the classic <c>%UserProfile%\Documents</c>, and <c>%OneDrive%\Documents</c>. OneDrive's Known Folder Move
-/// silently changes the first, which is how saves and mods end up "missing" after a redirection.
+/// silently changes the first, which is how saves and mods end up "missing" after a redirection. The folder can also
+/// be anywhere else, so the folders the profiles name come next, and a search of the drives last (ADR-0032).
 /// </summary>
 public sealed class DetectDocumentsFolders
 {
     private readonly IFileSystem _fileSystem;
     private readonly IKnownFolders _knownFolders;
+    private readonly ProfileDocumentsFolders _profileFolders;
+    private readonly IDocumentsFolderSearch _search;
 
-    public DetectDocumentsFolders(IFileSystem fileSystem, IKnownFolders knownFolders)
+    public DetectDocumentsFolders(
+        IFileSystem fileSystem,
+        IKnownFolders knownFolders,
+        ProfileDocumentsFolders profileFolders,
+        IDocumentsFolderSearch search)
     {
         _fileSystem = fileSystem;
         _knownFolders = knownFolders;
+        _profileFolders = profileFolders;
+        _search = search;
     }
 
-    public Task<Result<DocumentsDetection>> ExecuteAsync(DetectDocumentsFoldersRequest request, CancellationToken cancellationToken = default)
+    public async Task<Result<DocumentsDetection>> ExecuteAsync(DetectDocumentsFoldersRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
         cancellationToken.ThrowIfCancellationRequested();
 
-        var candidates = Roots()
-            .DistinctBy(r => r.Root, StringComparer.OrdinalIgnoreCase)
-            .Select(r => Describe(r.Root, r.Source))
+        var candidates = Roots().ConvertAll(r => Describe(GamePaths.DefaultDocumentsDirectory(r.Root), r.Source));
+
+        // Only ones that exist: unlike the usual places, the game will never create a folder a profile names.
+        candidates.AddRange((await _profileFolders.ReadAsync(cancellationToken)).Select(path => Describe(path, DocumentsFolderSource.Profile)).Where(c => c.Exists));
+
+        // Detection runs on every diagnose, so the drives are walked only when nothing cheaper found a folder.
+        if (!candidates.Exists(c => c.Exists))
+        {
+            candidates.AddRange((await _search.FindAsync(cancellationToken)).Select(path => Describe(path, DocumentsFolderSource.DriveSearch)));
+        }
+
+        var ordered = candidates
+            .DistinctBy(c => c.Path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar), StringComparer.OrdinalIgnoreCase)
             .OrderByDescending(c => c.Exists)
             .ThenBy(c => c.Source)
             .ToList();
 
-        return Task.FromResult(Result.Success(new DocumentsDetection(candidates)));
+        return Result.Success(new DocumentsDetection(ordered));
     }
 
     /// <summary>Whether a path lives under a OneDrive folder, read off the path itself.</summary>
@@ -65,9 +84,6 @@ public sealed class DetectDocumentsFolders
         return roots;
     }
 
-    private DocumentsFolder Describe(string documentsRoot, DocumentsFolderSource source)
-    {
-        var path = GamePaths.DefaultDocumentsDirectory(documentsRoot);
-        return new DocumentsFolder(path, source, _fileSystem.Directory.Exists(path), IsUnderOneDrive(path));
-    }
+    private DocumentsFolder Describe(string path, DocumentsFolderSource source) =>
+        new(path, source, _fileSystem.Directory.Exists(path), IsUnderOneDrive(path));
 }

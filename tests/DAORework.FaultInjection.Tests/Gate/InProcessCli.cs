@@ -1,7 +1,10 @@
 using DAORework.Application;
+using DAORework.Application.Documents;
 using DAORework.Cli.Composition;
+using DAORework.FaultInjection.Tests.Host;
 using DAORework.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Spectre.Console.Cli.Testing;
 
 namespace DAORework.FaultInjection.Tests.Gate;
@@ -16,6 +19,7 @@ internal static class InProcessCli
             .AddApplication()
             .AddInfrastructure(options => options.AppDataDirectory = appData)
             .AddCliRendering();
+        services.Replace(ServiceDescriptor.Singleton<IDocumentsFolderSearch, NoDocumentsFolderSearch>());
         var tester = new CommandAppTester(new MicrosoftDependencyInjectionRegistrar(services));
         tester.Configure(CliConfiguration.Configure);
         var result = tester.Run([.. arguments]);

@@ -232,7 +232,7 @@ platform item was carried into Phase 2.*
 ## Phase 2.6: After launch
 
 **Status: in progress.** Releases `v0.3.1` to `v0.4.0` came from this work (see [CHANGELOG.md](../CHANGELOG.md)). Open:
-P2.5-22 (in part), P2.5-23, P2.5-31, the SonarCloud findings (P2.5-35, P2.5-37, P2.5-38), P2.6-01, P2.6-02,
+P2.5-22 (in part), P2.5-23, P2.5-31, the SonarCloud findings (P2.5-35, P2.5-37, P2.5-38), P2.6-02,
 P2.6-06 to P2.6-08, and the two items carried from Phase 2.5's exit gate. Opened on 2026-11-03 for the work that had
 been added to Phase 2.5 after 0.3.0.
 

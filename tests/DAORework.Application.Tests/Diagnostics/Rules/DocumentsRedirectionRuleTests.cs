@@ -1,6 +1,5 @@
 using System.IO.Abstractions.TestingHelpers;
 using DAORework.Application.Diagnostics.Rules;
-using DAORework.Application.Documents;
 using DAORework.Application.Tests.Fakes;
 using DAORework.Core.Common;
 using DAORework.Core.Diagnostics;
@@ -67,5 +66,35 @@ public sealed class DocumentsRedirectionRuleTests
         Assert.Empty(await Rule(plain).EvaluateAsync(new RuntimeProfile { UserDocumentsDirectory = documents }));
     }
 
-    private DocumentsRedirectionRule Rule(FakeKnownFolders knownFolders) => new(new DetectDocumentsFolders(_fileSystem, knownFolders));
+    [Fact]
+    public async Task EvaluateAsync_ProfilesFolderOnAnotherDriveExists_DoesNotSayItIsElsewhere()
+    {
+        var moved = TestPaths.Root("Games", "BioWare", "Dragon Age");
+        _fileSystem.AddDirectory(moved);
+        _fileSystem.AddDirectory(Classic);
+        var profile = new RuntimeProfile { Name = "Default", UserDocumentsDirectory = moved };
+        var profiles = new InMemoryProfileRepository();
+        profiles.Profiles[profile.Name] = profile;
+        var rule = new DocumentsRedirectionRule(TestDocumentsDetection.Create(_fileSystem, _redirected, profiles));
+
+        Assert.Empty(await rule.EvaluateAsync(profile));
+    }
+
+    [Fact]
+    public async Task EvaluateAsync_ConfiguredFolderGoneAndTheSearchFindsOne_PointsAtIt()
+    {
+        var moved = TestPaths.Root("Games", "BioWare", "Dragon Age");
+        _fileSystem.AddDirectory(moved);
+        var search = new FakeDocumentsFolderSearch();
+        search.Found.Add(moved);
+        var rule = new DocumentsRedirectionRule(TestDocumentsDetection.Create(_fileSystem, new FakeKnownFolders(), search: search));
+
+        var issues = await rule.EvaluateAsync(new RuntimeProfile { UserDocumentsDirectory = TestPaths.Root("Old", "BioWare", "Dragon Age") });
+
+        var elsewhere = Assert.Single(issues);
+        Assert.Equal(DiagnosticCodes.DocumentsDirectoryElsewhere, elsewhere.Code);
+        Assert.Contains(moved, elsewhere.Recommendation, StringComparison.Ordinal);
+    }
+
+    private DocumentsRedirectionRule Rule(FakeKnownFolders knownFolders) => new(TestDocumentsDetection.Create(_fileSystem, knownFolders));
 }

@@ -121,7 +121,7 @@ freely; the CLI keeps its own words (`activate`, `adopt`, `rollback`).
 ## What the command line does
 
 - Detects Dragon Age: Origins installations: Steam libraries on any drive, GOG Galaxy and EA App registrations, the usual folders, or a folder you name with `detect --path`
-- Finds the documents folder, including a OneDrive-redirected Documents folder, and warns when saves sit somewhere else than the profile says
+- Finds the documents folder wherever it is, including a OneDrive-redirected Documents folder or another drive, and warns when saves sit somewhere else than the profile says
 - Creates named runtime profiles (install directory, executables, documents folder, launch target)
 - Diagnoses a profile and writes a JSON report with stable `DAO_*` codes
 - Launches the game or the official launcher from a profile; a Steam install is started through Steam

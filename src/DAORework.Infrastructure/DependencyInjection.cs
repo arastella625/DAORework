@@ -1,6 +1,7 @@
 using System.IO.Abstractions;
 using DAORework.Application.Abstractions;
 using DAORework.Application.Common;
+using DAORework.Application.Documents;
 using DAORework.Application.Installations;
 using DAORework.Application.Launching;
 using DAORework.Application.Profiles;
@@ -68,6 +69,7 @@ public static class DependencyInjection
         services.AddSingleton<IInstallLocator, GogRegistryLocator>();
         services.AddSingleton<IInstallLocator, BioWareRegistryLocator>();
         services.AddSingleton<IInstallLocator, WellKnownPathLocator>();
+        services.AddSingleton<IDocumentsFolderSearch, DriveDocumentsFolderSearch>();
 
         // Runtimes are keyed by mode (SDD §5, Factory via keyed DI); add a runtime by adding a keyed registration.
         // The original game: through Steam for a Steam install, otherwise by starting the executable (ADR-0022).
