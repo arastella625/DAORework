@@ -18,6 +18,11 @@ public sealed class ModDownloadRuleTests
     [InlineData("model.mmh")]
     [InlineData("mesh.msh")]
     [InlineData("material.mao")]
+    [InlineData("Presets/face.mop")]
+    [InlineData("Tints/hair.TNT")]
+    [InlineData("speech.dlg")]
+    [InlineData("speech.dlb")]
+    [InlineData("kiss.cut")]
     [InlineData("Mod/chargenmorphcfg.xml")]
     [InlineData("Inner.dazip")]
     public void LooksLikeMod_TheGamesOwnData_Passes(string entry)

@@ -54,8 +54,9 @@ A file is offered when all of these hold:
   not on the list of files already dealt with.
 - **It looks like a Dragon Age mod:** a new rule in Core, `ModDownloadRule`, reads the archive's file names only. A
   `.dazip` always passes. An archive passes if it holds a `.dazip`, an add-in's `Manifest.xml` and `Contents/`, or at
-  least one file of the game's own data (`.erf`, `.gda`, `.tlk`, `.ncs`, `.uti`, `.utc`, `.mmh`, `.msh`, `.mao`, or
-  `chargenmorphcfg.xml`).
+  least one file of the game's own data (`.erf`, `.gda`, `.tlk`, `.ncs`, `.uti`, `.utc`, `.mmh`, `.msh`, `.mao`,
+  `.mop`, `.tnt`, `.dlg`, `.dlb`, `.cut`, or `chargenmorphcfg.xml`). The five after `.mao` were added on 2026-11-04,
+  once a look at the owner's real library showed presets, tints and dialogue mods were being missed.
 
 `.dds` does not count on its own, because every game on Nexus uses it. A retexture holding only `.dds` files is not
 offered, and *Add mods* still takes it. A mod missed is better than offering a player's other games.
