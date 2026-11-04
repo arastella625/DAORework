@@ -442,11 +442,51 @@ decision.
 
 ---
 
+## Phase 2.8: Mods that run inside the game
+
+**Status: proposed.** Waits for [ADR-0033](adr/0033-mods-that-run-inside-the-game.md) to be accepted, and for Phase 2.6's
+exit gate. Added 2026-11-03, after comparing DAORework with the tools on Nexus.
+The owner chose the same day to run it before Phase 2.7, so it comes first here; it keeps its number because Phase 2.7's
+task IDs were already published. Issues are opened when the phase is scheduled.
+
+**Goal:** a player can install a mod that puts a DLL in `bin_ship`, such as DAO Lib, with the same scan, preview, record
+and undo as any other mod, and says yes to the program first. A mod that cannot be installed says so.
+
+**Task IDs:** `P2.8-` (branch `feat/P2.8-02-game-program-mods`).
+
+- P2.8-01 Decide it: ADR-0033 and this phase.
+- P2.8-02 Never half-installed: a mod for `bin_ship`, in either of ADR-0033's two shapes, is recognised, nothing from it
+  is copied into `override`, and its preview says what will happen.
+- P2.8-03 See what is there: `DAO_INSTALL_PROGRAM_FOUND` reports a DLL in `bin_ship` that is neither the game's nor in
+  the record.
+- P2.8-04 Plan and apply: `PlanGameProgramMod` and `ApplyGameProgramMod` on the fix path's record, journal and backups,
+  with ADR-0033's refusals. A refactor PR comes first if a shared piece is fix-only.
+- P2.8-05 Say yes to the program: the tick box in the preview, *Turn on selected* leaving these mods out, and
+  `--allow-programs <modId>` on the command line.
+- P2.8-06 What a mod needs: the catalog's `needs` list and its preview warning, with entries for DAO Lib, the controller
+  mod and Luma, and a conflict entry linking DAO Lib's `dinput8.chain.dll` page.
+- P2.8-07 Fault injection: scenarios for turning a `GameProgram` on and off
+  ([ADR-0014](adr/0014-fault-injection-exit-gate.md)).
+- P2.8-08 Say so: the README, the website, the Nexus description, the plan warning, `docs/VOICE.md` and ADR-0018 stop
+  promising that programs are never installed, in the same release as P2.8-05.
+
+**Not in this phase:** mods that ship game data as well as programs; renaming a DLL; taking over a DLL placed by hand;
+these mods on Linux; a replacement `daorigins.exe`, which is never in scope.
+
+**Exit gate:**
+- [ ] P2.8-01 to P2.8-08 are done.
+- [ ] On the owner's real install, DAO Lib and Luma are each turned on, load in the game, are turned off and undone, and
+  the folder ends as it started, apart from files the mod wrote itself.
+- [ ] A tester with Steam's protected executable runs ADR-0033's *Not yet seen* items, recorded in `docs/testing/`.
+  Anything not run there is not claimed as supported.
+
+---
+
 ## Phase 2.7: Steam on Linux
 
 **Status: proposed.** Waits for [ADR-0031](adr/0031-steam-on-linux-through-proton.md) to be accepted and for Phase
-2.6's exit gate. Added 2026-11-04, after a trial build ran in Ubuntu under WSL. Issues are opened when the phase is
-scheduled.
+2.8's exit gate, which the owner chose to run first. Added 2026-11-04, after a trial build ran in Ubuntu under WSL.
+Issues are opened when the phase is scheduled.
 
 **Goal:** a Linux player with the Steam copy of the game, running through Proton, can find their game, manage mods,
 back up saves and press Play, from a `linux-x64` download. Windows players see no change.
