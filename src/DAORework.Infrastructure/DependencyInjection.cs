@@ -68,6 +68,7 @@ public static class DependencyInjection
         services.AddSingleton<IFixSourceReader, FixSourceReader>();
 
         // Install locators run in registration order (SDD §5, Composite): the launchers' own records first, folder probing last.
+        services.AddSingleton<SteamLibraries>();
         services.AddSingleton<IInstallLocator, SteamLibraryLocator>();
         services.AddSingleton<IInstallLocator, GogRegistryLocator>();
         services.AddSingleton<IInstallLocator, BioWareRegistryLocator>();

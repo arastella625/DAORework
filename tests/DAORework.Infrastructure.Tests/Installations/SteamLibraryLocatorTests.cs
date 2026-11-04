@@ -30,9 +30,34 @@ public sealed class SteamLibraryLocatorTests
     public async Task LocateAsync_NoProgramFilesAndNoRegistry_NeverLooksInARelativePath()
     {
         _fileSystem.AddFile(Path.Combine("Steam", "steamapps", "appmanifest_47810.acf"), new MockFileData("x"));
-        var locator = new SteamLibraryLocator(_fileSystem, _registry, new FakeKnownFolders { ProgramFilesX86 = string.Empty }, new InstallationProbe(_fileSystem), NullLogger<SteamLibraryLocator>.Instance);
+        Assert.Empty(await CreateLocator(new FakeKnownFolders { ProgramFilesX86 = string.Empty }).LocateAsync());
+    }
 
-        Assert.Empty(await locator.LocateAsync());
+    [Theory]
+    [InlineData(".local/share/Steam")]
+    [InlineData(".steam/steam")]
+    [InlineData(".var/app/com.valvesoftware.Steam/.local/share/Steam")]
+    [InlineData(".var/app/com.valvesoftware.Steam/data/Steam")]
+    [InlineData("snap/steam/common/.local/share/Steam")]
+    public async Task LocateAsync_TheFoldersLinuxKeepsSteamIn_AreRead(string root)
+    {
+        var steam = Path.Combine([_knownFolders.UserProfile, .. root.Split('/')]);
+        _fileSystem.AddFile(GamePaths.GameExecutable(Path.Combine(steam, "steamapps", "common", "Dragon Age Ultimate Edition")), new MockFileData("exe"));
+
+        var found = Assert.Single(await CreateLocator().LocateAsync());
+
+        Assert.Equal(Distribution.Steam, found.Distribution);
+    }
+
+    [Fact]
+    public async Task LocateAsync_ALibraryOnAMount_IsFoundThroughEachRootsManifest()
+    {
+        var card = MockUnixSupport.Path(@"E:\media\card");
+        var steam = Path.Combine(_knownFolders.UserProfile, ".local", "share", "Steam");
+        _fileSystem.AddFile(Path.Combine(steam, "steamapps", "libraryfolders.vdf"), new MockFileData($"\"libraryfolders\" {{ \"0\" {{ \"path\" \"{card.Replace(Path.DirectorySeparatorChar, '/')}\" }} }}"));
+        _fileSystem.AddFile(GamePaths.GameExecutable(Path.Combine(card, "steamapps", "common", "Dragon Age Origins")), new MockFileData("exe"));
+
+        Assert.Single(await CreateLocator().LocateAsync());
     }
 
     [Fact]
@@ -89,6 +114,6 @@ public sealed class SteamLibraryLocatorTests
         _fileSystem.AddFile(Path.Combine(steamRoot, "steamapps", "libraryfolders.vdf"), new MockFileData($"\"libraryfolders\" {{ {string.Join(' ', entries)} }}"));
     }
 
-    private SteamLibraryLocator CreateLocator() =>
-        new(_fileSystem, _registry, _knownFolders, new InstallationProbe(_fileSystem), NullLogger<SteamLibraryLocator>.Instance);
+    private SteamLibraryLocator CreateLocator(FakeKnownFolders? folders = null) =>
+        new(_fileSystem, new SteamLibraries(_fileSystem, _registry, folders ?? _knownFolders, NullLogger<SteamLibraries>.Instance), new InstallationProbe(_fileSystem), NullLogger<SteamLibraryLocator>.Instance);
 }
