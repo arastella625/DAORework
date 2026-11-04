@@ -6,6 +6,8 @@ internal sealed class FakeKnownFolders : IKnownFolders
 {
     public string MyDocuments { get; init; } = TestPaths.Root("Users", "Me", "Documents");
 
+    public string Downloads { get; set; } = string.Empty;
+
     public string UserProfile { get; init; } = TestPaths.Root("Users", "Me");
 
     public string? OneDrive { get; init; }

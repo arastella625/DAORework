@@ -7,6 +7,8 @@ internal sealed class FakeKnownFolders : IKnownFolders
 {
     public string MyDocuments { get; init; } = MockUnixSupport.Path(@"C:\Users\Me\Documents");
 
+    public string Downloads { get; set; } = string.Empty;
+
     public string UserProfile { get; init; } = MockUnixSupport.Path(@"C:\Users\Me");
 
     public string? OneDrive { get; init; }

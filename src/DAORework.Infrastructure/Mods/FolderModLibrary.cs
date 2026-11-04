@@ -3,6 +3,7 @@ using DAORework.Application.Abstractions;
 using DAORework.Application.Common;
 using DAORework.Core.Common;
 using DAORework.Core.Diagnostics;
+using DAORework.Core.Mods.Downloads;
 using DAORework.Core.Mods.Library;
 using Microsoft.Extensions.Options;
 using SharpCompress.Common;
@@ -110,7 +111,7 @@ public sealed class FolderModLibrary : IModLibrary
         }
 
         var extension = _fileSystem.Path.GetExtension(path).ToLowerInvariant();
-        if (extension is not (".zip" or ".dazip" or ".7z" or ".rar"))
+        if (!ModDownloadRule.IsDownload(path))
         {
             return Unsupported(path);
         }

@@ -6,6 +6,8 @@ public sealed class EnvironmentKnownFolders : IKnownFolders
 {
     public string MyDocuments => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
+    public string Downloads => ShellDownloadsFolder.Path();
+
     public string UserProfile => Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
     public string? OneDrive => Environment.GetEnvironmentVariable("OneDrive") is { Length: > 0 } root ? root : null;
