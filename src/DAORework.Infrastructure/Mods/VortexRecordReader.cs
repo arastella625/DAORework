@@ -34,11 +34,13 @@ public sealed class VortexRecordReader
 
             var folder = _fileSystem.Path.GetDirectoryName(_fileSystem.Path.GetFullPath(recordPath))!;
             var relativeFolder = Normal(_fileSystem.Path.GetRelativePath(_fileSystem.Path.GetFullPath(documentsDirectory), folder));
+            var atItsTarget = Normal(Text(root, "targetPath")).Equals(Normal(folder), StringComparison.OrdinalIgnoreCase);
+            var stagingPath = Text(root, "stagingPath");
             return Result.Success(new VortexRecord(Placed(files, relativeFolder))
             {
-                AtItsTarget = Normal(Text(root, "targetPath")).Equals(Normal(folder), StringComparison.OrdinalIgnoreCase),
-                StagedMods = Staged(Text(root, "stagingPath")),
-                StagingPath = Text(root, "stagingPath"),
+                AtItsTarget = atItsTarget,
+                StagedMods = atItsTarget && !IsNetworkPath(stagingPath) ? Staged(stagingPath) : new HashSet<string>(StringComparer.OrdinalIgnoreCase),
+                StagingPath = stagingPath,
                 RelativeFolder = relativeFolder + "/",
             });
         }
@@ -54,6 +56,13 @@ public sealed class VortexRecordReader
 
     private static Result<VortexRecord> Unreadable(string path, string reason) =>
         Result.Failure<VortexRecord>(new Error(DiagnosticCodes.VortexRecordUnreadable, $"Vortex's record {path} could not be read: {reason}.", "Close Vortex and try again."));
+
+    /// <summary>
+    /// A record is a file in the game's folders that anything could have put there, and just looking at a path on a
+    /// network share makes Windows connect to it, sending the player's credentials. Vortex links its files, so its
+    /// staging folder is on a local drive.
+    /// </summary>
+    private static bool IsNetworkPath(string path) => path.Length >= 2 && path[0] is '/' or '\\' && path[1] is '/' or '\\';
 
     private static string Normal(string path) => path.Replace('\\', '/').TrimEnd('/');
 
