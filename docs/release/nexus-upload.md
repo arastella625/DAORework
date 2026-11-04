@@ -42,12 +42,10 @@ Nexus holds every upload that contains programs until its staff have checked it 
 quarantined at first (0.3.1 and 0.4.0 both were). The README, the website and the Nexus description say so, and point
 players to the same zip on GitHub in the meantime.
 
-1. **Ask for the review.** Email `support@nexusmods.com` with the subject *Review request: DAORework <version>
-   quarantined (Dragon Age: Origins, mod 7083)*. Give the file id from the quarantine notice, the GitHub release link
-   and the zip's SHA-256 (from the release's `.sha256` file), and say how to check it: the build attestation
-   (`gh attestation verify DAORework-<version>-win-x64.zip --repo arastella625/DAORework`), the code signature, and
-   how to build it (`pwsh ./scripts/publish-release.ps1`, see CONTRIBUTING.md). Say it works offline, includes no game
-   files, and does not touch Steam's DRM. Ask which antivirus engines flagged it, and their detection names.
+1. **Ask for the review.** The release run's summary (Actions → Release → the tag's run) has the email to
+   `support@nexusmods.com` filled in with the version, the zip's SHA-256, the release link, the attestation command
+   and how to build it, from [nexus-review-request.md](nexus-review-request.md). Copy it, add the file id from the
+   quarantine notice, and send it. It asks which antivirus engines flagged the zip, and their detection names.
 2. **Report each false positive.** For every engine Nexus names, send the zip to that vendor as a false positive, with
    the detection name and the link to the source. Start with Microsoft Defender, which most Windows players run:
    [submit a file to Microsoft](https://www.microsoft.com/en-us/wdsi/filesubmission), as a software developer, and

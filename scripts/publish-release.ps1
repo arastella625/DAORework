@@ -31,7 +31,8 @@ if ($ZipOnly) {
 else {
     Remove-Item $staging -Recurse -Force -ErrorAction SilentlyContinue
     New-Item -ItemType Directory -Force -Path $staging, (Join-Path $staging 'dotnet') | Out-Null
-    $publishArgs = @('-c', 'Release', '-r', $Runtime, '--self-contained', '-p:PublishSingleFile=true', '-p:IncludeNativeLibrariesForSelfExtract=true', '-p:EnableCompressionInSingleFile=true', '-p:DebugType=none')
+    # No EnableCompressionInSingleFile: antivirus heuristics treat a compressed bundle like a packed program (P2.6-07).
+    $publishArgs = @('-c', 'Release', '-r', $Runtime, '--self-contained', '-p:PublishSingleFile=true', '-p:IncludeNativeLibrariesForSelfExtract=true', '-p:DebugType=none')
 
     foreach ($app in @(@{ Project = 'src/DAORework.App'; Exe = 'DAORework.App.exe'; As = 'DAORework.exe' }, @{ Project = 'src/DAORework.Cli'; Exe = 'DAORework.Cli.exe'; As = 'dao.exe' })) {
         $out = Join-Path $OutDir "publish/$(Split-Path -Leaf $app.Project)"

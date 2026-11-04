@@ -273,6 +273,21 @@ jobs:
           gh release create $env:TAG @files --verify-tag --title "DAORework $version" --notes-file notes.md @flags
           if ($LASTEXITCODE -ne 0) { throw 'gh release create failed.' }
 
+      # Nexus holds every upload that contains programs until its staff check it by hand (P2.6-07): the review request,
+      # filled in, goes in the run's summary for the owner to send. It never stops the Nexus upload.
+      - name: Write the Nexus review request
+        continue-on-error: true
+        shell: pwsh
+        env:
+          SIGNED: ${{ steps.signing.outputs.sign }}
+        run: |
+          $version = $env:TAG.TrimStart('v')
+          $hash = ((Get-Content "artifacts/DAORework-$version-win-x64.zip.sha256" -Raw) -split '\s+')[0]
+          $signed = if ($env:SIGNED -eq 'true') { 'Both executables are Authenticode-signed (Azure Artifact Signing); see Properties > Digital Signatures.' } else { 'This release is not code-signed.' }
+          $email = (Get-Content docs/release/nexus-review-request.md -Raw) -replace '(?s)^<!--.*?-->\s*', ''
+          $email = $email.Replace('{VERSION}', $version).Replace('{SHA256}', $hash).Replace('{SIGNED}', $signed)
+          "## Nexus review request`n`nCopy this into an email once the quarantine notice arrives (docs/release/nexus-upload.md, step 4).`n`n$email" >> $env:GITHUB_STEP_SUMMARY
+
       # The same zip as the GitHub Release, so its checksum matches. Pinned to the commit of v1.0.0-beta.11: this
       # third-party action receives the Nexus API key, so a moved tag must not change what runs.
       - name: Upload to Nexus Mods
