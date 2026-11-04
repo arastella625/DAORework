@@ -9,3 +9,6 @@ Nexus image captions (paste each into the image's description when uploading). T
 06-fixes.png        Fixes: DXVK, and the 4 GB patch where your copy allows it. DAORework notices when Steam's Verify integrity has undone one.
 07-history.png      History: every change DAORework made, with Undo. It asks first.
 08-your-look.png    Four dark themes, or your own accent colour and background picture.
+09-move-from-vortex.png    Move from Vortex: copy your mods, purge in Vortex, then turn them on in the same order.
+10-new-downloads.png       New downloads: mods you downloaded, ready to add. It stays off until you say yes.
+11-inside-archives.png     Combined files: a file two mods keep inside .erf archives, and which mods share it.
