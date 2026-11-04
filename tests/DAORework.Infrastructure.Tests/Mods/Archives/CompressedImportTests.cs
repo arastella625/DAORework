@@ -29,7 +29,7 @@ public sealed class CompressedImportTests
     [Fact]
     public async Task Import_Rar_AddIn_IsImportedWithItsManifest()
     {
-        var entry = (await ImportAsync("Dog.rar", TestArchives.Rar(Manifest("Dog_UID", "Dog"), ("Contents\\addins\\Dog_UID\\dog.gda", "dog")))).Value.Entry;
+        var entry = (await ImportAsync("Dog.rar", TestArchives.Rar(Manifest("Dog_UID", "Dog"), ("Contents/addins/Dog_UID/dog.gda", "dog")))).Value.Entry;
 
         Assert.Equal(ModKind.AddIn, entry.Mod.Kind);
         Assert.Equal("Dog_UID", entry.Mod.AddInUid);
