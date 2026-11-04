@@ -1,4 +1,6 @@
+using System.IO.Abstractions.TestingHelpers;
 using DAORework.Application.Abstractions;
+using DAORework.Application.Mods.Adoption;
 using DAORework.Application.Mods.Apply;
 using DAORework.Application.Mods.Backups;
 using DAORework.Application.Mods.Changes;
@@ -39,6 +41,19 @@ public sealed class ModChangeUseCaseTests
         var plan = (await Plan(ModChangeKind.Activate, "hair")).Value;
 
         Assert.Equal(PlanBlockerKind.UnmanagedFileInTheWay, Assert.Single(plan.Blockers).Kind);
+    }
+
+    [Fact]
+    public async Task Plan_WithAnInstallFolder_WarnsAboutAFileItsOverrideHasToo()
+    {
+        var fileSystem = new MockFileSystem();
+        fileSystem.AddFile(Path.Combine(GamePaths.OverrideDirectory("C:/Game"), "Old Hair", "hair.dds"), new MockFileData("x"));
+        var usecase = new PlanModChange(_stores, _library, _scanner, _stores, new ReadInstallOverride(fileSystem));
+
+        var plan = (await usecase.ExecuteAsync(new PlanModChangeRequest(Documents, new ModChange(ModChangeKind.Activate, ["hair"]), "C:/Game"))).Value;
+
+        Assert.Equal("hair.dds", Assert.Single(plan.InstallOverrideShadows).FileName);
+        Assert.False(plan.IsBlocked);
     }
 
     [Fact]
@@ -152,7 +167,7 @@ public sealed class ModChangeUseCaseTests
     }
 
     private Task<Result<ModActivationPlan>> Plan(ModChangeKind kind, params string[] ids) =>
-        new PlanModChange(_stores, _library, _scanner, _stores).ExecuteAsync(new PlanModChangeRequest(Documents, new ModChange(kind, ids)));
+        new PlanModChange(_stores, _library, _scanner, _stores, new ReadInstallOverride(new MockFileSystem())).ExecuteAsync(new PlanModChangeRequest(Documents, new ModChange(kind, ids)));
 
     private RollBackModChange RollBack() => new(_stores, _backups, new RestoreDeployment(_backups), _stores);
 

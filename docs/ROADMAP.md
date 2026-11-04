@@ -232,13 +232,13 @@ platform item was carried into Phase 2.*
 ## Phase 2.6: After launch
 
 **Status: in progress.** Releases `v0.3.1` to `v0.4.0` came from this work (see [CHANGELOG.md](../CHANGELOG.md)). Open:
-P2.5-22 (in part), P2.5-23, P2.5-31, the SonarCloud findings (P2.5-37, P2.5-38), and the two items carried from Phase
+P2.5-23, P2.5-31, the SonarCloud findings (P2.5-37, P2.5-38), and the two items carried from Phase
 2.5's exit gate. Opened on 2026-11-03 for the work that had been added to Phase 2.5 after 0.3.0.
 
 **Scheduled on 2026-11-04 (P2.6-11):** the owner accepted ADR-0031, ADR-0033 and ADR-0034 and asked for work towards a
 large next release without waiting for this phase's exit gate, whose open items need the owner or outside testers.
 They are carried forward, as Phase 1's and Phase 2.5's were. Phases 2.8 and 2.7 and P3-10 and P3-11 start now, in that
-order, after P2.5-22 and P2.5-31.
+order, after P2.5-31.
 
 **Goal:** a player who switched to DAORework stays. What the owner and the first players find in real use is fixed
 or smoothed: several mods at once, mods that touch the same files, a window organised around what a player does,
@@ -294,9 +294,10 @@ read the game's file formats wait for P3-01 (P3-07 to P3-09).
   install folder's override into them.*
 - P2.5-22 The install folder's override: read `<install>/packages/core/override`, where older guides put mods and
   which the game loads too. List what is there under *Installed by hand* as *in the install folder*, and include it
-  in the shared-file warnings. Adopting from there needs ADR-0015 amended first. *Diagnostics done
-  (`InstallOverrideRule`: what is there, and each name both overrides have, with what it means); the Installed by hand
-  list and the plan's warnings follow.*
+  in the shared-file warnings. Adopting from there needs ADR-0015 amended first. *Done: `InstallOverrideRule` in the
+  diagnostics; *Found in your game* lists each folder and the loose files, tagged *in your game folder* as VOICE.md
+  words it, with a filter chip and no *Manage*; and activation plans warn about a file of the same name
+  ([screenshot](screenshots/p2.5-22/01-game-folder.png)).*
 - P2.5-23 Add-ins against each other: show the active add-ins with their `Priority` from `AddIns.xml`, and warn when
   two add-ins ship a file with the same name. How the game ranks add-ins is checked on the owner's install first;
   DAORework changes no priority until it is.

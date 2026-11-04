@@ -34,7 +34,10 @@ public sealed partial class HandInstalledModRow : ObservableObject
     public partial bool IsSelected { get; set; }
 
     /// <summary>Gets a value indicating whether it can be managed here: not a mod Vortex still manages (ADR-0028 §2).</summary>
-    public bool CanManage => Candidate is not { Kind: AdoptionCandidateKind.VortexMod, DeployedByVortex: true };
+    public bool CanManage => !IsInGameFolder && Candidate is not { Kind: AdoptionCandidateKind.VortexMod, DeployedByVortex: true };
+
+    /// <summary>Gets a value indicating whether it is in the game folder's override (P2.5-22), which DAORework only reads.</summary>
+    public bool IsInGameFolder { get; private init; }
 
     /// <summary>Gets a value indicating whether adopting it needs a name: loose override files have none of their own.</summary>
     public bool NeedsName => Candidate?.Kind == AdoptionCandidateKind.LooseOverrideFiles;
@@ -75,6 +78,18 @@ public sealed partial class HandInstalledModRow : ObservableObject
             $"{kind} · {Counted.Of(candidate.Files.Count, "file")} · {new ByteSize(candidate.SizeBytes)} · in {(candidate.Kind == AdoptionCandidateKind.VortexMod ? "override" : candidate.Path)}",
             notes,
             candidate);
+    }
+
+    public static HandInstalledModRow From(InstallOverrideMod mod)
+    {
+        ArgumentNullException.ThrowIfNull(mod);
+        return new HandInstalledModRow(
+            mod.Name,
+            $"override mod · {Counted.Of(mod.FileCount, "file")} · {new ByteSize(mod.SizeBytes)} · in your game folder",
+            ["The game loads this too. To manage it here, move it to the override folder in your documents folder, then Look again."])
+        {
+            IsInGameFolder = true,
+        };
     }
 
     public static HandInstalledModRow From(AdoptionExclusion exclusion)

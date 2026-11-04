@@ -70,8 +70,13 @@
       </Border>
       <TextBlock Name="AdoptionStatus" Classes="Status" Classes.Error="{Binding Adoption.IsError}" Text="{Binding Adoption.StatusMessage}" TextWrapping="Wrap"
                  IsVisible="{Binding Adoption.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-      <StackPanel Name="SelectionBar" Orientation="Horizontal" Spacing="8"
-                  IsVisible="{Binding Candidates.Count, Converter={x:Static views:CountConverters.IsPositive}}">
+      <StackPanel Name="SelectionBar" Orientation="Horizontal" Spacing="8">
+        <StackPanel.IsVisible>
+          <MultiBinding Converter="{x:Static BoolConverters.And}">
+            <Binding Path="HasManageable" />
+            <Binding Path="!$parent[views:ModsListPanel].((vm:ModsTabViewModel)DataContext).Filter.IsGameFolder" />
+          </MultiBinding>
+        </StackPanel.IsVisible>
         <Button Name="AdoptSelectedButton" Classes="accent" Content="Manage selected" Command="{Binding AdoptSelectedCommand}" />
         <Button Name="SelectAllButton" Content="Select all" Command="{Binding SelectAllCommand}" />
         <Button Name="ClearSelectionButton" Content="Clear" Command="{Binding ClearSelectionCommand}" />

@@ -40,6 +40,7 @@ public static class ModActivationPlanWarnings
         }
 
         warnings.AddRange(plan.CombineProblems);
+        warnings.AddRange(InstallOverrideWarnings.For(plan, nameOf));
         return warnings;
     }
 

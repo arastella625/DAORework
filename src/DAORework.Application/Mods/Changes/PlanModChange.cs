@@ -1,4 +1,5 @@
 using DAORework.Application.Abstractions;
+using DAORework.Application.Mods.Adoption;
 using DAORework.Application.Mods.Combining;
 using DAORework.Core.Common;
 using DAORework.Core.Diagnostics;
@@ -18,13 +19,15 @@ public sealed class PlanModChange
     private readonly IModLibrary _library;
     private readonly IDocumentsScanner _scanner;
     private readonly IApplyJournalStore _journals;
+    private readonly ReadInstallOverride _installOverride;
 
-    public PlanModChange(IDeploymentRecordStore records, IModLibrary library, IDocumentsScanner scanner, IApplyJournalStore journals)
+    public PlanModChange(IDeploymentRecordStore records, IModLibrary library, IDocumentsScanner scanner, IApplyJournalStore journals, ReadInstallOverride installOverride)
     {
         _records = records;
         _library = library;
         _scanner = scanner;
         _journals = journals;
+        _installOverride = installOverride;
     }
 
     public async Task<Result<ModActivationPlan>> ExecuteAsync(PlanModChangeRequest request, CancellationToken cancellationToken = default)
@@ -63,10 +66,13 @@ public sealed class PlanModChange
             return Result.Failure<ModActivationPlan>(error);
         }
 
+        var installOverride = _installOverride.Execute(request.InstallDirectory);
         return ModActivationPlanner.Plan(new PlanInput(record, targets, disk.UnmanagedOverridePaths, disk.Hashes, disk.RegisteredAddInUids)
         {
             Combined = combine.Combined,
             CombineProblems = combine.Problems,
+            InstallOverridePaths = installOverride.IsSuccess ? installOverride.Value.Paths : [],
+            InstallOverrideProblem = installOverride.Error?.Message,
         });
     }
 
