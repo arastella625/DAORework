@@ -18,11 +18,19 @@ public static class ModActivationPlanWarnings
         ArgumentNullException.ThrowIfNull(plan);
         ArgumentNullException.ThrowIfNull(nameOf);
         nameOf = CombinedAware(nameOf);
+        return [.. plan.Conflicts.BetweenMods.Select(c => Shared(c, nameOf)), .. Others(plan, nameOf)];
+    }
+
+    /// <summary>The sentence for one file two mods ship.</summary>
+    internal static string Shared(OverrideConflict c, Func<string, string> nameOf) =>
+        $"{c.FileName} is in {string.Join(", ", c.OtherModIds.Select(nameOf))} and {nameOf(c.Winner.ModId)}; {nameOf(c.Winner.ModId)}'s copy is used{(c.SameContent ? " (identical content)" : string.Empty)}.{Meaning(c)}";
+
+    /// <summary>Every warning that isn't about files two mods ship.</summary>
+    internal static IReadOnlyList<string> Others(ModActivationPlan plan, Func<string, string> nameOf)
+    {
         var conflicts = plan.Conflicts;
-        var warnings = conflicts.BetweenMods.Select(c =>
-                $"{c.FileName} is in {string.Join(", ", c.OtherModIds.Select(nameOf))} and {nameOf(c.Winner.ModId)}; {nameOf(c.Winner.ModId)}'s copy is used{(c.SameContent ? " (identical content)" : string.Empty)}.{Meaning(c)}")
-            .Concat(conflicts.UnmanagedShadows.Select(s =>
-                $"{s.Managed.FileName} from {nameOf(s.Managed.ModId)} has the same name as {string.Join(", ", s.UnmanagedPaths)} in the override folder, which DAORework does not manage; the game picks one."))
+        var warnings = conflicts.UnmanagedShadows.Select(s =>
+                $"{s.Managed.FileName} from {nameOf(s.Managed.ModId)} has the same name as {string.Join(", ", s.UnmanagedPaths)} in the override folder, which DAORework does not manage; the game picks one.")
             .Concat(conflicts.AddInFilesOverridden.Select(a =>
                 $"{a.Override.FileName} from {nameOf(a.Override.ModId)} replaces the add-in file {a.AddInFile.TargetPath} in the game."))
             .ToList();
@@ -35,8 +43,7 @@ public static class ModActivationPlanWarnings
 
         if (plan.MissingRecordedFiles.Count > 0)
         {
-            var count = plan.MissingRecordedFiles.Count;
-            warnings.Add($"{Files(count)} DAORework placed earlier {(count == 1 ? "is" : "are")} missing; any still needed are copied again.");
+            warnings.Add(Missing(plan.MissingRecordedFiles.Count));
         }
 
         warnings.AddRange(plan.CombineProblems);
@@ -44,6 +51,9 @@ public static class ModActivationPlanWarnings
         warnings.AddRange(InstallOverrideWarnings.For(plan, nameOf));
         return warnings;
     }
+
+    internal static string Missing(int count) =>
+        $"{Files(count)} DAORework placed earlier {(count == 1 ? "is" : "are")} missing; any still needed are copied again.";
 
     /// <summary>What sharing the file means, by its kind (P2.5-21); nothing for identical copies.</summary>
     private static string Meaning(OverrideConflict conflict) =>

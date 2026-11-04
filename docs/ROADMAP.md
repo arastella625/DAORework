@@ -444,6 +444,15 @@ decision.
 - P2.6-12 Release 0.5.0: the version, the changelog's section, the audit re-run and this roadmap. The tag is the
   owner's, after the hand checks. Phases 2.6, 2.7 and 2.8 stay open: 0.5.0 carries what is done of each.
 
+**A real library** *(added 2026-11-04, from the owner's first run of 0.5.0 on about 70 mods moved over from Vortex: a
+preview of 63 mods was one paragraph of names and hundreds of warnings, with what stopped it last. Screen tests had two
+made-up mods, which is how it got through.)*
+
+- P2.6-13 A preview reads in one screen: what stops it first, each cause once with what to do, *Leave out* for the mods
+  behind it, warnings grouped by the mods involved, and files that mean nothing to the game left out of the warnings.
+  `RealScaleLibrary` (70 mods, 8,000 files) guards it, and window changes are checked against it from now on
+  ([REVIEWING.md](REVIEWING.md)). *Done ([blocked](screenshots/p2.6-13/01-blocked.png), [ready](screenshots/p2.6-13/02-ready.png)).*
+
 **Not in this phase:** the same as Phase 2.5's.
 
 **Exit gate:**

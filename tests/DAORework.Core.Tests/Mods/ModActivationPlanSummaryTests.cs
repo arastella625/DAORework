@@ -29,12 +29,12 @@ public sealed class ModActivationPlanSummaryTests
     }
 
     [Fact]
-    public void Line_Blocked_SaysNothingChanges()
+    public void Line_Blocked_SaysItCantGoAhead()
     {
         var disk = new Dictionary<string, string> { ["packages/core/override/DAORework/hair/hair.dds"] = "theirs" };
         var plan = ModActivationPlanner.Plan(new PlanInput(DeploymentRecord.Empty, [Mods.Override("hair", "hair.dds")], [], disk, [])).Value;
 
-        Assert.Equal("Blocked: nothing changes until the problems below are resolved.", ModActivationPlanSummary.Line(plan));
+        Assert.Equal("Can't go ahead yet: 1 problem to sort out first.", ModActivationPlanSummary.Line(plan));
     }
 
     [Fact]

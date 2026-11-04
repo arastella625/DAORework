@@ -59,6 +59,8 @@ internal sealed class AppTestHost : IDisposable
 
     public string PreferencesFile => Path.Combine(_appData, "preferences.json");
 
+    public string LibraryDirectory => Path.Combine(_appData, "library");
+
     public T Resolve<T>()
         where T : notnull
         => _services.GetRequiredService<T>();

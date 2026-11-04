@@ -48,6 +48,16 @@ summary follows these rules. The command line keeps its own words; see the end.
 > ⚠ Red Hair and Blue Hair both change hair.dds. Red Hair's is used, since it's lower in the order.
 > [Apply] [Cancel] Details
 
+A preview reads in one screen however big the change is. What stops it comes first, each cause once, with what to do.
+Warnings are grouped by the mods involved, and every file is behind *Show details*.
+> **Turn on 63 mods**
+> Can't go ahead yet: 1 problem to sort out first.
+> ⚠ **Luma runs inside the game, and DAORework can't install that kind of mod yet.**
+> Leave it out for now. It stays in your Library.
+> ⚠ 376 files are in more than one mod. For each one, the mod lower in the order wins.
+> ⚠ JB3 wins over Commoner Clothes: 120 textures and models.
+> [Leave out Luma] [Cancel] Show details
+
 **A success**: what happened, in the past tense, with the thing's name. Optionally *Undo*.
 > Turned on Blue Hair. · Undo
 

@@ -23,10 +23,7 @@ public static class ModActivationPlanner
         }
 
         var state = new PlanState(input);
-        state.Blockers.AddRange(conflicts.PathCollisions.Select(c => new PlanBlocker(
-            PlanBlockerKind.PathCollision,
-            c.TargetPath,
-            $"{string.Join(" and ", c.Files.Select(f => f.ModId).Distinct(_paths))} would both write {c.TargetPath}.")));
+        state.Blockers.AddRange(conflicts.PathCollisions.Select(PathCollisionBlocker));
 
         state.Blockers.AddRange(input.Mods.Where(m => m.Kind == ModKind.GameProgram).Select(m => GameProgramBlocker(m, input.Current)));
 
@@ -64,6 +61,17 @@ public static class ModActivationPlanner
         });
     }
 
+    /// <summary>Leaving out every mod but the first clears it, whichever of them the player picked last.</summary>
+    private static PlanBlocker PathCollisionBlocker(PathCollision collision)
+    {
+        var mods = collision.Files.Select(f => f.ModId).Distinct(_paths).ToList();
+        return new PlanBlocker(PlanBlockerKind.PathCollision, collision.TargetPath, $"{string.Join(" and ", mods)} would both write {collision.TargetPath}.")
+        {
+            ModIds = mods,
+            LeaveOutModIds = [.. mods.Skip(1)],
+        };
+    }
+
     /// <summary>Says what to do when there is something to do: a copy added as an override mod is still on, or the mod is DXVK.</summary>
     private static PlanBlocker GameProgramBlocker(LibraryMod mod, DeploymentRecord current)
     {
@@ -75,7 +83,11 @@ public static class ModActivationPlanner
         return new PlanBlocker(
             PlanBlockerKind.GameProgramNotInstalled,
             mod.Id,
-            $"{mod.Name} runs inside the game, and DAORework can't install that kind of mod yet. Nothing was changed, and it stays in your Library.{next}");
+            $"{mod.Name} runs inside the game, and DAORework can't install that kind of mod yet. Nothing was changed, and it stays in your Library.{next}")
+        {
+            ModIds = [mod.Id],
+            LeaveOutModIds = [mod.Id],
+        };
     }
 
     /// <summary>What the record says once the plan is applied: every deployed file with the hash it will have, and the add-ins DAORework added.</summary>
@@ -103,7 +115,7 @@ public static class ModActivationPlanner
             }
             else
             {
-                state.Block(PlanBlockerKind.UnmanagedFileInTheWay, file.TargetPath, $"{file.TargetPath} is already there and DAORework did not put it there; it is never overwritten.");
+                state.Block(PlanBlockerKind.UnmanagedFileInTheWay, file.TargetPath, $"{file.TargetPath} is already there and DAORework did not put it there; it is never overwritten.", file.ModId);
             }
 
             return;
@@ -154,7 +166,7 @@ public static class ModActivationPlanner
         {
             if (registered.Contains(mod.AddInUid!))
             {
-                state.Block(PlanBlockerKind.AddInAlreadyRegistered, mod.AddInUid!, $"The add-in {mod.AddInUid} is already registered in AddIns.xml, installed some other way.");
+                state.Block(PlanBlockerKind.AddInAlreadyRegistered, mod.AddInUid!, $"The add-in {mod.AddInUid} is already registered in AddIns.xml, installed some other way.", mod.Id);
             }
             else
             {
@@ -191,5 +203,9 @@ public static class ModActivationPlanner
         public string? HashOnDisk(string path) => _disk.GetValueOrDefault(path);
 
         public void Block(PlanBlockerKind kind, string subject, string message) => Blockers.Add(new PlanBlocker(kind, subject, message));
+
+        /// <summary>A blocker that leaving <paramref name="modId"/> out of the plan clears.</summary>
+        public void Block(PlanBlockerKind kind, string subject, string message, string modId) =>
+            Blockers.Add(new PlanBlocker(kind, subject, message) { ModIds = [modId], LeaveOutModIds = [modId] });
     }
 }

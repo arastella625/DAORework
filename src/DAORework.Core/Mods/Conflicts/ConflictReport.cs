@@ -18,9 +18,10 @@ public sealed record ConflictReport(
 
     /// <summary>
     /// Gets the conflicts worth telling a player about: those between mods. One mod holding a name in several folders, such
-    /// as a <c>README.txt</c> beside each option, still deploys one copy, but there is nothing to choose.
+    /// as a <c>README.txt</c> beside each option, still deploys one copy, but there is nothing to choose. Nor is there for
+    /// a file that means nothing to the game, however many mods hold one.
     /// </summary>
-    public IReadOnlyList<OverrideConflict> BetweenMods => [.. OverrideConflicts.Where(c => c.OtherModIds.Count > 0)];
+    public IReadOnlyList<OverrideConflict> BetweenMods => [.. OverrideConflicts.Where(c => c.OtherModIds.Count > 0 && !NonModFiles.Is(c.FileName))];
 
     /// <summary>Gets a value indicating whether the set cannot be deployed as it is (two mods writing the same file outside override).</summary>
     public bool IsBlocked => PathCollisions.Count > 0;

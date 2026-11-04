@@ -15,6 +15,6 @@ public static class InstallOverrideOverlap
         ArgumentNullException.ThrowIfNull(deploy);
         ArgumentNullException.ThrowIfNull(installOverridePaths);
         var names = installOverridePaths.Select(p => p[(p.LastIndexOfAny(['/', '\\']) + 1)..]).ToHashSet(StringComparer.OrdinalIgnoreCase);
-        return [.. deploy.Where(f => f.IsOverride && names.Contains(f.FileName))];
+        return [.. deploy.Where(f => f.IsOverride && names.Contains(f.FileName) && !NonModFiles.Is(f.FileName))];
     }
 }

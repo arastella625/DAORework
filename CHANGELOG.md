@@ -6,6 +6,11 @@ All notable changes to DAORework are recorded here. The format follows
 
 ## [Unreleased]
 
+### Changed
+- A preview reads in one screen however many mods it covers (P2.6-13). What stops it comes first, each cause once with what to do, instead of last in a list of hundreds of files. Warnings are grouped by the mods involved, identical copies aren't mentioned, and every file is behind *Show details*, which scrolls inside the preview. The title gives a count once it would be longer than a line.
+- *Leave out* takes the mods that stop a change out of it, so the rest can go ahead (P2.6-13). They stay in your Library, off.
+- Vortex's folder markers, Mac leftovers, readmes and other documents no longer count as files mods share (P2.6-13), in a preview, on *Combined files* or on the command line.
+
 ## [0.5.0] - 2026-11-04
 
 Moving over from Vortex, and seeing more of what your mods share. *Move from Vortex* brings the mods Vortex manages into DAORework a step at a time. *New downloads*, if you turn it on, offers the mods you download, and *Combined files* now looks inside `.erf` archives. Your documents folder is found on other drives too. Mods that run inside the game, such as DAO Lib and Luma, are recognised instead of half-installed, though DAORework can't install them yet. Nothing changes in how other mods are installed, backed up or undone.

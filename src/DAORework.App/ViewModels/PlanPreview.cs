@@ -5,16 +5,21 @@ using DAORework.Core.Mods.Planning;
 namespace DAORework.App.ViewModels;
 
 /// <summary>
-/// A mod plan as the window shows it (P2.5-18): a title, one sentence saying what it does, its warnings and blockers
-/// in full, and the file-by-file detail behind <i>Show details</i>. Mods are named by their names, from
-/// <see cref="NameOf"/>; the command line keeps their ids.
+/// A mod plan as the window shows it (P2.5-18): a title, one sentence saying what it does, what stops it and what to do,
+/// a few warnings however big the plan is, and every file behind <i>Show details</i>. Mods are named by their names,
+/// from <see cref="NameOf"/>; the command line keeps their ids.
 /// </summary>
 public sealed partial class PlanPreview : ObservableObject
 {
+    private const int MaxNamesInTitle = 3;
+
     /// <summary>Gets or sets how a mod id is shown; an id it does not know is shown as it is.</summary>
     public Func<string, string> NameOf { get; set; } = id => id;
 
-    /// <summary>Gets the warnings and blockers, always shown.</summary>
+    /// <summary>Gets what stops the plan and what to do about it, shown first.</summary>
+    public ObservableCollection<PlanProblem> Problems { get; } = [];
+
+    /// <summary>Gets the warnings, always shown, and grouped once a plan has many.</summary>
     public ObservableCollection<string> Notes { get; } = [];
 
     /// <summary>Gets the plan's full text, shown on <i>Show details</i>.</summary>
@@ -29,6 +34,19 @@ public sealed partial class PlanPreview : ObservableObject
     [ObservableProperty]
     public partial bool ShowDetails { get; set; }
 
+    /// <summary>A preview's title: the mods by name while that fits on a line, then how many. <i>Show details</i> names them all.</summary>
+    public static string TitleFor(string verb, IReadOnlyList<string> names)
+    {
+        ArgumentNullException.ThrowIfNull(names);
+        var list = string.Join(", ", names);
+        return names.Count switch
+        {
+            1 => $"{verb} {list}",
+            <= MaxNamesInTitle => $"{verb} {names.Count} mods: {list}",
+            _ => $"{verb} {names.Count} mods",
+        };
+    }
+
     /// <param name="title">What the plan is for, such as "Activate Eyes".</param>
     /// <param name="plan">The plan.</param>
     /// <param name="summary">A sentence to show instead of the plan's own, such as why an order changes nothing.</param>
@@ -38,14 +56,14 @@ public sealed partial class PlanPreview : ObservableObject
         Clear();
         Title = title;
         Summary = summary ?? ModActivationPlanSummary.Line(plan, NameOf);
-        foreach (var warning in ModActivationPlanWarnings.For(plan, NameOf))
+        foreach (var problem in PlanProblems.For(plan, NameOf))
         {
-            Notes.Add(warning);
+            Problems.Add(problem);
         }
 
-        foreach (var blocker in plan.Blockers)
+        foreach (var note in PlanNotes.For(plan, NameOf))
         {
-            Notes.Add($"Cannot apply: {blocker.Message}");
+            Notes.Add(note);
         }
 
         foreach (var line in ModActivationPlanText.Render(plan, nameOf: NameOf))
@@ -59,6 +77,7 @@ public sealed partial class PlanPreview : ObservableObject
         Title = null;
         Summary = null;
         ShowDetails = false;
+        Problems.Clear();
         Notes.Clear();
         Lines.Clear();
     }

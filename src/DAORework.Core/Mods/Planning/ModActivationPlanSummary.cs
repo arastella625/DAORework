@@ -14,7 +14,7 @@ public static class ModActivationPlanSummary
         nameOf ??= id => id;
         if (plan.IsBlocked)
         {
-            return "Blocked: nothing changes until the problems below are resolved.";
+            return $"Can't go ahead yet: {PlanWords.Count(PlanProblems.For(plan, nameOf).Count, "problem", "problems")} to sort out first.";
         }
 
         if (plan.IsEmpty)
@@ -33,7 +33,7 @@ public static class ModActivationPlanSummary
         Add(parts, added, "adds", files: false, added == 1 ? " add-in to AddIns.xml" : " add-ins to AddIns.xml");
         Add(parts, removed, "removes", files: false, removed == 1 ? " add-in from AddIns.xml" : " add-ins from AddIns.xml");
 
-        var sentence = Capitalize(Join(parts)) + ".";
+        var sentence = Capitalize(PlanWords.List(parts)) + ".";
         if (plan.BytesToWrite.Bytes > 0)
         {
             sentence += $" Writes {plan.BytesToWrite}.";
@@ -42,7 +42,7 @@ public static class ModActivationPlanSummary
         foreach (var combined in plan.Combined)
         {
             var mods = combined.FromModIds.Distinct(StringComparer.OrdinalIgnoreCase).Select(nameOf).ToList();
-            sentence += $" Combines {combined.FileName} from {Join(mods)}: {combined.EntryCount} entries.";
+            sentence += $" Combines {combined.FileName} from {PlanWords.List(mods)}: {combined.EntryCount} entries.";
         }
 
         return sentence;
@@ -55,12 +55,6 @@ public static class ModActivationPlanSummary
             parts.Add(files ? $"{verb} {ModActivationPlanWarnings.Files(count)}{suffix}" : $"{verb} {count}{suffix}");
         }
     }
-
-    private static string Join(List<string> parts) => parts.Count switch
-    {
-        1 => parts[0],
-        _ => $"{string.Join(", ", parts.Take(parts.Count - 1))} and {parts[^1]}",
-    };
 
     private static string Capitalize(string text) => char.ToUpperInvariant(text[0]) + text[1..];
 }
