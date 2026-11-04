@@ -63,7 +63,7 @@ public static class ModActivationPlanWarnings
     {
         var staying = plan.TargetModIds.ToHashSet(StringComparer.OrdinalIgnoreCase);
         var count = plan.Operations.Count(o => o.Action == PlanAction.Delete && staying.Contains(o.ModId) && NonModFiles.Is(o.TargetPath));
-        return count == 0 ? null : $"Takes {Files(count)} that mean nothing to the game, such as readmes, out of your game. Your Library keeps {(count == 1 ? "it" : "them")}.";
+        return count == 0 ? null : $"Takes {Files(count)} that {(count == 1 ? "means" : "mean")} nothing to the game, such as readmes, out of your game. Your Library keeps {(count == 1 ? "it" : "them")}.";
     }
 
     internal static string Missing(int count) =>

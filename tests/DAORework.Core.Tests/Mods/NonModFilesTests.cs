@@ -56,7 +56,7 @@ public sealed class NonModFilesTests
         var plan = ModActivationPlanner.Plan(new PlanInput(current, [mod], [], new Dictionary<string, string> { [target] = "2" }, [])).Value;
 
         Assert.Contains(plan.Operations, o => o.Action == PlanAction.Delete && o.TargetPath == target);
-        Assert.Contains("Takes 1 file that mean", Assert.Single(PlanNotes.For(plan, id => id)), StringComparison.Ordinal);
+        Assert.Contains("Takes 1 file that means nothing", Assert.Single(PlanNotes.For(plan, id => id)), StringComparison.Ordinal);
     }
 
     [Fact]
