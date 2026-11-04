@@ -51,6 +51,10 @@ public sealed class LibraryScreenTests : IDisposable
             row.Warning);
         Assert.Equal("Add mods", Assert.Single(_host.Picker.Titles));
         Assert.False(Panel(window).FindControl<TextBlock>("LibraryEmpty")!.IsVisible);
+        viewModel.ModsTab.ModPage.OpenCommand.Execute(row.PageLink);
+        Assert.Equal("https://www.nexusmods.com/dragonage/mods/664", _host.UriLauncher.LastUri?.AbsoluteUri);
+        viewModel.ModsTab.ModPage.OpenCommand.Execute("calc.exe");
+        Assert.True(viewModel.ModsTab.ModPage.IsError);
         ShowPanel(window);
         Screenshots.Save(window, "13-library");
     }

@@ -20,6 +20,9 @@
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>
+            <Button Content="Open the mod's page" HorizontalAlignment="Left" CommandParameter="{Binding PageLink}"
+                    IsVisible="{Binding PageLink, Converter={x:Static ObjectConverters.IsNotNull}}"
+                    Command="{Binding $parent[views:ModsListPanel].((vm:ModsTabViewModel)DataContext).ModPage.OpenCommand}" />
             <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding NeedsName}">
               <TextBlock VerticalAlignment="Center" Text="Name them" />
               <TextBox Name="LooseFilesName" Width="240" PlaceholderText="a name for these files"

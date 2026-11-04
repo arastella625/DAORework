@@ -26,6 +26,9 @@ public sealed partial class HandInstalledModRow : ObservableObject
 
     public AdoptionCandidate? Candidate { get; }
 
+    /// <summary>Gets the page of the known item this is (ADR-0034 §7).</summary>
+    public string? PageLink => Candidate?.CatalogItem?.Source;
+
     /// <summary>Gets a value indicating whether this is an add-in found in the game, rather than override files.</summary>
     public bool IsAddIn => Candidate?.Kind == AdoptionCandidateKind.AddIn;
 

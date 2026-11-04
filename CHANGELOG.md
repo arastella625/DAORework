@@ -11,6 +11,7 @@ All notable changes to DAORework are recorded here. The format follows
 
 - Mods in your game folder's own override are listed (P2.5-22): older guides put mods in `<game folder>\packages\core\override`, which the game loads too. *Found in your game* now shows what is there, tagged *in your game folder*, with a filter of its own, and says how to bring it under management. DAORework only reads that folder. A preview warns when a mod you turn on has a file of the same name there, since the game uses one copy, and the command line's plan says the same.
 - *Check the game* names programs in the game's `bin_ship` folder that DAORework did not place (P2.8-03, `DAO_INSTALL_PROGRAM_FOUND`), such as a `dinput8.dll` put there by hand. It only reports them.
+- *Open the mod's page* (P3-11, [ADR-0034](docs/adr/0034-picking-up-new-downloads.md)): a mod DAORework knows, in your Library or found in your game, has a button that opens its page in your default browser. Only `https` links open.
 
 ### Changed
 - `DAORework.exe` and `dao.exe` are no longer compressed inside (P2.6-07), since antivirus programs treat a compressed program like a packed one and Nexus holds every flagged upload for a check by hand. Each file is larger; the download grows much less, since the zip compresses them anyway. Nothing changes in how they work.

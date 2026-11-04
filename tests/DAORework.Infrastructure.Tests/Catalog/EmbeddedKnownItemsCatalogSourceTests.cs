@@ -41,6 +41,13 @@ public sealed class EmbeddedKnownItemsCatalogSourceTests
         Assert.Null(laa.WhenMissing);
     }
 
+    /// <summary>Only https links open (ADR-0034 §7), so a source that is anything else would be a dead button.</summary>
+    [Fact]
+    public void Load_TheShippedCatalog_EverySourceIsHttps()
+    {
+        Assert.All(new EmbeddedKnownItemsCatalogSource().Load().Value.Items, item => Assert.StartsWith("https://", item.Source, StringComparison.Ordinal));
+    }
+
     /// <summary>The UIDs read out of the mods' own .dazip manifests (catalog/README.md lists the downloads and their hashes).</summary>
     [Theory]
     [InlineData("qwinn-fixpack", "qwinn_fixpack_3")]

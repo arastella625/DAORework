@@ -50,6 +50,7 @@ public static class DependencyInjection
         services.AddSingleton<IFingerprintMatcher, LargeAddressAwareMatcher>();
 
         services.AddSingleton<ReadInstallOverride>();
+        services.AddSingleton<OpenModPage>();
         services.AddSingleton<RunDiagnostics>();
         services.AddSingleton<InstallationProbe>();
         services.AddSingleton<DetectInstallations>();
