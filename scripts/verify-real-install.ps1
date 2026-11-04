@@ -78,7 +78,8 @@ $detect = Dao @('detect')
 Check 'detect finds the install automatically' ($detect -match [regex]::Escape($InstallDir)) (($detect -split "\r?\n" | Where-Object { $_ -match '^\[' }) -join '; ')
 $manual = Dao @('detect', '--path', $InstallDir)
 Check 'detect --path accepts the install folder' ($manual -match [regex]::Escape($InstallDir))
-Check 'detect lists an existing documents folder' ($detect -match '\[KnownFolder\] .*\(exists') (($detect -split "\r?\n" | Where-Object { $_ -match '^\s+\[(KnownFolder|UserProfile|OneDrive)\]' }) -join '; ')
+$documentsLines = @($detect -split "\r?\n" | Where-Object { $_ -match '^\s+\[(KnownFolder|UserProfile|OneDrive|Profile|DriveSearch)\]' })
+Check 'detect lists an existing documents folder' (@($documentsLines -match '\(exists').Count -gt 0) ($documentsLines -join '; ')
 
 Write-Host "== Creating profile '$ProfileName'" -ForegroundColor Cyan
 Dao @('init', $ProfileName) | Out-Null
@@ -205,7 +206,8 @@ function New-TestZip([string]$path, [hashtable]$entries) {
     try { foreach ($name in $entries.Keys) { $w = [System.IO.StreamWriter]::new($zip.CreateEntry($name).Open()); $w.Write($entries[$name]); $w.Dispose() } }
     finally { $zip.Dispose() }
 }
-$documents = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'BioWare\Dragon Age'
+# The folder detection gave the new profile: the real one, wherever it is, not only where Windows says.
+$documents = ($profileJson | ConvertFrom-Json).UserDocumentsDirectory
 $docsBefore = if (Test-Path $documents) { Get-ChildItem $documents -Recurse -File | ForEach-Object { "$($_.FullName)|$($_.Length)" } } else { @() }
 $libDir = Join-Path $env:LOCALAPPDATA 'DAORework\library'
 $tempMods = Join-Path ([System.IO.Path]::GetTempPath()) ("DAORework-verify-mods-" + [guid]::NewGuid().ToString('N'))

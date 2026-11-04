@@ -79,5 +79,5 @@ public sealed class DetectDocumentsFoldersTests
     }
 
     private Task<Core.Common.Result<DocumentsDetection>> Detect(FakeKnownFolders knownFolders) =>
-        new DetectDocumentsFolders(_fileSystem, knownFolders).ExecuteAsync(new DetectDocumentsFoldersRequest());
+        TestDocumentsDetection.Create(_fileSystem, knownFolders).ExecuteAsync(new DetectDocumentsFoldersRequest());
 }

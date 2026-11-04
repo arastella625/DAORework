@@ -1,5 +1,6 @@
 using DAORework.Application;
 using DAORework.Application.Diagnostics;
+using DAORework.Application.Documents;
 using DAORework.Application.Installations;
 using DAORework.Application.Launching;
 using DAORework.Application.Mods;
@@ -25,6 +26,7 @@ public sealed class DependencyInjectionTests : IDisposable
     [Theory]
     [InlineData(typeof(DetectInstallations))]
     [InlineData(typeof(CreateProfile))]
+    [InlineData(typeof(DetectDocumentsFolders))]
     [InlineData(typeof(GetProfile))]
     [InlineData(typeof(ListProfiles))]
     [InlineData(typeof(UpdateLaunchTarget))]
