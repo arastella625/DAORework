@@ -10,6 +10,10 @@ already on your machine. See [docs/LEGAL_BOUNDARIES.md](docs/LEGAL_BOUNDARIES.md
 
 ## Download
 
+**A new version may be held on Nexus for a day or two.** DAORework contains programs, so Nexus staff check each new
+upload by hand before it can be downloaded there. The same zip is on the Releases page straight away, and you can check
+it as below.
+
 Windows builds are on the [Releases page](https://github.com/arastella625/DAORework/releases) and on
 [Nexus Mods](https://www.nexusmods.com/dragonage/mods/7083), and the project
 website, <https://daorework.dilly-world.net/>, lists each release's checksum. Unzip anywhere and run
