@@ -28,6 +28,8 @@ public static class ModActivationPlanner
             c.TargetPath,
             $"{string.Join(" and ", c.Files.Select(f => f.ModId).Distinct(_paths))} would both write {c.TargetPath}.")));
 
+        state.Blockers.AddRange(input.Mods.Where(m => m.Kind == ModKind.GameProgram).Select(m => GameProgramBlocker(m, input.Current)));
+
         // A path collision leaves two files on one path; it already blocks the plan, so each path is planned once.
         var desired = conflicts.Deploy.DistinctBy(f => f.TargetPath, _paths).ToList();
         foreach (var file in desired)
@@ -59,6 +61,20 @@ public static class ModActivationPlanner
             InstallOverrideShadows = InstallOverrideOverlap.Find(conflicts.Deploy, input.InstallOverridePaths),
             InstallOverrideProblem = input.InstallOverrideProblem,
         });
+    }
+
+    /// <summary>Says what to do when there is something to do: a copy added as an override mod is still on, or the mod is DXVK.</summary>
+    private static PlanBlocker GameProgramBlocker(LibraryMod mod, DeploymentRecord current)
+    {
+        var next = current.ActiveModIds.Contains(mod.Id, _paths)
+            ? $" Turn {mod.Name} off first: it was added before DAORework knew this, and its files do nothing where they are."
+            : mod.Files.Any(f => f.RelativePath.EndsWith("d3d9.dll", StringComparison.OrdinalIgnoreCase))
+                ? " For DXVK, use: fixes apply dxvk <release>."
+                : string.Empty;
+        return new PlanBlocker(
+            PlanBlockerKind.GameProgramNotInstalled,
+            mod.Id,
+            $"{mod.Name} runs inside the game, and DAORework can't install that kind of mod yet. Nothing was changed, and it stays in your Library.{next}");
     }
 
     /// <summary>What the record says once the plan is applied: every deployed file with the hash it will have, and the add-ins DAORework added.</summary>

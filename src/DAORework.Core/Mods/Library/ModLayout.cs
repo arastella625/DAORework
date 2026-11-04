@@ -7,7 +7,8 @@ namespace DAORework.Core.Mods.Library;
 /// Maps a library mod's files to where they go in the documents folder (ADR-0012). Override files go to DAORework's
 /// own subfolder, <c>packages/core/override/DAORework/&lt;modId&gt;/</c>; an add-in's <c>Contents</c> goes where the
 /// game's DAUpdater would put it, except that its override files also go to the owned subfolder. Files outside an
-/// add-in's <c>Contents</c> (its <c>Manifest.xml</c>, a readme) are not deployed.
+/// add-in's <c>Contents</c> (its <c>Manifest.xml</c>, a readme) are not deployed. A mod that runs inside the game has
+/// nothing here: its files go to the install folder or nowhere, never to <c>override</c> (ADR-0033 §1).
 /// </summary>
 public static class ModLayout
 {
@@ -31,7 +32,12 @@ public static class ModLayout
                     $"Mod '{mod.Id}' has a file path that would leave its folder: '{file.RelativePath}'."));
             }
 
-            var target = mod.Kind == ModKind.Override ? Owned(mod.Id, file.RelativePath) : AddInTarget(mod.Id, file.RelativePath);
+            var target = mod.Kind switch
+            {
+                ModKind.Override => Owned(mod.Id, file.RelativePath),
+                ModKind.AddIn => AddInTarget(mod.Id, file.RelativePath),
+                _ => null,
+            };
             if (target is not null)
             {
                 files.Add(new DeployedFile(mod.Id, file, target, target.StartsWith(OverridePrefix, StringComparison.OrdinalIgnoreCase)));
