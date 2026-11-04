@@ -1,6 +1,8 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Avalonia.LogicalTree;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using DAORework.App.Views;
 using Xunit;
@@ -52,10 +54,29 @@ public sealed class RealScalePreviewTests : IDisposable
         Assert.False(activation.ApplyCommand.CanExecute(null));
 
         ModsTabScenario.Show<LibraryPanel>(window);
-        var panel = window.GetLogicalDescendants().OfType<LibraryPanel>().Distinct().Single();
-        var border = panel.GetLogicalDescendants().OfType<Border>().First(b => b.Name == "PlanPreview");
-        Assert.InRange(border.Bounds.Height, 1, panel.FindAncestorOfType<ScrollViewer>()!.Viewport.Height);
         Screenshots.Save(window, "real-scale-01-blocked-preview");
+    }
+
+    [AvaloniaFact]
+    public async Task TurnOn_FromFarDownTheList_BringsTheWholePreviewAndItsButtonsIntoView()
+    {
+        var (window, viewModel) = await _scenario.OpenAsync();
+        var panel = window.GetLogicalDescendants().OfType<LibraryPanel>().Distinct().Single();
+        window.UpdateLayout();
+        var scroller = panel.FindAncestorOfType<ScrollViewer>()!;
+        scroller.Offset = new Vector(0, scroller.Extent.Height);
+        window.UpdateLayout();
+
+        await RealScaleScenario.TurnOnEverythingAsync(viewModel);
+        window.UpdateLayout();
+        Dispatcher.UIThread.RunJobs();
+        window.UpdateLayout();
+
+        var border = panel.GetLogicalDescendants().OfType<Border>().First(b => b.Name == "PlanPreview");
+        var top = border.TranslatePoint(default, scroller)!.Value.Y;
+        Assert.InRange(top, 0, scroller.Viewport.Height);
+        Assert.InRange(top + border.Bounds.Height, 0, scroller.Viewport.Height);
+        Screenshots.Save(window, "real-scale-03-preview-in-view");
     }
 
     [AvaloniaFact]
