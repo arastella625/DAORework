@@ -20,6 +20,7 @@ All notable changes to DAORework are recorded here. The format follows
 - `DAORework.exe` and `dao.exe` are no longer compressed inside (P2.6-07), since antivirus programs treat a compressed program like a packed one and Nexus holds every flagged upload for a check by hand. Each file is larger; the download grows much less, since the zip compresses them anyway. Nothing changes in how they work.
 
 ### Fixed
+- A plan and *Combined files* no longer warn about one mod sharing a file with itself. A mod that keeps a `README.txt` beside each option used to list its own name over and over, and a file two mods share now names each mod once.
 - `detect` no longer says the game is using the Documents folder Windows reports when your folder is somewhere else (P2.6-01). DAORework can't tell where the game looks, so it now says only which folder a new profile uses.
 - DXVK is no longer suggested on Linux, where Proton has its own way of running the game (P2.7-06). One already in the game folder is still recognised and can be removed.
 - On Linux, a copy of the game that isn't Steam's now says to start it from your launcher, instead of trying to run a `.exe` (P2.7-05, `DAO_LAUNCH_NOT_SUPPORTED`). Messages about opening a link no longer mention Windows.

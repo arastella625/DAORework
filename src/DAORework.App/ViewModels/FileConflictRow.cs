@@ -18,7 +18,7 @@ public sealed record FileConflictRow(string FileName, string Winner, string Deta
         ArgumentNullException.ThrowIfNull(conflict);
         ArgumentNullException.ThrowIfNull(names);
         string Name(string id) => names.TryGetValue(id, out var name) ? name : id;
-        var losers = string.Join(", ", conflict.Overridden.Select(f => Name(f.ModId)).Distinct(StringComparer.Ordinal));
+        var losers = string.Join(", ", conflict.OtherModIds.Select(Name));
         var detail = conflict.SameContent
             ? $"Also in {losers}, with the same content, so the order changes nothing for it."
             : $"Also in {losers}, whose copy is not used.{(SharedFileMeaning.For(conflict.FileName) is { } meaning ? " " + meaning : string.Empty)}";

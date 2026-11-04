@@ -203,7 +203,7 @@ public sealed partial class LoadOrderViewModel : PageViewModel
 
         ShowCombined(plan?.Combined ?? [], id => names is not null && names.TryGetValue(id, out var name) ? name : id);
         Conflicts.Clear();
-        foreach (var conflict in plan?.Conflicts.OverrideConflicts ?? [])
+        foreach (var conflict in plan?.Conflicts.BetweenMods ?? [])
         {
             Conflicts.Add(FileConflictRow.From(conflict, names ?? new Dictionary<string, string>()));
         }
