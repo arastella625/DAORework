@@ -35,7 +35,7 @@ The "remaster" succeeds or fails on the quality of layers 1 to 3.
 ## 2. Scope
 
 ### In scope
-- Windows desktop (Win10 and Win11, x64) first. Keep the Core and Application layers portable so Linux/Proton support is possible later.
+- Windows desktop (Win10 and Win11, x64) first. Keep the Core and Application layers portable so Linux/Proton support is possible later; [ADR-0031](adr/0031-steam-on-linux-through-proton.md) proposes how, for Steam's copy.
 - The Steam, GOG and EA App distributions, plus manual installs.
 - Reading from the user's install and documents folders. Writing only to DAORework's own app-data folder and, in Phase 2+, to the user's mod folders, always behind backup and rollback.
 
