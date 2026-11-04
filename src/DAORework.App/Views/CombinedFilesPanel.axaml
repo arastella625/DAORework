@@ -26,6 +26,21 @@
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>
+      <ItemsControl Name="PackedFiles" ItemsSource="{Binding PackedConflicts}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:FileConflictRow">
+            <Border Padding="0,10" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <StackPanel Spacing="2">
+                  <TextBlock Classes="Mono" FontWeight="SemiBold" Text="{Binding FileName}" />
+                  <TextBlock Classes="Secondary" TextWrapping="Wrap" Text="{Binding Detail}" />
+                </StackPanel>
+                <TextBlock Grid.Column="1" Classes="Warning" Text="{Binding Winner}" VerticalAlignment="Top" />
+              </Grid>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
       <ItemsControl Name="SharedFiles" ItemsSource="{Binding Conflicts}">
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="vm:FileConflictRow">

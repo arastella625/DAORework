@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DAORework.Application.Mods.Apply;
 using DAORework.Application.Mods.Changes;
-using DAORework.Application.Mods.Library;
 using DAORework.Application.Profiles;
 using DAORework.Core.Mods.Combining;
 using DAORework.Core.Mods.Planning;
@@ -18,20 +17,22 @@ namespace DAORework.App.ViewModels;
 /// </summary>
 public sealed partial class LoadOrderViewModel : PageViewModel
 {
+    private const int MaxPackedRows = 50;
+
     private readonly GetProfile _getProfile;
     private readonly PlanModChange _plan;
     private readonly ApplyModPlan _apply;
-    private readonly ListLibrary _listLibrary;
+    private readonly ReadLoadOrderDetails _details;
     private IReadOnlyList<string> _saved = [];
     private (string Documents, ModActivationPlan Plan)? _pending;
 
-    public LoadOrderViewModel(GetProfile getProfile, PlanModChange plan, ApplyModPlan apply, ListLibrary listLibrary, ILogger<LoadOrderViewModel> logger)
+    public LoadOrderViewModel(GetProfile getProfile, PlanModChange plan, ApplyModPlan apply, ReadLoadOrderDetails details, ILogger<LoadOrderViewModel> logger)
         : base(logger)
     {
         _getProfile = getProfile;
         _plan = plan;
         _apply = apply;
-        _listLibrary = listLibrary;
+        _details = details;
     }
 
     /// <summary>Gets or sets what runs after a new order was applied, such as reading the other panels again.</summary>
@@ -39,6 +40,9 @@ public sealed partial class LoadOrderViewModel : PageViewModel
 
     /// <summary>Gets the active mods, lowest priority first, in the order being edited.</summary>
     public ObservableCollection<LoadOrderRow> Order { get; } = [];
+
+    /// <summary>Gets what more than one active mod holds inside an archive (P3-07). The game's choice there isn't known, so no mod is said to win.</summary>
+    public ObservableCollection<FileConflictRow> PackedConflicts { get; } = [];
 
     /// <summary>Gets the override files more than one mod in <see cref="Order"/> ships.</summary>
     public ObservableCollection<FileConflictRow> Conflicts { get; } = [];
@@ -164,8 +168,10 @@ public sealed partial class LoadOrderViewModel : PageViewModel
             _saved = plan.TargetModIds;
         }
 
-        var names = (await _listLibrary.ExecuteAsync(cancellationToken)).Value.ToDictionary(e => e.Mod.Id, e => e.Mod.Name, StringComparer.OrdinalIgnoreCase);
+        var details = await _details.ExecuteAsync(plan.TargetModIds, cancellationToken);
+        var names = details.Names;
         Show(plan.TargetModIds.Select((id, i) => new LoadOrderRow(id, names.TryGetValue(id, out var name) ? name : id, i + 1)).ToList(), plan, names);
+        ShowPacked(details);
         IsReordered = !plan.TargetModIds.SequenceEqual(_saved, StringComparer.OrdinalIgnoreCase);
         if (IsReordered)
         {
@@ -178,7 +184,7 @@ public sealed partial class LoadOrderViewModel : PageViewModel
         }
     }
 
-    private void ShowPlan(ModActivationPlan plan, Dictionary<string, string> names)
+    private void ShowPlan(ModActivationPlan plan, IReadOnlyDictionary<string, string> names)
     {
         Preview.NameOf = id => names.TryGetValue(id, out var name) ? name : id;
         Preview.Show(
@@ -187,7 +193,7 @@ public sealed partial class LoadOrderViewModel : PageViewModel
             plan.IsEmpty && !plan.IsBlocked ? "No file changes: none of these mods ships a file another one does, so their order makes no difference." : null);
     }
 
-    private void Show(IReadOnlyList<LoadOrderRow> rows, ModActivationPlan? plan, Dictionary<string, string>? names = null)
+    private void Show(IReadOnlyList<LoadOrderRow> rows, ModActivationPlan? plan, IReadOnlyDictionary<string, string>? names = null)
     {
         Order.Clear();
         foreach (var row in rows)
@@ -203,6 +209,21 @@ public sealed partial class LoadOrderViewModel : PageViewModel
         }
 
         IsReordered = false;
+    }
+
+    private void ShowPacked(LoadOrderDetails details)
+    {
+        PackedConflicts.Clear();
+        foreach (var conflict in details.Packed.Take(MaxPackedRows))
+        {
+            var mods = string.Join(", ", conflict.ModIds.Select(id => details.Names.TryGetValue(id, out var name) ? name : id));
+            PackedConflicts.Add(new FileConflictRow(conflict.FileName, "Inside an archive", $"In {mods}. The game uses one copy, and DAORework can't tell which."));
+        }
+
+        if (details.Packed.Count > MaxPackedRows)
+        {
+            PackedConflicts.Add(new FileConflictRow($"{details.Packed.Count - MaxPackedRows} more", "Inside an archive", "More files these mods share inside their archives."));
+        }
     }
 
     private void ShowCombined(IReadOnlyList<CombinedOverride> combined, Func<string, string> nameOf)
