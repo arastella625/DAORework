@@ -250,8 +250,13 @@ Check 'launch NopeVerify created no profile file' (-not (Test-Path (Join-Path $p
 if (-not $SkipLaunch) {
     Write-Host "== launch (this starts the game; close it when it is up)" -ForegroundColor Cyan
     $launch = Dao @('launch', $ProfileName)
-    Check 'launch succeeded with a process id' ($launch -match 'Launch succeeded\. ProcessId: \d+')
-    if (Test-Path $launcherExe) {
+    # Steam starts a Steam install, so there is no process id and the launch target does not apply (ADR-0022).
+    $startedBySteam = $launch -match 'Launch succeeded\. Steam was asked to start the game'
+    Check 'launch succeeded' ($startedBySteam -or ($launch -match 'Launch succeeded\. ProcessId: \d+'))
+    if ($startedBySteam) {
+        $results.Add('[SKIP] launch via OfficialLauncher (a Steam install runs what Steam''s Play button runs, ADR-0022)')
+    }
+    elseif (Test-Path $launcherExe) {
         Read-Host 'Press Enter after closing the game to test the official launcher target'
         Dao @('profile', 'set-target', $ProfileName, 'OfficialLauncher') | Out-Null
         $launch2 = Dao @('launch', $ProfileName)

@@ -421,6 +421,11 @@ decision.
   [ADR-0030](adr/0030-nexus-page-text-from-the-repository.md)): a workflow sends `docs/release/nexus/summary.txt`
   and `description.bbcode` to Nexus when they change on `main`, so the owner no longer pastes them. The gallery, the
   name, permissions and the category stay manual. The description gains P2.6-06's note about Nexus's manual check.
+- P2.6-10 The real-install check knows Steam starts the game ([#99](https://github.com/arastella625/DAORework/issues/99),
+  [ADR-0022](adr/0022-launching-steam-installs-through-steam.md)): `verify-real-install.ps1` still wanted a process
+  id, so a Steam install failed two launch checks on the owner's run of 2026-11-03 although the game started. The
+  launch check accepts either success message, and the official launcher check is skipped on a Steam install, where
+  the launch target does not apply. GOG and EA App installs keep it.
 
 **Not in this phase:** the same as Phase 2.5's.
 
@@ -433,6 +438,52 @@ decision.
 - [ ] Carried from Phase 2.5: Steam, GOG and EA App each have a real run in `docs/testing/phase-2.5-matrix.md`, and
   at least one beta tester from outside the project completes adopt, import, activate and rollback in the GUI
   (P2.5-08, [#70](https://github.com/arastella625/DAORework/issues/70)). The owner may carry these forward again.
+- [ ] Released as a tagged version, with the audit re-run and this roadmap updated.
+
+---
+
+## Phase 2.7: Steam on Linux
+
+**Status: proposed.** Waits for [ADR-0031](adr/0031-steam-on-linux-through-proton.md) to be accepted and for Phase
+2.6's exit gate. Added 2026-11-04, after a trial build ran in Ubuntu under WSL. Issues are opened when the phase is
+scheduled.
+
+**Goal:** a Linux player with the Steam copy of the game, running through Proton, can find their game, manage mods,
+back up saves and press Play, from a `linux-x64` download. Windows players see no change.
+
+**Task IDs:** `P2.7-` (branch `fix/P2.7-02-known-folders`).
+
+- P2.7-01 Decide it: ADR-0031 and this phase.
+- P2.7-02 No relative paths: a known folder that does not exist yet keeps its name, and an empty one is never joined
+  into a path. Today a bare home folder puts profiles and logs in the folder DAORework was started from, and `init`
+  saves the relative path `BioWare/Dragon Age`.
+- P2.7-03 Find Steam on Linux: `SteamLibraries` reads the native, Flatpak and Snap Steam folders and every library
+  they list, wherever it is mounted, and `SteamLibraryLocator` uses it. The player can still name the folder.
+- P2.7-04 Find the documents folder in the Proton prefix: `IProtonPrefixLocator`, `DocumentsFolderSource.ProtonPrefix`
+  and `DAO_PROTON_PREFIX_MISSING`. Diagnostics and `mods status` say plainly when the prefix, and the mods in it, have
+  gone.
+- P2.7-05 Play on Linux: a Steam copy starts through `xdg-open`; any other copy fails with `DAO_LAUNCH_NOT_SUPPORTED`
+  and points to the player's launcher. Launch messages stop saying *Windows*.
+- P2.7-06 Advice that fits Linux: `IHostPlatform`, and DXVK is no longer suggested there. A DXVK already in the game
+  folder is still recognised and can be removed.
+- P2.7-07 The window opens: `Program.Main` names the missing library in one line instead of a stack trace, and a CI
+  job starts the published window under `xvfb`.
+- P2.7-08 A Linux download: `DAORework-<version>-linux-x64.tar.gz` from `publish-release.ps1` and `release.yml`, with a
+  checksum and a build attestation, on GitHub only.
+- P2.7-09 A real run: `docs/testing/phase-2.7-matrix.md`, on a Linux machine with real Steam and Proton. It settles
+  what ADR-0031 takes from community reports: the prefix's folder names and letter case, the Flatpak and Snap paths,
+  and what Proton uses for Direct3D 9 in this game.
+- P2.7-10 Say so: the README, the website and the requirements (`libice6`, `libsm6`). The Nexus page is a separate
+  decision after P2.7-09.
+
+**Not in this phase:** GOG or EA copies under Heroic, Lutris, Bottles or Wine beyond naming the folders by hand;
+Flatpak, AppImage or distribution packages; macOS; malware scanning on Linux; changing any Proton setting.
+
+**Exit gate:**
+- [ ] P2.7-01 to P2.7-10 are done.
+- [ ] A Linux player with real Steam and Proton completes detect, import, activate, rollback, a save backup and Play
+  in the window, recorded in `docs/testing/phase-2.7-matrix.md`. Anything not run there is not claimed as supported.
+- [ ] The Windows verify script still reports no FAIL on the owner's PC.
 - [ ] Released as a tagged version, with the audit re-run and this roadmap updated.
 
 ---
