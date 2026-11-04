@@ -15,6 +15,7 @@ internal static class Layers
     public static readonly Assembly Application = typeof(DAORework.Application.Diagnostics.RunDiagnostics).Assembly;
     public static readonly Assembly Infrastructure = typeof(DAORework.Infrastructure.Persistence.JsonProfileRepository).Assembly;
     public static readonly Assembly App = typeof(DAORework.App.App).Assembly;
+    public static readonly Assembly Formats = typeof(DAORework.Formats.Erf.ErfReader).Assembly;
 
     public static IReadOnlyList<string> ReferencedAssemblyNames(Assembly assembly) =>
         assembly.GetReferencedAssemblies().Select(a => a.Name ?? string.Empty).Order().ToList();

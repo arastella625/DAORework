@@ -552,6 +552,8 @@ Flatpak, AppImage or distribution packages; macOS; malware scanning on Linux; ch
 **Goal:** understand the game's data through clean-room readers and give the tooling a GUI.
 
 - P3-01 The `DAORework.Formats` library (BCL only). Readers for ERF v2.0/v2.2, GFF v4.0 and TLK are built from public community specifications, which are cited in `docs/formats/`. DAOTools (MIT) may be ported with attribution; xoreos (GPL-3) supplies specifications and observed behavior only ([ADR-0009](adr/0009-third-party-mods-and-tools.md) tier 3). Each reader gets fuzz tests.
+  *ERF done (`docs/formats/erf.md`); GFF and TLK to come. The exit gate's run over a real install is the owner's:
+  `DAOREWORK_GAME_DIR` turns the test on.*
 - P3-02 A data-browser CLI: list archive contents and dump GFF as JSON (for local inspection only; never redistributed).
 - P3-03 Toolkit views in the GUI: archive browser and GFF viewer over the P3-01/P3-02 use cases. *(The GUI shell itself moved to P1-00; ADR-0010 decided D-4.)*
 - *P3-04 moved to Phase 2.5.*

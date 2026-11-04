@@ -4,6 +4,7 @@
     <ProjectReference Include="..\..\src\DAORework.Application\DAORework.Application.csproj" />
     <ProjectReference Include="..\..\src\DAORework.Infrastructure\DAORework.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\DAORework.App\DAORework.App.csproj" />
+    <ProjectReference Include="..\..\src\DAORework.Formats\DAORework.Formats.csproj" />
     <PackageReference Include="NetArchTest.eNhancedEdition" />
   </ItemGroup>
 </Project>
