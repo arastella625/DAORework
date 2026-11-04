@@ -15,6 +15,6 @@ public enum DocumentsFolderSource
     /// <summary>A folder a saved profile names: one the user chose, or that detection found before.</summary>
     Profile = 3,
 
-    /// <summary>A folder found by searching the drives, when no other source found one (ADR-0031).</summary>
+    /// <summary>A folder found by searching the drives, when no other source found one (ADR-0032).</summary>
     DriveSearch = 4,
 }

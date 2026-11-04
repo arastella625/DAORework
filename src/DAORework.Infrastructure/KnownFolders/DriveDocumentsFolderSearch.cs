@@ -7,7 +7,7 @@ namespace DAORework.Infrastructure.KnownFolders;
 
 /// <summary>
 /// Looks for <c>BioWare\Dragon Age</c> on the fixed drives, in each root and in folders up to three deep. It reads
-/// folder names only, skips the system's own folders and does not follow links (ADR-0031).
+/// folder names only, skips the system's own folders and does not follow links (ADR-0032).
 /// </summary>
 public sealed class DriveDocumentsFolderSearch : IDocumentsFolderSearch
 {

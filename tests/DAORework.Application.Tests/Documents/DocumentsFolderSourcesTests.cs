@@ -8,7 +8,7 @@ using Xunit;
 
 namespace DAORework.Application.Tests.Documents;
 
-/// <summary>The sources after the usual three: the folders profiles name, then the drive search (ADR-0031).</summary>
+/// <summary>The sources after the usual three: the folders profiles name, then the drive search (ADR-0032).</summary>
 public sealed class DocumentsFolderSourcesTests
 {
     private static readonly string _moved = TestPaths.Root("Games", "BioWare", "Dragon Age");

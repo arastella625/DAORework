@@ -2,7 +2,7 @@ using DAORework.Application.Profiles;
 
 namespace DAORework.Application.Documents;
 
-/// <summary>The documents folders the saved profiles name: places the user chose, or that detection found before (ADR-0031).</summary>
+/// <summary>The documents folders the saved profiles name: places the user chose, or that detection found before (ADR-0032).</summary>
 public sealed class ProfileDocumentsFolders
 {
     private readonly IProfileRepository _profiles;

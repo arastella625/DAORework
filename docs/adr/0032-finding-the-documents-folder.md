@@ -1,4 +1,4 @@
-# ADR-0031: Find the documents folder from the profiles, then by searching the drives
+# ADR-0032: Find the documents folder from the profiles, then by searching the drives
 
 - **Status:** Accepted
 - **Date:** 2026-11-03

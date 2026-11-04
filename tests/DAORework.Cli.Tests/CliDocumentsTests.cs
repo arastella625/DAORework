@@ -4,7 +4,7 @@ using Xunit;
 
 namespace DAORework.Cli.Tests;
 
-/// <summary>Finding a documents folder that is not where Windows says (ADR-0031), through the real composition.</summary>
+/// <summary>Finding a documents folder that is not where Windows says (ADR-0032), through the real composition.</summary>
 public sealed class CliDocumentsTests : IDisposable
 {
     private readonly CliTestHost _host = new();

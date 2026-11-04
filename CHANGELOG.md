@@ -13,7 +13,7 @@ All notable changes to DAORework are recorded here. The format follows
 - `DAORework.exe` and `dao.exe` are no longer compressed inside (P2.6-07), since antivirus programs treat a compressed program like a packed one and Nexus holds every flagged upload for a check by hand. Each file is larger; the download grows much less, since the zip compresses them anyway. Nothing changes in how they work.
 
 ### Fixed
-- The documents folder is found wherever it is (P2.6-01, [ADR-0031](docs/adr/0031-finding-the-documents-folder.md)): as well as the Documents folder Windows reports and its OneDrive copy, `detect`, new profiles and the window's *Detect* button now look at the folders your profiles name, and if none of those exists, search your fixed drives for `BioWare\Dragon Age`. The search reads folder names only and runs only when nothing else found a folder. You can still name the folder yourself. A profile pointing at a folder on another drive no longer gets told its folder is elsewhere when one also exists in the usual place.
+- The documents folder is found wherever it is (P2.6-01, [ADR-0032](docs/adr/0032-finding-the-documents-folder.md)): as well as the Documents folder Windows reports and its OneDrive copy, `detect`, new profiles and the window's *Detect* button now look at the folders your profiles name, and if none of those exists, search your fixed drives for `BioWare\Dragon Age`. The search reads folder names only and runs only when nothing else found a folder. You can still name the folder yourself. A profile pointing at a folder on another drive no longer gets told its folder is elsewhere when one also exists in the usual place.
 
 ## [0.4.0] - 2026-11-02
 

@@ -9,7 +9,7 @@ namespace DAORework.Application.Documents;
 /// Finds where the Dragon Age documents folder is, or could be: the Documents folder Windows reports (what the game
 /// uses), the classic <c>%UserProfile%\Documents</c>, and <c>%OneDrive%\Documents</c>. OneDrive's Known Folder Move
 /// silently changes the first, which is how saves and mods end up "missing" after a redirection. The folder can also
-/// be anywhere else, so the folders the profiles name come next, and a search of the drives last (ADR-0031).
+/// be anywhere else, so the folders the profiles name come next, and a search of the drives last (ADR-0032).
 /// </summary>
 public sealed class DetectDocumentsFolders
 {
