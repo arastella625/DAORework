@@ -63,6 +63,9 @@ public sealed class CopyVortexModsTests
 
         public Task SaveAsync(string documentsDirectory, VortexHandover handover, CancellationToken cancellationToken = default) => Task.CompletedTask;
 
+        public Task<Result<IReadOnlyList<KeptAddIn>>> ReadKeptAddInsAsync(string documentsDirectory, CancellationToken cancellationToken = default) =>
+            Task.FromResult(Result.Success<IReadOnlyList<KeptAddIn>>([]));
+
         public Task KeepAddInsListAsync(string documentsDirectory, CancellationToken cancellationToken = default) => Task.CompletedTask;
     }
 

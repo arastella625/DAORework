@@ -113,6 +113,10 @@ public sealed partial class ModActivationViewModel : PageViewModel
     /// does: mods activated together are added in the order given, after what is already active.
     /// </summary>
     public Task PlanChangeAsync(ModChangeKind kind, IReadOnlyList<LibraryModRow> mods, CancellationToken cancellationToken = default) =>
+        PlanChangeAsync(kind, mods, [], cancellationToken);
+
+    /// <summary>Plans the change as above, and puts back official DLC entries too (ADR-0028 §3).</summary>
+    public Task PlanChangeAsync(ModChangeKind kind, IReadOnlyList<LibraryModRow> mods, IReadOnlyList<AddInsListChange> restoredAddIns, CancellationToken cancellationToken) =>
         GuardAsync(
             async token =>
             {
@@ -124,7 +128,7 @@ public sealed partial class ModActivationViewModel : PageViewModel
                 }
 
                 if (!(await ProfileDocuments.FoldersAsync(_getProfile, ProfileName, token)).TryGetValue(out var folders, out var error)
-                    || !(await _plan.ExecuteAsync(new PlanModChangeRequest(folders.Documents, new ModChange(kind, [.. mods.Select(m => m.Id)]), folders.Install), token)).TryGetValue(out var plan, out error))
+                    || !(await _plan.ExecuteAsync(new PlanModChangeRequest(folders.Documents, new ModChange(kind, [.. mods.Select(m => m.Id)]), folders.Install) { RestoredAddIns = restoredAddIns }, token)).TryGetValue(out var plan, out error))
                 {
                     ReportError(error);
                     return;

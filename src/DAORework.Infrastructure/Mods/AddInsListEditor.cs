@@ -40,7 +40,7 @@ internal sealed class AddInsListEditor(IFileSystem fileSystem, string library)
 
                 if (existing.Count == 0)
                 {
-                    var item = await ManifestItemAsync(change, cancellationToken);
+                    var item = change.Item is { } kept ? XElement.Parse(kept) : await ManifestItemAsync(change, cancellationToken);
                     if (item is null)
                     {
                         return Failed($"The library copy of {change.ModId} has no AddInItem {change.Uid} in its Manifest.xml.");

@@ -90,11 +90,11 @@ public sealed class ModsTabViewModel
         await Handover.LoadAsync(profileName, cancellationToken);
     }
 
-    private Task TurnOnAsync(IReadOnlyList<string> modIds, CancellationToken cancellationToken)
+    private Task TurnOnAsync(IReadOnlyList<string> modIds, IReadOnlyList<AddInsListChange> restoredAddIns, CancellationToken cancellationToken)
     {
         Filter.ShowOnlyCommand.Execute(ModShowFilter.All); // The preview shows with your mods, which a chip may be hiding.
         var rows = modIds.Select(id => Library.Mods.FirstOrDefault(m => string.Equals(m.Id, id, StringComparison.OrdinalIgnoreCase))).OfType<LibraryModRow>().ToList();
-        return Activation.PlanChangeAsync(ModChangeKind.Activate, rows, cancellationToken);
+        return Activation.PlanChangeAsync(ModChangeKind.Activate, rows, restoredAddIns, cancellationToken);
     }
 
     private string NameOf(string modId) =>

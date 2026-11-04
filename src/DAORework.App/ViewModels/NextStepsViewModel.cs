@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DAORework.Application.Catalog;
 using DAORework.Application.Mods.Adoption;
+using DAORework.Application.Mods.Handover;
 using DAORework.Application.Profiles;
 using DAORework.Core.Common;
 using DAORework.Core.Diagnostics;
@@ -23,13 +24,15 @@ public sealed partial class NextStepsViewModel : PageViewModel
     private readonly GetProfile _getProfile;
     private readonly DetectKnownItems _detectKnownItems;
     private readonly ScanForAdoption _scanForAdoption;
+    private readonly ReadVortexHandover _readHandover;
 
-    public NextStepsViewModel(GetProfile getProfile, DetectKnownItems detectKnownItems, ScanForAdoption scanForAdoption, ILogger<NextStepsViewModel> logger)
+    public NextStepsViewModel(GetProfile getProfile, DetectKnownItems detectKnownItems, ScanForAdoption scanForAdoption, ReadVortexHandover readHandover, ILogger<NextStepsViewModel> logger)
         : base(logger)
     {
         _getProfile = getProfile;
         _detectKnownItems = detectKnownItems;
         _scanForAdoption = scanForAdoption;
+        _readHandover = readHandover;
     }
 
     /// <summary>Gets or sets what a step's button does: switch to its tab and open its plan.</summary>
@@ -129,6 +132,20 @@ public sealed partial class NextStepsViewModel : PageViewModel
                 $"Manage {Counted.Of(adoption.Candidates.Count, "mod")} found in your game",
                 "DAORework can take them over without reinstalling them, so you can turn them off or undo them like any other mod.",
                 "See them"));
+        }
+
+        if (!(await _readHandover.ExecuteAsync(profile.UserDocumentsDirectory, cancellationToken)).TryGetValue(out var handover, out error))
+        {
+            return error;
+        }
+
+        if (handover.PlacingAgain)
+        {
+            Steps.Add(new NextStep(
+                NextStepKind.MoveFromVortex,
+                "Vortex is placing mods again",
+                "Stop managing Dragon Age in Vortex, or it will keep changing your game.",
+                "See what to do"));
         }
 
         return null;

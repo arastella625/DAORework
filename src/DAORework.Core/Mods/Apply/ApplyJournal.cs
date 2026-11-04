@@ -16,7 +16,7 @@ public sealed record ApplyJournal(
     DeploymentRecord Previous)
 {
     /// <summary>Version 2 adds <see cref="PlanAction.Move"/> steps and <see cref="PlanOperation.MovedFrom"/>.</summary>
-    public const int CurrentSchemaVersion = 2;
+    public const int CurrentSchemaVersion = 3;
 
     public int SchemaVersion { get; init; } = CurrentSchemaVersion;
 

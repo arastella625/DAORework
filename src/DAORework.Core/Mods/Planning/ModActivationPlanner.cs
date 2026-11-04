@@ -44,6 +44,7 @@ public static class ModActivationPlanner
         }
 
         PlanAddIns(state, input);
+        state.AddInsChanges.AddRange(input.RestoredAddIns);
         return Result.Success(new ModActivationPlan(
             input.Current.ActiveModIds,
             input.Mods.Select(m => m.Id).ToList(),
@@ -83,7 +84,7 @@ public static class ModActivationPlanner
         var wanted = input.Mods.Where(m => m.Kind == ModKind.AddIn && m.AddInUid is not null).Select(m => m.AddInUid!).ToHashSet(_paths);
         var addIns = input.Current.AddedAddIns
             .Where(a => wanted.Contains(a.Uid))
-            .Concat(changes.Where(c => c.Add).Select(c => new RecordedAddIn(c.Uid, c.ModId)))
+            .Concat(changes.Where(c => c.Add && c.Item is null).Select(c => new RecordedAddIn(c.Uid, c.ModId)))
             .ToList();
         return new DeploymentRecord(
             input.Mods.Select(m => m.Id).ToList(),

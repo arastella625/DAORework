@@ -54,6 +54,7 @@ public static class DependencyInjection
         services.AddSingleton<OpenModPage>();
         services.AddSingleton<ReadVortexHandover>();
         services.AddSingleton<CopyVortexMods>();
+        services.AddSingleton<FindLostDlc>();
         services.AddSingleton<RunDiagnostics>();
         services.AddSingleton<InstallationProbe>();
         services.AddSingleton<DetectInstallations>();

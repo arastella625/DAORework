@@ -40,6 +40,7 @@ public static class ModActivationPlanWarnings
         }
 
         warnings.AddRange(plan.CombineProblems);
+        warnings.AddRange(plan.AddInsChanges.Where(c => c.Item is not null).Select(c => $"Puts {c.ModId} back in AddIns.xml: the purge in Vortex took it out."));
         warnings.AddRange(InstallOverrideWarnings.For(plan, nameOf));
         return warnings;
     }

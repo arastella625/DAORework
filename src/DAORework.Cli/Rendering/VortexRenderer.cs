@@ -30,6 +30,15 @@ public sealed class VortexRenderer
             VortexHandoverStep.TurnOn => "Next, in this order: mods activate " + string.Join(' ', state.Copies.Select(c => c.ModId)),
             _ => "Done: every copy is on.",
         });
+        if (state.PlacingAgain)
+        {
+            _console.WriteLine("Vortex is placing mods again. Stop managing Dragon Age in Vortex, or it will keep changing your game.");
+        }
+
+        if (state.LostDlc.Count > 0)
+        {
+            _console.WriteLine($"The purge took {string.Join(", ", state.LostDlc.Select(c => c.ModId))} out of AddIns.xml. Press Turn them on on the window's Move from Vortex card to put it back.");
+        }
     }
 
     public void RenderCopied(VortexCopyReport report)

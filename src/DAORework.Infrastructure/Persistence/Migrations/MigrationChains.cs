@@ -31,6 +31,6 @@ public static class MigrationChains
     /// <summary>Gets the chain for backup manifests: version 2 adds moves (ADR-0015). Every manifest has carried <c>schemaVersion</c>.</summary>
     public static JsonMigrationChain DeploymentBackups { get; } = new(DeploymentBackup.CurrentSchemaVersion, new UnchangedMigration(0), new UnchangedMigration(1));
 
-    /// <summary>Gets the chain for apply journals: version 2 adds move steps (ADR-0015). Every journal has carried <c>schemaVersion</c>.</summary>
-    public static JsonMigrationChain ApplyJournals { get; } = new(ApplyJournal.CurrentSchemaVersion, new UnchangedMigration(0), new UnchangedMigration(1));
+    /// <summary>Gets the chain for apply journals: version 2 adds move steps (ADR-0015), and version 3 an entry put back as it was (ADR-0028). Every journal has carried <c>schemaVersion</c>.</summary>
+    public static JsonMigrationChain ApplyJournals { get; } = new(ApplyJournal.CurrentSchemaVersion, new UnchangedMigration(0), new UnchangedMigration(1), new UnchangedMigration(2));
 }

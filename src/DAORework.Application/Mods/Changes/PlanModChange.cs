@@ -73,6 +73,7 @@ public sealed class PlanModChange
             CombineProblems = combine.Problems,
             InstallOverridePaths = installOverride.IsSuccess ? installOverride.Value.Paths : [],
             InstallOverrideProblem = installOverride.Error?.Message,
+            RestoredAddIns = request.RestoredAddIns,
         });
     }
 
