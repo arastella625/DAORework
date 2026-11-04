@@ -1,16 +1,31 @@
-# Nexus Mods page, ready to paste
+# Nexus Mods page
 
-This page describes the six-tab window ([ADR-0026](../../adr/0026-workflow-first-layout.md): Home, Mods, Fixes, Saves,
-History, Settings) in the gilded-tome style, with its plain words (*Turn on*, *Manage*, *Undo*). **Paste it when the first release with that
-window is on Nexus**; until then the live page keeps describing 0.3.2. Its pictures are in their own folder, so
-merging this changes nothing on the live page.
+The page's summary and description live here, and the **Nexus page** workflow sends them to Nexus whenever they change
+on `main` ([ADR-0030](../../adr/0030-nexus-page-text-from-the-repository.md)). To change the page's text, change these
+files by PR; an edit made on the Nexus website is overwritten by the next change here. The name, the gallery,
+permissions and the category stay manual.
 
-| Nexus field | Paste from |
+| Nexus field | Where it comes from |
 |---|---|
-| Mod name | `DAORework - Mod Manager, Launcher and Diagnostics` |
-| Brief overview (summary) | [summary.txt](summary.txt): plain text, no formatting, under Nexus's 350 characters |
-| Detailed description | [description.bbcode](description.bbcode): open it, select all, copy, and paste into the description editor in BBCode mode (the `[BBCode]` toggle) |
-| Permissions and credits | [permissions.md](permissions.md): which option to pick for each permission, and the text for Author notes and File credits |
+| Mod name | `DAORework - Mod Manager, Launcher and Diagnostics` (by hand) |
+| Brief overview (summary) | [summary.txt](summary.txt): plain text, no formatting, under Nexus's 350 characters (sent by the workflow) |
+| Detailed description | [description.bbcode](description.bbcode): BBCode (sent by the workflow; by hand, paste it in the editor's `[BBCode]` mode) |
+| Permissions and credits | [permissions.md](permissions.md): which option to pick for each permission, and the text for Author notes and File credits (by hand) |
+
+## Setting up the page sync (once)
+
+1. **On GitHub:** **Settings** → **Environments** → **New environment** `nexus-page`. Under **Deployment branches and
+   tags**, choose **Selected branches and tags** and add `main` only.
+2. In `nexus-page`, add the secret `NEXUS_API_KEY` (the same personal key as the `release` environment's, from
+   [your API keys](https://www.nexusmods.com/settings/api-keys)) and the variable `NEXUS_MOD_ID` = `601295428523`, the
+   Unique Mod ID ([nexus-upload.md](../nexus-upload.md)).
+3. **Check the files match what you want live**, since the first run replaces the page's summary and description.
+   Then run it: **Actions** → **Nexus page** → **Run workflow** on `main`. The run's summary says what was sent; open
+   the mod page to check it.
+
+If a run fails, its log shows Nexus's answer. The API call is experimental (ADR-0030): if Nexus changes it, paste by
+hand as in the table above until the workflow is fixed. If the key leaks, revoke it on Nexus and put a new one in both
+environments.
 
 ## Pictures
 
