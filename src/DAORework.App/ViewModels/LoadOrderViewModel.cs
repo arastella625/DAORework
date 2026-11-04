@@ -19,6 +19,8 @@ public sealed partial class LoadOrderViewModel : PageViewModel
 {
     private const int MaxPackedRows = 50;
 
+    private const int MaxSharedRows = 30;
+
     private readonly GetProfile _getProfile;
     private readonly PlanModChange _plan;
     private readonly ApplyModPlan _apply;
@@ -46,6 +48,9 @@ public sealed partial class LoadOrderViewModel : PageViewModel
 
     /// <summary>Gets the override files more than one mod in <see cref="Order"/> ships.</summary>
     public ObservableCollection<FileConflictRow> Conflicts { get; } = [];
+
+    /// <summary>Gets what <i>Combined files</i> lists: each shared file, or a row for each set of mods once there are too many to read.</summary>
+    public ObservableCollection<FileConflictRow> SharedRows { get; } = [];
 
     /// <summary>Gets how many files are combined from several mods' copies (ADR-0025), such as <c>chargenmorphcfg.xml</c>.</summary>
     [ObservableProperty]
@@ -208,7 +213,20 @@ public sealed partial class LoadOrderViewModel : PageViewModel
             Conflicts.Add(FileConflictRow.From(conflict, names ?? new Dictionary<string, string>()));
         }
 
+        ShowShared(plan, names);
         IsReordered = false;
+    }
+
+    private void ShowShared(ModActivationPlan? plan, IReadOnlyDictionary<string, string>? names)
+    {
+        var groups = Conflicts.Count <= MaxSharedRows
+            ? []
+            : SharedFileNotes.Groups(plan?.Conflicts.BetweenMods ?? [], id => names is not null && names.TryGetValue(id, out var name) ? name : id);
+        SharedRows.Clear();
+        foreach (var row in groups.Count > 0 ? groups.Select(FileConflictRow.From) : Conflicts)
+        {
+            SharedRows.Add(row);
+        }
     }
 
     private void ShowPacked(LoadOrderDetails details)

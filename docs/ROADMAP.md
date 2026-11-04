@@ -460,6 +460,9 @@ made-up mods, which is how it got through.)*
 - P2.6-15 The library reads clean: names read as words, `loose` reads *Loose files*, a mod with nothing for the game
   isn't listed, and *Combined files* counts shared files, not only merged ones.
 
+- P2.6-16 *Combined files* and History at real scale: past 30 files, one row for each set of mods, not each file;
+  History counts the mods on instead of naming 66. `RealScaleScreensTests` renders every main screen.
+
 **Not in this phase:** the same as Phase 2.5's.
 
 **Exit gate:**

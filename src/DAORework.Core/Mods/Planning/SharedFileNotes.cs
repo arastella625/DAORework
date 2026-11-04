@@ -7,7 +7,7 @@ namespace DAORework.Core.Mods.Planning;
 /// Files several mods ship, as a few sentences however many there are: how many, which of them lose a mod's behaviour
 /// rather than a look, then one line for each set of mods, biggest first. Pure.
 /// </summary>
-internal static class SharedFileNotes
+public static class SharedFileNotes
 {
     private const int GroupsShown = 3;
 
@@ -32,13 +32,8 @@ internal static class SharedFileNotes
             notes.Add($"{PlanWords.Count(behaviour, "of them is a data table, script or talk table", "of them are data tables, scripts or talk tables")}, where a mod's changes are lost. Look for a compatibility patch.");
         }
 
-        var groups = conflicts
-            .GroupBy(c => $"{c.Winner.ModId}\n{string.Join('\n', c.OtherModIds.Order(StringComparer.OrdinalIgnoreCase))}", StringComparer.OrdinalIgnoreCase)
-            .OrderByDescending(g => g.Any(IsBehaviour))
-            .ThenByDescending(g => g.Count())
-            .ThenBy(g => g.Key, StringComparer.OrdinalIgnoreCase)
-            .ToList();
-        notes.AddRange(groups.Take(GroupsShown).Select(g => Line([.. g], nameOf)));
+        var groups = Groups(conflicts, nameOf);
+        notes.AddRange(groups.Take(GroupsShown).Select(g => $"{g.Title}: {g.Kinds}."));
         if (groups.Count > GroupsShown)
         {
             notes.Add($"{PlanWords.Count(groups.Count - GroupsShown, "more set of mods shares", "more sets of mods share")} files. Show details lists them.");
@@ -47,12 +42,29 @@ internal static class SharedFileNotes
         return notes;
     }
 
-    private static string Line(List<OverrideConflict> group, Func<string, string> nameOf)
+    /// <summary>One group for each set of mods, those that lose behaviour first, then the biggest.</summary>
+    public static IReadOnlyList<SharedFileGroup> Groups(IReadOnlyList<OverrideConflict> conflicts, Func<string, string> nameOf)
+    {
+        ArgumentNullException.ThrowIfNull(conflicts);
+        ArgumentNullException.ThrowIfNull(nameOf);
+        return [.. conflicts
+            .GroupBy(c => $"{c.Winner.ModId}\n{string.Join('\n', c.OtherModIds.Order(StringComparer.OrdinalIgnoreCase))}", StringComparer.OrdinalIgnoreCase)
+            .OrderByDescending(g => g.Any(IsBehaviour))
+            .ThenByDescending(g => g.Count())
+            .ThenBy(g => g.Key, StringComparer.OrdinalIgnoreCase)
+            .Select(g => Group([.. g], nameOf))];
+    }
+
+    private static SharedFileGroup Group(List<OverrideConflict> group, Func<string, string> nameOf)
     {
         var first = group[0];
         var kinds = group.GroupBy(c => Kind(c.FileName)).OrderByDescending(k => k.Count()).ThenBy(k => k.Key.One, StringComparer.Ordinal)
             .Select(k => PlanWords.Count(k.Count(), k.Key.One, k.Key.Many)).ToList();
-        return $"{nameOf(first.Winner.ModId)} wins over {PlanWords.Names(first.OtherModIds, nameOf)}: {PlanWords.List(kinds)}.";
+        return new SharedFileGroup(
+            $"{nameOf(first.Winner.ModId)} wins over {PlanWords.Names(first.OtherModIds, nameOf)}",
+            PlanWords.List(kinds),
+            [.. group.Select(c => c.FileName)],
+            group.TrueForAll(c => c.SameContent));
     }
 
     private static bool IsBehaviour(OverrideConflict conflict) => _behaviour.Contains(Path.GetExtension(conflict.FileName));

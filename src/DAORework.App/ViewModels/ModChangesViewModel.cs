@@ -4,6 +4,7 @@ using DAORework.Application.Mods.Changes;
 using DAORework.Application.Profiles;
 using DAORework.Core.Common;
 using DAORework.Core.Mods.Backups;
+using DAORework.Core.Mods.Planning;
 using Microsoft.Extensions.Logging;
 
 namespace DAORework.App.ViewModels;
@@ -55,7 +56,9 @@ public sealed partial class ModChangesViewModel : RecoverableChangesViewModel
         var active = status.Record.ActiveModIds;
         Summary = active.Count == 0
             ? "No mods are on yet."
-            : $"On now, in order: {string.Join(", ", active.Select(NameOf))} ({Counted.Of(status.Record.Files.Count, "file")}).";
+            : active.Count > PlanWords.NamesShown
+                ? $"On now: {active.Count} mods, {Counted.Of(status.Record.Files.Count, "file")}. Arrange shows them in order."
+                : $"On now, in order: {string.Join(", ", active.Select(NameOf))} ({Counted.Of(status.Record.Files.Count, "file")}).";
         ChangeUnfinished = status.ChangeUnfinished;
         ShowBackups(status.Backups, active, DeploymentChangeText.Mods, NameOf, "no mods");
     }

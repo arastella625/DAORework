@@ -41,7 +41,7 @@
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>
-      <ItemsControl Name="SharedFiles" ItemsSource="{Binding Conflicts}">
+      <ItemsControl Name="SharedFiles" ItemsSource="{Binding SharedRows}">
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="vm:FileConflictRow">
             <Border Padding="0,10" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
