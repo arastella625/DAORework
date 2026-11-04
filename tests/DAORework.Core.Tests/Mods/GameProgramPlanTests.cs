@@ -32,6 +32,24 @@ public sealed class GameProgramPlanTests
         Assert.True(Plan(Mods.Override("hair", "hair.dds"), _program).IsBlocked);
     }
 
+    [Fact]
+    public void Plan_ACopyThatIsStillOn_SaysToTurnItOffFirst()
+    {
+        var current = new DeploymentRecord(["dao-lib-1"], [], []);
+
+        var plan = ModActivationPlanner.Plan(new PlanInput(current, [_program], [], new Dictionary<string, string>(), [])).Value;
+
+        Assert.Contains("Turn DAO Lib off first", Assert.Single(plan.Blockers).Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Plan_ADxvkDownload_PointsToTheFix()
+    {
+        var dxvk = new LibraryMod("dxvk-1", "DXVK", ModKind.GameProgram, [new LibraryModFile("d3d9.dll", 4, "a")]);
+
+        Assert.Contains("fixes apply dxvk", Assert.Single(Plan(dxvk).Blockers).Message, StringComparison.Ordinal);
+    }
+
     private static ModActivationPlan Plan(params LibraryMod[] mods) =>
         ModActivationPlanner.Plan(new PlanInput(DeploymentRecord.Empty, mods, [], new Dictionary<string, string>(), [])).Value;
 }

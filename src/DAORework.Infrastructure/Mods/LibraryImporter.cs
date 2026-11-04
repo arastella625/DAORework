@@ -90,7 +90,7 @@ internal sealed class LibraryImporter
     /// <summary>A mod added before DAORework knew mods that run inside the game becomes one when it is added again (ADR-0033).</summary>
     private async Task<LibraryEntry> RecognisedAgainAsync(LibraryEntry existing, ModKind kind, CancellationToken cancellationToken)
     {
-        if (kind != ModKind.GameProgram || existing.Mod.Kind != ModKind.Override)
+        if (kind != ModKind.GameProgram || existing.Mod.Kind != ModKind.Override || existing.Origin.Kind != ModOriginKind.Download)
         {
             return existing;
         }

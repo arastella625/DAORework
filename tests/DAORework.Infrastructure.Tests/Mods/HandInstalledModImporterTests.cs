@@ -45,6 +45,16 @@ public sealed class HandInstalledModImporterTests
     }
 
     [Fact]
+    public async Task Import_AnOverrideFolderHoldingOnlyADll_StaysAnOverrideMod()
+    {
+        Add("packages/core/override/Tools/helper.dll", "dll");
+
+        var entry = (await _importer.ImportAsync(_documents, Candidate(AdoptionCandidateKind.OverrideFolder, "packages/core/override/Tools", "packages/core/override/Tools/helper.dll"), "Tools")).Value;
+
+        Assert.Equal(ModKind.Override, entry.Mod.Kind);
+    }
+
+    [Fact]
     public async Task Import_OverrideFolder_KeepsItsLayoutBelowTheFolderAndNeverChangesIt()
     {
         var entry = (await _importer.ImportAsync(_documents, Candidate(AdoptionCandidateKind.OverrideFolder, "packages/core/override/Better Hair", "packages/core/override/Better Hair/textures/hair.dds"), "Better Hair")).Value;
