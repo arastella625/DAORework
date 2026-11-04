@@ -46,6 +46,26 @@ public sealed class VortexRecordReaderTests
 
         Assert.False(record.AtItsTarget);
         Assert.False(record.IsLive("Hair-1-0"));
+        Assert.Empty(record.StagedMods);
+    }
+
+    [Theory]
+    [InlineData(@"\\attacker\share")]
+    [InlineData(@"/\attacker\share")]
+    [InlineData("//attacker/share")]
+    public async Task Read_AStagingFolderOnANetworkShare_IsNeverLookedAt(string staging)
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            _fileSystem.AddDirectory(_fileSystem.Path.Combine(staging, "Hair-1-0"));
+        }
+
+        Write(Override, staging, ("hair.dds", "Hair-1-0"));
+
+        var record = (await ReadAsync()).Value;
+
+        Assert.Empty(record.StagedMods);
+        Assert.False(record.IsLive("Hair-1-0"));
     }
 
     [Fact]
