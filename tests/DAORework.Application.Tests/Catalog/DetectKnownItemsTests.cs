@@ -16,6 +16,16 @@ public sealed class DetectKnownItemsTests
     private readonly MockFileSystem _fileSystem = new();
 
     [Fact]
+    public async Task ExecuteAsync_OnLinux_DoesNotCallDxvkMissing()
+    {
+        var useCase = new DetectKnownItems(new FakeKnownItemsCatalogSource([Dxvk]), [new GameFileMatcher(_fileSystem)], new FakeHostPlatform { IsLinux = true });
+
+        var scan = (await useCase.ExecuteAsync(new DetectKnownItemsRequest(Profile))).Value;
+
+        Assert.Empty(scan.Missing);
+    }
+
+    [Fact]
     public async Task ExecuteAsync_FindsItemsByEveryKindOfFingerprint()
     {
         _fileSystem.AddFile(D3D9, new MockFileData(DxvkDll("v2.3")));
@@ -80,7 +90,7 @@ public sealed class DetectKnownItemsTests
     [Fact]
     public async Task ExecuteAsync_FingerprintKindWithoutAMatcher_IsUnresolvedAsACatalogProblem()
     {
-        var useCase = new DetectKnownItems(new FakeKnownItemsCatalogSource([Dxvk]), [new AddInUidMatcher(_fileSystem)]);
+        var useCase = new DetectKnownItems(new FakeKnownItemsCatalogSource([Dxvk]), [new AddInUidMatcher(_fileSystem)], new FakeHostPlatform());
 
         var scan = (await useCase.ExecuteAsync(new DetectKnownItemsRequest(Profile))).Value;
 
@@ -91,7 +101,7 @@ public sealed class DetectKnownItemsTests
     public async Task ExecuteAsync_CatalogFailsToLoad_ReturnsTheFailure()
     {
         var broken = Result.Failure<KnownItemsCatalog>(new Error(DiagnosticCodes.CatalogInvalid, "broken"));
-        var useCase = new DetectKnownItems(new FakeKnownItemsCatalogSource(broken), Matchers());
+        var useCase = new DetectKnownItems(new FakeKnownItemsCatalogSource(broken), Matchers(), new FakeHostPlatform());
 
         var result = await useCase.ExecuteAsync(new DetectKnownItemsRequest(Profile));
 
@@ -99,7 +109,7 @@ public sealed class DetectKnownItemsTests
     }
 
     internal static DetectKnownItems UseCase(MockFileSystem fileSystem, IReadOnlyList<KnownItem> items, IReadOnlyList<KnownConflict>? conflicts = null) =>
-        new(new FakeKnownItemsCatalogSource(items, conflicts), Matchers(fileSystem));
+        new(new FakeKnownItemsCatalogSource(items, conflicts), Matchers(fileSystem), new FakeHostPlatform());
 
     private static IFingerprintMatcher[] Matchers(MockFileSystem? fileSystem = null)
     {

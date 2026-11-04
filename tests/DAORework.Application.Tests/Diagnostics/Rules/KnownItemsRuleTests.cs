@@ -119,7 +119,7 @@ public sealed class KnownItemsRuleTests
     public async Task EvaluateAsync_CatalogFailsToLoad_WarnsWithoutBlockingTheLaunch()
     {
         var broken = Result.Failure<KnownItemsCatalog>(new Error(DiagnosticCodes.CatalogInvalid, "broken"));
-        var rule = new KnownItemsRule(new DetectKnownItems(new FakeKnownItemsCatalogSource(broken), [new GameFileMatcher(_fileSystem)]));
+        var rule = new KnownItemsRule(new DetectKnownItems(new FakeKnownItemsCatalogSource(broken), [new GameFileMatcher(_fileSystem)], new FakeHostPlatform()));
 
         var issue = Assert.Single(await rule.EvaluateAsync(Profile));
 
