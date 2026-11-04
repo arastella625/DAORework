@@ -12,6 +12,7 @@ using DAORework.Application.Mods.Adoption;
 using DAORework.Application.Mods.Apply;
 using DAORework.Application.Mods.Backups;
 using DAORework.Application.Mods.Changes;
+using DAORework.Application.Mods.Handover;
 using DAORework.Application.Mods.Library;
 using DAORework.Application.Preferences;
 using DAORework.Application.Profiles;
@@ -51,6 +52,8 @@ public static class DependencyInjection
 
         services.AddSingleton<ReadInstallOverride>();
         services.AddSingleton<OpenModPage>();
+        services.AddSingleton<ReadVortexHandover>();
+        services.AddSingleton<CopyVortexMods>();
         services.AddSingleton<RunDiagnostics>();
         services.AddSingleton<InstallationProbe>();
         services.AddSingleton<DetectInstallations>();

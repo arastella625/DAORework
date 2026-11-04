@@ -5,7 +5,7 @@ namespace DAORework.Application.Abstractions;
 
 /// <summary>
 /// DAORework's mod library under app-data (ADR-0012, ROADMAP P2-07). Importing reads the download and copies its
-/// files into a new folder of the library; it never writes anywhere else, and a library entry is never changed after.
+/// files into a new folder of the library; it never writes anywhere else, and a library entry's files never change after.
 /// </summary>
 public interface IModLibrary
 {

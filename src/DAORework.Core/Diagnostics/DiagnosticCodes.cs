@@ -131,6 +131,7 @@ public static class DiagnosticCodes
 
     // P2.5-30: the mods Vortex placed (ADR-0028).
     public const string VortexRecordUnreadable = "DAO_VORTEX_RECORD_UNREADABLE";
+    public const string VortexHandoverUnreadable = "DAO_VORTEX_HANDOVER_UNREADABLE";
     public const string ModAdoptVortexManages = "DAO_MOD_ADOPT_VORTEX_MANAGES";
 
     // P2.5-12: mod safety (ADR-0018).

@@ -13,6 +13,7 @@ public static class CliServices
         services.AddSingleton<LibraryRenderer>();
         services.AddSingleton<ModChangeRenderer>();
         services.AddSingleton<AdoptionRenderer>();
+        services.AddSingleton<VortexRenderer>();
 
         // Not a renderer: the second half of mods adopt, kept apart so the command stays within five dependencies.
         services.AddSingleton<AdoptionApplier>();
