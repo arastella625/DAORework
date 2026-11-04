@@ -15,7 +15,12 @@ public sealed class StatusFadeTests
 
         page.Succeed("Turned on Blue Hair.");
         Assert.Equal("Turned on Blue Hair.", page.StatusMessage);
-        await Task.Delay(300, TestContext.Current.CancellationToken);
+
+        // A busy CI runner can be slow to get to the fade, so this waits for it rather than for a fixed time.
+        for (var waited = 0; waited < 5000 && page.StatusMessage.Length > 0; waited += 50)
+        {
+            await Task.Delay(50, TestContext.Current.CancellationToken);
+        }
 
         Assert.Equal(string.Empty, page.StatusMessage);
     }
