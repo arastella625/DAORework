@@ -32,6 +32,34 @@ public sealed class ConflictScannerTests
     }
 
     [Fact]
+    public void Scan_OneModHoldingANameInTwoFolders_DeploysOneCopyAndIsNoClash()
+    {
+        var report = Scan([Mods.Override("zdf", "one/readme.txt#1", "two/readme.txt#2")]);
+
+        Assert.Single(report.Deploy);
+        Assert.Single(report.OverrideConflicts);
+        Assert.Empty(report.BetweenMods);
+    }
+
+    [Fact]
+    public void Scan_AModWithTwoCopiesAndAnotherMod_NamesEachModOnce()
+    {
+        var report = Scan([Mods.Override("low", "one/readme.txt#1", "two/readme.txt#2", "three/readme.txt#3"), Mods.Override("high", "readme.txt#4")]);
+
+        var conflict = Assert.Single(report.BetweenMods);
+        Assert.Equal("high", conflict.Winner.ModId);
+        Assert.Equal(["low"], conflict.OtherModIds);
+    }
+
+    [Fact]
+    public void Scan_WinnersOwnSecondCopy_IsNotAnotherMod()
+    {
+        var report = Scan([Mods.Override("low", "readme.txt#1"), Mods.Override("high", "one/readme.txt#2", "two/readme.txt#3")]);
+
+        Assert.Equal(["low"], Assert.Single(report.BetweenMods).OtherModIds);
+    }
+
+    [Fact]
     public void Scan_SameNameSameContent_IsMarkedHarmless()
     {
         var report = Scan([Mods.Override("a", "shared.gda#abc"), Mods.Override("b", "shared.gda#ABC")]);

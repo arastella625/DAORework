@@ -19,8 +19,8 @@ public static class ModActivationPlanWarnings
         ArgumentNullException.ThrowIfNull(nameOf);
         nameOf = CombinedAware(nameOf);
         var conflicts = plan.Conflicts;
-        var warnings = conflicts.OverrideConflicts.Select(c =>
-                $"{c.FileName} is in {string.Join(", ", c.Overridden.Select(o => nameOf(o.ModId)))} and {nameOf(c.Winner.ModId)}; {nameOf(c.Winner.ModId)}'s copy is used{(c.SameContent ? " (identical content)" : string.Empty)}.{Meaning(c)}")
+        var warnings = conflicts.BetweenMods.Select(c =>
+                $"{c.FileName} is in {string.Join(", ", c.OtherModIds.Select(nameOf))} and {nameOf(c.Winner.ModId)}; {nameOf(c.Winner.ModId)}'s copy is used{(c.SameContent ? " (identical content)" : string.Empty)}.{Meaning(c)}")
             .Concat(conflicts.UnmanagedShadows.Select(s =>
                 $"{s.Managed.FileName} from {nameOf(s.Managed.ModId)} has the same name as {string.Join(", ", s.UnmanagedPaths)} in the override folder, which DAORework does not manage; the game picks one."))
             .Concat(conflicts.AddInFilesOverridden.Select(a =>
