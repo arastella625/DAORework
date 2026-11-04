@@ -1,7 +1,9 @@
 using System.IO.Abstractions.TestingHelpers;
 using System.IO.Compression;
 using System.Text;
+using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
+using Avalonia.VisualTree;
 using DAORework.App.ViewModels;
 using DAORework.App.Views;
 using Xunit;
@@ -36,6 +38,7 @@ public sealed class PackedConflictsScreenTests : IDisposable
         Assert.Contains("First Pack, Second Pack", row.Detail, StringComparison.Ordinal);
         Assert.Contains("can't tell which", row.Detail, StringComparison.Ordinal);
         ModsTabScenario.Show<CombinedFilesPanel>(window);
+        Assert.False(window.GetVisualDescendants().OfType<TextBlock>().Single(t => t.Name == "NoSharedFiles").IsVisible);
         Screenshots.Save(window, "40-packed-conflicts");
     }
 
