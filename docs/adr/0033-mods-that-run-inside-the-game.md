@@ -1,7 +1,6 @@
 # ADR-0033: Mods that run inside the game: programs in `bin_ship`
 
-- **Status:** Proposed. The owner chose on 2026-11-03 to allow these mods. Becomes Accepted when the owner schedules
-  Phase 2.8. It then amends [ADR-0018](0018-mod-safety.md) §1 and extends
+- **Status:** Accepted (owner, 2026-11-04). The owner chose on 2026-11-03 to allow these mods. It amends [ADR-0018](0018-mod-safety.md) §1 and extends
   [ADR-0013](0013-managed-fixes-in-the-install-folder.md).
 - **Date:** 2026-11-03
 
