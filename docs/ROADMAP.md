@@ -360,7 +360,9 @@ unchanged.
   ([screenshot](screenshots/p2.5-30/01-vortex-mods.png)).*
 - P2.5-31 The handover (ADR-0028 §3 and §4): the *Move from Vortex* card on the Mods page and `mods vortex copy`;
   the copies, a check that the purge is done, one preview to turn them on in Vortex's order, and Home's suggestion
-  when Vortex deploys again.
+  when Vortex deploys again. *Done for override mods ([screenshot](screenshots/p2.5-31/01-card.png)), with the DLC
+  repair and a fault-injection test for the copy; add-ins Vortex placed wait on a real `.dazip` deployment (ADR-0028 §6).
+  Run only on simulated records so far.*
 
 **SonarCloud's first findings** *(added 2026-11-02, from the first analyses after
 [ADR-0027](adr/0027-sonarcloud-analysis-in-ci.md); 113 open findings and a red, report-only quality gate)*. Each task

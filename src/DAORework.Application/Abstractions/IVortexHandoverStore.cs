@@ -14,6 +14,9 @@ public interface IVortexHandoverStore
 
     Task SaveAsync(string documentsDirectory, VortexHandover handover, CancellationToken cancellationToken = default);
 
+    /// <summary>The entries of the kept <c>AddIns.xml</c>, or none when none was kept.</summary>
+    Task<Result<IReadOnlyList<KeptAddIn>>> ReadKeptAddInsAsync(string documentsDirectory, CancellationToken cancellationToken = default);
+
     /// <summary>Keeps <c>Settings\AddIns.xml</c> as it is now, if it is there and none is kept yet, for the last step.</summary>
     Task KeepAddInsListAsync(string documentsDirectory, CancellationToken cancellationToken = default);
 }

@@ -7,6 +7,9 @@ public sealed record VortexHandoverState(VortexHandoverStep Step, IReadOnlyList<
 {
     private static readonly StringComparer _names = StringComparer.OrdinalIgnoreCase;
 
+    /// <summary>Gets a value indicating whether Vortex is placing mods again though the copies are on (ADR-0028 §4).</summary>
+    public bool PlacingAgain { get; init; }
+
     public static VortexHandoverState From(HandInstalledSnapshot snapshot, VortexHandover? handover, IReadOnlyCollection<string> activeModIds)
     {
         ArgumentNullException.ThrowIfNull(snapshot);
@@ -14,7 +17,10 @@ public sealed record VortexHandoverState(VortexHandoverStep Step, IReadOnlyList<
         var present = PresentFiles(snapshot);
         var managed = ManagedMods(snapshot, present);
         var copies = handover?.Copies ?? [];
-        return new VortexHandoverState(StepOf(snapshot, handover, managed, present, activeModIds), managed, copies);
+        return new VortexHandoverState(StepOf(snapshot, handover, managed, present, activeModIds), managed, copies)
+        {
+            PlacingAgain = managed.Count > 0 && copies.Any(c => activeModIds.Contains(c.ModId, _names)),
+        };
     }
 
     /// <summary>The mods Vortex can still put back, each once.</summary>

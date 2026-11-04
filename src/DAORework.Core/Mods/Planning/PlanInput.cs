@@ -21,6 +21,9 @@ public sealed record PlanInput(
     /// <summary>Gets why copies that would have been combined were not, such as a copy that cannot be read.</summary>
     public IReadOnlyList<string> CombineProblems { get; init; } = [];
 
+    /// <summary>Gets the official DLC entries to put back in <c>AddIns.xml</c> (ADR-0028 §3).</summary>
+    public IReadOnlyList<AddInsListChange> RestoredAddIns { get; init; } = [];
+
     /// <summary>Gets the files in the install folder's override (P2.5-22), which the game loads too.</summary>
     public IReadOnlyList<string> InstallOverridePaths { get; init; } = [];
 

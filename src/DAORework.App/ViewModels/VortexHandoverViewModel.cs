@@ -5,6 +5,7 @@ using DAORework.Application.Mods.Handover;
 using DAORework.Application.Profiles;
 using DAORework.Core.Common;
 using DAORework.Core.Mods.Handover;
+using DAORework.Core.Mods.Planning;
 using Microsoft.Extensions.Logging;
 
 namespace DAORework.App.ViewModels;
@@ -19,21 +20,23 @@ public sealed partial class VortexHandoverViewModel : PageViewModel
     private readonly GetProfile _getProfile;
     private readonly ReadVortexHandover _read;
     private readonly CopyVortexMods _copy;
+    private readonly FindLostDlc _findLostDlc;
     private IReadOnlyList<VortexCopy> _copies = [];
 
-    public VortexHandoverViewModel(GetProfile getProfile, ReadVortexHandover read, CopyVortexMods copy, ILogger<VortexHandoverViewModel> logger)
+    public VortexHandoverViewModel(GetProfile getProfile, ReadVortexHandover read, CopyVortexMods copy, FindLostDlc findLostDlc, ILogger<VortexHandoverViewModel> logger)
         : base(logger)
     {
         _getProfile = getProfile;
         _read = read;
         _copy = copy;
+        _findLostDlc = findLostDlc;
     }
 
     /// <summary>Gets or sets what runs after copying, such as reading the Library again.</summary>
     public Func<CancellationToken, Task>? AfterCopyAsync { get; set; }
 
     /// <summary>Gets or sets how the copies are turned on: the usual preview, in the order given.</summary>
-    public Func<IReadOnlyList<string>, CancellationToken, Task>? TurnOnAsync { get; set; }
+    public Func<IReadOnlyList<string>, IReadOnlyList<AddInsListChange>, CancellationToken, Task>? TurnOnAsync { get; set; }
 
     public ObservableCollection<string> Mods { get; } = [];
 
@@ -92,8 +95,20 @@ public sealed partial class VortexHandoverViewModel : PageViewModel
         cancellationToken);
 
     [RelayCommand]
-    private Task TurnOnAllAsync(CancellationToken cancellationToken) =>
-        TurnOnAsync?.Invoke([.. _copies.Select(c => c.ModId)], cancellationToken) ?? Task.CompletedTask;
+    private Task TurnOnAllAsync(CancellationToken cancellationToken) => GuardAsync(
+        async token =>
+        {
+            if (!(await DocumentsAsync(token)).TryGetValue(out var documents, out var error)
+                || !(await _findLostDlc.ExecuteAsync(documents, token)).TryGetValue(out var lost, out error))
+            {
+                ReportError(error);
+            }
+            else if (TurnOnAsync is { } turnOn)
+            {
+                await turnOn([.. _copies.Select(c => c.ModId)], lost, token);
+            }
+        },
+        cancellationToken);
 
     private Task<Result<string>> DocumentsAsync(CancellationToken cancellationToken) => ProfileDocuments.ForAsync(_getProfile, ProfileName, cancellationToken);
 

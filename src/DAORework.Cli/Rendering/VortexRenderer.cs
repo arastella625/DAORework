@@ -14,9 +14,12 @@ public sealed class VortexRenderer
         _console = console;
     }
 
-    public void RenderState(VortexHandoverState state)
+    /// <param name="state">Where the handover stands.</param>
+    /// <param name="lostDlc">The official DLC the purge took out of <c>AddIns.xml</c>.</param>
+    public void RenderState(VortexHandoverState state, IReadOnlyList<string> lostDlc)
     {
         ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(lostDlc);
         foreach (var mod in state.Managed)
         {
             _console.WriteLine($"  {mod.Name}  ({mod.FilesInGame} file(s) in the game)");
@@ -30,6 +33,15 @@ public sealed class VortexRenderer
             VortexHandoverStep.TurnOn => "Next, in this order: mods activate " + string.Join(' ', state.Copies.Select(c => c.ModId)),
             _ => "Done: every copy is on.",
         });
+        if (state.PlacingAgain)
+        {
+            _console.WriteLine("Vortex is placing mods again. Stop managing Dragon Age in Vortex, or it will keep changing your game.");
+        }
+
+        if (lostDlc.Count > 0)
+        {
+            _console.WriteLine($"The purge took {string.Join(", ", lostDlc)} out of AddIns.xml. Turn them on from the window's Move from Vortex card to put it back.");
+        }
     }
 
     public void RenderCopied(VortexCopyReport report)

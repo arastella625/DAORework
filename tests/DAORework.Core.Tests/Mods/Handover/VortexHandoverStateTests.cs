@@ -57,6 +57,13 @@ public sealed class VortexHandoverStateTests
     }
 
     [Fact]
+    public void From_VortexManagesModsWhileACopyIsOn_IsPlacingAgain()
+    {
+        Assert.True(VortexHandoverState.From(Snapshot(placed: true, live: true), _handover, ["anto-1"]).PlacingAgain);
+        Assert.False(VortexHandoverState.From(Snapshot(placed: true, live: true), _handover, []).PlacingAgain);
+    }
+
+    [Fact]
     public void From_ThePurgeIsDone_IsTheTurnOnStep_UntilEveryCopyIsOn()
     {
         var purged = Snapshot(placed: false, live: false) with { VortexRecords = [] };

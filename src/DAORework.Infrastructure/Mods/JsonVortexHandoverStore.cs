@@ -1,5 +1,7 @@
 using System.IO.Abstractions;
 using System.Text.Json;
+using System.Xml;
+using System.Xml.Linq;
 using DAORework.Application.Abstractions;
 using DAORework.Application.Common;
 using DAORework.Core.Common;
@@ -51,6 +53,27 @@ public sealed class JsonVortexHandoverStore : IVortexHandoverStore
     {
         _fileSystem.Directory.CreateDirectory(_root);
         await AtomicWrite.TextAsync(_fileSystem, PathFor(documentsDirectory, ".json"), JsonSerializer.Serialize(handover, JsonDefaults.Options), cancellationToken);
+    }
+
+    public async Task<Result<IReadOnlyList<KeptAddIn>>> ReadKeptAddInsAsync(string documentsDirectory, CancellationToken cancellationToken = default)
+    {
+        var kept = PathFor(documentsDirectory, ".AddIns.xml");
+        if (!_fileSystem.File.Exists(kept))
+        {
+            return Result.Success<IReadOnlyList<KeptAddIn>>([]);
+        }
+
+        try
+        {
+            var document = XDocument.Parse(await _fileSystem.File.ReadAllTextAsync(kept, cancellationToken));
+            return Result.Success<IReadOnlyList<KeptAddIn>>([.. document.Descendants("AddInItem")
+                .Where(e => e.Attribute("UID") is not null)
+                .Select(e => new KeptAddIn((string)e.Attribute("UID")!, e.ToString(SaveOptions.DisableFormatting)))]);
+        }
+        catch (XmlException exception)
+        {
+            return Result.Failure<IReadOnlyList<KeptAddIn>>(new Error(DiagnosticCodes.VortexHandoverUnreadable, $"The kept AddIns.xml in {kept} could not be read: {exception.Message}"));
+        }
     }
 
     public async Task KeepAddInsListAsync(string documentsDirectory, CancellationToken cancellationToken = default)

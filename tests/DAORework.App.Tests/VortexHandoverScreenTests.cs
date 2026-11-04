@@ -2,6 +2,7 @@ using System.IO.Abstractions.TestingHelpers;
 using System.Text.Json;
 using Avalonia.Headless.XUnit;
 using DAORework.App.Views;
+using DAORework.Core.Common;
 using DAORework.Core.Mods.Handover;
 using Xunit;
 
@@ -74,6 +75,31 @@ public sealed class VortexHandoverScreenTests : IDisposable
         Assert.False(handover.IsShown);
         var winner = Assert.Single(_host.FileSystem.AllFiles, f => f.EndsWith("hair.dds", StringComparison.OrdinalIgnoreCase) && f.StartsWith(Override, StringComparison.OrdinalIgnoreCase));
         Assert.Equal("blue", _host.FileSystem.File.ReadAllText(winner));
+    }
+
+    [AvaloniaFact]
+    public async Task TurnOn_AfterThePurgeLostDlc_PutsItBackAsItWas()
+    {
+        _host.SeedRealisticInstall();
+        SeedVortex();
+        var list = GamePaths.AddInsListFile(_scenario.DocumentsDirectory);
+        _host.FileSystem.AddFile(list, new MockFileData("""<AddInsList><AddInItem UID="DAO_PRC_EP_1" BioWare="1"><Title DefaultText="Awakening" /></AddInItem></AddInsList>"""));
+        var (_, viewModel) = await _scenario.OpenAsync(seedInstall: false);
+        var handover = viewModel.ModsTab.Handover;
+        await handover.CopyCommand.ExecuteAsync(null);
+        Purge();
+        _host.FileSystem.File.WriteAllText(list, "<AddInsList />");
+        await handover.CheckAgainCommand.ExecuteAsync(null);
+
+        await handover.TurnOnAllCommand.ExecuteAsync(null);
+        var activation = viewModel.ModsTab.Activation;
+
+        Assert.Contains(activation.Preview.Notes, w => w.Contains("back in AddIns.xml", StringComparison.Ordinal));
+        await activation.ApplyCommand.ExecuteAsync(null);
+
+        Assert.False(activation.IsError, activation.StatusMessage);
+        Assert.Contains("BioWare=\"1\"", _host.FileSystem.File.ReadAllText(list), StringComparison.Ordinal);
+        Assert.Equal(VortexHandoverStep.Done, handover.Step);
     }
 
     private void SeedVortex()

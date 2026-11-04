@@ -6,6 +6,7 @@ public enum NextStepKind
     ApplyLargeAddressAware,
     InstallDxvk,
     AdoptHandInstalled,
+    MoveFromVortex,
 }
 
 /// <summary>One suggested next step on the Profile tab: why it is suggested, and the button that starts it.</summary>
