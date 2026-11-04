@@ -1,0 +1,59 @@
+name: Nexus page
+
+# Sends the Nexus page's summary and description from the repository to Nexus Mods (ADR-0030), when either file
+# changes on main or when run by hand. It runs only on main, in the nexus-page environment, which holds its own copy of
+# the Nexus API key; it never runs a pull request's code. With the key and the mod id set it sends; with neither it
+# skips with a notice; with only one the setup is half done and it fails.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/release/nexus/summary.txt'
+      - 'docs/release/nexus/description.bbcode'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nexus-page
+  cancel-in-progress: false
+
+jobs:
+  send:
+    name: Send the page text to Nexus
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: nexus-page
+    env:
+      NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+      NEXUS_MOD_ID: ${{ vars.NEXUS_MOD_ID }}
+      SUMMARY: docs/release/nexus/summary.txt
+      DESCRIPTION: docs/release/nexus/description.bbcode
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Send the summary and description
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "$NEXUS_API_KEY" && -z "$NEXUS_MOD_ID" ]]; then
+            echo "::notice::The Nexus page sync is not set up (docs/release/nexus/README.md), so nothing was sent."
+            exit 0
+          fi
+          [[ -n "$NEXUS_API_KEY" ]] || { echo "::error::NEXUS_MOD_ID is set, but the nexus-page environment has no NEXUS_API_KEY secret."; exit 1; }
+          [[ "$NEXUS_MOD_ID" =~ ^[0-9]+$ ]] || { echo "::error::NEXUS_MOD_ID must be the Unique Mod ID, digits only."; exit 1; }
+          # Nexus collapses whitespace in the summary and allows 350 characters; checking first gives a clearer error.
+          summary=$(tr -s '[:space:]' ' ' < "$SUMMARY" | sed 's/^ //; s/ $//')
+          (( ${#summary} >= 1 && ${#summary} <= 350 )) || { echo "::error::$SUMMARY is ${#summary} characters; Nexus allows 1 to 350."; exit 1; }
+          [[ -s "$DESCRIPTION" ]] || { echo "::error::$DESCRIPTION is empty."; exit 1; }
+          jq -n --arg summary "$summary" --rawfile description "$DESCRIPTION" \
+            '{summary: $summary, description: $description}' > body.json
+          status=$(curl -sS -o response.txt -w '%{http_code}' -X PATCH \
+            -H "apikey: $NEXUS_API_KEY" -H 'Content-Type: application/json' -H 'Accept: application/json' \
+            --data-binary @body.json "https://api.nexusmods.com/v3/mods/$NEXUS_MOD_ID")
+          if [[ "$status" != 204 ]]; then
+            echo "::error::Nexus answered $status."; cat response.txt; exit 1
+          fi
+          echo "Sent the summary (${#summary} characters) and the description to mod $NEXUS_MOD_ID." | tee -a "$GITHUB_STEP_SUMMARY"
