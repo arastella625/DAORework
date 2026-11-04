@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <ProjectReference Include="..\DAORework.Core\DAORework.Core.csproj" />
+    <ProjectReference Include="..\DAORework.Formats\DAORework.Formats.csproj" />
     <ProjectReference Include="..\DAORework.Application\DAORework.Application.csproj" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />

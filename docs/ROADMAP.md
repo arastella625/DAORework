@@ -578,6 +578,8 @@ Flatpak, AppImage or distribution packages; macOS; malware scanning on Linux; ch
 
 - P3-07 Conflicts inside `.erf` archives, over the P3-01 reader: the resource names inside each mod's override
   archives, compared with loose files and with each other, so a shared resource is found however it is packed.
+  *Done: on the Combined files card ([screenshot](screenshots/p3-07/01-packed.png)). No mod is said to win: which copy
+  the game uses isn't known.*
 - P3-08 `.gda` tables row by row, over the P3-01 reader: when two mods ship the same table, which rows each
   changes. Combining tables whose changes do not overlap is its own ADR, with the M2DA mechanism as the first answer.
 - P3-09 Talk table string ids two mods both use, over the P3-01 reader.

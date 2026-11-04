@@ -60,6 +60,7 @@ public static class DependencyInjection
         services.AddSingleton<IHandInstalledModsReader, HandInstalledModsReader>();
         services.AddSingleton<IVortexHandoverStore, JsonVortexHandoverStore>();
         services.AddSingleton<IDownloadsFolder, FolderDownloads>();
+        services.AddSingleton<IErfContentsReader, LibraryErfContents>();
         services.AddSingleton<INewDownloadsStore, JsonNewDownloadsStore>();
         services.AddSingleton<IAdoptionImporter, HandInstalledModImporter>();
         services.AddSingleton<IMalwareScanner, AmsiMalwareScanner>();
