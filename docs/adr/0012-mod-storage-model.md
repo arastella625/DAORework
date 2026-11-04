@@ -30,6 +30,8 @@ The game reads two kinds of mod, both under the documents folder (`Documents\Bio
   same archive gives the same id, and two releases of a mod get different ids.
 
 ### Deployment: copies, into folders DAORework owns
+*[ADR-0036](0036-only-mod-files-reach-the-game.md) leaves out files that aren't part of a mod to the game.*
+
 - Activating a mod **copies** its files. It never uses links, so the documents folder can be on another drive or on
   OneDrive, no elevated rights are needed, and a deployed file changed in the game folder can never damage the library.
   (Chosen by the owner, 2026-09-29.)

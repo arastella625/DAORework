@@ -108,6 +108,16 @@ public sealed class AdoptionScannerTests
         Assert.False(scan.Candidates.Single(c => c.Kind == AdoptionCandidateKind.LooseOverrideFiles).DeployedByVortex);
     }
 
+    [Fact]
+    public void Scan_AFolderOfMacLeftoversAndALoneReadme_AreNotMods()
+    {
+        var snapshot = Snapshot(
+            overrideFolders: Folders(("__MACOSX", ["packages/core/override/__MACOSX/hair/._hair.dds", "packages/core/override/__MACOSX/hair/hair.dds"]), ("Old Mod", ["packages/core/override/Old Mod/readme.txt"])),
+            loose: [new HandInstalledFile("packages/core/override/__folder_managed_by_vortex", 4)]);
+
+        Assert.Empty(Scan(snapshot).Candidates);
+    }
+
     private static KnownItem Item(string id, FingerprintKind kind, string value) =>
         new(id, id, KnownItemKind.Mod, $"https://example.org/{id}", "Author's permission", [new KnownItemFingerprint(kind, value)]);
 

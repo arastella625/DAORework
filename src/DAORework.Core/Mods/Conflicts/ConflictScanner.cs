@@ -76,7 +76,7 @@ public static class ConflictScanner
     {
         var unmanaged = unmanagedOverridePaths.ToLookup(p => p[(p.LastIndexOfAny(['/', '\\']) + 1)..], _names);
         return deploy
-            .Where(f => f.IsOverride && unmanaged.Contains(f.FileName) && !NonModFiles.Is(f.Source.RelativePath))
+            .Where(f => f.IsOverride && unmanaged.Contains(f.FileName))
             .Select(f => new UnmanagedShadow(f, unmanaged[f.FileName].ToList()))
             .ToList();
     }
@@ -88,7 +88,7 @@ public static class ConflictScanner
             .Where(f => !f.IsOverride && f.TargetPath.StartsWith(addInPrefix, StringComparison.OrdinalIgnoreCase))
             .ToLookup(f => f.FileName, _names);
         return deploy
-            .Where(f => f.IsOverride && addInFiles.Contains(f.FileName) && !NonModFiles.Is(f.Source.RelativePath))
+            .Where(f => f.IsOverride && addInFiles.Contains(f.FileName))
             .SelectMany(f => addInFiles[f.FileName].Select(a => new AddInFileOverridden(f, a)))
             .ToList();
     }

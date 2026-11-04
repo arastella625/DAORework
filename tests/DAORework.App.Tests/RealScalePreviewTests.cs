@@ -95,6 +95,7 @@ public sealed class RealScalePreviewTests : IDisposable
         Assert.StartsWith("Left out: ", activation.Preview.Notes[0], StringComparison.Ordinal);
         Assert.True(activation.ApplyCommand.CanExecute(null));
         Assert.False(activation.CanLeaveOut);
+        Assert.DoesNotContain("deletes", activation.Preview.Summary, StringComparison.Ordinal);
         ModsTabScenario.Show<LibraryPanel>(window);
         Screenshots.Save(window, "real-scale-02-ready-preview");
     }

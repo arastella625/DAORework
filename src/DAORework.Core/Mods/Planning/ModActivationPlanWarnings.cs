@@ -1,6 +1,7 @@
 using System.Globalization;
 using DAORework.Core.Mods.Combining;
 using DAORework.Core.Mods.Conflicts;
+using DAORework.Core.Mods.Library;
 
 namespace DAORework.Core.Mods.Planning;
 
@@ -46,10 +47,23 @@ public static class ModActivationPlanWarnings
             warnings.Add(Missing(plan.MissingRecordedFiles.Count));
         }
 
+        if (Tidied(plan) is { } tidied)
+        {
+            warnings.Add(tidied);
+        }
+
         warnings.AddRange(plan.CombineProblems);
         warnings.AddRange(plan.AddInsChanges.Where(c => c.Item is not null).Select(c => $"Puts {c.ModId} back in AddIns.xml: the purge in Vortex took it out."));
         warnings.AddRange(InstallOverrideWarnings.For(plan, nameOf));
         return warnings;
+    }
+
+    /// <summary>Says when a mod that stays on loses files placed before they were left out (ADR-0036), which would otherwise look like a surprise.</summary>
+    internal static string? Tidied(ModActivationPlan plan)
+    {
+        var staying = plan.TargetModIds.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var count = plan.Operations.Count(o => o.Action == PlanAction.Delete && staying.Contains(o.ModId) && NonModFiles.Is(o.TargetPath));
+        return count == 0 ? null : $"Takes {Files(count)} that mean nothing to the game, such as readmes, out of your game. Your Library keeps {(count == 1 ? "it" : "them")}.";
     }
 
     internal static string Missing(int count) =>

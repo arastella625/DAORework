@@ -3,7 +3,7 @@ namespace DAORework.Core.Mods.Library;
 /// <summary>
 /// Files in a mod that aren't part of it as far as the game goes: what other tools leave behind (Vortex's folder
 /// markers, a Mac's <c>.DS_Store</c>, <c>__MACOSX</c> and <c>._</c> files, Windows' <c>Thumbs.db</c>) and what is written
-/// for people (readmes and other documents). Two mods sharing one of these changes nothing in the game. Pure.
+/// for people (readmes and other documents). They stay in the library and are never deployed (ADR-0036). Pure.
 /// </summary>
 public static class NonModFiles
 {

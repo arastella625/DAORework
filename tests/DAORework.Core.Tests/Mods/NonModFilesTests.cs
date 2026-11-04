@@ -36,6 +36,41 @@ public sealed class NonModFilesTests
     }
 
     [Fact]
+    public void Map_KeepsTheModsFiles_AndLeavesTheRestInTheLibrary()
+    {
+        var mod = Mods.Override("hair", "hair.dds#1", "readme.txt#2", "__folder_managed_by_vortex#3", "__MACOSX/._hair.dds#4");
+
+        var deployed = Assert.Single(ModLayout.Map(mod).Value);
+
+        Assert.Equal("hair.dds", deployed.FileName);
+        Assert.Equal(4, mod.Files.Count);
+    }
+
+    [Fact]
+    public void Plan_AModAlreadyOnWithAReadmePlaced_TakesItOutAndSaysSo()
+    {
+        const string target = "packages/core/override/DAORework/hair/readme.txt";
+        var mod = Mods.Override("hair", "hair.dds#1", "readme.txt#2");
+        var current = DeploymentRecord.Empty with { ActiveModIds = ["hair"], Files = [new RecordedFile(target, "2", "hair")] };
+
+        var plan = ModActivationPlanner.Plan(new PlanInput(current, [mod], [], new Dictionary<string, string> { [target] = "2" }, [])).Value;
+
+        Assert.Contains(plan.Operations, o => o.Action == PlanAction.Delete && o.TargetPath == target);
+        Assert.Contains("Takes 1 file that mean", Assert.Single(PlanNotes.For(plan, id => id)), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Plan_TurningAModOff_DoesNotExplainItsReadmeGoing()
+    {
+        const string target = "packages/core/override/DAORework/hair/readme.txt";
+        var current = DeploymentRecord.Empty with { ActiveModIds = ["hair"], Files = [new RecordedFile(target, "2", "hair")] };
+
+        var plan = ModActivationPlanner.Plan(new PlanInput(current, [], [], new Dictionary<string, string> { [target] = "2" }, [])).Value;
+
+        Assert.Empty(PlanNotes.For(plan, id => id));
+    }
+
+    [Fact]
     public void Plan_AnAddInAndAnOverrideModBothHoldingAMarker_WarnsAboutNothing()
     {
         var addIn = new LibraryMod("addin", "Add-in", ModKind.AddIn, [new LibraryModFile("Manifest.xml", 1, "m"), new LibraryModFile("Contents/addins/x/__folder_managed_by_vortex", 1, "a")], "uid");
