@@ -471,7 +471,7 @@ and undo as any other mod, and says yes to the program first. A mod that cannot 
   is copied into `override`, and its preview says what will happen. *Done: `ModKind.GameProgram`, and until P2.8-04
   turning one on is blocked, naming it ([screenshot](screenshots/p2.8-02/01-preview.png)).*
 - P2.8-03 See what is there: `DAO_INSTALL_PROGRAM_FOUND` reports a DLL in `bin_ship` that is neither the game's nor in
-  the record.
+  the record. *Done (`BinShipProgramsRule`); the GOG and EA copies' own DLLs are still to be compared.*
 - P2.8-04 Plan and apply: `PlanGameProgramMod` and `ApplyGameProgramMod` on the fix path's record, journal and backups,
   with ADR-0033's refusals. A refactor PR comes first if a shared piece is fix-only.
 - P2.8-05 Say yes to the program: the tick box in the preview, *Turn on selected* leaving these mods out, and

@@ -25,6 +25,7 @@ public static class DiagnosticCodes
     // P2.5-22: the install folder's own override, which older guides use and the game loads too.
     public const string InstallOverrideFiles = "DAO_INSTALL_OVERRIDE_FILES";
     public const string InstallOverrideShared = "DAO_INSTALL_OVERRIDE_SHARED";
+    public const string InstallProgramFound = "DAO_INSTALL_PROGRAM_FOUND";
     public const string InstallOverrideUnreadable = "DAO_INSTALL_OVERRIDE_UNREADABLE";
     public const string OverrideDirectoryNotFound = "DAO_OVERRIDE_DIRECTORY_NOT_FOUND";
 

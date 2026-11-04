@@ -34,6 +34,7 @@ public static class DependencyInjection
         services.AddSingleton<IDiagnosticRule, DocumentsRedirectionRule>();
         services.AddSingleton<IDiagnosticRule, ModFoldersRule>();
         services.AddSingleton<IDiagnosticRule, InstallOverrideRule>();
+        services.AddSingleton<IDiagnosticRule, BinShipProgramsRule>();
         services.AddSingleton<IDiagnosticRule, LargeAddressAwareRule>();
         services.AddSingleton<IDiagnosticRule, SteamProtectedExecutableRule>();
         services.AddSingleton<IDiagnosticRule, PrerequisitesRule>();
