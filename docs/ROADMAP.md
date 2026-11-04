@@ -232,9 +232,9 @@ platform item was carried into Phase 2.*
 ## Phase 2.6: After launch
 
 **Status: in progress.** Releases `v0.3.1` to `v0.4.0` came from this work (see [CHANGELOG.md](../CHANGELOG.md)). Open:
-P2.5-22 (in part), P2.5-23, P2.5-31, the SonarCloud findings (P2.5-35, P2.5-37, P2.5-38), P2.6-01 to
-P2.6-04, and the two items carried from Phase 2.5's exit gate. Opened on 2026-11-03 for the work that had been added to
-Phase 2.5 after 0.3.0.
+P2.5-22 (in part), P2.5-23, P2.5-31, the SonarCloud findings (P2.5-35, P2.5-37, P2.5-38), P2.6-01, P2.6-02,
+P2.6-06 and P2.6-07, and the two items carried from Phase 2.5's exit gate. Opened on 2026-11-03 for the work that had
+been added to Phase 2.5 after 0.3.0.
 
 **Goal:** a player who switched to DAORework stays. What the owner and the first players find in real use is fixed
 or smoothed: several mods at once, mods that touch the same files, a window organised around what a player does,
@@ -407,13 +407,25 @@ decision.
   ended in `startup_failure` after a change to the repository's Actions settings, fixed there by the owner. The
   SHA-pin setting was not the cause, but `ci.yml` and `release.yml` now pin GitHub's own actions to commit SHAs too.
 
+**Releasing on Nexus** *(added 2026-11-04: Nexus holds every upload for a manual check, as it did 0.3.1 and 0.4.0)*.
+
+- P2.6-06 Say it up front ([#86](https://github.com/arastella625/DAORework/issues/86)): the README, the website and
+  the Nexus description say a new version may be held on Nexus for a day or two, and that the same zip is on GitHub
+  straight away. `docs/release/nexus-upload.md` says what to do after each upload, including reporting a false
+  positive to the antivirus engine Nexus names.
+- P2.6-07 Fewer flags, quicker reviews ([#87](https://github.com/arastella625/DAORework/issues/87)): the release no
+  longer compresses the single-file executables, which antivirus heuristics treat like packed programs, and each
+  release run writes the filled-in review request to Nexus into its summary. A VirusTotal scan in CI waits until
+  these two have been tried on a few releases.
+
 **Not in this phase:** the same as Phase 2.5's.
 
 **Exit gate:**
 - [ ] P2.5-22, P2.5-23 and P2.5-31 are done.
 - [ ] The SonarCloud tasks (P2.5-32 to P2.5-38) are done, and the quality gate is green. It stays report-only
   unless a separate decision makes it blocking.
-- [ ] P2.6-01 to P2.6-04 are done, and `scripts/verify-real-install.ps1` reports no FAIL on the owner's PC.
+- [ ] P2.6-01 to P2.6-04, P2.6-06 and P2.6-07 are done, and `scripts/verify-real-install.ps1` reports no FAIL on
+  the owner's PC.
 - [ ] Carried from Phase 2.5: Steam, GOG and EA App each have a real run in `docs/testing/phase-2.5-matrix.md`, and
   at least one beta tester from outside the project completes adopt, import, activate and rollback in the GUI
   (P2.5-08, [#70](https://github.com/arastella625/DAORework/issues/70)). The owner may carry these forward again.
