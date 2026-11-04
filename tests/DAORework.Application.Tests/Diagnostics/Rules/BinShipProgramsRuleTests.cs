@@ -17,6 +17,7 @@ public sealed class BinShipProgramsRuleTests
 
     private readonly MockFileSystem _fileSystem = new();
     private readonly InMemoryDeploymentStores _records = new();
+    private readonly FakeFileHasher _hasher = new();
 
     private RuntimeProfile Profile => new() { InstallDirectory = _install };
 
@@ -51,9 +52,33 @@ public sealed class BinShipProgramsRuleTests
     public async Task EvaluateAsync_AFileInTheRecord_IsLeftOut()
     {
         Add("d3d9.dll");
-        await _records.SaveAsync(_install, new DeploymentRecord([], [new RecordedFile("bin_ship/d3d9.dll", "a", "fix-dxvk")], []));
+        await _records.SaveAsync(_install, new DeploymentRecord([], [new RecordedFile("bin_ship/d3d9.dll", "hash:D3D9.DLL", "fix-dxvk")], []));
 
         Assert.Empty(await Rule().EvaluateAsync(Profile));
+    }
+
+    [Fact]
+    public async Task EvaluateAsync_AFileReplacedSinceTheRecord_IsNamed()
+    {
+        Add("d3d9.dll");
+        await _records.SaveAsync(_install, new DeploymentRecord([], [new RecordedFile("bin_ship/d3d9.dll", "what-dxvk-placed", "fix-dxvk")], []));
+
+        var issue = Assert.Single(await Rule().EvaluateAsync(Profile));
+
+        Assert.Contains("1 program(s) DAORework did not place: d3d9.dll.", issue.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task EvaluateAsync_ARecordedFileThatCantBeRead_WarnsRatherThanGuessing()
+    {
+        Add("d3d9.dll");
+        await _records.SaveAsync(_install, new DeploymentRecord([], [new RecordedFile("bin_ship/d3d9.dll", "a", "fix-dxvk")], []));
+        _hasher.UnreadablePaths.Add(Path.Combine(_install, GamePaths.BinShipDirectoryName, "d3d9.dll"));
+
+        var issue = Assert.Single(await Rule().EvaluateAsync(Profile));
+
+        Assert.Equal(DiagnosticSeverity.Warning, issue.Severity);
+        Assert.Contains("could not be read", issue.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -71,7 +96,7 @@ public sealed class BinShipProgramsRuleTests
         Assert.Contains("d3d9.dll, dinput8.dll (DAO Lib).", issue.Message, StringComparison.Ordinal);
     }
 
-    private BinShipProgramsRule Rule(params KnownItem[] items) => new(_fileSystem, _records, new FakeKnownItemsCatalogSource(items));
+    private BinShipProgramsRule Rule(params KnownItem[] items) => new(_fileSystem, _records, new FakeKnownItemsCatalogSource(items), _hasher);
 
     private void Add(params string[] names)
     {
