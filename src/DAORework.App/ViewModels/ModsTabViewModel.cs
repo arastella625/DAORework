@@ -1,3 +1,5 @@
+using DAORework.Core.Mods.Planning;
+
 namespace DAORework.App.ViewModels;
 
 /// <summary>The Mods tab's panels, grouped so the pages stay within five dependencies (ENGINEERING_STANDARDS §3).</summary>
@@ -21,6 +23,9 @@ public sealed class ModsTabViewModel
         Selection = new LibrarySelectionViewModel(library.Mods, Activation);
         Changes = deployed.Changes;
         LoadOrder = deployed.LoadOrder;
+        Handover = deployed.Handover;
+        Handover.AfterCopyAsync = library.LoadAsync;
+        Handover.TurnOnAsync = TurnOnAsync;
         Activation.ActiveModsChanged += (_, _) => Library.ShowActive(Activation.ActiveModIds);
         Filter = new ModListFilter(library.Mods, handInstalled.Candidates);
         Setup = new SetupSummary(this);
@@ -63,6 +68,9 @@ public sealed class ModsTabViewModel
     /// <summary>Gets the load order and the files mods share (P2.5-05).</summary>
     public LoadOrderViewModel LoadOrder { get; }
 
+    /// <summary>Gets the <i>Move from Vortex</i> card (ADR-0028 §3).</summary>
+    public VortexHandoverViewModel Handover { get; }
+
     /// <summary>Gets the kind cards, the chips and Arrange, which filter the page (ADR-0026, P2.5-26).</summary>
     public ModListFilter Filter { get; }
 
@@ -79,6 +87,14 @@ public sealed class ModsTabViewModel
         await Changes.LoadAsync(profileName, cancellationToken);
         await LoadOrder.LoadAsync(profileName, cancellationToken);
         await HandInstalled.RefreshAsync(cancellationToken);
+        await Handover.LoadAsync(profileName, cancellationToken);
+    }
+
+    private Task TurnOnAsync(IReadOnlyList<string> modIds, CancellationToken cancellationToken)
+    {
+        Filter.ShowOnlyCommand.Execute(ModShowFilter.All); // The preview shows with your mods, which a chip may be hiding.
+        var rows = modIds.Select(id => Library.Mods.FirstOrDefault(m => string.Equals(m.Id, id, StringComparison.OrdinalIgnoreCase))).OfType<LibraryModRow>().ToList();
+        return Activation.PlanChangeAsync(ModChangeKind.Activate, rows, cancellationToken);
     }
 
     private string NameOf(string modId) =>
@@ -91,5 +107,6 @@ public sealed class ModsTabViewModel
         await Changes.RefreshAsync(cancellationToken);
         await LoadOrder.RefreshAsync(cancellationToken);
         await HandInstalled.RefreshAsync(cancellationToken);
+        await Handover.RefreshAsync(cancellationToken);
     }
 }
