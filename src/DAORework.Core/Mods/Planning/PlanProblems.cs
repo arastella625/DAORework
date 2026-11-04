@@ -15,7 +15,7 @@ public static class PlanProblems
     {
         ArgumentNullException.ThrowIfNull(plan);
         ArgumentNullException.ThrowIfNull(nameOf);
-        var problems = plan.Blockers.GroupBy(b => b.Kind).OrderBy(g => g.Key).SelectMany(g => Describe(g.Key, [.. g], plan, nameOf)).ToList();
+        var problems = All(plan, nameOf);
         if (problems.Count <= MaxShown)
         {
             return problems;
@@ -24,6 +24,16 @@ public static class PlanProblems
         var more = problems.Count - (MaxShown - 1);
         return [.. problems.Take(MaxShown - 1), new PlanProblem(PlanWords.Count(more, "more problem", "more problems"), "Show details lists them.")];
     }
+
+    /// <summary>How many causes there are, including any past the rows shown.</summary>
+    public static int Count(ModActivationPlan plan)
+    {
+        ArgumentNullException.ThrowIfNull(plan);
+        return All(plan, id => id).Count;
+    }
+
+    private static List<PlanProblem> All(ModActivationPlan plan, Func<string, string> nameOf) =>
+        [.. plan.Blockers.GroupBy(b => b.Kind).OrderBy(g => g.Key).SelectMany(g => Describe(g.Key, [.. g], plan, nameOf))];
 
     private static IEnumerable<PlanProblem> Describe(PlanBlockerKind kind, List<PlanBlocker> blockers, ModActivationPlan plan, Func<string, string> nameOf) => kind switch
     {
@@ -53,7 +63,7 @@ public static class PlanProblems
         {
             problems.Add(new PlanProblem(
                 $"{PlanWords.Names(off, nameOf)} {(off.Count == 1 ? "runs" : "run")} inside the game, and DAORework can't install that kind of mod yet.",
-                $"Leave {It(off.Count)} out for now. {(off.Count == 1 ? "It stays" : "They stay")} in your Library."));
+                $"Leave {It(off.Count)} out for now. {(off.Count == 1 ? "It stays" : "They stay")} in your Library.{Instead(blockers)}"));
         }
 
         if (on.Count > 0)
@@ -86,6 +96,9 @@ public static class PlanProblems
             $"{PlanWords.Names(mods, nameOf)} {(mods.Count == 1 ? "is" : "are")} already installed some other way.",
             $"Leave {It(mods.Count)} out for now, or uninstall the other copy first.");
     }
+
+    private static string Instead(List<PlanBlocker> blockers) =>
+        blockers.Select(b => b.Instead).OfType<string>().Distinct(StringComparer.Ordinal).FirstOrDefault() is { } instead ? " " + instead : string.Empty;
 
     private static string It(int count) => count == 1 ? "it" : "them";
 }

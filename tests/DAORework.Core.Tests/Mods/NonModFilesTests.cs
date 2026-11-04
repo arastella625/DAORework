@@ -45,6 +45,14 @@ public sealed class NonModFilesTests
     }
 
     [Fact]
+    public void Plan_TwoModsSharingAFileInsideAMacFolder_WarnsAboutNothing()
+    {
+        var plan = ModActivationPlanner.Plan(new PlanInput(DeploymentRecord.Empty, [Mods.Override("a", "__MACOSX/hair.dds#1"), Mods.Override("b", "__MACOSX/hair.dds#2")], [], new Dictionary<string, string>(), [])).Value;
+
+        Assert.Empty(ModActivationPlanWarnings.For(plan, id => id));
+    }
+
+    [Fact]
     public void Plan_TwoModsSharingOnlyMarkersAndReadmes_WarnsAboutNothing()
     {
         var plan = ModActivationPlanner.Plan(new PlanInput(

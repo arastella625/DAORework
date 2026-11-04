@@ -49,14 +49,14 @@ public sealed class PlanNotesTests
     }
 
     [Fact]
-    public void For_ManySetsOfMods_ShowsFourAndCountsTheRest()
+    public void For_ManySetsOfMods_ShowsThreeAndCountsTheRest()
     {
         var mods = Enumerable.Range(0, 10).SelectMany(i => new[] { Mods.Override($"low{i}", $"f{i}.dds#1"), Mods.Override($"high{i}", $"f{i}.dds#2") }).ToArray();
 
         var notes = Notes(mods);
 
-        Assert.Equal(6, notes.Count);
-        Assert.Equal("6 more sets of mods share files. Show details lists them.", notes[^1]);
+        Assert.Equal(5, notes.Count);
+        Assert.Equal("7 more sets of mods share files. Show details lists them.", notes[^1]);
     }
 
     [Fact]
@@ -65,6 +65,17 @@ public sealed class PlanNotesTests
         var mods = Enumerable.Range(0, 8).Select(i => Mods.Override($"m{i}", Textures(10, i.ToString(System.Globalization.CultureInfo.InvariantCulture)))).ToArray();
 
         Assert.Equal("m7 wins over m0, m1, m2 and 4 more: 10 textures and models.", Notes(mods)[1]);
+    }
+
+    [Fact]
+    public void For_OneSharedFileAmongManyWarnings_WritesItInTheSingular()
+    {
+        var plan = ModActivationPlanner.Plan(new PlanInput(DeploymentRecord.Empty, [Mods.Override("a", "x.dds#1"), Mods.Override("b", "x.dds#2")], [], new Dictionary<string, string>(), [])).Value with
+        {
+            CombineProblems = ["one", "two", "three", "four", "five", "six"],
+        };
+
+        Assert.Equal("1 file is in more than one mod. The mod lower in the order wins.", PlanNotes.For(plan, id => id)[0]);
     }
 
     private static string[] Textures(int count, string content) => [.. Enumerable.Range(0, count).Select(i => $"t{i}.dds#{content}")];

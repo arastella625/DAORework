@@ -8,4 +8,7 @@ public sealed record PlanBlocker(PlanBlockerKind Kind, string Subject, string Me
 
     /// <summary>Gets the mods that clear it if they aren't turned on; empty when leaving a mod out would not.</summary>
     public IReadOnlyList<string> LeaveOutModIds { get; init; } = [];
+
+    /// <summary>Gets what the window offers instead of the mod, such as the Fixes page for DXVK.</summary>
+    public string? Instead { get; init; }
 }

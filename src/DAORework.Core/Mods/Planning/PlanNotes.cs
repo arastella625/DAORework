@@ -28,18 +28,19 @@ public static class PlanNotes
         if (conflicts.UnmanagedShadows.Count > 0)
         {
             var mods = conflicts.UnmanagedShadows.Select(s => s.Managed.ModId);
-            notes.Add($"{ModActivationPlanWarnings.Files(conflicts.UnmanagedShadows.Count)} from {PlanWords.Names(mods, nameOf)} share a name with files in the override folder that DAORework doesn't manage; the game picks one.");
+            notes.Add($"{ModActivationPlanWarnings.Files(conflicts.UnmanagedShadows.Count)} from {PlanWords.Names(mods, nameOf)} {Verb(conflicts.UnmanagedShadows.Count, "shares", "share")} a name with files in the override folder that DAORework doesn't manage; the game picks one.");
         }
 
         if (conflicts.AddInFilesOverridden.Count > 0)
         {
             var mods = conflicts.AddInFilesOverridden.Select(a => a.Override.ModId);
-            notes.Add($"{ModActivationPlanWarnings.Files(conflicts.AddInFilesOverridden.Count)} from {PlanWords.Names(mods, nameOf)} replace files inside add-ins.");
+            notes.Add($"{ModActivationPlanWarnings.Files(conflicts.AddInFilesOverridden.Count)} from {PlanWords.Names(mods, nameOf)} {Verb(conflicts.AddInFilesOverridden.Count, "replaces a file", "replace files")} inside add-ins.");
         }
 
         if (conflicts.ProgramFiles.Count > 0)
         {
-            notes.Add($"{PlanWords.Names(conflicts.ProgramFiles.Select(f => f.ModId), nameOf)} hold programs, which are never installed into the game's folders.");
+            var mods = conflicts.ProgramFiles.Select(f => f.ModId).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            notes.Add($"{PlanWords.Names(mods, nameOf)} {Verb(mods.Count, "holds", "hold")} programs, which are never installed into the game's folders.");
         }
 
         if (plan.MissingRecordedFiles.Count > 0)
@@ -57,7 +58,7 @@ public static class PlanNotes
 
         if (plan.InstallOverrideShadows.Count > 0)
         {
-            notes.Add($"{ModActivationPlanWarnings.Files(plan.InstallOverrideShadows.Count)} are also in your game folder's override, which DAORework doesn't manage; the game uses one copy.");
+            notes.Add($"{ModActivationPlanWarnings.Files(plan.InstallOverrideShadows.Count)} {Verb(plan.InstallOverrideShadows.Count, "is", "are")} also in your game folder's override, which DAORework doesn't manage; the game uses one copy.");
         }
 
         if (plan.InstallOverrideProblem is { } unread)
@@ -67,4 +68,6 @@ public static class PlanNotes
 
         return notes;
     }
+
+    private static string Verb(int count, string one, string many) => count == 1 ? one : many;
 }

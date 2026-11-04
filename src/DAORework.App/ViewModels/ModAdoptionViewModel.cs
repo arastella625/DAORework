@@ -17,8 +17,6 @@ namespace DAORework.App.ViewModels;
 /// </summary>
 public sealed partial class ModAdoptionViewModel : PageViewModel
 {
-    private const int MaxNamesInMessage = 3;
-
     private readonly GetProfile _getProfile;
     private readonly PlanAdoption _plan;
     private readonly ApplyModPlan _apply;
@@ -89,7 +87,7 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
                 }
 
                 var titles = candidates.Select(m => m.Title).ToList();
-                _pending = (documents, plan, titles.Count <= MaxNamesInMessage ? string.Join(", ", titles) : $"{titles.Count} mods");
+                _pending = (documents, plan, PlanWords.Names(titles, title => title));
                 CanApply = !plan.IsBlocked && !plan.IsEmpty;
                 if (AfterPlanAsync is not null)
                 {
@@ -127,7 +125,7 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
                     return;
                 }
 
-                ReportSuccess($"Now managing {pending.Name}. It is in the Library, and you can undo this in History.");
+                ReportSuccess($"Now managing {pending.Name}. You can undo this in History.");
             },
             cancellationToken);
 

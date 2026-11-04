@@ -77,6 +77,22 @@ public sealed class PlanProblemsTests
     }
 
     [Fact]
+    public void For_DxvkInAZip_SaysWhereDxvkIs()
+    {
+        var dxvk = new LibraryMod("dxvk", "Dxvk", ModKind.GameProgram, [new LibraryModFile("bin_ship/d3d9.dll", 1, "a") { Kind = ModFileKind.Program }]);
+
+        Assert.EndsWith("For DXVK, use the Fixes page.", Assert.Single(PlanProblems.For(Plan([dxvk]), Name)).WhatToDo, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Summary_MoreCausesThanRows_CountsEveryCause()
+    {
+        var pairs = Enumerable.Range(0, 8).SelectMany(i => new[] { AddIn($"a{i}", $"shared{i}"), AddIn($"b{i}", $"shared{i}") }).ToList();
+
+        Assert.Equal("Can't go ahead yet: 8 problems to sort out first.", ModActivationPlanSummary.Line(Plan(pairs), Name));
+    }
+
+    [Fact]
     public void Summary_Blocked_CountsTheProblems()
     {
         Assert.Equal("Can't go ahead yet: 1 problem to sort out first.", ModActivationPlanSummary.Line(Plan([Program("luma")]), Name));

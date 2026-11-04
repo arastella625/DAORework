@@ -9,7 +9,7 @@ namespace DAORework.Core.Mods.Planning;
 /// </summary>
 internal static class SharedFileNotes
 {
-    private const int GroupsShown = 4;
+    private const int GroupsShown = 3;
 
     private static readonly HashSet<string> _behaviour = new(StringComparer.OrdinalIgnoreCase) { ".gda", ".ncs", ".tlk" };
 
@@ -22,7 +22,10 @@ internal static class SharedFileNotes
             return [];
         }
 
-        var notes = new List<string> { $"{ModActivationPlanWarnings.Files(conflicts.Count)} are in more than one mod. For each one, the mod lower in the order wins." };
+        var notes = new List<string>
+        {
+            conflicts.Count == 1 ? "1 file is in more than one mod. The mod lower in the order wins." : $"{ModActivationPlanWarnings.Files(conflicts.Count)} are in more than one mod. For each one, the mod lower in the order wins.",
+        };
         var behaviour = conflicts.Count(IsBehaviour);
         if (behaviour > 0)
         {

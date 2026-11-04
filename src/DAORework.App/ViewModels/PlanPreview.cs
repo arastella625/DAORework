@@ -11,8 +11,6 @@ namespace DAORework.App.ViewModels;
 /// </summary>
 public sealed partial class PlanPreview : ObservableObject
 {
-    private const int MaxNamesInTitle = 3;
-
     /// <summary>Gets or sets how a mod id is shown; an id it does not know is shown as it is.</summary>
     public Func<string, string> NameOf { get; set; } = id => id;
 
@@ -42,7 +40,7 @@ public sealed partial class PlanPreview : ObservableObject
         return names.Count switch
         {
             1 => $"{verb} {list}",
-            <= MaxNamesInTitle => $"{verb} {names.Count} mods: {list}",
+            <= PlanWords.NamesShown => $"{verb} {names.Count} mods: {list}",
             _ => $"{verb} {names.Count} mods",
         };
     }

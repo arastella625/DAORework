@@ -14,7 +14,7 @@ public static class ModActivationPlanSummary
         nameOf ??= id => id;
         if (plan.IsBlocked)
         {
-            return $"Can't go ahead yet: {PlanWords.Count(PlanProblems.For(plan, nameOf).Count, "problem", "problems")} to sort out first.";
+            return $"Can't go ahead yet: {PlanWords.Count(PlanProblems.Count(plan), "problem", "problems")} to sort out first.";
         }
 
         if (plan.IsEmpty)

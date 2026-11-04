@@ -4,7 +4,7 @@ using Xunit;
 
 namespace DAORework.App.Tests;
 
-/// <summary>The window opened on <see cref="RealScaleLibrary"/>, at a laptop's size, with seven of its mods on.</summary>
+/// <summary>The window opened on <see cref="RealScaleLibrary"/>, at its own size, with seven of its mods on.</summary>
 internal sealed class RealScaleScenario(AppTestHost host)
 {
     private readonly ModsTabScenario _scenario = new(host);
@@ -14,8 +14,6 @@ internal sealed class RealScaleScenario(AppTestHost host)
         host.SeedRealisticInstall();
         RealScaleLibrary.Seed(host);
         var (window, viewModel) = await _scenario.OpenAsync(seedInstall: false);
-        window.Width = 1280;
-        window.Height = 800;
         await viewModel.Library.LoadAsync(TestContext.Current.CancellationToken);
         Assert.Equal(RealScaleLibrary.Entries.Count, viewModel.Library.Mods.Count);
         Pick(viewModel, RealScaleLibrary.AlreadyOn.Contains);

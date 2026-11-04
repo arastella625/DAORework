@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Avalonia.LogicalTree;
+using Avalonia.VisualTree;
 using DAORework.App.Views;
 using Xunit;
 
@@ -51,8 +52,9 @@ public sealed class RealScalePreviewTests : IDisposable
         Assert.False(activation.ApplyCommand.CanExecute(null));
 
         ModsTabScenario.Show<LibraryPanel>(window);
-        var border = window.GetLogicalDescendants().OfType<LibraryPanel>().Distinct().Single().GetLogicalDescendants().OfType<Border>().First(b => b.Name == "PlanPreview");
-        Assert.InRange(border.Bounds.Height, 1, window.Height);
+        var panel = window.GetLogicalDescendants().OfType<LibraryPanel>().Distinct().Single();
+        var border = panel.GetLogicalDescendants().OfType<Border>().First(b => b.Name == "PlanPreview");
+        Assert.InRange(border.Bounds.Height, 1, panel.FindAncestorOfType<ScrollViewer>()!.Viewport.Height);
         Screenshots.Save(window, "real-scale-01-blocked-preview");
     }
 

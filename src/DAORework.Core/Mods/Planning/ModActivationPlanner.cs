@@ -75,9 +75,10 @@ public static class ModActivationPlanner
     /// <summary>Says what to do when there is something to do: a copy added as an override mod is still on, or the mod is DXVK.</summary>
     private static PlanBlocker GameProgramBlocker(LibraryMod mod, DeploymentRecord current)
     {
+        var dxvk = mod.Files.Any(f => f.RelativePath.EndsWith("d3d9.dll", StringComparison.OrdinalIgnoreCase));
         var next = current.ActiveModIds.Contains(mod.Id, _paths)
             ? $" Turn {mod.Name} off first: it was added before DAORework knew this, and its files do nothing where they are."
-            : mod.Files.Any(f => f.RelativePath.EndsWith("d3d9.dll", StringComparison.OrdinalIgnoreCase))
+            : dxvk
                 ? " For DXVK, use: fixes apply dxvk <release>."
                 : string.Empty;
         return new PlanBlocker(
@@ -87,6 +88,7 @@ public static class ModActivationPlanner
         {
             ModIds = [mod.Id],
             LeaveOutModIds = [mod.Id],
+            Instead = dxvk ? "For DXVK, use the Fixes page." : null,
         };
     }
 

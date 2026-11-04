@@ -31,7 +31,7 @@ internal static class RealScaleLibrary
 
     public static IReadOnlyList<LibraryEntry> Entries { get; } = Build();
 
-    /// <summary>Writes every mod into the library, the two blocked add-ins' traces into the game, and returns the UID already registered.</summary>
+    /// <summary>Writes every mod into the library, and what blocks the two add-ins into the game.</summary>
     public static void Seed(AppTestHost host)
     {
         foreach (var entry in Entries)
@@ -70,7 +70,7 @@ internal static class RealScaleLibrary
 
         foreach (var name in new[] { "Haircolors", "colorful hair basic-reworked" })
         {
-            mods.Add(Override(name).Same("t1_stb_bac.tnt", "t1_stb_cld.tnt", "t3_har_bac.tnt", "t3_har_cld.tnt").Text("list.txt").Looks(name[..4], 40).Readme().Build());
+            mods.Add(Override(name).Same("t1_stb_bac.tnt", "t1_stb_cld.tnt", "t3_har_bac.tnt", "t3_har_cld.tnt").Own("list.txt").Looks(name[..4], 40).Readme().Build());
         }
 
         foreach (var name in new[] { "rules_core", "talent_singletarget" })
@@ -89,8 +89,8 @@ internal static class RealScaleLibrary
             mods.Add(Override(name).Looks(name.Replace(" ", string.Empty, StringComparison.Ordinal), 62).Own("zevran_kiss_dm_new.cut").Readme().Build());
         }
 
-        mods.Add(Override("__MACOSX").Text("._.DS_Store", "._hair.dds", "._eye.dds", "._skin.dds", "._lash.dds", "._brow.dds").Build());
-        mods.Add(Override("loose").Text("readme.txt", "for chargenmorphcfg.txt").Looks("loose", 28).Build());
+        mods.Add(Override("__MACOSX").Own("._.DS_Store", "._hair.dds", "._eye.dds", "._skin.dds", "._lash.dds", "._brow.dds").Build());
+        mods.Add(Override("loose").Own("readme.txt", "for chargenmorphcfg.txt").Looks("loose", 28).Build());
         foreach (var name in new[] { "Item Pack", "Dye Kit", "Tactics Slots", BlockedRegistered, BlockedInTheWay })
         {
             mods.Add(AddIn(name));
@@ -143,8 +143,6 @@ internal static class RealScaleLibrary
             _files.AddRange(files.Select(f => File(f, "same in each")));
             return this;
         }
-
-        public ModBuilder Text(params string[] files) => Own(files);
 
         public ModBuilder Readme() => Own("readme.txt");
 
