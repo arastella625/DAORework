@@ -42,10 +42,6 @@ second `Contact: mailto:...` line.
 - **Nexus pictures:** the Nexus description loads them from `https://daorework.dilly-world.net/images/`.
 - **Website pictures:** the page shows `images/app/`, copies of the README's screenshots
   (`docs/screenshots/readme/`). Copy them again when those are retaken.
-- **The next release (the first with the six-tab layout):** take out the page's *Coming in the next release* section,
-  the *Pictured: the next release* line and *From the next release*, and fold its points into *What it does*. Point
-  the Nexus description at `images/app/` too (with new captions in `nexus/captions.txt`), then delete the numbered
-  pictures in `images/` except `00-cover.png`, retaken at 1920 x 1080 from the new layout.
 - **After each release:** put the zip's SHA-256 (from its `.sha256` file) and the version in the *Check your download*
   section of `site/public/index.html`, and merge. Add the Nexus page's address to the *Download* section once it
   exists.

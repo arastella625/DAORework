@@ -58,7 +58,6 @@ code { font: 0.9em ui-monospace, Consolas, monospace; background: var(--surface-
   display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 6px;
   box-shadow: 0 0 0 3px var(--bg), 0 0 0 4px rgba(201, 169, 110, 0.35);
 }
-.cover-note { color: var(--muted); font-size: 0.9rem; margin: 0.9em 0 0; }
 
 /* A card with a double rule: the gold line and a faint one inside it. */
 .panel {
