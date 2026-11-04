@@ -28,6 +28,8 @@ public static class ModActivationPlanner
             c.TargetPath,
             $"{string.Join(" and ", c.Files.Select(f => f.ModId).Distinct(_paths))} would both write {c.TargetPath}.")));
 
+        state.Blockers.AddRange(input.Mods.Where(m => m.Kind == ModKind.GameProgram).Select(GameProgramBlocker));
+
         // A path collision leaves two files on one path; it already blocks the plan, so each path is planned once.
         var desired = conflicts.Deploy.DistinctBy(f => f.TargetPath, _paths).ToList();
         foreach (var file in desired)
@@ -60,6 +62,11 @@ public static class ModActivationPlanner
             InstallOverrideProblem = input.InstallOverrideProblem,
         });
     }
+
+    private static PlanBlocker GameProgramBlocker(LibraryMod mod) => new(
+        PlanBlockerKind.GameProgramNotInstalled,
+        mod.Id,
+        $"{mod.Name} runs inside the game, and DAORework can't install that kind of mod yet. Nothing was changed, and it stays in your Library.");
 
     /// <summary>What the record says once the plan is applied: every deployed file with the hash it will have, and the add-ins DAORework added.</summary>
     private static DeploymentRecord NextRecord(PlanInput input, List<DeployedFile> desired, List<AddInsListChange> changes)

@@ -10,4 +10,7 @@ public enum ArchiveShape
 
     /// <summary>Loose files for the override folder.</summary>
     Override,
+
+    /// <summary>A mod that runs inside the game, for <c>bin_ship</c> (ADR-0033 §1).</summary>
+    GameProgram,
 }

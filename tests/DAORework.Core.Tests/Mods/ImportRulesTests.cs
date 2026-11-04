@@ -65,6 +65,28 @@ public sealed class ImportRulesTests
         Assert.Equal(new ArchiveClassification(ArchiveShape.WrappedAddIn, "QUDAO Fixpack v3_5.dazip"), ArchiveClassifier.Classify(["QUDAO Fixpack v3_5.dazip", "readme.txt"]).Value);
     }
 
+    [Theory]
+    [InlineData("bin_ship/dinput8.dll", "bin_ship/daolib/addresses/1.05.txt", "readme.txt")]
+    [InlineData("BIN_SHIP/dinput8.dll")]
+    [InlineData("DAO Lib 1.2/bin_ship/dinput8.dll", "DAO Lib 1.2/readme.txt")]
+    [InlineData("d3d9.dll", "dxgi.dll", "ReShade.ini", "Luma/shader.fx")]
+    [InlineData("Luma 0.6.9/d3d9.dll", "Luma 0.6.9/Luma/shader.fx")]
+    public void Classify_ForBinShip_InEitherShape_IsAGameProgram(params string[] files)
+    {
+        Assert.Equal(ArchiveShape.GameProgram, ArchiveClassifier.Classify(files).Value.Shape);
+    }
+
+    [Theory]
+    [InlineData("hair.dds", "tool.dll")]
+    [InlineData("bin_ship/dinput8.dll", "override/table.gda")]
+    [InlineData("Mod/Tools/helper.dll", "Mod/readme.txt")]
+    [InlineData("a/x.dll", "b/y.dll")]
+    [InlineData("readme.txt")]
+    public void Classify_GameDataOrNoProgramAtTheRoot_StaysAnOverrideMod(params string[] files)
+    {
+        Assert.Equal(ArchiveShape.Override, ArchiveClassifier.Classify(files).Value.Shape);
+    }
+
     [Fact]
     public void Classify_LooseFiles_IsAnOverrideMod()
     {

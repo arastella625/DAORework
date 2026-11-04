@@ -64,12 +64,12 @@ internal sealed class LibraryImporter
 
         var (name, uid) = mod;
         var id = ModIds.Create(name, source.Sha256);
+        var kind = KindOf(shape.Shape, uid, origin);
         if (await ReadAsync(MetadataPath(id), cancellationToken) is { } existing)
         {
-            return Result.Success(new LibraryImport(existing, AlreadyInLibrary: true));
+            return Result.Success(new LibraryImport(await RecognisedAgainAsync(existing, kind, cancellationToken), AlreadyInLibrary: true));
         }
 
-        var kind = uid is null ? ModKind.Override : ModKind.AddIn;
         var (files, staging) = await ExtractAsync(source, id, cancellationToken);
         var scan = await ScanAsync(files, staging, cancellationToken);
         if (scan.Status == MalwareScanStatus.ThreatFound)
@@ -85,6 +85,19 @@ internal sealed class LibraryImporter
         var entry = new LibraryEntry(new LibraryMod(id, name, kind, files, uid), source.Name, source.Sha256, _clock.GetUtcNow()) { Origin = origin, Scan = scan };
         await AtomicWrite.TextAsync(_fileSystem, MetadataPath(id), JsonSerializer.Serialize(entry, JsonDefaults.Options), cancellationToken);
         return Result.Success(new LibraryImport(entry, AlreadyInLibrary: false));
+    }
+
+    /// <summary>A mod added before DAORework knew mods that run inside the game becomes one when it is added again (ADR-0033).</summary>
+    private async Task<LibraryEntry> RecognisedAgainAsync(LibraryEntry existing, ModKind kind, CancellationToken cancellationToken)
+    {
+        if (kind != ModKind.GameProgram || existing.Mod.Kind != ModKind.Override)
+        {
+            return existing;
+        }
+
+        var entry = existing with { Mod = existing.Mod with { Kind = kind } };
+        await AtomicWrite.TextAsync(_fileSystem, MetadataPath(existing.Mod.Id), JsonSerializer.Serialize(entry, JsonDefaults.Options), cancellationToken);
+        return entry;
     }
 
     /// <summary>A mod.json, read through its migration chain; null when it is missing or an import never finished.</summary>
@@ -110,6 +123,17 @@ internal sealed class LibraryImporter
         {
             return null;
         }
+    }
+
+    /// <summary>Only a download is a mod that runs inside the game: files adopted from override stay override files (ADR-0033 §1).</summary>
+    private static ModKind KindOf(ArchiveShape shape, string? uid, ModOrigin origin)
+    {
+        if (uid is not null)
+        {
+            return ModKind.AddIn;
+        }
+
+        return shape == ArchiveShape.GameProgram && origin.Kind == ModOriginKind.Download ? ModKind.GameProgram : ModKind.Override;
     }
 
     private static async Task<ZipModSource> UnwrapAsync(ModSource outer, string dazip, CancellationToken cancellationToken)

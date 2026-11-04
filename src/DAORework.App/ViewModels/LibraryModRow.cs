@@ -48,12 +48,17 @@ public sealed partial class LibraryModRow : ObservableObject
     {
         ArgumentNullException.ThrowIfNull(entry);
         ArgumentNullException.ThrowIfNull(check);
-        var kind = entry.Mod.AddInUid is { } uid ? $"add-in {uid}" : "override mod";
+        var kind = entry.Mod.Kind == ModKind.GameProgram ? "runs in the game" : entry.Mod.AddInUid is { } uid ? $"add-in {uid}" : "override mod";
         var imported = entry.ImportedAtUtc.ToLocalTime().ToString("d MMM yyyy", CultureInfo.InvariantCulture);
         var notes = new List<string> { LibraryEntryNotes.Scan(entry) };
         if (LibraryEntryNotes.Programs(entry) is { } programs)
         {
             notes.Add(programs);
+        }
+
+        if (entry.Mod.Kind == ModKind.GameProgram)
+        {
+            notes.Add("DAORework can't install this kind of mod yet, so turning it on changes nothing.");
         }
 
         if (entry.Origin.Kind == ModOriginKind.Adopted)

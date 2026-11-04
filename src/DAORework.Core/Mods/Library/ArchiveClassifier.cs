@@ -29,7 +29,7 @@ public static class ArchiveClassifier
         var dazips = files.Where(f => f.EndsWith(".dazip", StringComparison.OrdinalIgnoreCase)).ToList();
         return dazips.Count switch
         {
-            0 => Result.Success(new ArchiveClassification(ArchiveShape.Override)),
+            0 => Result.Success(new ArchiveClassification(GameProgramLayout.Matches(files) ? ArchiveShape.GameProgram : ArchiveShape.Override)),
             1 => Result.Success(new ArchiveClassification(ArchiveShape.WrappedAddIn, dazips[0])),
             _ => Fail($"it holds {dazips.Count} .dazip files ({string.Join(", ", dazips)}); extract them and import each one."),
         };

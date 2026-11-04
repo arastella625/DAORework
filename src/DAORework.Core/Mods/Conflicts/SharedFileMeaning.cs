@@ -1,3 +1,5 @@
+using DAORework.Core.Mods.Library;
+
 namespace DAORework.Core.Mods.Conflicts;
 
 /// <summary>
@@ -7,11 +9,6 @@ namespace DAORework.Core.Mods.Conflicts;
 /// </summary>
 public static class SharedFileMeaning
 {
-    private static readonly HashSet<string> _looks = new(StringComparer.OrdinalIgnoreCase)
-    {
-        ".dds", ".tga", ".mmh", ".msh", ".mao", ".phy", ".mor", ".mop", ".tnt", ".gr2", ".ani", ".anb", ".fxe",
-    };
-
     /// <returns>A sentence for the file's kind, or null for a kind DAORework says nothing particular about.</returns>
     public static string? For(string fileName)
     {
@@ -24,7 +21,7 @@ public static class SharedFileMeaning
             ".tlk" => "It is a talk table, so the other mod's text is not shown.",
             ".erf" or ".rim" => "It is an archive: only one is loaded, and what is inside is not compared yet.",
             ".xml" => "It is a settings file the game reads one copy of.",
-            _ when _looks.Contains(extension) => "It is a texture or model, so only that mod's look shows.",
+            _ when GameDataFiles.Looks.Contains(extension) => "It is a texture or model, so only that mod's look shows.",
             _ => null,
         };
     }

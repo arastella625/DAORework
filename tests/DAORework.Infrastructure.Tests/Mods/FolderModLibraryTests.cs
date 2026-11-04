@@ -89,6 +89,32 @@ public sealed class FolderModLibraryTests
     }
 
     [Fact]
+    public async Task Import_ABinShipZip_IsAModThatRunsInTheGame()
+    {
+        var path = Download("DAO Lib-7052-1-2.zip", Zip(("bin_ship/dinput8.dll", "dll"u8.ToArray()), ("readme.txt", "hi"u8.ToArray())));
+
+        var entry = (await _library.ImportAsync(path)).Value.Entry;
+
+        Assert.Equal(ModKind.GameProgram, entry.Mod.Kind);
+        Assert.Equal(ModKind.GameProgram, (await _library.ListAsync()).Single().Mod.Kind);
+    }
+
+    [Fact]
+    public async Task Import_ABinShipZipAddedAsAnOverrideModBefore_IsRecognisedWhenAddedAgain()
+    {
+        var path = Download("DAO Lib-7052-1-2.zip", Zip(("bin_ship/dinput8.dll", "dll"u8.ToArray())));
+        await _library.ImportAsync(path);
+        var metadata = _fileSystem.AllFiles.Single(f => f.EndsWith(".mod.json", StringComparison.Ordinal));
+        _fileSystem.File.WriteAllText(metadata, _fileSystem.File.ReadAllText(metadata).Replace("GameProgram", "Override", StringComparison.Ordinal));
+
+        var again = (await _library.ImportAsync(path)).Value;
+
+        Assert.True(again.AlreadyInLibrary);
+        Assert.Equal(ModKind.GameProgram, again.Entry.Mod.Kind);
+        Assert.Equal(ModKind.GameProgram, (await _library.ListAsync()).Single().Mod.Kind);
+    }
+
+    [Fact]
     public async Task Import_ZipSlip_IsRefusedAndWritesNothing()
     {
         var result = await _library.ImportAsync(Download("evil.zip", Zip(("../../evil.txt", "x"u8.ToArray()))));

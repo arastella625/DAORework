@@ -5,6 +5,9 @@ public enum PlanBlockerKind
     /// <summary>Two mods would write the same file outside the override folder.</summary>
     PathCollision,
 
+    /// <summary>A mod that runs inside the game, which this plan cannot place (ADR-0033 §1).</summary>
+    GameProgramNotInstalled,
+
     /// <summary>A file DAORework placed was changed afterwards; it is the user's call whether to replace it.</summary>
     ChangedSinceDeployed,
 
