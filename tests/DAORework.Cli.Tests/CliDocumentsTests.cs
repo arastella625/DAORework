@@ -25,6 +25,20 @@ public sealed class CliDocumentsTests : IDisposable
     }
 
     [Fact]
+    public void Detect_FolderElsewhere_SaysWhatANewProfileUsesAndNotWhereTheGameLooks()
+    {
+        var moved = GamePaths.DefaultDocumentsDirectory(Path.Combine(Path.GetDirectoryName(_host.KnownFolders.UserProfile)!, "Games"));
+        _host.Run("init", "Smoke");
+        _host.FileSystem.AddDirectory(moved);
+        _host.Run("profile", "set-path", "Smoke", "documents", moved);
+
+        var result = _host.Run("detect");
+
+        Assert.Contains("A new profile uses the folder listed first, not the one Windows reports.", result.Output, StringComparison.Ordinal);
+        Assert.DoesNotContain("The game currently uses", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void DetectAndInit_FolderOnlyOnADrive_FindsItAndTheProfileKeepsIt()
     {
         _host.FileSystem.AddDrive("C:", new MockDriveData { DriveType = DriveType.Fixed });
