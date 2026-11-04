@@ -38,6 +38,7 @@ public static class CliConfiguration
             mods.AddCommand<ModsInspectCommand>("inspect").WithDescription("Summarize the override and AddIns folders");
             mods.AddCommand<ModsInventoryCommand>("inventory").WithDescription("Write a JSON inventory of every mod file");
             mods.AddCommand<ModsImportCommand>("import").WithDescription("Add a .dazip, .zip or mod folder to DAORework's library (installs nothing)");
+            mods.AddCommand<ModsDownloadsCommand>("downloads").WithDescription("List the downloads that look like Dragon Age mods. Only reads");
             mods.AddCommand<ModsLibraryCommand>("library").WithDescription("List the mods in DAORework's library");
             mods.AddCommand<ModsStatusCommand>("status").WithDescription("Show the mods DAORework has activated in the profile's documents folder, and its backups");
             mods.AddCommand<ModsActivateCommand>("activate").WithDescription("Install library mods into the documents folder: shows the plan, asks, backs up, applies");

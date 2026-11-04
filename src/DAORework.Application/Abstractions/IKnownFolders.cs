@@ -6,6 +6,9 @@ public interface IKnownFolders
     /// <summary>Gets the Documents folder the shell reports. With OneDrive Known Folder Move this is inside OneDrive.</summary>
     string MyDocuments { get; }
 
+    /// <summary>Gets the Downloads folder the shell reports, wherever it was moved to, or an empty string when it reports none.</summary>
+    string Downloads { get; }
+
     /// <summary>Gets the user's profile folder, whose classic <c>Documents</c> child may hold pre-redirection saves.</summary>
     string UserProfile { get; }
 

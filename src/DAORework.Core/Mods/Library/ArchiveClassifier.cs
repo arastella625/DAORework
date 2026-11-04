@@ -20,8 +20,7 @@ public static class ArchiveClassifier
             return Fail($"'{unsafePath}' would be written outside the mod's folder.");
         }
 
-        if (files.Any(f => f.Equals("Manifest.xml", StringComparison.OrdinalIgnoreCase))
-            && files.Any(f => f.StartsWith("Contents/", StringComparison.OrdinalIgnoreCase)))
+        if (IsAddInLayout(files))
         {
             return Result.Success(new ArchiveClassification(ArchiveShape.AddIn));
         }
@@ -33,6 +32,14 @@ public static class ArchiveClassifier
             1 => Result.Success(new ArchiveClassification(ArchiveShape.WrappedAddIn, dazips[0])),
             _ => Fail($"it holds {dazips.Count} .dazip files ({string.Join(", ", dazips)}); extract them and import each one."),
         };
+    }
+
+    /// <summary>Whether the list has a <c>.dazip</c>'s layout: <c>Manifest.xml</c> and <c>Contents/</c> at its root.</summary>
+    public static bool IsAddInLayout(IReadOnlyList<string> files)
+    {
+        ArgumentNullException.ThrowIfNull(files);
+        return files.Any(f => f.Equals("Manifest.xml", StringComparison.OrdinalIgnoreCase))
+            && files.Any(f => f.StartsWith("Contents/", StringComparison.OrdinalIgnoreCase));
     }
 
     private static Result<ArchiveClassification> Fail(string reason) =>

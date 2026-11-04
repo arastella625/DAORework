@@ -12,6 +12,7 @@ using DAORework.Application.Mods.Adoption;
 using DAORework.Application.Mods.Apply;
 using DAORework.Application.Mods.Backups;
 using DAORework.Application.Mods.Changes;
+using DAORework.Application.Mods.Downloads;
 using DAORework.Application.Mods.Handover;
 using DAORework.Application.Mods.Library;
 using DAORework.Application.Preferences;
@@ -55,6 +56,9 @@ public static class DependencyInjection
         services.AddSingleton<ReadVortexHandover>();
         services.AddSingleton<CopyVortexMods>();
         services.AddSingleton<FindLostDlc>();
+        services.AddSingleton<FindNewDownloads>();
+        services.AddSingleton<SetDownloadHandled>();
+        services.AddSingleton<SetNewDownloads>();
         services.AddSingleton<RunDiagnostics>();
         services.AddSingleton<InstallationProbe>();
         services.AddSingleton<DetectInstallations>();

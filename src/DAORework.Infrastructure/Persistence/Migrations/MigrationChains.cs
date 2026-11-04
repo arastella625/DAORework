@@ -2,6 +2,7 @@ using DAORework.Core.Looks;
 using DAORework.Core.Mods;
 using DAORework.Core.Mods.Apply;
 using DAORework.Core.Mods.Backups;
+using DAORework.Core.Mods.Downloads;
 using DAORework.Core.Mods.Handover;
 using DAORework.Core.Mods.Library;
 using DAORework.Core.Preferences;
@@ -22,6 +23,9 @@ public static class MigrationChains
 
     /// <summary>Gets the chain for a handover from Vortex, new at version 1 (ADR-0028).</summary>
     public static JsonMigrationChain VortexHandovers { get; } = new(VortexHandover.CurrentSchemaVersion, new UnchangedMigration(0));
+
+    /// <summary>Gets the chain for <c>new-downloads.json</c>, new at version 1 (ADR-0034).</summary>
+    public static JsonMigrationChain NewDownloads { get; } = new(NewDownloadsSettings.CurrentSchemaVersion, new UnchangedMigration(0));
 
     public static JsonMigrationChain ModProfiles { get; } = new(DaoModProfile.CurrentSchemaVersion, new NameFromFileStemMigration());
 
