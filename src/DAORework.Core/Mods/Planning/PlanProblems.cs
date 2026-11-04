@@ -50,7 +50,7 @@ public static class PlanProblems
         blockers.GroupBy(b => string.Join('\n', b.ModIds), StringComparer.OrdinalIgnoreCase).Select(set =>
             new PlanProblem(
                 $"{PlanWords.Names(set.First().ModIds, nameOf)} would write {ModActivationPlanWarnings.Files(set.Count())} to the same place, so they can't be on together.",
-                "Leave one out for now."));
+                "Only one of them can be on."));
 
     /// <summary>A mod that is off can be left out; one turned on before DAORework knew better has to be turned off.</summary>
     private static List<PlanProblem> GamePrograms(List<PlanBlocker> blockers, ModActivationPlan plan, Func<string, string> nameOf)
@@ -63,7 +63,7 @@ public static class PlanProblems
         {
             problems.Add(new PlanProblem(
                 $"{PlanWords.Names(off, nameOf)} {(off.Count == 1 ? "runs" : "run")} inside the game, and DAORework can't install that kind of mod yet.",
-                $"Leave {It(off.Count)} out for now. {(off.Count == 1 ? "It stays" : "They stay")} in your Library.{Instead(blockers)}"));
+                $"{(off.Count == 1 ? "It stays" : "They stay")} in your Library, off.{Instead(blockers)}"));
         }
 
         if (on.Count > 0)
@@ -82,7 +82,7 @@ public static class PlanProblems
         var mods = blockers.SelectMany(b => b.ModIds).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
         return new PlanProblem(
             $"{ModActivationPlanWarnings.Files(count)} from {PlanWords.Names(mods, nameOf)} {(count == 1 ? "is" : "are")} already in your game, and DAORework didn't put {It(count)} there.",
-            $"DAORework never overwrites those. Leave {(mods.Count == 1 ? "the mod" : "the mods")} out for now, or take the other copy out of your game first.");
+            $"DAORework never overwrites those. Take the other copy out of your game first, or go without {(mods.Count == 1 ? "this mod" : "these mods")}.");
     }
 
     private static PlanProblem Changed(int count) => new(
@@ -94,7 +94,7 @@ public static class PlanProblems
         var mods = blockers.SelectMany(b => b.ModIds).ToList();
         return new PlanProblem(
             $"{PlanWords.Names(mods, nameOf)} {(mods.Count == 1 ? "is" : "are")} already installed some other way.",
-            $"Leave {It(mods.Count)} out for now, or uninstall the other copy first.");
+            $"Uninstall the other copy first, or go without {It(mods.Count)}.");
     }
 
     private static string Instead(List<PlanBlocker> blockers) =>

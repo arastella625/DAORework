@@ -53,7 +53,7 @@ Warnings are grouped by the mods involved, and every file is behind *Show detail
 > **Turn on 63 mods**
 > Can't go ahead yet: 1 problem to sort out first.
 > ⚠ **Luma runs inside the game, and DAORework can't install that kind of mod yet.**
-> Leave it out for now. It stays in your Library.
+> It stays in your Library, off.
 > ⚠ 376 files are in more than one mod. For each one, the mod lower in the order wins.
 > ⚠ JB3 wins over Commoner Clothes: 120 textures and models.
 > [Leave out Luma] [Cancel] Show details
