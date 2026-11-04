@@ -36,7 +36,9 @@ public sealed class DetectDocumentsFolders
         cancellationToken.ThrowIfCancellationRequested();
 
         var candidates = Roots().ConvertAll(r => Describe(GamePaths.DefaultDocumentsDirectory(r.Root), r.Source));
-        candidates.AddRange((await _profileFolders.ReadAsync(cancellationToken)).Select(path => Describe(path, DocumentsFolderSource.Profile)));
+
+        // Only ones that exist: unlike the usual places, the game will never create a folder a profile names.
+        candidates.AddRange((await _profileFolders.ReadAsync(cancellationToken)).Select(path => Describe(path, DocumentsFolderSource.Profile)).Where(c => c.Exists));
 
         // Detection runs on every diagnose, so the drives are walked only when nothing cheaper found a folder.
         if (!candidates.Exists(c => c.Exists))

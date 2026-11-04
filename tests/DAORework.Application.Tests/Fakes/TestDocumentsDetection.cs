@@ -2,6 +2,7 @@ using System.IO.Abstractions;
 using DAORework.Application.Abstractions;
 using DAORework.Application.Documents;
 using DAORework.Application.Profiles;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace DAORework.Application.Tests.Fakes;
 
@@ -16,6 +17,6 @@ internal static class TestDocumentsDetection
         new(
             fileSystem,
             knownFolders,
-            new ProfileDocumentsFolders(profiles ?? new InMemoryProfileRepository()),
+            new ProfileDocumentsFolders(profiles ?? new InMemoryProfileRepository(), NullLogger<ProfileDocumentsFolders>.Instance),
             search ?? new FakeDocumentsFolderSearch());
 }

@@ -1,9 +1,12 @@
 using System.IO.Abstractions.TestingHelpers;
+using System.Text.Json;
 using DAORework.Application.Documents;
+using DAORework.Application.Profiles;
 using DAORework.Application.Tests.Fakes;
 using DAORework.Core.Common;
 using DAORework.Core.Documents;
 using DAORework.Core.Profiles;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace DAORework.Application.Tests.Documents;
@@ -71,9 +74,10 @@ public sealed class DocumentsFolderSourcesTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ProfileNamesAFolderThatIsGone_StillSearches()
+    public async Task ExecuteAsync_ProfileNamesAFolderThatIsGone_LeavesItOutAndStillSearches()
     {
-        NameInAProfile(TestPaths.Root("Old", "BioWare", "Dragon Age"));
+        var gone = TestPaths.Root("Old", "BioWare", "Dragon Age");
+        NameInAProfile(gone);
         _fileSystem.AddDirectory(_moved);
         _search.Found.Add(_moved);
 
@@ -81,6 +85,7 @@ public sealed class DocumentsFolderSourcesTests
 
         Assert.Equal(_moved, detection.Recommended.Path);
         Assert.Equal(1, _search.Searches);
+        Assert.DoesNotContain(detection.Candidates, c => c.Path == gone);
     }
 
     [Fact]
@@ -105,6 +110,7 @@ public sealed class DocumentsFolderSourcesTests
 
     [Theory]
     [InlineData(typeof(InvalidDataException))]
+    [InlineData(typeof(JsonException))]
     [InlineData(typeof(IOException))]
     [InlineData(typeof(UnauthorizedAccessException))]
     public async Task ReadAsync_AProfileCannotBeRead_ReturnsTheOthers(Type failure)
@@ -112,7 +118,7 @@ public sealed class DocumentsFolderSourcesTests
         var profiles = new UnreadableProfileRepository(_profiles, "Broken", (Exception)Activator.CreateInstance(failure)!);
         NameInAProfile(_moved);
 
-        var folders = await new ProfileDocumentsFolders(profiles).ReadAsync();
+        var folders = await Reader(profiles).ReadAsync();
 
         Assert.Equal(_moved, Assert.Single(folders));
     }
@@ -122,8 +128,10 @@ public sealed class DocumentsFolderSourcesTests
     {
         _profiles.Profiles["Empty"] = new RuntimeProfile { Name = "Empty" };
 
-        Assert.Empty(await new ProfileDocumentsFolders(_profiles).ReadAsync());
+        Assert.Empty(await Reader(_profiles).ReadAsync());
     }
+
+    private static ProfileDocumentsFolders Reader(IProfileRepository profiles) => new(profiles, NullLogger<ProfileDocumentsFolders>.Instance);
 
     private void NameInAProfile(string folder) =>
         _profiles.Profiles["Default"] = new RuntimeProfile { Name = "Default", UserDocumentsDirectory = folder };

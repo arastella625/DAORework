@@ -27,8 +27,10 @@ Detection runs often: `detect`, a new profile, the window's *Detect* button, and
   It reads folder names only, never files, and nothing leaves the machine.
 - **It sits behind a port.** `IDocumentsFolderSearch` is in Application and `DriveDocumentsFolderSearch` in
   Infrastructure, as with `IInstallLocator`. It runs off the calling thread, so the window stays responsive.
-- **A profile that cannot be read names no folder.** Detection carries on without it. The commands that use that
-  profile report the problem.
+- **A profile that cannot be read names no folder.** Detection logs it and carries on without it. The commands that
+  use that profile report the problem.
+- **A folder a profile names that no longer exists is left out.** The window says a missing folder appears on first
+  launch, which is true of the usual places and never of this one.
 - **The user can still name it**, with `profile set-path <name> documents` or *Game folders* in Settings.
 
 ## Consequences
@@ -38,6 +40,8 @@ Detection runs often: `detect`, a new profile, the window's *Detect* button, and
   cached, because a cache would need rules for when the folder appears.
 - A copy kept as a backup, such as `E:\Backup\BioWare\Dragon Age`, is listed like any other, and is the recommendation
   if nothing else exists. Every candidate is shown with its path, so the player can choose another.
+- Three folders deep reaches `C:\Users\<name>\Documents`, so another Windows account's folder would be found if its
+  profile were readable. Windows denies that read by default, and the search skips what it cannot read.
 - The test hosts that run on the real file system turn the search off, so a test never reads the machine's drives.
 
 ## Alternatives considered
