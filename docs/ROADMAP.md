@@ -421,6 +421,11 @@ decision.
   [ADR-0030](adr/0030-nexus-page-text-from-the-repository.md)): a workflow sends `docs/release/nexus/summary.txt`
   and `description.bbcode` to Nexus when they change on `main`, so the owner no longer pastes them. The gallery, the
   name, permissions and the category stay manual. The description gains P2.6-06's note about Nexus's manual check.
+- P2.6-10 The real-install check knows Steam starts the game ([#99](https://github.com/arastella625/DAORework/issues/99),
+  [ADR-0022](adr/0022-launching-steam-installs-through-steam.md)): `verify-real-install.ps1` still wanted a process
+  id, so a Steam install failed two launch checks on the owner's run of 2026-11-03 although the game started. The
+  launch check accepts either success message, and the official launcher check is skipped on a Steam install, where
+  the launch target does not apply. GOG and EA App installs keep it.
 
 **Not in this phase:** the same as Phase 2.5's.
 
