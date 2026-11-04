@@ -14,7 +14,7 @@ public static class VortexNotes
         return candidate switch
         {
             { Kind: AdoptionCandidateKind.VortexMod, DeployedByVortex: true } =>
-                ["Vortex still manages this mod and would put its files back if they were moved, so it stays in Vortex for now. Taking mods over from Vortex comes in a later version."],
+                ["Vortex still manages this mod and would put its files back if they were moved, so it can't be managed on its own. Move from Vortex brings it over (mods vortex on the command line)."],
             { Kind: AdoptionCandidateKind.VortexMod } =>
                 [$"Vortex placed this mod but can no longer change it: the folder has moved since, or Vortex's own copy is gone. {capital} it here is safe. Stop managing Dragon Age in Vortex too, so it doesn't place mods again."],
             { DeployedByVortex: true } =>

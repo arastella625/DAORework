@@ -30,6 +30,7 @@ public static class AppServices
         services.AddTransient<ModActivationViewModel>();
         services.AddTransient<ModChangesViewModel>();
         services.AddTransient<LoadOrderViewModel>();
+        services.AddTransient<VortexHandoverViewModel>();
         services.AddTransient<DeployedModsViewModel>();
         services.AddTransient<ModPageViewModel>();
         services.AddTransient<ModsTabViewModel>();

@@ -1,0 +1,27 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DAORework.App.ViewModels"
+             xmlns:controls="using:DAORework.App.Controls"
+             x:Class="DAORework.App.Views.VortexHandoverPanel"
+             x:DataType="vm:VortexHandoverViewModel">
+  <!-- Move from Vortex (ADR-0028 §3): shown only while Vortex manages mods here, or a handover is under way. -->
+  <controls:Card Margin="12,0">
+    <StackPanel Spacing="10">
+      <TextBlock Classes="SectionTitle" Text="Move from Vortex" />
+      <TextBlock Name="VortexStep" TextWrapping="Wrap" Text="{Binding StepText}" />
+      <ItemsControl Name="VortexMods" ItemsSource="{Binding Mods}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="x:String">
+            <TextBlock Classes="Secondary" Text="{Binding}" TextWrapping="Wrap" />
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+      <TextBlock Name="VortexStatus" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" TextWrapping="Wrap" />
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <Button Name="VortexCopyButton" Classes="accent" Content="Copy" Command="{Binding CopyCommand}" IsVisible="{Binding ShowsCopy}" />
+        <Button Name="VortexTurnOnButton" Classes="accent" Content="Turn them on" Command="{Binding TurnOnAllCommand}" IsVisible="{Binding ShowsTurnOn}" />
+        <Button Name="VortexCheckButton" Content="Check again" Command="{Binding CheckAgainCommand}" />
+      </StackPanel>
+    </StackPanel>
+  </controls:Card>
+</UserControl>
