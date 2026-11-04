@@ -2,6 +2,7 @@ using DAORework.Application.Abstractions;
 using DAORework.Core.Catalog;
 using DAORework.Core.Common;
 using DAORework.Core.Diagnostics;
+using DAORework.Core.Fixes;
 using DAORework.Core.Profiles;
 
 namespace DAORework.Application.Catalog;
@@ -14,9 +15,11 @@ public sealed class DetectKnownItems
 {
     private readonly IKnownItemsCatalogSource _catalogSource;
     private readonly Dictionary<FingerprintKind, IFingerprintMatcher> _matchers;
+    private readonly IHostPlatform _platform;
 
-    public DetectKnownItems(IKnownItemsCatalogSource catalogSource, IEnumerable<IFingerprintMatcher> matchers)
+    public DetectKnownItems(IKnownItemsCatalogSource catalogSource, IEnumerable<IFingerprintMatcher> matchers, IHostPlatform platform)
     {
+        _platform = platform;
         ArgumentNullException.ThrowIfNull(matchers);
         _catalogSource = catalogSource;
         _matchers = matchers.ToDictionary(m => m.Kind);
@@ -45,7 +48,10 @@ public sealed class DetectKnownItems
             }
         }
 
-        return Result.Success(KnownItemsScan.Create(catalog, found, unresolved));
+        var scan = KnownItemsScan.Create(catalog, found, unresolved);
+
+        // Proton has its own way of running Direct3D, so DXVK isn't missing there. One in the game folder is still found (ADR-0031).
+        return Result.Success(_platform.IsLinux ? scan with { Missing = [.. scan.Missing.Where(i => i.Id != FixIds.Dxvk)] } : scan);
     }
 
     private async Task<(List<FingerprintMatch> Matches, Error? Failure)> MatchAsync(

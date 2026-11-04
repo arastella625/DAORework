@@ -19,6 +19,7 @@ All notable changes to DAORework are recorded here. The format follows
 - `DAORework.exe` and `dao.exe` are no longer compressed inside (P2.6-07), since antivirus programs treat a compressed program like a packed one and Nexus holds every flagged upload for a check by hand. Each file is larger; the download grows much less, since the zip compresses them anyway. Nothing changes in how they work.
 
 ### Fixed
+- DXVK is no longer suggested on Linux, where Proton has its own way of running the game (P2.7-06). One already in the game folder is still recognised and can be removed.
 - On Linux, a copy of the game that isn't Steam's now says to start it from your launcher, instead of trying to run a `.exe` (P2.7-05, `DAO_LAUNCH_NOT_SUPPORTED`). Messages about opening a link no longer mention Windows.
 - The documents folder is found in the game's Proton prefix on Linux (P2.7-04, [ADR-0031](docs/adr/0031-steam-on-linux-through-proton.md)), whatever the prefix calls its folders. Diagnostics say so if there's no prefix yet (`DAO_PROTON_PREFIX_MISSING`), or if it has gone with the mods in it, and `mods status` says the same. DAORework never creates a prefix. Nothing changes on Windows.
 - Steam is found on Linux (P2.7-03, [ADR-0031](docs/adr/0031-steam-on-linux-through-proton.md)): the native, Flatpak and Snap folders are read, and every library they list, wherever it is mounted. Nothing changes on Windows.

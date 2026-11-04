@@ -523,7 +523,8 @@ back up saves and press Play, from a `linux-x64` download. Windows players see n
   and points to the player's launcher. Launch messages stop saying *Windows*. *Done; the real `xdg-open` waits for
   P2.7-09.*
 - P2.7-06 Advice that fits Linux: `IHostPlatform`, and DXVK is no longer suggested there. A DXVK already in the game
-  folder is still recognised and can be removed.
+  folder is still recognised and can be removed. *Done: `DetectKnownItems` leaves it out of what is missing, so neither
+  diagnostics nor Home suggest it.*
 - P2.7-07 The window opens: `Program.Main` names the missing library in one line instead of a stack trace, and a CI
   job starts the published window under `xvfb`.
 - P2.7-08 A Linux download: `DAORework-<version>-linux-x64.tar.gz` from `publish-release.ps1` and `release.yml`, with a
