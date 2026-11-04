@@ -18,6 +18,11 @@ with your antivirus, and applies the 4 GB patch and DXVK safely.
 
 ## Description
 
+**New versions**
+A new version may be held here for a day or two. DAORework contains programs, so Nexus staff check each new upload by
+hand before it can be downloaded. The same zip is on GitHub straight away:
+https://github.com/arastella625/DAORework/releases/latest. Its checksum and build attestation are described below.
+
 **What it does**
 - **Takes over your existing setup.** It finds the mods you installed by hand in `override` and `AddIns` and adopts
   them without reinstalling anything. Official DLC is never touched.
