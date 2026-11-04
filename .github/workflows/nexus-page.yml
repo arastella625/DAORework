@@ -27,7 +27,8 @@ jobs:
     environment: nexus-page
     env:
       NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
-      NEXUS_MOD_ID: ${{ vars.NEXUS_MOD_ID }}
+      # A variable or a secret, as release.yml accepts it; it is not a password.
+      NEXUS_MOD_ID: ${{ vars.NEXUS_MOD_ID || secrets.NEXUS_MOD_ID }}
       SUMMARY: docs/release/nexus/summary.txt
       DESCRIPTION: docs/release/nexus/description.bbcode
     steps:
@@ -43,6 +44,7 @@ jobs:
             exit 0
           fi
           [[ -n "$NEXUS_API_KEY" ]] || { echo "::error::NEXUS_MOD_ID is set, but the nexus-page environment has no NEXUS_API_KEY secret."; exit 1; }
+          [[ -n "$NEXUS_MOD_ID" ]] || { echo "::error::The nexus-page environment has the NEXUS_API_KEY secret but no NEXUS_MOD_ID variable. Add it under Settings > Environments > nexus-page."; exit 1; }
           [[ "$NEXUS_MOD_ID" =~ ^[0-9]+$ ]] || { echo "::error::NEXUS_MOD_ID must be the Unique Mod ID, digits only."; exit 1; }
           # Nexus collapses whitespace in the summary and allows 350 characters; checking first gives a clearer error.
           summary=$(tr -s '[:space:]' ' ' < "$SUMMARY" | sed 's/^ //; s/ $//')
