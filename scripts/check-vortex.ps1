@@ -56,10 +56,10 @@ function Find-Places {
 
     $profiles = if ($env:LOCALAPPDATA) { Join-Path $env:LOCALAPPDATA 'DAORework\profiles' } else { '' }
     foreach ($file in (Quiet { Get-ChildItem -LiteralPath $profiles -Filter '*.json' -File })) {
-        $profile = Quiet { Get-Content -LiteralPath $file.FullName -Raw | ConvertFrom-Json }
-        if (-not $profile) { continue }
-        Note Documents $profile.UserDocumentsDirectory "DAORework profile '$($profile.Name)'"
-        Note Install $profile.InstallDirectory "DAORework profile '$($profile.Name)'"
+        $daoProfile = Quiet { Get-Content -LiteralPath $file.FullName -Raw | ConvertFrom-Json }
+        if (-not $daoProfile) { continue }
+        Note Documents $daoProfile.UserDocumentsDirectory "DAORework profile '$($daoProfile.Name)'"
+        Note Install $daoProfile.InstallDirectory "DAORework profile '$($daoProfile.Name)'"
     }
 
     $myDocuments = [Environment]::GetFolderPath('MyDocuments')
