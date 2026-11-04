@@ -13,6 +13,13 @@ public sealed class DependencyRuleTests
         "Testably.Abstractions.FileSystem.Interface",
     ];
 
+    /// <summary>SDD §4: the format readers stay reusable and testable on their own.</summary>
+    [Fact]
+    public void Formats_UsesOnlyTheBcl()
+    {
+        Assert.All(Layers.ReferencedAssemblyNames(Layers.Formats), n => Assert.True(Layers.IsBcl(n), n));
+    }
+
     [Fact]
     public void Core_ReferencesOnlyTheBcl()
     {
