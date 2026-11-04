@@ -59,6 +59,8 @@
       <Button Name="ShowEveryKindButton" Content="Show every kind" Command="{Binding ShowEveryKindCommand}" />
     </StackPanel>
 
+    <TextBlock Name="ModPageStatus" Margin="12,0" Classes="Status" Classes.Error="{Binding ModPage.IsError}" Text="{Binding ModPage.StatusMessage}" TextWrapping="Wrap"
+               IsVisible="{Binding ModPage.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
     <views:LibraryPanel IsVisible="{Binding Filter.ShowsMods}" />
     <views:HandInstalledPanel DataContext="{Binding HandInstalled}" IsVisible="{Binding $parent[views:ModsListPanel].((vm:ModsTabViewModel)DataContext).Filter.ShowsFound}" />
     <views:LoadOrderPanel DataContext="{Binding LoadOrder}" IsVisible="{Binding $parent[views:ModsListPanel].((vm:ModsTabViewModel)DataContext).Filter.Arranging}" />

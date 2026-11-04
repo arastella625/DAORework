@@ -35,6 +35,9 @@ public sealed partial class LibraryModRow : ObservableObject
 
     public string? Warning { get; }
 
+    /// <summary>Gets the page of the known item this mod's download is, or is a copy of (ADR-0034 §7).</summary>
+    public string? PageLink { get; private init; }
+
     [ObservableProperty]
     public partial bool IsActive { get; set; }
 
@@ -48,7 +51,6 @@ public sealed partial class LibraryModRow : ObservableObject
     {
         ArgumentNullException.ThrowIfNull(entry);
         ArgumentNullException.ThrowIfNull(check);
-        var kind = entry.Mod.Kind == ModKind.GameProgram ? "runs in the game" : entry.Mod.AddInUid is { } uid ? $"add-in {uid}" : "override mod";
         var imported = entry.ImportedAtUtc.ToLocalTime().ToString("d MMM yyyy", CultureInfo.InvariantCulture);
         var notes = new List<string> { LibraryEntryNotes.Scan(entry) };
         if (LibraryEntryNotes.Programs(entry) is { } programs)
@@ -83,9 +85,19 @@ public sealed partial class LibraryModRow : ObservableObject
         return new LibraryModRow(
             entry.Mod.Id,
             entry.Mod.Name,
-            $"{kind} · {Counted.Of(entry.Mod.Files.Count, "file")} · {new ByteSize(entry.SizeBytes)} · added {imported} from {entry.SourceName}",
+            $"{KindOf(entry.Mod)} · {Counted.Of(entry.Mod.Files.Count, "file")} · {new ByteSize(entry.SizeBytes)} · added {imported} from {entry.SourceName}",
             notes,
             warning)
-        { IsAddIn = entry.Mod.AddInUid is not null };
+        {
+            IsAddIn = entry.Mod.AddInUid is not null,
+            PageLink = check.IsSuccess ? check.Value.Item?.Source : null,
+        };
     }
+
+    private static string KindOf(LibraryMod mod) => mod.Kind switch
+    {
+        ModKind.GameProgram => "runs in the game",
+        ModKind.AddIn => $"add-in {mod.AddInUid}",
+        _ => "override mod",
+    };
 }

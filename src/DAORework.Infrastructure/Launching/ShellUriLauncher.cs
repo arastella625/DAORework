@@ -23,7 +23,7 @@ public sealed class ShellUriLauncher : IUriLauncher
             return Result.Failure(new Error(
                 DiagnosticCodes.ProcessStartFailed,
                 $"Windows could not open {uri.AbsoluteUri}. {exception.Message}",
-                "Check that Steam is installed, or start the game from Steam."));
+                uri.Scheme == Uri.UriSchemeHttps ? "Check that Windows has a default browser." : "Check that Steam is installed, or start the game from Steam."));
         }
     }
 }

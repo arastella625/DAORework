@@ -31,6 +31,7 @@ public static class AppServices
         services.AddTransient<ModChangesViewModel>();
         services.AddTransient<LoadOrderViewModel>();
         services.AddTransient<DeployedModsViewModel>();
+        services.AddTransient<ModPageViewModel>();
         services.AddTransient<ModsTabViewModel>();
         services.AddTransient<SavesPageViewModel>();
         services.AddTransient<FixStatusViewModel>();

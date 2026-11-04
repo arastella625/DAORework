@@ -7,12 +7,14 @@ public sealed class ModsTabViewModel
         ModsPageViewModel folders,
         HandInstalledViewModel handInstalled,
         LibraryViewModel library,
-        DeployedModsViewModel deployed)
+        DeployedModsViewModel deployed,
+        ModPageViewModel modPage)
     {
         ArgumentNullException.ThrowIfNull(handInstalled);
         ArgumentNullException.ThrowIfNull(deployed);
         ArgumentNullException.ThrowIfNull(library);
         Folders = folders;
+        ModPage = modPage;
         HandInstalled = handInstalled;
         Library = library;
         Activation = deployed.Activation;
@@ -36,6 +38,9 @@ public sealed class ModsTabViewModel
         handInstalled.Adoption.Preview.NameOf = NameOf;
         Changes.NameOf = NameOf;
     }
+
+    /// <summary>Gets opening a known mod's page in the browser (ADR-0034 §7).</summary>
+    public ModPageViewModel ModPage { get; }
 
     /// <summary>Gets the summary of the override and AddIns folders and the inventory.</summary>
     public ModsPageViewModel Folders { get; }

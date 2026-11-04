@@ -61,6 +61,9 @@
                       </DataTemplate>
                     </ItemsControl.ItemTemplate>
                   </ItemsControl>
+                  <Button Content="Open the mod's page" HorizontalAlignment="Left" CommandParameter="{Binding PageLink}"
+                          IsVisible="{Binding PageLink, Converter={x:Static ObjectConverters.IsNotNull}}"
+                          Command="{Binding $parent[views:LibraryPanel].((vm:ModsTabViewModel)DataContext).ModPage.OpenCommand}" />
                 </StackPanel>
                 <StackPanel Grid.Column="2" VerticalAlignment="Top">
                   <!-- A switch (ADR-0026 §4): clicking it shows the preview; it moves once the change is applied. -->

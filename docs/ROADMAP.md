@@ -584,7 +584,9 @@ work; scheduled here as P3-05 and P3-06 are. None of it goes online except what 
   so nothing is added without a click, and the download itself is only ever read. `mods downloads` lists the same files.
   Needs `/security-review`: archive readers now run on files nobody chose.
 - P3-11 Opening a mod's page: *Open the mod's page* wherever the window names a known item's source, in the player's
-  default browser, `https` links only. `ShellUriLauncher`'s error stops mentioning Steam for a web page.
+  default browser, `https` links only. `ShellUriLauncher`'s error stops mentioning Steam for a web page. *Done: on the
+  Library's and *Found in your game*'s rows, through `OpenModPage`; a test holds every catalog source to `https`
+  ([screenshot](screenshots/p3-11/01-open-page.png)).*
 - P3-12 Asking Nexus about `nxm://` links: the owner asks Nexus how a registered app should handle *Mod Manager
   Download*, for free and premium accounts. A go-ahead needs its own ADR before any code (SDD §12): the opt-in, what is
   sent, registering the app, and sharing the link type with Vortex.
