@@ -19,9 +19,9 @@ public sealed class DocumentsDetection
     /// <summary>Gets the candidates: existing folders first, then the shell's known folder, then the rest.</summary>
     public IReadOnlyList<DocumentsFolder> Candidates { get; }
 
-    /// <summary>Gets the first existing folder, else the shell's known folder: the game reads and writes there.</summary>
+    /// <summary>Gets the first existing folder, else the shell's known folder.</summary>
     public DocumentsFolder Recommended => Candidates[0];
 
-    /// <summary>Gets a value indicating whether the recommended folder is not the one the game uses right now.</summary>
+    /// <summary>Gets a value indicating whether the recommended folder is not the one Windows reports, which says nothing of where the game looks.</summary>
     public bool RecommendedDiffersFromKnownFolder => Recommended.Source != DocumentsFolderSource.KnownFolder;
 }

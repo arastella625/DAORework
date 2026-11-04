@@ -25,7 +25,7 @@ public sealed class DocumentsFolderRenderer
 
         if (detection.RecommendedDiffersFromKnownFolder)
         {
-            _console.WriteLine("  The game currently uses the KnownFolder path, but your saves and mods are in the folder listed first.");
+            _console.WriteLine("  A new profile uses the folder listed first, not the one Windows reports.");
         }
     }
 
