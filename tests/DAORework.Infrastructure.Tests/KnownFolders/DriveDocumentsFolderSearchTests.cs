@@ -8,13 +8,17 @@ namespace DAORework.Infrastructure.Tests.KnownFolders;
 
 public sealed class DriveDocumentsFolderSearchTests
 {
-    private static readonly string _drive = MockUnixSupport.Path(@"C:\");
+    private const string Drive = "C:";
 
     private readonly MockFileSystem _fileSystem = new();
+    private readonly string _root;
 
     public DriveDocumentsFolderSearchTests()
     {
-        _fileSystem.AddDrive(_drive, new MockDriveData { DriveType = DriveType.Fixed });
+        _fileSystem.AddDrive(Drive, new MockDriveData { DriveType = DriveType.Fixed });
+
+        // Read back, not assumed: the mock's root for a drive differs by OS (C:\ on Windows, /C: elsewhere).
+        _root = _fileSystem.DriveInfo.GetDrives().Single(d => d.DriveType == DriveType.Fixed).RootDirectory.FullName;
     }
 
     private DriveDocumentsFolderSearch Search => new(_fileSystem, NullLogger<DriveDocumentsFolderSearch>.Instance);
@@ -32,7 +36,7 @@ public sealed class DriveDocumentsFolderSearchTests
     [InlineData(DriveType.Fixed, false)]
     public async Task FindAsync_DriveThatIsNotFixedOrNotReady_IsNotSearched(DriveType type, bool isReady)
     {
-        _fileSystem.AddDrive(_drive, new MockDriveData { DriveType = type, IsReady = isReady });
+        _fileSystem.AddDrive(Drive, new MockDriveData { DriveType = type, IsReady = isReady });
         _fileSystem.AddDirectory(DocumentsUnder());
 
         Assert.Empty(await Search.FindAsync());
@@ -107,6 +111,6 @@ public sealed class DriveDocumentsFolderSearchTests
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() => Search.FindAsync(cancellation.Token));
     }
 
-    private static string DocumentsUnder(params string[] folders) =>
-        GamePaths.DefaultDocumentsDirectory(MockUnixSupport.Path(@"C:\" + string.Join(@"\", folders)));
+    private string DocumentsUnder(params string[] folders) =>
+        GamePaths.DefaultDocumentsDirectory(Path.Combine([_root, .. folders]));
 }

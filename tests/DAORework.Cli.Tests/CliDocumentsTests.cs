@@ -27,9 +27,11 @@ public sealed class CliDocumentsTests : IDisposable
     [Fact]
     public void DetectAndInit_FolderOnlyOnADrive_FindsItAndTheProfileKeepsIt()
     {
-        var root = Path.GetPathRoot(_host.KnownFolders.UserProfile)!;
+        _host.FileSystem.AddDrive("C:", new MockDriveData { DriveType = DriveType.Fixed });
+
+        // Read back, not assumed: the mock's root for a drive differs by OS (C:\ on Windows, /C: elsewhere).
+        var root = _host.FileSystem.DriveInfo.GetDrives().Single(d => d.DriveType == DriveType.Fixed).RootDirectory.FullName;
         var moved = GamePaths.DefaultDocumentsDirectory(root);
-        _host.FileSystem.AddDrive(root, new MockDriveData { DriveType = DriveType.Fixed });
         _host.FileSystem.AddDirectory(moved);
 
         var detected = _host.Run("detect");
