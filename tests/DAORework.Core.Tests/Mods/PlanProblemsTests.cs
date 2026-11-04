@@ -10,14 +10,14 @@ public sealed class PlanProblemsTests
     private const string OwnedOverride = "packages/core/override/DAORework/";
 
     [Fact]
-    public void For_AModThatRunsInTheGame_SaysLeaveItOut()
+    public void For_AModThatRunsInTheGame_SaysItStaysInTheLibrary()
     {
         var plan = Plan([Program("luma")]);
 
         var problem = Assert.Single(PlanProblems.For(plan, Name));
 
         Assert.Equal("Luma runs inside the game, and DAORework can't install that kind of mod yet.", problem.Title);
-        Assert.Equal("Leave it out for now. It stays in your Library.", problem.WhatToDo);
+        Assert.Equal("It stays in your Library, off.", problem.WhatToDo);
         Assert.Equal(["luma"], Assert.Single(plan.Blockers).LeaveOutModIds);
     }
 
