@@ -1,6 +1,6 @@
 # ADR-0034: Picking up new downloads from the player's own browser
 
-- **Status:** Proposed. Becomes Accepted when the owner schedules P3-10.
+- **Status:** Accepted (owner, 2026-11-04)
 - **Date:** 2026-11-03
 
 ## Context

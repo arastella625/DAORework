@@ -232,9 +232,13 @@ platform item was carried into Phase 2.*
 ## Phase 2.6: After launch
 
 **Status: in progress.** Releases `v0.3.1` to `v0.4.0` came from this work (see [CHANGELOG.md](../CHANGELOG.md)). Open:
-P2.5-22 (in part), P2.5-23, P2.5-31, the SonarCloud findings (P2.5-35, P2.5-37, P2.5-38), P2.6-02,
-P2.6-06 to P2.6-08, and the two items carried from Phase 2.5's exit gate. Opened on 2026-11-03 for the work that had
-been added to Phase 2.5 after 0.3.0.
+P2.5-22 (in part), P2.5-23, P2.5-31, the SonarCloud findings (P2.5-37, P2.5-38), and the two items carried from Phase
+2.5's exit gate. Opened on 2026-11-03 for the work that had been added to Phase 2.5 after 0.3.0.
+
+**Scheduled on 2026-11-04 (P2.6-11):** the owner accepted ADR-0031, ADR-0033 and ADR-0034 and asked for work towards a
+large next release without waiting for this phase's exit gate, whose open items need the owner or outside testers.
+They are carried forward, as Phase 1's and Phase 2.5's were. Phases 2.8 and 2.7 and P3-10 and P3-11 start now, in that
+order, after P2.5-22 and P2.5-31.
 
 **Goal:** a player who switched to DAORework stays. What the owner and the first players find in real use is fixed
 or smoothed: several mods at once, mods that touch the same files, a window organised around what a player does,
@@ -378,11 +382,13 @@ decision.
   The AMSI calls in `AmsiNativeMethods` keep `DllImport`, with `SYSLIB1054` suppressed and the reason given:
   `LibraryImport` needs `AllowUnsafeBlocks`, which Infrastructure keeps off, and without trimming or AOT it gains
   nothing (owner, 2026-11-03). It is reconsidered if the app is ever trimmed or compiled ahead of time.
+  *Done ([#79](https://github.com/arastella625/DAORework/pull/79)).*
 - P2.5-36 The Nexus cover page (`docs/release/nexus/cover.html`) gets a `<title>` and `lang`. *Done
   ([#66](https://github.com/arastella625/DAORework/pull/66)); the cover's screenshot is byte-for-byte the same.*
 - P2.5-37 The collection-expression hints (about 85, mostly `IDE0305` and `IDE0028`, set to *suggestion* in
   `.editorconfig`): either raise them to *warning* and apply them in one refactor PR, or keep them as suggestions and
-  stop SonarCloud reporting them. The owner decides in the issue.
+  stop SonarCloud reporting them. *The owner chose on 2026-11-04 to keep them as suggestions; what is left is to stop
+  SonarCloud reporting them.*
 - P2.5-38 Mark the findings that are wrong, in SonarCloud, with the reason: `LookColor`'s exact comparisons
   (`csharpsquid:S1244`; `max` is always exactly one of r, g and b) and `GrainTexture`'s seeded `Random`
   (`csharpsquid:S2245`; seeded on purpose so the screenshots stay the same). No code changes.
@@ -393,39 +399,44 @@ decision.
   `detect` looks only in the Documents folder Windows reports and its OneDrive copy, and misses the owner's, which
   is on `D:`. It also reads the folders the profiles name and searches the drives, as `scripts/check-vortex.ps1`
   does, and the user can still name it. The verify script finds it the same way.
+  *Done ([#101](https://github.com/arastella625/DAORework/pull/101), [ADR-0032](adr/0032-finding-the-documents-folder.md)).*
 - P2.6-02 The tests pass on Windows ([#75](https://github.com/arastella625/DAORework/issues/75)): Cli, Infrastructure
   and App tests fail on the owner's PC while CI (Linux) is green on the same commit. First, find which tests fail
-  and why.
+  and why. *Done ([#95](https://github.com/arastella625/DAORework/pull/95)).*
 
 **Review setup** *(added 2026-11-03, from a `/ponytail-review` of PRs #76 and #78)*.
 
 - P2.6-03 The PR guard holds up ([#80](https://github.com/arastella625/DAORework/issues/80)): `pr-guard.yml` labels a
   PR from its full file list, not the first 100 files, and clears `needs-maintainer-review` when a maintainer releases
   the PR. CODEOWNERS also owns `Directory.Build.props` and every `.csproj`, since `VersionOverride` lets a project
-  change a package version.
+  change a package version. *Done ([#83](https://github.com/arastella625/DAORework/pull/83)).*
 - P2.6-04 CI starts again ([#84](https://github.com/arastella625/DAORework/issues/84)): from 2026-11-03 every run
   ended in `startup_failure` after a change to the repository's Actions settings, fixed there by the owner. The
   SHA-pin setting was not the cause, but `ci.yml` and `release.yml` now pin GitHub's own actions to commit SHAs too.
+  *Done ([#83](https://github.com/arastella625/DAORework/pull/83), [#85](https://github.com/arastella625/DAORework/pull/85)).*
 
 **Releasing on Nexus** *(added 2026-11-04: Nexus holds every upload for a manual check, as it did 0.3.1 and 0.4.0)*.
 
 - P2.6-06 Say it up front ([#86](https://github.com/arastella625/DAORework/issues/86)): the README, the website and
   the Nexus description say a new version may be held on Nexus for a day or two, and that the same zip is on GitHub
   straight away. `docs/release/nexus-upload.md` says what to do after each upload, including reporting a false
-  positive to the antivirus engine Nexus names.
+  positive to the antivirus engine Nexus names. *Done ([#89](https://github.com/arastella625/DAORework/pull/89)).*
 - P2.6-07 Fewer flags, quicker reviews ([#87](https://github.com/arastella625/DAORework/issues/87)): the release no
   longer compresses the single-file executables, which antivirus heuristics treat like packed programs, and each
   release run writes the filled-in review request to Nexus into its summary. A VirusTotal scan in CI waits until
-  these two have been tried on a few releases.
+  these two have been tried on a few releases. *Done ([#90](https://github.com/arastella625/DAORework/pull/90)).*
 - P2.6-08 The Nexus page's text from the repository ([#91](https://github.com/arastella625/DAORework/issues/91),
   [ADR-0030](adr/0030-nexus-page-text-from-the-repository.md)): a workflow sends `docs/release/nexus/summary.txt`
   and `description.bbcode` to Nexus when they change on `main`, so the owner no longer pastes them. The gallery, the
   name, permissions and the category stay manual. The description gains P2.6-06's note about Nexus's manual check.
+  *Done ([#93](https://github.com/arastella625/DAORework/pull/93), [#94](https://github.com/arastella625/DAORework/pull/94)).*
 - P2.6-10 The real-install check knows Steam starts the game ([#99](https://github.com/arastella625/DAORework/issues/99),
   [ADR-0022](adr/0022-launching-steam-installs-through-steam.md)): `verify-real-install.ps1` still wanted a process
   id, so a Steam install failed two launch checks on the owner's run of 2026-11-03 although the game started. The
   launch check accepts either success message, and the official launcher check is skipped on a Steam install, where
-  the launch target does not apply. GOG and EA App installs keep it.
+  the launch target does not apply. GOG and EA App installs keep it. *Done ([#100](https://github.com/arastella625/DAORework/pull/100)).*
+- P2.6-11 Schedule the next release: this roadmap brought up to date, and ADR-0031, ADR-0033 and ADR-0034 accepted, as
+  the owner decided on 2026-11-04.
 
 **Not in this phase:** the same as Phase 2.5's.
 
@@ -444,8 +455,8 @@ decision.
 
 ## Phase 2.8: Mods that run inside the game
 
-**Status: proposed.** Waits for [ADR-0033](adr/0033-mods-that-run-inside-the-game.md) to be accepted, and for Phase 2.6's
-exit gate. Added 2026-11-03, after comparing DAORework with the tools on Nexus.
+**Status: scheduled on 2026-11-04.** [ADR-0033](adr/0033-mods-that-run-inside-the-game.md) is accepted. Added
+2026-11-03, after comparing DAORework with the tools on Nexus.
 The owner chose the same day to run it before Phase 2.7, so it comes first here; it keeps its number because Phase 2.7's
 task IDs were already published. Issues are opened when the phase is scheduled.
 
@@ -484,8 +495,8 @@ these mods on Linux; a replacement `daorigins.exe`, which is never in scope.
 
 ## Phase 2.7: Steam on Linux
 
-**Status: proposed.** Waits for [ADR-0031](adr/0031-steam-on-linux-through-proton.md) to be accepted and for Phase
-2.8's exit gate, which the owner chose to run first. Added 2026-11-04, after a trial build ran in Ubuntu under WSL.
+**Status: scheduled on 2026-11-04, after Phase 2.8.** [ADR-0031](adr/0031-steam-on-linux-through-proton.md) is
+accepted. Added 2026-11-04, after a trial build ran in Ubuntu under WSL.
 Issues are opened when the phase is scheduled.
 
 **Goal:** a Linux player with the Steam copy of the game, running through Proton, can find their game, manage mods,
@@ -562,7 +573,7 @@ Flatpak, AppImage or distribution packages; macOS; malware scanning on Linux; ch
 - P3-09 Talk table string ids two mods both use, over the P3-01 reader.
 
 **New downloads** *(the owner's wish, 2026-11-03: a built-in browser so downloads are dealt with automatically;
-[ADR-0034](adr/0034-picking-up-new-downloads.md), proposed, meets the wish from the player's own browser)*. Not format
+[ADR-0034](adr/0034-picking-up-new-downloads.md), accepted, meets the wish from the player's own browser)*. Not format
 work; scheduled here as P3-05 and P3-06 are. None of it goes online except what P3-12 decides.
 
 - P3-10 Picking up new downloads: an opt-in, asked once, off by default. When the window comes back into focus,

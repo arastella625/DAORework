@@ -1,6 +1,6 @@
 # ADR-0031: Support Steam on Linux, with the game running through Proton
 
-- **Status:** Proposed. Becomes Accepted when the owner schedules Phase 2.7.
+- **Status:** Accepted (owner, 2026-11-04)
 - **Date:** 2026-11-04
 
 ## Context
