@@ -511,7 +511,8 @@ back up saves and press Play, from a `linux-x64` download. Windows players see n
 - P2.7-01 Decide it: ADR-0031 and this phase.
 - P2.7-02 No relative paths: a known folder that does not exist yet keeps its name, and an empty one is never joined
   into a path. Today a bare home folder puts profiles and logs in the folder DAORework was started from, and `init`
-  saves the relative path `BioWare/Dragon Age`.
+  saves the relative path `BioWare/Dragon Age`. *Done: `DoNotVerify` on the three folders a home has, and the readers
+  skip an empty one.*
 - P2.7-03 Find Steam on Linux: `SteamLibraries` reads the native, Flatpak and Snap Steam folders and every library
   they list, wherever it is mounted, and `SteamLibraryLocator` uses it. The player can still name the folder.
 - P2.7-04 Find the documents folder in the Proton prefix: `IProtonPrefixLocator`, `DocumentsFolderSource.ProtonPrefix`
