@@ -109,9 +109,11 @@ public sealed partial class LibraryViewModel : PageViewModel
         Mods.Clear();
 
         // Nothing of a mod like a folder of Mac leftovers reaches the game (ADR-0036), so it isn't one; if it is on, it can still be turned off.
-        foreach (var entry in entries.Where(e => _active.Contains(e.Mod.Id) || !e.Mod.Files.All(f => NonModFiles.Is(f.RelativePath))))
+        var shown = entries.Where(e => _active.Contains(e.Mod.Id) || !e.Mod.Files.All(f => NonModFiles.Is(f.RelativePath))).ToList();
+        var copies = ModCopies.Find(shown);
+        foreach (var entry in shown)
         {
-            var row = LibraryModRow.From(entry, _checkKnownDownload.Execute(entry));
+            var row = LibraryModRow.From(entry, _checkKnownDownload.Execute(entry), copies.GetValueOrDefault(entry.Mod.Id));
             row.IsActive = _active.Contains(row.Id);
             Mods.Add(row);
         }

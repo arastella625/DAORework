@@ -463,6 +463,10 @@ made-up mods, which is how it got through.)*
 - P2.6-16 *Combined files* and History at real scale: past 30 files, one row for each set of mods, not each file;
   History counts the mods on instead of naming 66. `RealScaleScreensTests` renders every main screen.
 
+- P2.6-18 Copies of a mod ([#146](https://github.com/arastella625/DAORework/issues/146)): add-ins with one UID and
+  mods with the same files are noticed, each says so, and *Select all* picks one. Removing a copy from the library is
+  a separate decision: the library has no way to remove a mod yet.
+
 **Keeping the tests honest on Windows** *(added 2026-11-05, from P2.6-02)*.
 
 - P2.6-09 Run the tests on Windows in CI: `ci.yml` runs them on Linux only, which is how P2.6-02's failures reached
