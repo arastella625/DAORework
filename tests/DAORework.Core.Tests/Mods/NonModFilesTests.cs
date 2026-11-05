@@ -60,6 +60,19 @@ public sealed class NonModFilesTests
     }
 
     [Fact]
+    public void Plan_AReadmeEditedAfterItWasPlaced_StaysAndBlocksNothing()
+    {
+        const string target = "packages/core/override/DAORework/hair/readme.txt";
+        var current = DeploymentRecord.Empty with { ActiveModIds = ["hair"], Files = [new RecordedFile(target, "2", "hair")] };
+
+        var plan = ModActivationPlanner.Plan(new PlanInput(current, [Mods.Override("hair", "readme.txt#2")], [], new Dictionary<string, string> { [target] = "edited" }, [])).Value;
+
+        Assert.False(plan.IsBlocked);
+        Assert.Empty(plan.Operations);
+        Assert.Empty(plan.NextRecord.Files);
+    }
+
+    [Fact]
     public void Plan_TurningAModOff_DoesNotExplainItsReadmeGoing()
     {
         const string target = "packages/core/override/DAORework/hair/readme.txt";

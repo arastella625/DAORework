@@ -1,4 +1,5 @@
 using DAORework.Core.Mods.Conflicts;
+using DAORework.Core.Mods.Planning;
 
 namespace DAORework.App.ViewModels;
 
@@ -8,8 +9,19 @@ namespace DAORework.App.ViewModels;
 /// </summary>
 public sealed record FileConflictRow(string FileName, string Winner, string Detail)
 {
+    private const int FilesNamed = 3;
+
     /// <summary>Gets a value indicating whether every copy is the same, so the order changes nothing for this file.</summary>
     public bool SameContent { get; init; }
+
+    /// <summary>Many files the same mods share, as one row (P2.6-16).</summary>
+    public static FileConflictRow From(SharedFileGroup group)
+    {
+        ArgumentNullException.ThrowIfNull(group);
+        var more = group.FileNames.Count - FilesNamed;
+        var names = string.Join(", ", group.FileNames.Take(FilesNamed));
+        return new FileConflictRow(group.Title, group.Kinds, more > 0 ? $"{names} and {more} more." : $"{names}.") { SameContent = group.SameContent };
+    }
 
     /// <param name="conflict">The conflict the scanner found.</param>
     /// <param name="names">Mod names by id, for the mods in the load order.</param>

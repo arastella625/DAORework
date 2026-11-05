@@ -87,8 +87,8 @@ public sealed class ModsTabViewModel
     {
         Folders.Load(profileName);
         HandInstalled.Load(profileName);
+        await Activation.LoadAsync(profileName, cancellationToken); // First, so a listed mod's state is known as it is read.
         await Library.LoadAsync(cancellationToken);
-        await Activation.LoadAsync(profileName, cancellationToken);
         await Changes.LoadAsync(profileName, cancellationToken);
         await LoadOrder.LoadAsync(profileName, cancellationToken);
         await HandInstalled.RefreshAsync(cancellationToken);

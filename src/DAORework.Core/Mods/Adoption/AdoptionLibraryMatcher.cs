@@ -89,7 +89,7 @@ public static class AdoptionLibraryMatcher
 
         var unused = candidate.Files.ToList();
         var pairs = new List<(LibraryModFile File, string? DiskPath)>();
-        foreach (var file in mod.Files)
+        foreach (var file in mod.Files.Where(f => !NonModFiles.Is(f.RelativePath)))
         {
             var match = unused.FirstOrDefault(f => f.SizeBytes == file.SizeBytes && f.Path.EndsWith("/" + file.RelativePath, StringComparison.OrdinalIgnoreCase))
                 ?? unused.FirstOrDefault(f => f.SizeBytes == file.SizeBytes && FileName(f.Path).Equals(FileName(file.RelativePath), StringComparison.OrdinalIgnoreCase));
