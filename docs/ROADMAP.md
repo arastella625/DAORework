@@ -453,7 +453,7 @@ made-up mods, which is how it got through.)*
   `RealScaleLibrary` (70 mods, 8,000 files) guards it, and window changes are checked against it from now on
   ([REVIEWING.md](REVIEWING.md)). *Done ([blocked](screenshots/p2.6-13/01-blocked.png), [ready](screenshots/p2.6-13/02-ready.png)).*
 
-- P2.6-14 Only mod files reach the game ([ADR-0036](adr/0036-only-mod-files-reach-the-game.md), proposed): Vortex's
+- P2.6-14 Only mod files reach the game ([ADR-0036](adr/0036-only-mod-files-reach-the-game.md)): Vortex's
   markers, Mac leftovers and documents stay in the library and are never deployed, and a folder of nothing else isn't
   offered as a mod.
 
