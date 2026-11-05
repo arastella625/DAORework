@@ -1,6 +1,8 @@
+using System.ComponentModel;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using DAORework.App.ViewModels;
 
 namespace DAORework.App.Views;
@@ -13,6 +15,24 @@ public sealed partial class LibraryPanel : UserControl
         InitializeComponent();
         AddHandler(DragDrop.DragOverEvent, OnDragOver);
         AddHandler(DragDrop.DropEvent, OnDrop);
+    }
+
+    /// <summary>A preview opens above the list, so a switch pressed far down it would otherwise seem to do nothing.</summary>
+    protected override void OnDataContextChanged(EventArgs e)
+    {
+        base.OnDataContextChanged(e);
+        if (DataContext is ModsTabViewModel mods)
+        {
+            mods.Activation.Preview.PropertyChanged += OnPreviewChanged;
+        }
+    }
+
+    private void OnPreviewChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ViewModels.PlanPreview.Title) && sender is ViewModels.PlanPreview { Title: not null })
+        {
+            Dispatcher.UIThread.Post(() => PlanPreview.BringIntoView(), DispatcherPriority.Loaded);
+        }
     }
 
     /// <summary>The local paths of the files and folders in a drop; items with none, such as a browser link, are left out.</summary>

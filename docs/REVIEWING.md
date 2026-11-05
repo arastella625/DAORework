@@ -15,6 +15,7 @@ Run these on the task branch, fix what they find, then open the PR (or take it o
 | 3. Less code | `/ponytail-review branch` | Code that can be deleted, reused or made plainer. |
 | 4. Security | `/security-review`, only when the diff touches `DAORework.Infrastructure`, `scripts/` or `.github/` | Paths, processes, downloads, secrets. |
 | 5. Read it | The diff, top to bottom, against the PR checklist | Anything the tools missed. |
+| 6. At real scale | For a change to the window: its screen against `RealScaleLibrary` (70 mods, 8,000 files), with a screenshot in the PR | What two made-up mods can't show. |
 
 Put one line per pass in the PR description under *Review*: what it found and what was done about it.
 

@@ -86,8 +86,8 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
                     return;
                 }
 
-                var names = string.Join(", ", candidates.Select(m => m.Title));
-                _pending = (documents, plan, names);
+                var titles = candidates.Select(m => m.Title).ToList();
+                _pending = (documents, plan, PlanWords.Names(titles, title => title));
                 CanApply = !plan.IsBlocked && !plan.IsEmpty;
                 if (AfterPlanAsync is not null)
                 {
@@ -95,7 +95,7 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
                 }
 
                 // Shown once the library has been read again, so the mods planning just imported are named.
-                Preview.Show(candidates.Count == 1 ? $"Manage {names}" : $"Manage {candidates.Count} mods: {names}", plan);
+                Preview.Show(PlanPreview.TitleFor("Manage", titles), plan);
             },
             cancellationToken);
 
@@ -125,7 +125,7 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
                     return;
                 }
 
-                ReportSuccess($"Now managing {pending.Name}. It is in the Library, and you can undo this in History.");
+                ReportSuccess($"Now managing {pending.Name}. You can undo this in History.");
             },
             cancellationToken);
 

@@ -128,7 +128,7 @@ public sealed class ModAdoptionScreenTests : IDisposable
         await handInstalled.AdoptSelectedCommand.ExecuteAsync(null);
 
         Assert.False(handInstalled.Adoption.IsError, handInstalled.Adoption.StatusMessage);
-        Assert.StartsWith($"Manage {count} mods: ", handInstalled.Adoption.PlanTitle, StringComparison.Ordinal);
+        Assert.Equal($"Manage {count} mods", handInstalled.Adoption.PlanTitle);
         Assert.True(handInstalled.Adoption.ApplyCommand.CanExecute(null));
         ModsTabScenario.Show<HandInstalledPanel>(window);
         Screenshots.Save(window, "28-adopt-selected");

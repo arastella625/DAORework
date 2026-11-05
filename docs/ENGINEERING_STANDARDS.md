@@ -82,6 +82,7 @@ new use case, rule or strategy, and belongs in a new file.
 - [ ] New diagnostic codes are added to `DiagnosticCodes` and documented. No code was renamed.
 - [ ] Persisted schema changes bump `schemaVersion` and include a migrator and a test.
 - [ ] README/docs are updated if user-facing behavior changed.
+- [ ] A window change was checked at real scale (`RealScaleLibrary`, [REVIEWING.md](REVIEWING.md)), with a screenshot.
 - [ ] Nothing here conflicts with LEGAL_BOUNDARIES.md.
 
 ## 8. Definition of Done

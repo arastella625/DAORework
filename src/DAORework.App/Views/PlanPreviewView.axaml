@@ -2,12 +2,27 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:DAORework.App.ViewModels"
              xmlns:views="using:DAORework.App.Views"
+             xmlns:planning="using:DAORework.Core.Mods.Planning"
              x:Class="DAORework.App.Views.PlanPreviewView"
              x:DataType="vm:PlanPreview">
-  <!-- P2.5-18: the plan in one sentence, its warnings in full, and the file-by-file detail on request. -->
+  <!-- P2.5-18: the plan in one sentence, what stops it, a few warnings, and the file-by-file detail on request. -->
   <StackPanel Spacing="8">
     <TextBlock Name="PlanTitle" FontWeight="SemiBold" Text="{Binding Title}" TextWrapping="Wrap" />
     <TextBlock Name="PlanSummary" Text="{Binding Summary}" TextWrapping="Wrap" />
+    <ItemsControl Name="PlanProblems" ItemsSource="{Binding Problems}">
+      <ItemsControl.ItemTemplate>
+        <DataTemplate x:DataType="planning:PlanProblem">
+          <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" Margin="0,3">
+            <PathIcon Classes="Warning" Data="{StaticResource IconWarning}" VerticalAlignment="Top" />
+            <StackPanel Grid.Column="1" Spacing="1">
+              <TextBlock Classes="Warning" FontWeight="SemiBold" Text="{Binding Title}" TextWrapping="Wrap" />
+              <TextBlock Text="{Binding WhatToDo}" TextWrapping="Wrap"
+                         IsVisible="{Binding WhatToDo, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            </StackPanel>
+          </Grid>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
     <ItemsControl Name="PlanNotes" ItemsSource="{Binding Notes}">
       <ItemsControl.ItemTemplate>
         <DataTemplate x:DataType="x:String">
@@ -19,12 +34,15 @@
       </ItemsControl.ItemTemplate>
     </ItemsControl>
     <ToggleButton Name="ShowDetailsButton" Content="Show details" IsChecked="{Binding ShowDetails}" />
-    <ItemsControl Name="PlanLines" ItemsSource="{Binding Lines}" IsVisible="{Binding ShowDetails}">
-      <ItemsControl.ItemTemplate>
-        <DataTemplate x:DataType="x:String">
-          <TextBlock Classes="Mono" Text="{Binding}" TextWrapping="Wrap" />
-        </DataTemplate>
-      </ItemsControl.ItemTemplate>
-    </ItemsControl>
+    <!-- Scrolls inside the preview, so a long list never pushes the buttons off the screen. -->
+    <ScrollViewer MaxHeight="280" IsVisible="{Binding ShowDetails}">
+      <ItemsControl Name="PlanLines" ItemsSource="{Binding Lines}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="x:String">
+            <TextBlock Classes="Mono" Text="{Binding}" TextWrapping="Wrap" />
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
   </StackPanel>
 </UserControl>

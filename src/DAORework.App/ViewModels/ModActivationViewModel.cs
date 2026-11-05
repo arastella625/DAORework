@@ -22,6 +22,7 @@ public sealed partial class ModActivationViewModel : PageViewModel
     private readonly ApplyModPlan _apply;
     private readonly GetModStatus _status;
     private (string Documents, ModActivationPlan Plan)? _pending;
+    private PlannedChange? _planned;
 
     public ModActivationViewModel(GetProfile getProfile, PlanModChange plan, ApplyModPlan apply, GetModStatus status, ILogger<ModActivationViewModel> logger)
         : base(logger)
@@ -55,6 +56,15 @@ public sealed partial class ModActivationViewModel : PageViewModel
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ApplyCommand))]
     public partial bool CanApply { get; set; }
+
+    /// <summary>Gets a value indicating whether the plan is blocked only by mods it could go ahead without.</summary>
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(LeaveOutCommand))]
+    public partial bool CanLeaveOut { get; set; }
+
+    /// <summary>Gets what the button that takes those mods out of the plan says.</summary>
+    [ObservableProperty]
+    public partial string? LeaveOutLabel { get; set; }
 
     public Task LoadAsync(string? profileName, CancellationToken cancellationToken = default)
     {
@@ -101,6 +111,19 @@ public sealed partial class ModActivationViewModel : PageViewModel
             },
             cancellationToken);
 
+    /// <summary>Plans the same change again without the mods that stop it, which stay in the Library and can be turned on later.</summary>
+    [RelayCommand(CanExecute = nameof(CanLeaveOut))]
+    private Task LeaveOutAsync(CancellationToken cancellationToken)
+    {
+        if (_planned is not { } planned || _pending is not { } pending)
+        {
+            return Task.CompletedTask;
+        }
+
+        var leftOut = LeftOut.Of(pending.Plan, planned.Mods);
+        return PlanAsync(planned with { Mods = [.. planned.Mods.Except(leftOut)], LeftOut = [.. planned.LeftOut, .. leftOut] }, cancellationToken);
+    }
+
     [RelayCommand]
     private void CancelPlan()
     {
@@ -117,29 +140,40 @@ public sealed partial class ModActivationViewModel : PageViewModel
 
     /// <summary>Plans the change as above, and puts back official DLC entries too (ADR-0028 §3).</summary>
     public Task PlanChangeAsync(ModChangeKind kind, IReadOnlyList<LibraryModRow> mods, IReadOnlyList<AddInsListChange> restoredAddIns, CancellationToken cancellationToken) =>
+        PlanAsync(new PlannedChange(kind, mods, restoredAddIns, []), cancellationToken);
+
+    private Task PlanAsync(PlannedChange change, CancellationToken cancellationToken) =>
         GuardAsync(
             async token =>
             {
                 ClearPlan();
                 ReportSuccess(string.Empty);
-                if (mods.Count == 0)
+                if (change.Mods.Count == 0)
                 {
                     return;
                 }
 
+                var request = new ModChange(change.Kind, [.. change.Mods.Select(m => m.Id)]);
                 if (!(await ProfileDocuments.FoldersAsync(_getProfile, ProfileName, token)).TryGetValue(out var folders, out var error)
-                    || !(await _plan.ExecuteAsync(new PlanModChangeRequest(folders.Documents, new ModChange(kind, [.. mods.Select(m => m.Id)]), folders.Install) { RestoredAddIns = restoredAddIns }, token)).TryGetValue(out var plan, out error))
+                    || !(await _plan.ExecuteAsync(new PlanModChangeRequest(folders.Documents, request, folders.Install) { RestoredAddIns = change.RestoredAddIns }, token)).TryGetValue(out var plan, out error))
                 {
                     ReportError(error);
                     return;
                 }
 
-                var verb = kind == ModChangeKind.Activate ? "Turn on" : "Turn off";
-                var names = string.Join(", ", mods.Select(m => m.Title));
-                Preview.Show(mods.Count == 1 ? $"{verb} {names}" : $"{verb} {mods.Count} mods: {names}", plan);
+                var verb = change.Kind == ModChangeKind.Activate ? "Turn on" : "Turn off";
+                Preview.Show(PlanPreview.TitleFor(verb, [.. change.Mods.Select(m => m.Title)]), plan);
+                if (change.LeftOut.Count > 0)
+                {
+                    Preview.Notes.Insert(0, LeftOut.Note(change.LeftOut));
+                }
 
                 _pending = (folders.Documents, plan);
+                _planned = change;
                 CanApply = !plan.IsBlocked && !plan.IsEmpty;
+                var leftOut = change.Kind == ModChangeKind.Activate ? LeftOut.Of(plan, change.Mods) : [];
+                LeaveOutLabel = LeftOut.Label(leftOut);
+                CanLeaveOut = leftOut.Count > 0;
             },
             cancellationToken);
 
@@ -170,7 +204,9 @@ public sealed partial class ModActivationViewModel : PageViewModel
     private void ClearPlan()
     {
         _pending = null;
+        _planned = null;
         Preview.Clear();
         CanApply = false;
+        CanLeaveOut = false;
     }
 }
