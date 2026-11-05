@@ -38,6 +38,9 @@ public sealed partial class LoadOrderViewModel : PageViewModel
         _details = details;
     }
 
+    /// <summary>Raised after <i>To top</i> or <i>To bottom</i>: the mod has left the place it was pressed, so its preview is brought into view.</summary>
+    public event EventHandler? MovedFar;
+
     /// <summary>Gets or sets what runs after a new order was applied, such as reading the other panels again.</summary>
     public Func<CancellationToken, Task>? AfterChangeAsync { get; set; }
 
@@ -92,10 +95,18 @@ public sealed partial class LoadOrderViewModel : PageViewModel
     public Task RefreshAsync(CancellationToken cancellationToken = default) => GuardAsync(token => PlanOrderAsync(null, token), cancellationToken);
 
     [RelayCommand]
-    private Task MoveUpAsync(LoadOrderRow mod, CancellationToken cancellationToken) => MoveAsync(mod, -1, cancellationToken);
+    private Task MoveUpAsync(LoadOrderRow mod, CancellationToken cancellationToken) => MoveToAsync(mod, mod.Position - 2, cancellationToken);
 
     [RelayCommand]
-    private Task MoveDownAsync(LoadOrderRow mod, CancellationToken cancellationToken) => MoveAsync(mod, 1, cancellationToken);
+    private Task MoveDownAsync(LoadOrderRow mod, CancellationToken cancellationToken) => MoveToAsync(mod, mod.Position, cancellationToken);
+
+    /// <summary>Moves a mod to the top in one step and one preview (P2.6-19), where the others' copies of its files win.</summary>
+    [RelayCommand]
+    private Task MoveToTopAsync(LoadOrderRow mod, CancellationToken cancellationToken) => MoveFarAsync(mod, 0, cancellationToken);
+
+    /// <summary>Moves a mod to the bottom in one step and one preview (P2.6-19), where its copies of files win.</summary>
+    [RelayCommand]
+    private Task MoveToBottomAsync(LoadOrderRow mod, CancellationToken cancellationToken) => MoveFarAsync(mod, Order.Count - 1, cancellationToken);
 
     [RelayCommand(CanExecute = nameof(CanApply))]
     private Task ApplyAsync(CancellationToken cancellationToken) =>
@@ -135,19 +146,25 @@ public sealed partial class LoadOrderViewModel : PageViewModel
             },
             cancellationToken);
 
-    private Task MoveAsync(LoadOrderRow mod, int step, CancellationToken cancellationToken) =>
+    private async Task MoveFarAsync(LoadOrderRow mod, int to, CancellationToken cancellationToken)
+    {
+        await MoveToAsync(mod, to, cancellationToken);
+        MovedFar?.Invoke(this, EventArgs.Empty);
+    }
+
+    private Task MoveToAsync(LoadOrderRow mod, int to, CancellationToken cancellationToken) =>
         GuardAsync(
             async token =>
             {
                 var order = Order.Select(r => r.Id).ToList();
                 var from = order.IndexOf(mod.Id);
-                var to = from + step;
-                if (from < 0 || to < 0 || to >= order.Count)
+                if (from < 0 || to < 0 || to >= order.Count || to == from)
                 {
                     return;
                 }
 
-                (order[from], order[to]) = (order[to], order[from]);
+                order.RemoveAt(from);
+                order.Insert(to, mod.Id);
                 ReportSuccess(string.Empty);
                 await PlanOrderAsync(order, token);
             },

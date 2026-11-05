@@ -7,6 +7,7 @@ All notable changes to DAORework are recorded here. The format follows
 ## [Unreleased]
 
 ### Changed
+- *Arrange* has *To top* and *To bottom* (P2.6-19): a mod goes all the way in one click and one preview, instead of one for each place.
 - *Combined files* stays readable with many mods (P2.6-16): past 30 shared files it shows a row for each set of mods. History counts the mods that are on once there are more than three.
 - Mods read better on the Mods page (P2.6-15): `rules_core` shows as *Rules core*, and `loose` as *Loose files*. A mod with nothing for the game, such as a `__MACOSX` folder, isn't listed. The *Combined files* card counts files mods share instead of saying *None needed*.
 - A preview reads in one screen however many mods it covers (P2.6-13). What stops it comes first, each cause once with what to do, instead of last in a list of hundreds of files. Warnings are grouped by the mods involved, identical copies aren't mentioned, and every file is behind *Show details*, which scrolls inside the preview. The title gives a count once it would be longer than a line.

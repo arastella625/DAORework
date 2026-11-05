@@ -463,6 +463,9 @@ made-up mods, which is how it got through.)*
 - P2.6-16 *Combined files* and History at real scale: past 30 files, one row for each set of mods, not each file;
   History counts the mods on instead of naming 66. `RealScaleScreensTests` renders every main screen.
 
+- P2.6-19 Arrange moves a mod far in one step ([#144](https://github.com/arastella625/DAORework/issues/144)): *To top*
+  and *To bottom*, each with one preview. Dragging a mod to a place in the middle waits for the design pass's answer.
+
 **Keeping the tests honest on Windows** *(added 2026-11-05, from P2.6-02)*.
 
 - P2.6-09 Run the tests on Windows in CI: `ci.yml` runs them on Linux only, which is how P2.6-02's failures reached

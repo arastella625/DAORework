@@ -76,6 +76,34 @@ public sealed class LoadOrderScreenTests : IDisposable
     }
 
     [AvaloniaFact]
+    public async Task ToTopAndToBottom_MoveAModPastTheOthersInOneStep_AndKeepTheirOrder()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        foreach (var name in new[] { "Eyes", "Lips", "Nails", "Teeth" })
+        {
+            await _scenario.ImportAsync(viewModel, Path.Combine(_downloads, $"{name}.zip"), ($"{name}.dds", name));
+            await _scenario.ActivateAsync(viewModel, name);
+        }
+
+        var order = viewModel.ModsTab.LoadOrder;
+
+        await order.MoveToBottomCommand.ExecuteAsync(order.Order[0]);
+
+        Assert.Equal(["1. Lips", "2. Nails", "3. Teeth", "4. Eyes"], order.Order.Select(r => r.Label));
+        Assert.True(order.IsReordered);
+
+        await order.MoveToTopCommand.ExecuteAsync(order.Order[3]);
+
+        Assert.Equal(["1. Eyes", "2. Lips", "3. Nails", "4. Teeth"], order.Order.Select(r => r.Label));
+        Assert.False(order.IsReordered);
+
+        await order.MoveToTopCommand.ExecuteAsync(order.Order[0]);
+        await order.MoveToBottomCommand.ExecuteAsync(order.Order[3]);
+
+        Assert.False(order.IsReordered);
+    }
+
+    [AvaloniaFact]
     public async Task NewOrder_ThatChangesNoFile_SaysTheOrderMakesNoDifference()
     {
         var (_, viewModel) = await _scenario.OpenAsync();
