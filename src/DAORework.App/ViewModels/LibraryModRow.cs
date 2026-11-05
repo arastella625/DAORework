@@ -38,6 +38,9 @@ public sealed partial class LibraryModRow : ObservableObject
     /// <summary>Gets the page of the known item this mod's download is, or is a copy of (ADR-0034 §7).</summary>
     public string? PageLink { get; private init; }
 
+    /// <summary>Gets where it stands among the library's copies of this mod, or null when it is the only one (P2.6-18).</summary>
+    public ModCopy? Copy { get; private init; }
+
     [ObservableProperty]
     public partial bool IsActive { get; set; }
 
@@ -47,7 +50,8 @@ public sealed partial class LibraryModRow : ObservableObject
 
     /// <param name="entry">The library mod.</param>
     /// <param name="check">How its download compares with the catalog's known downloads, or the error that kept it from being compared.</param>
-    public static LibraryModRow From(LibraryEntry entry, Result<DownloadCheck> check)
+    /// <param name="copy">Where it stands among its copies, when the library holds it more than once.</param>
+    public static LibraryModRow From(LibraryEntry entry, Result<DownloadCheck> check, ModCopy? copy = null)
     {
         ArgumentNullException.ThrowIfNull(entry);
         ArgumentNullException.ThrowIfNull(check);
@@ -66,6 +70,11 @@ public sealed partial class LibraryModRow : ObservableObject
         if (entry.Origin.Kind == ModOriginKind.Adopted)
         {
             notes.Add($"Was in {entry.Origin.AdoptedPath} before DAORework managed it.");
+        }
+
+        if (copy is not null)
+        {
+            notes.Add($"You have {copy.Count} copies of this mod. Select all picks the one that's on, or else the newest.");
         }
 
         string? warning = null;
@@ -91,6 +100,7 @@ public sealed partial class LibraryModRow : ObservableObject
         {
             IsAddIn = entry.Mod.AddInUid is not null,
             PageLink = check.IsSuccess ? check.Value.Item?.Source : null,
+            Copy = copy,
         };
     }
 
