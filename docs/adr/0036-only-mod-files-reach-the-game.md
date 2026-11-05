@@ -1,6 +1,6 @@
 # ADR-0036: Only mod files reach the game
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-11-04
 
 ## Context
