@@ -153,8 +153,9 @@ public static class ModActivationPlanner
         {
             state.Operations.Add(new PlanOperation(PlanAction.Delete, recorded.TargetPath, recorded.ModId, null, recorded.Sha256));
         }
-        else
+        else if (!NonModFiles.Is(recorded.TargetPath))
         {
+            // An edited readme is the player's now, and means nothing to the game: it stays, and leaves the record.
             state.Block(PlanBlockerKind.ChangedSinceDeployed, recorded.TargetPath, $"{recorded.TargetPath} was changed after DAORework placed it; it would be removed.");
         }
     }

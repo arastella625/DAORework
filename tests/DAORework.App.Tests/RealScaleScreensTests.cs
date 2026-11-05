@@ -32,6 +32,7 @@ public sealed class RealScaleScreensTests : IDisposable
         var order = viewModel.ModsTab.LoadOrder;
         Assert.True(order.Conflicts.Count > MaxRows);
         Assert.InRange(order.SharedRows.Count, 1, MaxRows);
+        Assert.Contains(order.Order, r => r.Name == "Rules core");
         Assert.StartsWith("On now: 66 mods", viewModel.ModsTab.Changes.Summary, StringComparison.Ordinal);
 
         ModsTabScenario.Show<LibraryPanel>(window);

@@ -20,7 +20,6 @@ public sealed partial class SetupSummary : ObservableObject
         NotifyCollectionChangedEventHandler changed = (_, _) => Update();
         mods.Library.Mods.CollectionChanged += changed;
         mods.HandInstalled.Candidates.CollectionChanged += changed;
-        mods.LoadOrder.Conflicts.CollectionChanged += changed;
         mods.LoadOrder.PropertyChanged += OnLoadOrderChanged;
         Update();
     }
@@ -35,7 +34,7 @@ public sealed partial class SetupSummary : ObservableObject
 
     private void OnLoadOrderChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(LoadOrderViewModel.CombinedCount))
+        if (e.PropertyName is nameof(LoadOrderViewModel.CombinedCount) or nameof(LoadOrderViewModel.OverlapCount))
         {
             Update();
         }
@@ -45,7 +44,7 @@ public sealed partial class SetupSummary : ObservableObject
     {
         var library = _mods.Library.Mods;
         var found = _mods.HandInstalled.Candidates;
-        var overlaps = _mods.LoadOrder.Conflicts.Count(c => !c.SameContent);
+        var overlaps = _mods.LoadOrder.OverlapCount;
         var combined = _mods.LoadOrder.CombinedCount;
         SetupPart[] parts =
         [
