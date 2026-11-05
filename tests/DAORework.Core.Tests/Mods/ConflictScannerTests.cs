@@ -34,7 +34,7 @@ public sealed class ConflictScannerTests
     [Fact]
     public void Scan_OneModHoldingANameInTwoFolders_DeploysOneCopyAndIsNoClash()
     {
-        var report = Scan([Mods.Override("zdf", "one/readme.txt#1", "two/readme.txt#2")]);
+        var report = Scan([Mods.Override("zdf", "one/hair.dds#1", "two/hair.dds#2")]);
 
         Assert.Single(report.Deploy);
         Assert.Single(report.OverrideConflicts);

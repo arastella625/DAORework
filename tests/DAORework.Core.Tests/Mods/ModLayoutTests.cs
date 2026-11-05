@@ -9,12 +9,12 @@ public sealed class ModLayoutTests
     [Fact]
     public void Map_OverrideMod_GoesUnderTheOwnedSubfolderKeepingItsLayout()
     {
-        var mod = Mods.Override("better-hair-1a2b3c4d", "textures/hair_01.dds", "readme.txt");
+        var mod = Mods.Override("better-hair-1a2b3c4d", "textures/hair_01.dds", "brow.dds");
 
         var files = ModLayout.Map(mod).Value;
 
         Assert.Equal(
-            ["packages/core/override/DAORework/better-hair-1a2b3c4d/textures/hair_01.dds", "packages/core/override/DAORework/better-hair-1a2b3c4d/readme.txt"],
+            ["packages/core/override/DAORework/better-hair-1a2b3c4d/textures/hair_01.dds", "packages/core/override/DAORework/better-hair-1a2b3c4d/brow.dds"],
             files.Select(f => f.TargetPath));
         Assert.All(files, f => Assert.True(f.IsOverride));
         Assert.Equal("hair_01.dds", files[0].FileName);

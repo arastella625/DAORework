@@ -48,6 +48,11 @@ public static class PlanNotes
             notes.Add(ModActivationPlanWarnings.Missing(plan.MissingRecordedFiles.Count));
         }
 
+        if (ModActivationPlanWarnings.Tidied(plan) is { } tidied)
+        {
+            notes.Add(tidied);
+        }
+
         notes.AddRange(plan.CombineProblems);
 
         var restored = plan.AddInsChanges.Count(c => c.Item is not null);

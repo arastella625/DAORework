@@ -10,6 +10,7 @@ All notable changes to DAORework are recorded here. The format follows
 - A preview reads in one screen however many mods it covers (P2.6-13). What stops it comes first, each cause once with what to do, instead of last in a list of hundreds of files. Warnings are grouped by the mods involved, identical copies aren't mentioned, and every file is behind *Show details*, which scrolls inside the preview. The title gives a count once it would be longer than a line.
 - *Leave out* takes the mods that stop a change out of it, so the rest can go ahead (P2.6-13). They stay in your Library, off.
 - Vortex's folder markers, Mac leftovers, readmes and other documents no longer count as files mods share (P2.6-13), in a preview, on *Combined files* or on the command line.
+- Those files stay in your Library and no longer reach your game (P2.6-14, [ADR-0036](docs/adr/0036-only-mod-files-reach-the-game.md)). A mod already on loses them at its next change, which the preview says, and *Undo* puts them back. A folder in `override` holding nothing else isn't offered as a mod.
 
 ## [0.5.0] - 2026-11-04
 

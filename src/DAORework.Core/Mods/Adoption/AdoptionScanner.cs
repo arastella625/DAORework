@@ -89,11 +89,11 @@ public static class AdoptionScanner
         var candidates = snapshot.OverrideFolders
             .Where(f => !f.Key.Equals(ModLayout.OwnedOverrideFolder, StringComparison.OrdinalIgnoreCase))
             .Select(f => (f.Key, Files: Unclaimed(f.Value)))
-            .Where(f => f.Files.Count > 0)
+            .Where(f => HasModFiles(f.Files))
             .Select(f => Override(AdoptionIds.OverrideFolder(f.Key), AdoptionCandidateKind.OverrideFolder, f.Key, ModLayout.OverridePrefix + f.Key, f.Files))
             .ToList();
         var loose = Unclaimed(snapshot.LooseOverrideFiles);
-        if (loose.Count > 0)
+        if (HasModFiles(loose))
         {
             candidates.Add(Override(
                 AdoptionIds.LooseOverrideFiles,
@@ -104,6 +104,9 @@ public static class AdoptionScanner
         }
 
         return candidates;
+
+        // A folder of Mac leftovers or a lone readme isn't a mod (ADR-0036).
+        static bool HasModFiles(List<HandInstalledFile> files) => files.Exists(f => !NonModFiles.Is(f.Path));
 
         List<HandInstalledFile> Unclaimed(IReadOnlyList<HandInstalledFile> files) => files.Where(f => !claimed.Contains(f.Path)).ToList();
 
