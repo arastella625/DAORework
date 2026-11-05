@@ -49,8 +49,12 @@ public static class PlanProblems
     private static IEnumerable<PlanProblem> SameFiles(List<PlanBlocker> blockers, Func<string, string> nameOf) =>
         blockers.GroupBy(b => string.Join('\n', b.ModIds), StringComparer.OrdinalIgnoreCase).Select(set =>
             new PlanProblem(
-                $"{PlanWords.Names(set.First().ModIds, nameOf)} would write {ModActivationPlanWarnings.Files(set.Count())} to the same place, so they can't be on together.",
+                $"{Who(set.First().ModIds, nameOf)} would write {ModActivationPlanWarnings.Files(set.Count())} to the same place, so they can't be on together.",
                 "Only one of them can be on."));
+
+    /// <summary>Two library entries of one mod, such as a download and the copy managed from the game, share a name.</summary>
+    private static string Who(IReadOnlyList<string> modIds, Func<string, string> nameOf) =>
+        modIds.Select(nameOf).Distinct(StringComparer.OrdinalIgnoreCase).Count() == 1 ? $"{modIds.Count} copies of {nameOf(modIds[0])}" : PlanWords.Names(modIds, nameOf);
 
     /// <summary>A mod that is off can be left out; one turned on before DAORework knew better has to be turned off.</summary>
     private static List<PlanProblem> GamePrograms(List<PlanBlocker> blockers, ModActivationPlan plan, Func<string, string> nameOf)
