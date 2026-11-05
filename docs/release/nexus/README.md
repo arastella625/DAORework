@@ -45,6 +45,10 @@ Where the pictures come from:
   `28-adopt-selected`, `30-chargenmorph-combined`, `17-load-order`, `19-fixes-undone`, `15-changes-rollback` and
   `24-look-with-picture`. Taken on Linux, so a mod's antivirus line reads *Not scanned*, which is what DAORework says
   where the Windows scan is not available.
+- `09` to `11` are the screenshots from the pull requests that added those features, also from the App tests with
+  made-up mods: [Move from Vortex](../../screenshots/p2.5-31/01-card.png),
+  [New downloads](../../screenshots/p3-10/01-new-downloads.png) and
+  [shared files inside archives](../../screenshots/p3-07/01-packed.png).
 - `00-cover.png` is [cover.html](cover.html) at 1920x1080, built from `01-home.png` and `02-mods.png`.
 
 They show the gilded-tome style (P2.5-28), taken from its pull request. If the window's look changes again, retake

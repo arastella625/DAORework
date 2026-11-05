@@ -22,7 +22,6 @@
         <a class="button ghost" href="#check">Check your download</a>
       </p>
       <img class="cover" src="/images/app/home.png" alt="Home: ready to play, the add-ins, override mods and combined files at a glance, and what is worth a look" width="960" height="640">
-      <p class="cover-note">Pictured: the next release. 0.3.2, today's download, has the earlier layout.</p>
     </div>
   </header>
 
@@ -31,33 +30,20 @@
       <h2>What it does</h2>
       <ul class="points">
         <li><strong>Manages the mods you already installed by hand</strong>, without reinstalling them. Official DLC is never touched.</li>
+        <li><strong>Moves your mods over from Vortex.</strong> <em>Move from Vortex</em> takes you through it a step at a time: copy them, purge in Vortex, then turn them on in the same order. It has only been run on simulated Vortex records so far, and doesn't cover add-ins Vortex placed yet.</li>
+        <li><strong>Picks up new downloads, if you turn it on.</strong> When you come back from your browser, the mods you downloaded are offered on the Mods page. Nothing is added without a click.</li>
         <li><strong>Adds mods safely.</strong> Add a <code>.dazip</code>, <code>.zip</code>, <code>.7z</code> or <code>.rar</code>. Turning a mod on shows a preview of exactly what will be copied, replaced or removed, and nothing changes until you apply it. A backup is taken first.</li>
-        <li><strong>Shows conflicts.</strong> For every file two mods share, see whose copy the game uses, and arrange them.</li>
+        <li><strong>Shows conflicts.</strong> For every file two mods share, see whose copy the game uses and what that means, and arrange them. Files inside <code>.erf</code> archives are compared too, though there DAORework can't tell which copy the game uses.</li>
+        <li><strong>Hair, head and colour mods work together.</strong> When several mods ship the character creator's <code>chargenmorphcfg.xml</code>, DAORework combines them, so every mod's hairs, heads and colours show.</li>
         <li><strong>Checks every mod.</strong> Your own antivirus scans it before it is kept, programs inside a mod are never installed, and a download that differs from the official one is pointed out.</li>
         <li><strong>Turns on DXVK</strong>, and <strong>the 4 GB patch on copies that allow it</strong> (GOG, EA App). Steam's own executable is protected and Steam will not start it once patched, so DAORework leaves the Steam copy alone and tells you if it was patched before. It notices when Steam's Verify integrity has undone a fix.</li>
-        <li><strong>Checks your game</strong> and suggests what is worth a look, and backs up your saves.</li>
+        <li><strong>Checks your game</strong> and suggests what is worth a look, and backs up your saves. <em>Home</em> says whether the game is ready to play, and <em>History</em> lists every change, each with <em>Undo to here</em>.</li>
       </ul>
       <p class="note">It never downloads mods or game files, and never sends anything over the internet. Everything stays on your computer.</p>
     </section>
 
-    <section id="next">
-      <h2>Coming in the next release</h2>
-      <div class="panel">
-        <p>A new layout, built so you can see at a glance that everything is ready:</p>
-        <ul class="points">
-          <li><strong>Home</strong> opens first: whether the game is ready to play, your add-ins, override mods and combined files at a glance, the last change with <em>Undo</em>, and at most three things worth a look.</li>
-          <li><strong>Mods on one page</strong>, each with an on/off switch. The mods you put in the game yourself sit beside the rest, tagged <em>Found in your game</em>.</li>
-          <li><strong>Hair, head and colour mods work together.</strong> When several mods ship the character creator's <code>chargenmorphcfg.xml</code>, DAORework combines them, so every mod's hairs, heads and colours show.</li>
-          <li><strong>Shared files explained.</strong> When two mods change the same file, it says what that means for that kind of file: only one look shows, or one mod's table changes are lost and a compatibility patch is needed.</li>
-          <li><strong>History</strong> lists every change, to your mods and to the game's files, each with <em>Undo to here</em>.</li>
-          <li><strong>Plain words</strong> (<em>Turn on</em>, <em>Manage</em>, <em>Undo</em>) and a gilded look that every theme recolours.</li>
-        </ul>
-      </div>
-    </section>
-
     <section id="screens">
       <h2>See it</h2>
-      <p class="note">From the next release.</p>
       <div class="gallery">
         <figure><img src="/images/app/mods.png" alt="The Mods page with on/off switches" width="960" height="640" loading="lazy"><figcaption>Every mod on one page, each with its switch. The cards on top say whether each kind is ready.</figcaption></figure>
         <figure><img src="/images/app/preview.png" alt="The preview before turning a mod on" width="960" height="640" loading="lazy"><figcaption>Turning a mod on shows a preview first. Nothing changes until you press Apply.</figcaption></figure>
@@ -85,13 +71,13 @@
       <h2>Check your download</h2>
       <p>From 0.3.1, <code>DAORework.exe</code> and <code>dao.exe</code> are code-signed: right-click either one, choose <strong>Properties</strong>, then <strong>Digital Signatures</strong> to see the publisher. A new publisher has to build up reputation with Windows, so SmartScreen may still say it protected your PC on the first releases. If it does, choose <strong>More info</strong>, then <strong>Run anyway</strong>, after checking the zip one of these ways:</p>
       <dl class="release">
-        <dt>Latest release</dt><dd>0.3.2</dd>
-        <dt>File</dt><dd><code>DAORework-0.3.2-win-x64.zip</code></dd>
-        <dt>SHA-256</dt><dd><code class="hash">deb3709314699ed4449fa8f2b166b60ad8a6f9a6cdc4eee59cc3800dd5371cae</code></dd>
+        <dt>Latest release</dt><dd>0.5.0</dd>
+        <dt>File</dt><dd><code>DAORework-0.5.0-win-x64.zip</code></dd>
+        <dt>SHA-256</dt><dd><code class="hash">07754cbf2ed4f152cac3ec221bfd4b1f30d28f27ce2e66d14b2d572d2f2979ee</code></dd>
       </dl>
       <ol class="steps">
-        <li><strong>Checksum:</strong> in PowerShell, run <code>Get-FileHash DAORework-0.3.2-win-x64.zip</code> and compare the hash with the one above and with the release's <code>.sha256</code> file. This page is hosted separately from the downloads, so both have to agree.</li>
-        <li><strong>Build attestation:</strong> with the <a href="https://cli.github.com/">GitHub CLI</a>, run <code>gh attestation verify DAORework-0.3.2-win-x64.zip --repo arastella625/DAORework</code>. It proves the zip was built by the project's own release workflow from its published source, and not changed since.</li>
+        <li><strong>Checksum:</strong> in PowerShell, run <code>Get-FileHash DAORework-0.5.0-win-x64.zip</code> and compare the hash with the one above and with the release's <code>.sha256</code> file. This page is hosted separately from the downloads, so both have to agree.</li>
+        <li><strong>Build attestation:</strong> with the <a href="https://cli.github.com/">GitHub CLI</a>, run <code>gh attestation verify DAORework-0.5.0-win-x64.zip --repo arastella625/DAORework</code>. It proves the zip was built by the project's own release workflow from its published source, and not changed since.</li>
       </ol>
     </section>
 
