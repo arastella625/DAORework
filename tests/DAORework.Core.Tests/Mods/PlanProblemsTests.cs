@@ -68,6 +68,14 @@ public sealed class PlanProblemsTests
     }
 
     [Fact]
+    public void For_TwoCopiesOfOneMod_SaysSo()
+    {
+        var plan = Plan([AddIn("first", "shared"), AddIn("second", "shared")]);
+
+        Assert.StartsWith("2 copies of Dog Slot would write 1 file", Assert.Single(PlanProblems.For(plan, _ => "Dog Slot")).Title, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void Blocker_TwoModsWritingOnePath_LeavesOutTheLater()
     {
         var plan = Plan([AddIn("first", "shared"), AddIn("second", "shared")]);
