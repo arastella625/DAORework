@@ -43,8 +43,20 @@ public sealed partial class LibrarySelectionViewModel : ObservableObject
     private Task DeactivateSelectedAsync(CancellationToken cancellationToken) =>
         _activation.PlanChangeAsync(ModChangeKind.Deactivate, [.. _mods.Where(m => m.IsSelected && m.IsActive)], cancellationToken);
 
+    /// <summary>Ticks every mod, but only one copy of a mod held twice (P2.6-18): those that are on, or else the newest.</summary>
     [RelayCommand]
-    private void SelectAll() => SetSelected(true);
+    private void SelectAll()
+    {
+        SetSelected(true);
+        foreach (var copies in _mods.Where(m => m.Copy is not null).GroupBy(m => m.Copy!.Group, StringComparer.OrdinalIgnoreCase))
+        {
+            var keep = copies.Any(m => m.IsActive) ? 0 : 1;
+            foreach (var extra in copies.Where(m => !m.IsActive).OrderBy(m => m.Copy!.Rank).Skip(keep))
+            {
+                extra.IsSelected = false;
+            }
+        }
+    }
 
     [RelayCommand]
     private void ClearSelection() => SetSelected(false);

@@ -79,6 +79,34 @@ public sealed class LibrarySelectionScreenTests : IDisposable
         Assert.Equal(2, viewModel.ModsTab.Changes.Backups.Count);
     }
 
+    [AvaloniaFact]
+    public async Task SelectAll_WithTwoCopiesOfAnAddIn_TicksOne_PreferringTheOneThatIsOn()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        const string manifest = "<Manifest><AddInsList><AddInItem UID=\"Dog_UID\" Name=\"Dog\" /></AddInsList></Manifest>";
+        await _scenario.ImportAsync(viewModel, Path.Combine(_downloads, "Dog.zip"), ("Manifest.xml", manifest), ("Contents/addins/Dog_UID/a.gda", "1"));
+        await _scenario.ImportAsync(viewModel, Path.Combine(_downloads, "Dog 2.zip"), ("Manifest.xml", manifest), ("Contents/addins/Dog_UID/a.gda", "2"));
+        var mods = viewModel.Library.Mods;
+        var selection = viewModel.ModsTab.Selection;
+
+        selection.SelectAllCommand.Execute(null);
+
+        Assert.Single(mods, m => m.IsSelected);
+        Assert.Equal(0, mods.Single(m => m.IsSelected).Copy!.Rank);
+        Assert.All(mods, m => Assert.Contains("You have 2 copies of this mod. Select all picks the one that's on, or else the newest.", m.Notes));
+
+        var on = mods.Single(m => !m.IsSelected);
+        viewModel.Library.ShowActive([on.Id]);
+        selection.SelectAllCommand.Execute(null);
+
+        Assert.Equal(on.Id, Assert.Single(mods, m => m.IsSelected).Id);
+
+        viewModel.Library.ShowActive(mods.Select(m => m.Id));
+        selection.SelectAllCommand.Execute(null);
+
+        Assert.All(mods, m => Assert.True(m.IsSelected));
+    }
+
     private async Task<(MainWindow Window, MainWindowViewModel ViewModel)> OpenWithThreeModsAsync()
     {
         var (window, viewModel) = await _scenario.OpenAsync();
