@@ -1,4 +1,9 @@
+using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
+using Avalonia.LogicalTree;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
 using DAORework.App.Views;
 using Xunit;
 
@@ -18,6 +23,32 @@ public sealed class RealScaleScreensTests : IDisposable
     }
 
     public void Dispose() => _host.Dispose();
+
+    [AvaloniaFact]
+    public async Task ToBottom_WithNearlyEveryModOn_BringsThePreviewAndApplyIntoView()
+    {
+        var (window, viewModel) = await _scenario.OpenAsync();
+        await RealScaleScenario.TurnOnEverythingAsync(viewModel);
+        var activation = viewModel.ModsTab.Activation;
+        await activation.LeaveOutCommand.ExecuteAsync(null);
+        await activation.ApplyCommand.ExecuteAsync(null);
+        ModsTabScenario.Show<LoadOrderPanel>(window);
+        window.UpdateLayout();
+        var order = viewModel.ModsTab.LoadOrder;
+
+        await order.MoveToBottomCommand.ExecuteAsync(order.Order[0]);
+        window.UpdateLayout();
+        Dispatcher.UIThread.RunJobs();
+        window.UpdateLayout();
+
+        var panel = window.GetLogicalDescendants().OfType<LoadOrderPanel>().Distinct().Single();
+        var scroller = panel.FindAncestorOfType<ScrollViewer>()!;
+        var apply = panel.GetLogicalDescendants().OfType<Button>().First(b => b.Name == "ApplyOrderButton");
+        var top = apply.TranslatePoint(default, scroller)!.Value.Y;
+        Assert.True(order.IsReordered);
+        Assert.InRange(top, 0, scroller.Viewport.Height - apply.Bounds.Height);
+        Screenshots.Save(window, "real-scale-screen-arrange-moved");
+    }
 
     [AvaloniaFact]
     public async Task EveryMainScreen_WithNearlyEveryModOn_StaysReadable()

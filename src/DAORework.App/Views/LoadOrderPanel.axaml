@@ -16,12 +16,16 @@
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="vm:LoadOrderRow">
             <Border Padding="0,6" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
-              <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
-                <TextBlock VerticalAlignment="Center" Text="{Binding Label}" />
-                <Button Grid.Column="1" Content="Up" CommandParameter="{Binding}"
+              <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="8">
+                <TextBlock VerticalAlignment="Center" Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
+                <Button Grid.Column="1" Content="To top" CommandParameter="{Binding}"
+                        Command="{Binding $parent[views:LoadOrderPanel].((vm:LoadOrderViewModel)DataContext).MoveToTopCommand}" />
+                <Button Grid.Column="2" Content="Up" CommandParameter="{Binding}"
                         Command="{Binding $parent[views:LoadOrderPanel].((vm:LoadOrderViewModel)DataContext).MoveUpCommand}" />
-                <Button Grid.Column="2" Content="Down" CommandParameter="{Binding}"
+                <Button Grid.Column="3" Content="Down" CommandParameter="{Binding}"
                         Command="{Binding $parent[views:LoadOrderPanel].((vm:LoadOrderViewModel)DataContext).MoveDownCommand}" />
+                <Button Grid.Column="4" Content="To bottom" CommandParameter="{Binding}"
+                        Command="{Binding $parent[views:LoadOrderPanel].((vm:LoadOrderViewModel)DataContext).MoveToBottomCommand}" />
               </Grid>
             </Border>
           </DataTemplate>
