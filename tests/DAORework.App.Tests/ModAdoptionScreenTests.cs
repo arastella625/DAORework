@@ -43,7 +43,7 @@ public sealed class ModAdoptionScreenTests : IDisposable
         Assert.False(handInstalled.Adoption.IsError, handInstalled.Adoption.StatusMessage);
         Assert.StartsWith("Now managing textures.", handInstalled.Adoption.StatusMessage, StringComparison.Ordinal);
         var adopted = Assert.Single(viewModel.Library.Mods);
-        Assert.Equal("textures", adopted.Title);
+        Assert.Equal("Textures", adopted.Title);
         Assert.True(adopted.IsActive);
         Assert.Contains("Was in packages/core/override/textures before DAORework managed it.", adopted.Notes);
         Assert.DoesNotContain(handInstalled.Candidates, c => c.Title == "textures");

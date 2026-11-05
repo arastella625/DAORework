@@ -15,7 +15,7 @@ internal sealed class RealScaleScenario(AppTestHost host)
         RealScaleLibrary.Seed(host);
         var (window, viewModel) = await _scenario.OpenAsync(seedInstall: false);
         await viewModel.Library.LoadAsync(TestContext.Current.CancellationToken);
-        Assert.Equal(RealScaleLibrary.Entries.Count, viewModel.Library.Mods.Count);
+        Assert.Equal(RealScaleLibrary.Entries.Count - 1, viewModel.Library.Mods.Count); // __MACOSX has nothing for the game.
         Pick(viewModel, RealScaleLibrary.AlreadyOn.Contains);
         await viewModel.ModsTab.Selection.ActivateSelectedCommand.ExecuteAsync(null);
         await viewModel.ModsTab.Activation.ApplyCommand.ExecuteAsync(null);

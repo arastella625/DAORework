@@ -7,6 +7,7 @@ All notable changes to DAORework are recorded here. The format follows
 ## [Unreleased]
 
 ### Changed
+- Mods read better on the Mods page (P2.6-15): `rules_core` shows as *Rules core*, and `loose` as *Loose files*. A mod with nothing for the game, such as a `__MACOSX` folder, isn't listed. The *Combined files* card counts files mods share instead of saying *None needed*.
 - A preview reads in one screen however many mods it covers (P2.6-13). What stops it comes first, each cause once with what to do, instead of last in a list of hundreds of files. Warnings are grouped by the mods involved, identical copies aren't mentioned, and every file is behind *Show details*, which scrolls inside the preview. The title gives a count once it would be longer than a line.
 - *Leave out* takes the mods that stop a change out of it, so the rest can go ahead (P2.6-13). They stay in your Library, off.
 - Vortex's folder markers, Mac leftovers, readmes and other documents no longer count as files mods share (P2.6-13), in a preview, on *Combined files* or on the command line.

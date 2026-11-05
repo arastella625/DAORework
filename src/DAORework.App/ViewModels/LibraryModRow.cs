@@ -84,7 +84,7 @@ public sealed partial class LibraryModRow : ObservableObject
 
         return new LibraryModRow(
             entry.Mod.Id,
-            entry.Mod.Name,
+            ModDisplayName.For(entry.Mod.Name),
             $"{KindOf(entry.Mod)} · {Counted.Of(entry.Mod.Files.Count, "file")} · {new ByteSize(entry.SizeBytes)} · added {imported} from {entry.SourceName}",
             notes,
             warning)

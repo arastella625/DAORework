@@ -4,6 +4,7 @@ using DAORework.App.Services;
 using DAORework.Application.Mods.Library;
 using DAORework.Core.Common;
 using DAORework.Core.Mods.Downloads;
+using DAORework.Core.Mods.Library;
 using Microsoft.Extensions.Logging;
 
 namespace DAORework.App.ViewModels;
@@ -106,7 +107,9 @@ public sealed partial class LibraryViewModel : PageViewModel
         }
 
         Mods.Clear();
-        foreach (var entry in entries)
+
+        // Nothing of a mod like a folder of Mac leftovers reaches the game (ADR-0036), so it isn't one; if it is on, it can still be turned off.
+        foreach (var entry in entries.Where(e => _active.Contains(e.Mod.Id) || !e.Mod.Files.All(f => NonModFiles.Is(f.RelativePath))))
         {
             var row = LibraryModRow.From(entry, _checkKnownDownload.Execute(entry));
             row.IsActive = _active.Contains(row.Id);
