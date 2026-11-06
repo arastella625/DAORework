@@ -37,7 +37,7 @@ public sealed class RecoverModPlan
 
         if (request.Choice == RecoveryChoice.Finish)
         {
-            return await _runner.RunAsync(progress.Journal, progress.DoneSteps, cancellationToken);
+            return await _runner.RunAsync(progress.Journal, progress.DoneSteps, cancellationToken: cancellationToken);
         }
 
         var journal = progress.Journal;

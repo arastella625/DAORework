@@ -20,12 +20,12 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
 {
     private readonly GetProfile _getProfile;
     private readonly PlanAdoption _plan;
-    private readonly ApplyModPlan _apply;
+    private readonly ChangeInProgress _apply;
     private (string Documents, ModActivationPlan Plan, string Name)? _pending;
     private Dictionary<string, HandInstalledModRow> _planned = new(StringComparer.OrdinalIgnoreCase);
     private IReadOnlyList<string> _order = [];
 
-    public ModAdoptionViewModel(GetProfile getProfile, PlanAdoption plan, ApplyModPlan apply, ILogger<ModAdoptionViewModel> logger)
+    public ModAdoptionViewModel(GetProfile getProfile, PlanAdoption plan, ChangeInProgress apply, ILogger<ModAdoptionViewModel> logger)
         : base(logger)
     {
         _getProfile = getProfile;
@@ -127,8 +127,9 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
                     return;
                 }
 
+                var title = Preview.Title ?? $"Manage {pending.Name}";
                 ClearPlan();
-                var result = await _apply.ExecuteAsync(new ApplyModPlanRequest(pending.Documents, pending.Plan), token);
+                var result = await _apply.ApplyAsync(title, new ApplyModPlanRequest(pending.Documents, pending.Plan), token);
                 if (AfterChangeAsync is not null)
                 {
                     await AfterChangeAsync(token);

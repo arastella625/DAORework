@@ -80,6 +80,9 @@ public sealed partial class MainWindowViewModel : ObservableObject
 
     public ModsTabViewModel ModsTab => Pages.ModsTab;
 
+    /// <summary>Gets the change running now, shown across the window, which locks until it ends (P2.6-22).</summary>
+    public ChangeInProgress Change => ModsTab.Activation.Change;
+
     public FixesTabViewModel Fixes => Pages.Fixes;
 
     public SavesPageViewModel Saves => Pages.Saves;

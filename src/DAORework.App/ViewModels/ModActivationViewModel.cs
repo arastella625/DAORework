@@ -19,12 +19,12 @@ public sealed partial class ModActivationViewModel : PageViewModel
 {
     private readonly GetProfile _getProfile;
     private readonly PlanModChange _plan;
-    private readonly ApplyModPlan _apply;
+    private readonly ChangeInProgress _apply;
     private readonly GetModStatus _status;
     private (string Documents, ModActivationPlan Plan)? _pending;
     private PlannedChange? _planned;
 
-    public ModActivationViewModel(GetProfile getProfile, PlanModChange plan, ApplyModPlan apply, GetModStatus status, ILogger<ModActivationViewModel> logger)
+    public ModActivationViewModel(GetProfile getProfile, PlanModChange plan, ChangeInProgress apply, GetModStatus status, ILogger<ModActivationViewModel> logger)
         : base(logger)
     {
         _getProfile = getProfile;
@@ -38,6 +38,9 @@ public sealed partial class ModActivationViewModel : PageViewModel
 
     /// <summary>Gets or sets what runs after a change was applied, such as reading the backups again.</summary>
     public Func<CancellationToken, Task>? AfterChangeAsync { get; set; }
+
+    /// <summary>Gets the change running now, which the whole window shares (P2.6-22).</summary>
+    public ChangeInProgress Change => _apply;
 
     /// <summary>Gets the plan being previewed: a summary, its warnings, and its full text behind Show details (P2.5-18).</summary>
     public PlanPreview Preview { get; } = new();
@@ -93,8 +96,9 @@ public sealed partial class ModActivationViewModel : PageViewModel
                     return;
                 }
 
+                var title = Preview.Title ?? "Making the change";
                 ClearPlan();
-                if (!(await _apply.ExecuteAsync(new ApplyModPlanRequest(pending.Documents, pending.Plan), token)).TryGetValue(out var report, out var error))
+                if (!(await _apply.ApplyAsync(title, new ApplyModPlanRequest(pending.Documents, pending.Plan), token)).TryGetValue(out var report, out var error))
                 {
                     ReportError(error with { Message = $"The change did not complete: {error.Message}" });
                     await ReadActiveAsync(token);
