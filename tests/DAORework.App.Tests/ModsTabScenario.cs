@@ -46,6 +46,14 @@ internal sealed class ModsTabScenario(AppTestHost host)
     /// <summary>Imports a zip of <paramref name="files"/> saved at <paramref name="path"/>, through the Library.</summary>
     public async Task ImportAsync(MainWindowViewModel viewModel, string path, params (string Name, string Content)[] files)
     {
+        SaveZip(path, files);
+        await viewModel.Library.ImportPathsAsync([path], TestContext.Current.CancellationToken);
+        Assert.False(viewModel.Library.IsError, viewModel.Library.StatusMessage);
+    }
+
+    /// <summary>Saves a zip of <paramref name="files"/> at <paramref name="path"/>, as a download that has just arrived.</summary>
+    public void SaveZip(string path, params (string Name, string Content)[] files)
+    {
         using var buffer = new MemoryStream();
         using (var zip = new ZipArchive(buffer, ZipArchiveMode.Create, leaveOpen: true))
         {
@@ -56,9 +64,8 @@ internal sealed class ModsTabScenario(AppTestHost host)
             }
         }
 
-        host.FileSystem.AddFile(path, new MockFileData(buffer.ToArray()));
-        await viewModel.Library.ImportPathsAsync([path], TestContext.Current.CancellationToken);
-        Assert.False(viewModel.Library.IsError, viewModel.Library.StatusMessage);
+        var arrived = DateTime.UtcNow.AddMinutes(1);
+        host.FileSystem.AddFile(path, new MockFileData(buffer.ToArray()) { CreationTime = arrived, LastWriteTime = arrived });
     }
 
     public Task ActivateHairPackAsync(MainWindowViewModel viewModel) => ActivateAsync(viewModel, "Hair Pack");

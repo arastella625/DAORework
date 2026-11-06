@@ -35,6 +35,9 @@ public sealed partial class LibraryViewModel : PageViewModel
 
     public ObservableCollection<LibraryModRow> Mods { get; } = [];
 
+    /// <summary>Gets or sets the look before adding (ADR-0039): it holds back what looks already held, and returns the paths to add now.</summary>
+    public Func<IReadOnlyList<string>, CancellationToken, Task<IReadOnlyList<string>>>? LookFirstAsync { get; set; }
+
     public Task LoadAsync(CancellationToken cancellationToken = default) => GuardAsync(RefreshAsync, cancellationToken);
 
     /// <summary>Marks the mods active in the selected profile's documents folder, now and after every refresh.</summary>
@@ -56,6 +59,19 @@ public sealed partial class LibraryViewModel : PageViewModel
             row.ConflictMark = marks.GetValueOrDefault(row.Id);
         }
     }
+
+    /// <summary>Adds what the player chose: anything that looks already held is asked about first, and the rest is imported.</summary>
+    public Task AddPathsAsync(IReadOnlyList<string> paths, CancellationToken cancellationToken = default) =>
+        GuardAsync(
+            async token =>
+            {
+                var toAdd = LookFirstAsync is { } look ? await look(paths, token) : paths;
+                if (toAdd.Count > 0)
+                {
+                    await ImportPathsAsync(toAdd, token);
+                }
+            },
+            cancellationToken);
 
     /// <summary>Imports each path in turn (a drop can hold several) and shows the library afterwards.</summary>
     public Task ImportPathsAsync(IReadOnlyList<string> paths, CancellationToken cancellationToken = default) =>
@@ -95,7 +111,7 @@ public sealed partial class LibraryViewModel : PageViewModel
         var paths = await _picker.PickFilesAsync("Add mods", "Mod downloads", _downloadPatterns, cancellationToken);
         if (paths.Count > 0)
         {
-            await ImportPathsAsync(paths, cancellationToken);
+            await AddPathsAsync(paths, cancellationToken);
         }
     }
 
@@ -105,7 +121,7 @@ public sealed partial class LibraryViewModel : PageViewModel
         var path = await _picker.PickFolderAsync("Add an extracted mod folder", cancellationToken);
         if (path is not null)
         {
-            await ImportPathsAsync([path], cancellationToken);
+            await AddPathsAsync([path], cancellationToken);
         }
     }
 

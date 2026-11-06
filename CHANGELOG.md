@@ -7,6 +7,7 @@ All notable changes to DAORework are recorded here. The format follows
 ## [Unreleased]
 
 ### Changed
+- Adding a mod looks first (P2.6-39, [ADR-0039](docs/adr/0039-look-first-and-keep-one-copy.md)). A download that looks like something in your game offers *Manage it*, so you take over what you have instead of adding a second copy, and one that looks like something in your Library says so. *Add anyway* is always there, since names alone can't prove two mods are the same.
 - A new player sees where they are on the way to a first game with mods: *Find your game*, *Add mods*, *Turn them on* (P2.6-36). It goes once a mod is on.
 - Drag a mod by its grip in *Arrange* to put it anywhere, with one preview (P2.6-35).
 - A mod's row says if it *wins*, *loses* or *wins and loses* files it shares with another mod (P2.6-33). Only files that really differ count.

@@ -1,3 +1,5 @@
+using DAORework.Application.Mods.Library;
+using DAORework.Core.Mods.Adoption;
 using DAORework.Core.Mods.Planning;
 
 namespace DAORework.App.ViewModels;
@@ -10,13 +12,15 @@ public sealed class ModsTabViewModel
         HandInstalledViewModel handInstalled,
         LibraryViewModel library,
         DeployedModsViewModel deployed,
-        ModPageViewModel modPage)
+        LibraryActionsViewModel actions)
     {
         ArgumentNullException.ThrowIfNull(handInstalled);
         ArgumentNullException.ThrowIfNull(deployed);
         ArgumentNullException.ThrowIfNull(library);
+        ArgumentNullException.ThrowIfNull(actions);
         Folders = folders;
-        ModPage = modPage;
+        ModPage = actions.ModPage;
+        LookFirst = actions.LookFirst;
         HandInstalled = handInstalled;
         Library = library;
         Activation = deployed.Activation;
@@ -25,7 +29,10 @@ public sealed class ModsTabViewModel
         Handover = deployed.Handover;
         Handover.AfterCopyAsync = library.LoadAsync;
         NewDownloads = deployed.NewDownloads;
-        NewDownloads.AddAsync = library.ImportPathsAsync;
+        NewDownloads.AddAsync = library.AddPathsAsync;
+        library.LookFirstAsync = (paths, token) => LookFirst.HoldBackAsync(paths, FoundInGame(), token);
+        LookFirst.AddAsync = library.ImportPathsAsync;
+        LookFirst.ManageAsync = ManageHeldAsync;
         Handover.TurnOnAsync = TurnOnAsync;
         Activation.ActiveModsChanged += (_, _) => Library.ShowActive(Activation.ActiveModIds);
         LoadOrder.PropertyChanged += (_, e) =>
@@ -56,6 +63,9 @@ public sealed class ModsTabViewModel
 
     /// <summary>Gets opening a known mod's page in the browser (ADR-0034 §7).</summary>
     public ModPageViewModel ModPage { get; }
+
+    /// <summary>Gets the look before adding, and what it held back (ADR-0039).</summary>
+    public LookFirstViewModel LookFirst { get; }
 
     /// <summary>Gets the summary of the override and AddIns folders and the inventory.</summary>
     public ModsPageViewModel Folders { get; }
@@ -112,6 +122,21 @@ public sealed class ModsTabViewModel
         Filter.ShowOnlyCommand.Execute(ModShowFilter.All); // The preview shows with your mods, which a chip may be hiding.
         var rows = modIds.Select(id => Library.Mods.FirstOrDefault(m => string.Equals(m.Id, id, StringComparison.OrdinalIgnoreCase))).OfType<LibraryModRow>().ToList();
         return Activation.PlanChangeAsync(ModChangeKind.Activate, rows, restoredAddIns, cancellationToken);
+    }
+
+    private List<AdoptionCandidate> FoundInGame() => [.. HandInstalled.Candidates.Select(c => c.Candidate).OfType<AdoptionCandidate>()];
+
+    /// <summary>Plans managing what the held downloads look like. Loose files have no name of their own, so they take the download's.</summary>
+    private Task ManageHeldAsync(IReadOnlyList<HeldDownload> held, CancellationToken cancellationToken)
+    {
+        var ids = held.Select(h => h.Held.InGame?.Id).ToHashSet(StringComparer.Ordinal);
+        var rows = HandInstalled.Candidates.Where(c => c.CanManage && ids.Contains(c.Candidate?.Id)).ToList();
+        if (rows.Any(r => r.NeedsName) && string.IsNullOrWhiteSpace(HandInstalled.Adoption.LooseFilesName))
+        {
+            HandInstalled.Adoption.LooseFilesName = held.First(h => h.Held.InGame?.Kind == AdoptionCandidateKind.LooseOverrideFiles).Name;
+        }
+
+        return HandInstalled.Adoption.PlanAdoptionAsync(rows, cancellationToken);
     }
 
     private string NameOf(string modId) =>

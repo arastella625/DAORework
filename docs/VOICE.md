@@ -24,6 +24,7 @@ summary follows these rules. The command line keeps its own words; see the end.
 | Turn on / Turn off | Activate / Deactivate, Apply / Remove | For a mod or a fix. The switch says *On* or *Off* beside it. |
 | Manage | Adopt | Taking over a mod the player installed by hand. |
 | Take them over | Manage all, adopt all | The next step's button for everything found in the game. |
+| Manage it, Add anyway | Duplicate detected | Asked before adding a mod that looks already held ([ADR-0039](adr/0039-look-first-and-keep-one-copy.md)). Always *looks like*: names can't prove it. |
 | Who wins, Swap | Conflict resolution | Mods with different files of the same name, in a *Manage* preview. |
 | Found in your game | Installed by hand, unmanaged | A tag on the mod, and a filter. |
 | Undo, Undo to here | Roll back, Roll back to before this | *Undo* is always confirmed first. |

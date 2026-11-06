@@ -50,7 +50,8 @@ keeps the old long rows and the word *Manage*, and the two panels remain.
 2. *Turn on*, preview, *Apply*.
 3. If it clashes, the preview says who wins, and *Arrange* changes that.
 
-**Now:** it works, with search, one-line rows, drag and a preview that stays in view. It is the journey to protect.
+**Now:** it works, with search, one-line rows, drag and a preview that stays in view. It is the journey to protect. A
+download that looks already held is asked about first, and *Manage it* comes before a second copy (P2.6-39).
 
 ### 5. Something has gone wrong
 1. The game won't start, or a mod doesn't show.
