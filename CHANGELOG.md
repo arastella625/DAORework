@@ -7,6 +7,7 @@ All notable changes to DAORework are recorded here. The format follows
 ## [Unreleased]
 
 ### Changed
+- Drag a mod by its grip in *Arrange* to put it anywhere, with one preview (P2.6-35).
 - A mod's row says if it *wins*, *loses* or *wins and loses* files it shares with another mod (P2.6-33). Only files that really differ count.
 - A preview keeps amber for what stops a change, and its other notes are plain text (P2.6-32). *Worth a look* no longer repeats the next step.
 - Previews on the Mods tab open in a sheet under the list, with *Apply* and *Cancel* always showing (P2.6-31).

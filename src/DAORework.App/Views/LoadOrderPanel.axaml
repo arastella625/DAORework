@@ -9,28 +9,33 @@
     <StackPanel Spacing="10">
       <TextBlock Classes="SectionTitle" Text="Arrange" />
       <TextBlock Classes="Secondary" TextWrapping="Wrap"
-                 Text="The mods that are on, in order. When two mods change the same file, the lower one wins. Moving a mod shows a preview first." />
+                 Text="The mods that are on, in order. When two mods change the same file, the lower one wins. Drag a mod by its grip, or use the buttons. Moving a mod shows a preview first." />
       <TextBlock Name="LoadOrderEmpty" Classes="Secondary" Text="No mods are on yet."
                  IsVisible="{Binding !Order.Count}" />
+      <Panel>
       <ItemsControl Name="Order" ItemsSource="{Binding Order}">
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="vm:LoadOrderRow">
             <Border Padding="0,6" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
-              <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="8">
-                <TextBlock VerticalAlignment="Center" Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
-                <Button Grid.Column="1" Content="To top" CommandParameter="{Binding}"
+              <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto" ColumnSpacing="8">
+                <TextBlock Classes="dragGrip Secondary" VerticalAlignment="Center" Padding="4,2" Text="&#x2630;" Background="Transparent"
+                           Cursor="SizeNorthSouth" ToolTip.Tip="Drag to move this mod" />
+                <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
+                <Button Grid.Column="2" Content="To top" CommandParameter="{Binding}"
                         Command="{Binding $parent[views:LoadOrderPanel].((vm:LoadOrderViewModel)DataContext).MoveToTopCommand}" />
-                <Button Grid.Column="2" Content="Up" CommandParameter="{Binding}"
+                <Button Grid.Column="3" Content="Up" CommandParameter="{Binding}"
                         Command="{Binding $parent[views:LoadOrderPanel].((vm:LoadOrderViewModel)DataContext).MoveUpCommand}" />
-                <Button Grid.Column="3" Content="Down" CommandParameter="{Binding}"
+                <Button Grid.Column="4" Content="Down" CommandParameter="{Binding}"
                         Command="{Binding $parent[views:LoadOrderPanel].((vm:LoadOrderViewModel)DataContext).MoveDownCommand}" />
-                <Button Grid.Column="4" Content="To bottom" CommandParameter="{Binding}"
+                <Button Grid.Column="5" Content="To bottom" CommandParameter="{Binding}"
                         Command="{Binding $parent[views:LoadOrderPanel].((vm:LoadOrderViewModel)DataContext).MoveToBottomCommand}" />
               </Grid>
             </Border>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>
+      <Border Name="DropLine" Height="2" VerticalAlignment="Top" Background="{DynamicResource HeadingBrush}" IsVisible="False" IsHitTestVisible="False" />
+      </Panel>
       <TextBlock Name="LoadOrderStatus" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" TextWrapping="Wrap"
                  IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       <TextBlock Classes="Label" Text="Files more than one mod changes"

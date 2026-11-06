@@ -1,5 +1,12 @@
 using System.IO.Abstractions.TestingHelpers;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
+using Avalonia.Input;
+using Avalonia.LogicalTree;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
 using DAORework.App.ViewModels;
 using DAORework.App.Views;
 using Xunit;
@@ -75,6 +82,52 @@ public sealed class LoadOrderScreenTests : IDisposable
         await order.ApplyCommand.ExecuteAsync(null);
 
         Assert.Equal("wins", viewModel.Library.Mods.Single(m => m.Title == "Red Hair").ConflictMark);
+    }
+
+    [AvaloniaFact]
+    public async Task DraggingAModByItsGrip_MovesItToWhereItIsDropped_WithOnePreview()
+    {
+        var (window, viewModel) = await _scenario.OpenAsync();
+        foreach (var name in new[] { "Eyes", "Lips", "Nails", "Teeth" })
+        {
+            await _scenario.ImportAsync(viewModel, Path.Combine(_downloads, $"{name}.zip"), ($"{name}.dds", name));
+            await _scenario.ActivateAsync(viewModel, name);
+        }
+
+        var order = viewModel.ModsTab.LoadOrder;
+        ModsTabScenario.Show<LoadOrderPanel>(window);
+        window.UpdateLayout();
+        var grips = window.GetVisualDescendants().OfType<TextBlock>().Where(t => t.Classes.Contains("dragGrip")).ToList();
+        var start = grips[0].TranslatePoint(new Point(4, 4), window)!.Value;
+        var end = grips[2].TranslatePoint(new Point(4, grips[2].Bounds.Height), window)!.Value + new Point(0, 6);
+
+        window.MouseDown(start, MouseButton.Left);
+        window.MouseMove(end);
+        Dispatcher.UIThread.RunJobs();
+        Assert.True(window.GetLogicalDescendants().OfType<Border>().First(b => b.Name == "DropLine").IsVisible);
+        window.MouseUp(end, MouseButton.Left);
+        for (var i = 0; i < 100 && !order.IsReordered; i++)
+        {
+            await Task.Delay(20, TestContext.Current.CancellationToken);
+            Dispatcher.UIThread.RunJobs();
+        }
+
+        Assert.Equal(["1. Lips", "2. Nails", "3. Eyes", "4. Teeth"], order.Order.Select(r => r.Label));
+        Assert.True(order.IsReordered);
+        Assert.False(window.GetLogicalDescendants().OfType<Border>().First(b => b.Name == "DropLine").IsVisible);
+        Screenshots.Save(window, "arrange-dragged");
+    }
+
+    [Theory]
+    [InlineData(0, 0, 0)]
+    [InlineData(0, 1, 0)]
+    [InlineData(0, 3, 2)]
+    [InlineData(2, 0, 0)]
+    [InlineData(2, 2, 2)]
+    [InlineData(2, 4, 3)]
+    public void Place_TakesTheModItselfOutOfTheCount(int from, int gap, int expected)
+    {
+        Assert.Equal(expected, ArrangeDrop.Place(from, gap));
     }
 
     [AvaloniaFact]
