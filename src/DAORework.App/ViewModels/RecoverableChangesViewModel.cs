@@ -20,14 +20,14 @@ public abstract partial class RecoverableChangesViewModel : PageViewModel
 {
     private const int MaxBackups = 10;
 
-    private readonly RollBackModChange _rollBack;
+    private readonly ChangeInProgress _change;
     private readonly RecoverModPlan _recover;
     private (string Folder, string BackupId)? _pending;
 
-    protected RecoverableChangesViewModel(RollBackModChange rollBack, RecoverModPlan recover, ILogger logger)
+    protected RecoverableChangesViewModel(ChangeInProgress change, RecoverModPlan recover, ILogger logger)
         : base(logger)
     {
-        _rollBack = rollBack;
+        _change = change;
         _recover = recover;
     }
 
@@ -122,7 +122,7 @@ public abstract partial class RecoverableChangesViewModel : PageViewModel
                 }
 
                 ClearPending();
-                var result = await _rollBack.ExecuteAsync(new RollBackModChangeRequest(pending.Folder, pending.BackupId), token);
+                var result = await _change.UndoAsync(new RollBackModChangeRequest(pending.Folder, pending.BackupId), token);
                 await AfterAsync(token);
                 if (!result.TryGetValue(out var report, out var error))
                 {

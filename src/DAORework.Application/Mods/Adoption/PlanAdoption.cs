@@ -36,7 +36,7 @@ public sealed class PlanAdoption
         var documents = request.DocumentsDirectory;
         if (await _journals.LoadAsync(documents, cancellationToken) is not null)
         {
-            return Failure(new Error(DiagnosticCodes.ModApplyUnfinished, $"An earlier mod change in {documents} did not finish.", "Run mods recover to finish it or roll it back first."));
+            return Failure(new Error(DiagnosticCodes.ModApplyUnfinished, $"An earlier mod change in {documents} did not finish.", "Finish it or undo it in History first, or run mods recover."));
         }
 
         if (!(await _records.LoadAsync(documents, cancellationToken)).TryGetValue(out var record, out var error))

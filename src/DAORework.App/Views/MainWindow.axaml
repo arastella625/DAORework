@@ -14,7 +14,7 @@
             BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,0,0,1">
       <!-- The status lines live outside the grid: inside it, a long message widens the auto columns and pushes the buttons off-screen. -->
       <StackPanel Spacing="6">
-        <Grid ColumnDefinitions="Auto,14,Auto,220,16,Auto,200,8,Auto,*,Auto">
+        <Grid ColumnDefinitions="Auto,14,Auto,220,16,Auto,200,8,Auto,*,Auto" IsEnabled="{Binding !Change.IsRunning}">
           <PathIcon Grid.Column="0" Data="{StaticResource EmblemFeather}" Width="22" Height="22"
                     Foreground="{DynamicResource HeadingBrush}" ToolTip.Tip="DAORework" />
           <TextBlock Grid.Column="2" Text="Profile" VerticalAlignment="Center" Margin="0,0,8,0" />
@@ -31,13 +31,22 @@
                    IsVisible="{Binding Launch.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       </StackPanel>
     </Border>
+    <!-- A big change takes minutes: without this the window looks idle, and a second change only finds the first one's journal. -->
+    <Border DockPanel.Dock="Top" Name="ChangeBanner" Padding="16,10" Background="{DynamicResource SurfaceBrush}"
+            BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,0,0,1" IsVisible="{Binding Change.IsRunning}">
+      <StackPanel Spacing="6">
+        <TextBlock FontWeight="SemiBold" Text="{Binding Change.Title}" />
+        <ProgressBar Name="ChangeProgress" Minimum="0" Maximum="100" Value="{Binding Change.Percent}" IsIndeterminate="{Binding !Change.HasSteps}" />
+        <TextBlock Classes="Secondary" Text="{Binding Change.Detail}" />
+      </StackPanel>
+    </Border>
     <!-- Said once here instead of on every panel (docs/VOICE.md rule 3). -->
     <Border DockPanel.Dock="Bottom" Padding="16,8" Background="{DynamicResource SurfaceBrush}"
             BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
       <TextBlock Name="UndoPromise" Classes="Secondary" Text="Every change can be undone in History." />
     </Border>
     <controls:Backdrop>
-      <TabControl Name="Pages" Margin="8" SelectedIndex="{Binding SelectedPage}">
+      <TabControl Name="Pages" Margin="8" SelectedIndex="{Binding SelectedPage}" IsEnabled="{Binding !Change.IsRunning}">
         <TabItem Header="Home">
           <views:HomePage DataContext="{Binding Home}" />
         </TabItem>

@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DAORework.Application.Fixes;
 using DAORework.Application.Mods.Apply;
-using DAORework.Application.Mods.Changes;
 using DAORework.Application.Profiles;
 using DAORework.Core.Common;
 using DAORework.Core.Fixes;
@@ -21,8 +20,8 @@ public sealed partial class FixStatusViewModel : RecoverableChangesViewModel
     private readonly GetProfile _getProfile;
     private readonly GetFixStatus _status;
 
-    public FixStatusViewModel(GetProfile getProfile, GetFixStatus status, RollBackModChange rollBack, RecoverModPlan recover, ILogger<FixStatusViewModel> logger)
-        : base(rollBack, recover, logger)
+    public FixStatusViewModel(GetProfile getProfile, GetFixStatus status, ChangeInProgress change, RecoverModPlan recover, ILogger<FixStatusViewModel> logger)
+        : base(change, recover, logger)
     {
         _getProfile = getProfile;
         _status = status;

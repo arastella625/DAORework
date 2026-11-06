@@ -7,6 +7,7 @@ All notable changes to DAORework are recorded here. The format follows
 ## [Unreleased]
 
 ### Changed
+- A big change now says how far it has got, and the window locks until it ends (P2.6-22). Applying or undoing 7 GB of mods takes minutes, and the window used to look idle, so a second change could be started and told the first "did not finish".
 - *Manage* shows who wins when mods have different files with the same name, and *Swap* changes it before anything moves (P2.6-21). Vortex's record doesn't say which should win, so you choose.
 - A preview no longer warns about a file in your override folder that is the same as the mod's (P2.6-20), since nothing depends on which copy the game picks, and it only mentions the mods you're changing. Files Vortex left there no longer fill a preview with warnings.
 - *Arrange* has *To top* and *To bottom* (P2.6-19): a mod goes all the way in one click and one preview, instead of one for each place.

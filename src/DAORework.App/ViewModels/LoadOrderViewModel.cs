@@ -24,12 +24,12 @@ public sealed partial class LoadOrderViewModel : PageViewModel
 
     private readonly GetProfile _getProfile;
     private readonly PlanModChange _plan;
-    private readonly ApplyModPlan _apply;
+    private readonly ChangeInProgress _apply;
     private readonly ReadLoadOrderDetails _details;
     private IReadOnlyList<string> _saved = [];
     private (string Documents, ModActivationPlan Plan)? _pending;
 
-    public LoadOrderViewModel(GetProfile getProfile, PlanModChange plan, ApplyModPlan apply, ReadLoadOrderDetails details, ILogger<LoadOrderViewModel> logger)
+    public LoadOrderViewModel(GetProfile getProfile, PlanModChange plan, ChangeInProgress apply, ReadLoadOrderDetails details, ILogger<LoadOrderViewModel> logger)
         : base(logger)
     {
         _getProfile = getProfile;
@@ -119,7 +119,7 @@ public sealed partial class LoadOrderViewModel : PageViewModel
                 }
 
                 CanApply = false;
-                var result = await _apply.ExecuteAsync(new ApplyModPlanRequest(pending.Documents, pending.Plan), token);
+                var result = await _apply.ApplyAsync("Saving the new order", new ApplyModPlanRequest(pending.Documents, pending.Plan), token);
                 await PlanOrderAsync(null, token);
                 if (AfterChangeAsync is not null)
                 {

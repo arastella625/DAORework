@@ -32,6 +32,16 @@ public sealed class ApplyAndRecoverTests
     }
 
     [Fact]
+    public async Task Apply_SaysHowFarItHasGot_AfterEachStep()
+    {
+        var progress = new StepsSeen();
+
+        await Apply().ExecuteAsync(new ApplyModPlanRequest(Documents, Plan()) { Progress = progress });
+
+        Assert.Equal([new ChangeSteps(1, 3), new ChangeSteps(2, 3), new ChangeSteps(3, 3)], progress.Steps);
+    }
+
+    [Fact]
     public async Task Apply_FailingStep_StopsKeepsTheJournalAndSavesNoRecord()
     {
         _stores.FailAtCall = 1;
@@ -133,4 +143,11 @@ public sealed class ApplyAndRecoverTests
     private RecoverModPlan Recover() => new(_stores, Runner(), new RestoreDeployment(_backups), _stores);
 
     private JournaledApplyRunner Runner() => new(_stores, _stores, _stores);
+
+    private sealed class StepsSeen : IProgress<ChangeSteps>
+    {
+        public List<ChangeSteps> Steps { get; } = [];
+
+        public void Report(ChangeSteps value) => Steps.Add(value);
+    }
 }
