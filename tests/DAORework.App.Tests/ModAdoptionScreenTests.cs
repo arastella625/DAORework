@@ -1,3 +1,4 @@
+using System.IO.Abstractions.TestingHelpers;
 using Avalonia.Headless.XUnit;
 using DAORework.App.Views;
 using DAORework.Core.Common;
@@ -49,6 +50,39 @@ public sealed class ModAdoptionScreenTests : IDisposable
         Assert.DoesNotContain(handInstalled.Candidates, c => c.Title == "textures");
         Assert.Single(viewModel.ModsTab.Changes.Backups);
         Assert.False(_host.FileSystem.File.Exists(Path.Combine(GamePaths.OverrideDirectory(_scenario.DocumentsDirectory), "textures", "hair_01.dds")));
+    }
+
+    [AvaloniaFact]
+    public async Task Adopt_TwoModsWithDifferentFilesOfOneName_ShowsWhoWins_AndSwapChangesWhatIsApplied()
+    {
+        var (window, viewModel) = await _scenario.OpenAsync();
+        var overrideFolder = GamePaths.OverrideDirectory(_scenario.DocumentsDirectory);
+        _host.FileSystem.AddFile(Path.Combine(overrideFolder, "Alpha", "look.dds"), new MockFileData("alpha"));
+        _host.FileSystem.AddFile(Path.Combine(overrideFolder, "Beta", "look.dds"), new MockFileData("beta"));
+        var handInstalled = viewModel.HandInstalled;
+        await handInstalled.ScanCommand.ExecuteAsync(null);
+        var adoption = handInstalled.Adoption;
+
+        await adoption.PlanAdoptionAsync([handInstalled.Candidates.Single(c => c.Title == "Alpha"), handInstalled.Candidates.Single(c => c.Title == "Beta")], TestContext.Current.CancellationToken);
+
+        var row = Assert.Single(adoption.WhoWins);
+        Assert.Equal("Beta wins over Alpha", row.Title);
+        Assert.Equal("1 texture or model", row.Kinds);
+        Assert.True(row.CanSwap);
+        ModsTabScenario.Show<HandInstalledPanel>(window);
+        Screenshots.Save(window, "adopt-who-wins");
+
+        await adoption.SwapCommand.ExecuteAsync(row);
+
+        Assert.False(adoption.IsError, adoption.StatusMessage);
+        Assert.Equal("Alpha wins over Beta", Assert.Single(adoption.WhoWins).Title);
+        Assert.Equal("alpha", _host.FileSystem.File.ReadAllText(Path.Combine(overrideFolder, "Alpha", "look.dds")));
+
+        await adoption.ApplyCommand.ExecuteAsync(null);
+
+        Assert.False(adoption.IsError, adoption.StatusMessage);
+        Assert.Equal("alpha", _scenario.DeployedContent("look.dds"));
+        Assert.Empty(adoption.WhoWins);
     }
 
     [AvaloniaFact]

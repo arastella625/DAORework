@@ -474,6 +474,10 @@ made-up mods, which is how it got through.)*
   with the mod's, and one with the same content isn't mentioned; only mods the change adds are. On the owner's library
   all 551 files warned about were the same as Vortex's copies. ADR-0012 is amended.
 
+- P2.6-21 *Manage* shows who wins: mods with different files of the same name are listed by set, each with *Swap*,
+  which plans again in the new order (ADR-0015's "the user can reorder before confirming"). On the owner's library
+  all 46 such files were in different folders, so Vortex's record can't settle them.
+
 **Keeping the tests honest on Windows** *(added 2026-11-05, from P2.6-02)*.
 
 - P2.6-09 Run the tests on Windows in CI: `ci.yml` runs them on Linux only, which is how P2.6-02's failures reached

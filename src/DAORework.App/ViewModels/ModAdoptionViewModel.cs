@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using DAORework.Application.Mods.Adoption;
 using DAORework.Application.Mods.Apply;
 using DAORework.Application.Profiles;
+using DAORework.Core.Mods.Adoption;
 using DAORework.Core.Mods.Planning;
 using Microsoft.Extensions.Logging;
 
@@ -21,6 +22,8 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
     private readonly PlanAdoption _plan;
     private readonly ApplyModPlan _apply;
     private (string Documents, ModActivationPlan Plan, string Name)? _pending;
+    private Dictionary<string, HandInstalledModRow> _planned = new(StringComparer.OrdinalIgnoreCase);
+    private IReadOnlyList<string> _order = [];
 
     public ModAdoptionViewModel(GetProfile getProfile, PlanAdoption plan, ApplyModPlan apply, ILogger<ModAdoptionViewModel> logger)
         : base(logger)
@@ -41,6 +44,9 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
 
     /// <summary>Gets the plan's full text, as <c>mods adopt --dry-run</c> prints it, with mods named.</summary>
     public ObservableCollection<string> PlanLines => Preview.Lines;
+
+    /// <summary>Gets each set of mods with different files of the same name (P2.6-21), since only the player can say which should win.</summary>
+    public ObservableCollection<WhoWinsRow> WhoWins { get; } = [];
 
     /// <summary>Gets what the plan being previewed is for, or null when there is none.</summary>
     public string? PlanTitle => Preview.Title;
@@ -96,11 +102,20 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
 
                 // Shown once the library has been read again, so the mods planning just imported are named.
                 Preview.Show(PlanPreview.TitleFor("Manage", titles), plan);
+                ShowWhoWins(plan, candidates);
             },
             cancellationToken);
 
     [RelayCommand]
     private Task AdoptAsync(HandInstalledModRow mod, CancellationToken cancellationToken) => PlanAdoptionAsync([mod], cancellationToken);
+
+    /// <summary>Plans again with the winner in front of the mods it beat, so nothing is decided until <i>Apply</i>.</summary>
+    [RelayCommand]
+    private Task SwapAsync(WhoWinsRow row, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(row);
+        return PlanAdoptionAsync([.. AdoptionOrder.Swap(_order, row.WinnerModId, row.OtherModIds).Select(id => _planned[id])], cancellationToken);
+    }
 
     [RelayCommand(CanExecute = nameof(CanApply))]
     private Task ApplyAsync(CancellationToken cancellationToken) =>
@@ -136,10 +151,22 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
         ReportSuccess("Nothing in the documents folder was changed. The copy planning made stays in the Library.");
     }
 
+    /// <summary>The adopted mods are the plan's last, in the order given, whatever their library ids turned out to be.</summary>
+    private void ShowWhoWins(ModActivationPlan plan, List<HandInstalledModRow> candidates)
+    {
+        _order = [.. plan.TargetModIds.TakeLast(candidates.Count)];
+        _planned = _order.Zip(candidates).DistinctBy(p => p.First, StringComparer.OrdinalIgnoreCase).ToDictionary(p => p.First, p => p.Second, StringComparer.OrdinalIgnoreCase);
+        foreach (var group in SharedFileNotes.Groups([.. plan.Conflicts.BetweenMods.Where(c => !c.SameContent)], Preview.NameOf))
+        {
+            WhoWins.Add(new WhoWinsRow(group.Title, group.Kinds, group.WinnerModId, group.OtherModIds, AdoptionOrder.CanSwap(_order, group.WinnerModId, group.OtherModIds)));
+        }
+    }
+
     private void ClearPlan()
     {
         _pending = null;
         Preview.Clear();
+        WhoWins.Clear();
         CanApply = false;
     }
 }

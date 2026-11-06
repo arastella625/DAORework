@@ -5,4 +5,11 @@ namespace DAORework.Core.Mods.Planning;
 /// <param name="Kinds">What they are, such as <i>120 textures and models</i>.</param>
 /// <param name="FileNames">Each file.</param>
 /// <param name="SameContent">Whether every copy of every file is the same.</param>
-public sealed record SharedFileGroup(string Title, string Kinds, IReadOnlyList<string> FileNames, bool SameContent);
+public sealed record SharedFileGroup(string Title, string Kinds, IReadOnlyList<string> FileNames, bool SameContent)
+{
+    /// <summary>Gets the mod whose copies are used.</summary>
+    public string WinnerModId { get; init; } = string.Empty;
+
+    /// <summary>Gets the mods it wins over.</summary>
+    public IReadOnlyList<string> OtherModIds { get; init; } = [];
+}
