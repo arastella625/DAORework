@@ -37,6 +37,17 @@ public static class ShadowsThatMatter
             .ToList();
     }
 
+    /// <summary>The files of mods this change adds whose every unmanaged copy has the same content, which turning them on takes over (ADR-0037).</summary>
+    public static IReadOnlyList<UnmanagedShadow> Same(IReadOnlyList<UnmanagedShadow> shadows, IReadOnlyCollection<string> activeModIds, IReadOnlyDictionary<string, string> hashes)
+    {
+        ArgumentNullException.ThrowIfNull(shadows);
+        ArgumentNullException.ThrowIfNull(activeModIds);
+        ArgumentNullException.ThrowIfNull(hashes);
+        return shadows
+            .Where(s => !activeModIds.Contains(s.Managed.ModId, _paths) && s.UnmanagedPaths.All(p => IsSame(s, p, hashes)))
+            .ToList();
+    }
+
     private static bool IsSame(UnmanagedShadow shadow, string path, IReadOnlyDictionary<string, string> hashes) =>
         hashes.TryGetValue(DocumentsPath(path), out var hash) && hash.Equals(shadow.Managed.Source.Sha256, StringComparison.OrdinalIgnoreCase);
 

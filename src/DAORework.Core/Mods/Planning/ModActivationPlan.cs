@@ -29,6 +29,9 @@ public sealed record ModActivationPlan(
     /// <summary>Gets the files an adoption takes over where they already are, which it only records (ADR-0015).</summary>
     public int AdoptedInPlaceCount { get; init; }
 
+    /// <summary>Gets the files of mods being added that are already in the game with the same content (ADR-0037).</summary>
+    public IReadOnlyList<UnmanagedShadow> SameUnmanagedCopies { get; init; } = [];
+
     /// <summary>Gets the files the plan deploys combined from several mods' copies (ADR-0025).</summary>
     public IReadOnlyList<CombinedOverride> Combined { get; init; } = [];
 

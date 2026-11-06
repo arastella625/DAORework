@@ -58,6 +58,7 @@ public static class ModActivationPlanner
             CombineProblems = input.CombineProblems,
             InstallOverrideShadows = InstallOverrideOverlap.Find(conflicts.Deploy, input.InstallOverridePaths),
             InstallOverrideProblem = input.InstallOverrideProblem,
+            SameUnmanagedCopies = ShadowsThatMatter.Same(conflicts.UnmanagedShadows, input.Current.ActiveModIds, input.DiskHashes),
         });
     }
 

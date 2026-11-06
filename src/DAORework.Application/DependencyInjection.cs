@@ -100,6 +100,7 @@ public static class DependencyInjection
         services.AddSingleton<CheckKnownDownload>();
         services.AddSingleton<ListLibrary>();
         services.AddSingleton<PlanModChange>();
+        services.AddSingleton<PlanTurnOn>();
         services.AddSingleton<RollBackModChange>();
         services.AddSingleton<GetModStatus>();
         services.AddSingleton<ScanForAdoption>();
