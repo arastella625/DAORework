@@ -49,6 +49,14 @@ public sealed partial class KeepEachRow : ObservableObject
     [ObservableProperty]
     public partial string? Stopped { get; private set; }
 
+    /// <summary>Whether this row lists exactly the copies of <paramref name="set"/>.</summary>
+    public bool Shows(KeepEachSet set)
+    {
+        ArgumentNullException.ThrowIfNull(set);
+        return StringComparer.OrdinalIgnoreCase.Equals(Group, set.Group)
+            && Choices.Select(c => c.ModId).OfType<string>().SequenceEqual(set.Copies.Select(e => e.Mod.Id));
+    }
+
     /// <summary>Takes in a new plan, which leaves the pick and the row's place as they are.</summary>
     public void Update(KeepEachSet set)
     {

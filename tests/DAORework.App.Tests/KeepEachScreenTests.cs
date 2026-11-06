@@ -7,6 +7,7 @@ using DAORework.Core.Common;
 using DAORework.Core.Diagnostics;
 using DAORework.Core.Profiles;
 using Xunit;
+using static DAORework.App.Tests.KeepEachScenario;
 
 namespace DAORework.App.Tests;
 
@@ -17,10 +18,12 @@ public sealed class KeepEachScreenTests : IDisposable
 
     private readonly AppTestHost _host = new();
     private readonly ModsTabScenario _scenario;
+    private readonly KeepEachScenario _sets;
 
     public KeepEachScreenTests()
     {
         _scenario = new ModsTabScenario(_host);
+        _sets = new KeepEachScenario(_scenario);
     }
 
     public void Dispose() => _host.Dispose();
@@ -34,7 +37,7 @@ public sealed class KeepEachScreenTests : IDisposable
         Assert.Equal(0, viewModel.Library.CopySets);
         Assert.False(button.IsVisible);
 
-        await ImportAsync(viewModel, "Hair Pack Copy.zip", "hair_pack.dds", "DDS hair");
+        await _sets.ImportAsync(viewModel, "Hair Pack Copy.zip", "hair_pack.dds", "DDS hair");
 
         Assert.Equal(1, viewModel.Library.CopySets);
         Assert.True(button.IsVisible);
@@ -43,7 +46,7 @@ public sealed class KeepEachScreenTests : IDisposable
     [AvaloniaFact]
     public async Task OnePreview_ClearsEverySet_AndChangesNothingInTheGame()
     {
-        var (_, viewModel) = await OpenWithTwoSetsAsync();
+        var (_, viewModel) = await _sets.OpenAsync();
         await _scenario.ActivateAsync(viewModel, "Eyes Copy");
         var backups = viewModel.ModsTab.Changes.Backups.Count;
         var keep = viewModel.ModsTab.KeepEach;
@@ -73,7 +76,7 @@ public sealed class KeepEachScreenTests : IDisposable
     [AvaloniaFact]
     public async Task ChangingPicks_MakesEverySwapInOneChange()
     {
-        var (_, viewModel) = await OpenWithTwoSetsAsync();
+        var (_, viewModel) = await _sets.OpenAsync();
         await _scenario.ActivateAsync(viewModel, "Eyes Copy");
         await _scenario.ActivateAsync(viewModel, "Hair Pack Copy");
         var backups = viewModel.ModsTab.Changes.Backups.Count;
@@ -101,7 +104,7 @@ public sealed class KeepEachScreenTests : IDisposable
     [AvaloniaFact]
     public async Task KeepAllOfThem_LeavesThatSet_AndNothingLeftMeansNoButton()
     {
-        var (_, viewModel) = await OpenWithTwoSetsAsync();
+        var (_, viewModel) = await _sets.OpenAsync();
         var keep = viewModel.ModsTab.KeepEach;
         await keep.PlanCommand.ExecuteAsync(null);
         var order = keep.Rows.Select(r => r.Title).ToList();
@@ -122,7 +125,7 @@ public sealed class KeepEachScreenTests : IDisposable
     [AvaloniaFact]
     public async Task CopiesThatArentTheSame_ComeFirst_AndSayWhatWouldGo()
     {
-        var (_, viewModel) = await OpenWithTwoSetsAsync();
+        var (_, viewModel) = await _sets.OpenAsync();
         await ImportAddInAsync(viewModel, "Zeta One.dazip", "version one");
         await ImportAddInAsync(viewModel, "Zeta Two.dazip", "version two");
         var keep = viewModel.ModsTab.KeepEach;
@@ -139,7 +142,7 @@ public sealed class KeepEachScreenTests : IDisposable
     [AvaloniaFact]
     public async Task ASetOnInTwoProfiles_StaysAsItIs_AndTheOthersGo()
     {
-        var (_, viewModel) = await OpenWithTwoSetsAsync();
+        var (_, viewModel) = await _sets.OpenAsync();
         await _scenario.ActivateAsync(viewModel, "Hair Pack");
         await SelectSecondProfileAsync(viewModel);
         await _scenario.ActivateAsync(viewModel, "Hair Pack Copy");
@@ -163,7 +166,7 @@ public sealed class KeepEachScreenTests : IDisposable
     [AvaloniaFact]
     public async Task ACopyTurnedOnAfterThePreview_StopsIt_AndNothingIsRemoved()
     {
-        var (_, viewModel) = await OpenWithTwoSetsAsync();
+        var (_, viewModel) = await _sets.OpenAsync();
         var keep = viewModel.ModsTab.KeepEach;
         await keep.PlanCommand.ExecuteAsync(null);
 
@@ -178,7 +181,7 @@ public sealed class KeepEachScreenTests : IDisposable
     [AvaloniaFact]
     public async Task OpeningEitherPreview_ClosesTheOther()
     {
-        var (_, viewModel) = await OpenWithTwoSetsAsync();
+        var (_, viewModel) = await _sets.OpenAsync();
         var each = viewModel.ModsTab.KeepEach;
         var one = viewModel.ModsTab.KeepCopy;
 
@@ -200,7 +203,7 @@ public sealed class KeepEachScreenTests : IDisposable
     [AvaloniaFact]
     public async Task CancelAndChoosingAnotherProfile_RemoveNothing()
     {
-        var (_, viewModel) = await OpenWithTwoSetsAsync();
+        var (_, viewModel) = await _sets.OpenAsync();
         var keep = viewModel.ModsTab.KeepEach;
 
         await keep.PlanCommand.ExecuteAsync(null);
@@ -216,25 +219,6 @@ public sealed class KeepEachScreenTests : IDisposable
         Assert.False(keep.CanRemove);
         Assert.Equal(4, viewModel.Library.Mods.Count);
     }
-
-    private static KeepEachRow Set(KeepEachViewModel keep, string title) => keep.Rows.Single(r => r.Title.StartsWith(title, StringComparison.Ordinal));
-
-    private static Task PickOtherCopyAsync(KeepEachViewModel keep, string title)
-    {
-        var row = Set(keep, title);
-        return PickAsync(keep, row, row.Choices.First(c => c.ModId is not null && c != row.Pick));
-    }
-
-    private static Task KeepAllAsync(KeepEachViewModel keep, string title) => PickAsync(keep, Set(keep, title), Set(keep, title).Choices[^1]);
-
-    private static async Task PickAsync(KeepEachViewModel keep, KeepEachRow row, KeepChoice choice)
-    {
-        row.Pick = choice;
-        await keep.ReplanCommand.ExecutionTask!;
-    }
-
-    private Task ImportAsync(MainWindowViewModel viewModel, string fileName, string file, string content) =>
-        _scenario.ImportAsync(viewModel, Path.Combine(_downloads, fileName), (file, content));
 
     private async Task ImportAddInAsync(MainWindowViewModel viewModel, string fileName, string content)
     {
@@ -257,16 +241,5 @@ public sealed class KeepEachScreenTests : IDisposable
         _host.Picker.Enqueue(other);
         await paths.BrowseCommand.ExecuteAsync(ProfilePathKind.Documents);
         await viewModel.SelectProfileAsync("Second", TestContext.Current.CancellationToken);
-    }
-
-    private async Task<(Views.MainWindow Window, MainWindowViewModel ViewModel)> OpenWithTwoSetsAsync()
-    {
-        var opened = await _scenario.OpenAsync();
-        await _scenario.ImportHairPackAsync(opened.ViewModel);
-        await ImportAsync(opened.ViewModel, "Hair Pack Copy.zip", "hair_pack.dds", "DDS hair");
-        await ImportAsync(opened.ViewModel, "Eyes.zip", "eyes.dds", "DDS eyes");
-        await ImportAsync(opened.ViewModel, "Eyes Copy.zip", "eyes.dds", "DDS eyes");
-        Assert.Equal(2, opened.ViewModel.Library.CopySets);
-        return opened;
     }
 }

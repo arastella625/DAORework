@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DAORework.Application.Mods.Library;
 using DAORework.Application.Profiles;
+using DAORework.Core.Mods.Library;
 using Microsoft.Extensions.Logging;
 
 namespace DAORework.App.ViewModels;
@@ -52,10 +53,16 @@ public sealed partial class KeepEachViewModel : PageViewModel
         ReportSuccess(string.Empty);
     }
 
+    /// <summary>Opens the preview. Pressed again while it is open, it leaves the player's picks alone.</summary>
     [RelayCommand]
     private Task PlanAsync(CancellationToken cancellationToken) => GuardAsync(
         token =>
         {
+            if (Preview.Title is not null)
+            {
+                return Task.CompletedTask;
+            }
+
             Clear();
             ReportSuccess(string.Empty);
             return ShowPlanAsync(token);
@@ -126,6 +133,7 @@ public sealed partial class KeepEachViewModel : PageViewModel
         var plan = preview.Plan;
         if (plan.Sets.Count == 0)
         {
+            Clear();
             ReportSuccess("You have no copies to clear.");
             return;
         }
@@ -157,31 +165,29 @@ public sealed partial class KeepEachViewModel : PageViewModel
             Preview.Notes.Insert(place, note);
         }
 
-        ShowSets(preview);
+        ShowSets(plan);
         _pending = (preview, documents);
         RemoveLabel = KeepEachWords.Button(plan);
         CanRemove = plan.Clearing.Count > 0 && plan.Problems.Count == 0 && preview.Swap is not { IsBlocked: true };
     }
 
-    private void ShowSets(KeepEachPreview preview)
+    /// <summary>Updates the rows in place, which keeps the player's place, unless the Library changed: everything that goes must be listed.</summary>
+    private void ShowSets(KeepEachPlan plan)
     {
-        if (Rows.Count == 0)
+        if (Rows.Count == plan.Sets.Count && Rows.Zip(plan.Sets).All(p => p.First.Shows(p.Second)))
         {
-            foreach (var set in preview.Plan.Sets)
+            foreach (var (row, set) in Rows.Zip(plan.Sets))
             {
-                Rows.Add(new KeepEachRow(set, () => ReplanCommand.Execute(null)));
+                row.Update(set);
             }
 
             return;
         }
 
-        var sets = preview.Plan.Sets.ToDictionary(s => s.Group, StringComparer.OrdinalIgnoreCase);
-        foreach (var row in Rows)
+        Rows.Clear();
+        foreach (var set in plan.Sets)
         {
-            if (sets.TryGetValue(row.Group, out var set))
-            {
-                row.Update(set);
-            }
+            Rows.Add(new KeepEachRow(set, () => ReplanCommand.Execute(null)));
         }
     }
 
