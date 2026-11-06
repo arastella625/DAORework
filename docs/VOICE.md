@@ -26,6 +26,7 @@ summary follows these rules. The command line keeps its own words; see the end.
 | Take them over | Manage all, adopt all | The next step's button for everything found in the game. |
 | Manage it, Add anyway | Duplicate detected | Asked before adding a mod that looks already held ([ADR-0039](adr/0039-look-first-and-keep-one-copy.md)). Always *looks like*: names can't prove it. |
 | Keep this one, Remove the other copy | Delete duplicates, dominant copy | On a mod with copies ([ADR-0039](adr/0039-look-first-and-keep-one-copy.md)). |
+| Keep one of each, Keep all of them | Remove all duplicates, dedupe | Every set of copies in one preview ([ADR-0039](adr/0039-look-first-and-keep-one-copy.md)). *Keep all of them* leaves a set as it is. |
 | Who wins, Swap | Conflict resolution | Mods with different files of the same name, in a *Manage* preview. |
 | Found in your game | Installed by hand, unmanaged | A tag on the mod, and a filter. |
 | Undo, Undo to here | Roll back, Roll back to before this | *Undo* is always confirmed first. |

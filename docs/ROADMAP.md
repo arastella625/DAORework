@@ -505,6 +505,7 @@ made-up mods, which is how it got through.)*
 - P2.6-39 Look before adding: a download that looks already held offers *Manage it* or *Add anyway* first.
 - P2.6-40 Keep one copy: *Keep this one* removes a mod's other copies from the Library, with a preview.
 - P2.6-41 Count the differing files by kind on a real library, which sets the order of P3-01, P3-08 and combining (ADR-0040).
+- P2.6-42 Keep one of each: every set of copies cleared from one preview, with each pick changeable ([ADR-0039](adr/0039-look-first-and-keep-one-copy.md)).
 
 **Keeping the tests honest on Windows** *(added 2026-11-05, from P2.6-02)*.
 

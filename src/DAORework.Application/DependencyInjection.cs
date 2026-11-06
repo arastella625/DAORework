@@ -100,6 +100,7 @@ public static class DependencyInjection
         services.AddSingleton<LookBeforeAdding>();
         services.AddSingleton<CopyFolders>();
         services.AddSingleton<PlanKeepCopy>();
+        services.AddSingleton<PlanKeepEach>();
         services.AddSingleton<RemoveCopies>();
         services.AddSingleton<CheckKnownDownload>();
         services.AddSingleton<ListLibrary>();

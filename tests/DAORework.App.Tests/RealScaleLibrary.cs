@@ -22,6 +22,9 @@ internal static class RealScaleLibrary
     public const string BlockedInTheWay = "Extra Dog Slot v1.41";
 
     private const int MarkersPerMod = 14;
+    private const int CopySets = 51;
+    private const int TwiceCopied = 18;
+    private const long CopySizeBytes = 94_000_000;
 
     /// <summary>Each file's text by its hash, so a change applied here finds what the library says it holds.</summary>
     private static readonly Dictionary<string, string> _texts = [];
@@ -31,10 +34,13 @@ internal static class RealScaleLibrary
 
     public static IReadOnlyList<LibraryEntry> Entries { get; } = Build();
 
+    /// <summary>Gets the same library with the copies a real one gathers: 139 entries, 51 sets and about 6 GB of extras.</summary>
+    public static IReadOnlyList<LibraryEntry> WithCopies { get; } = [.. Entries, .. BuildCopies()];
+
     /// <summary>Writes every mod into the library, and what blocks the two add-ins into the game.</summary>
-    public static void Seed(AppTestHost host)
+    public static void Seed(AppTestHost host, IReadOnlyList<LibraryEntry>? entries = null)
     {
-        foreach (var entry in Entries)
+        foreach (var entry in entries ?? Entries)
         {
             foreach (var file in entry.Mod.Files)
             {
@@ -98,6 +104,37 @@ internal static class RealScaleLibrary
 
         mods.Add(new LibraryMod(ModIds.Create(BlockedProgram, Sha(BlockedProgram)), BlockedProgram, ModKind.GameProgram, [new LibraryModFile("bin_ship/dinput8.dll", 90_000, Sha("dll")) { Kind = ModFileKind.Program }]));
         return [.. mods.Select(mod => new LibraryEntry(mod, mod.Name + ".zip", Sha(mod.Name), new DateTimeOffset(2026, 11, 4, 12, 0, 0, TimeSpan.Zero)) { Scan = new MalwareScan(MalwareScanStatus.NoThreatFound, "No threats found.") })];
+    }
+
+    /// <summary>A copy of 51 mods, a second of 18, all older than the original. The three add-ins' copies aren't the same.</summary>
+    private static List<LibraryEntry> BuildCopies()
+    {
+        var addIns = Entries.Where(e => AlreadyOn.Contains(e.Mod.Name) && e.Mod.Kind == ModKind.AddIn);
+        var overrides = Entries.Where(e => e.Mod.Kind == ModKind.Override).Take(CopySets - 3);
+        var copies = new List<LibraryEntry>();
+        foreach (var (entry, place) in addIns.Concat(overrides).Select((e, i) => (e, i)))
+        {
+            copies.Add(CopyOf(entry, 1));
+            if (place < TwiceCopied)
+            {
+                copies.Add(CopyOf(entry, 2));
+            }
+        }
+
+        return copies;
+    }
+
+    private static LibraryEntry CopyOf(LibraryEntry entry, int number)
+    {
+        var name = entry.Mod.Name;
+        var files = entry.Mod.Files.Select(f => f.RelativePath.EndsWith("/slots.erf", StringComparison.Ordinal) ? f with { Sha256 = Sha($"{name} older {f.RelativePath}") } : f).ToList();
+        files[0] = files[0] with { SizeBytes = CopySizeBytes };
+        return entry with
+        {
+            Mod = entry.Mod with { Id = ModIds.Create(name, Sha($"{name} copy {number}")), Files = files },
+            SourceName = $"{name} ({number}).zip",
+            ImportedAtUtc = entry.ImportedAtUtc.AddDays(-number),
+        };
     }
 
     private static string Uid(string name) => name.Replace(" ", "_", StringComparison.Ordinal).Replace(".", "_", StringComparison.Ordinal).ToLowerInvariant();

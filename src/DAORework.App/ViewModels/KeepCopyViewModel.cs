@@ -1,6 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DAORework.Application.Mods.Apply;
 using DAORework.Application.Mods.Library;
 using DAORework.Application.Profiles;
 using DAORework.Core.Common;
@@ -17,18 +16,16 @@ public sealed partial class KeepCopyViewModel : PageViewModel
 {
     private readonly GetProfile _getProfile;
     private readonly PlanKeepCopy _plan;
-    private readonly RemoveCopies _remove;
-    private readonly ChangeInProgress _change;
+    private readonly CopyRemoval _removal;
     private string? _profileName;
     private (KeepCopyPreview Preview, string? Documents)? _pending;
 
-    public KeepCopyViewModel(GetProfile getProfile, PlanKeepCopy plan, RemoveCopies remove, ChangeInProgress change, ILogger<KeepCopyViewModel> logger)
+    public KeepCopyViewModel(GetProfile getProfile, PlanKeepCopy plan, CopyRemoval removal, ILogger<KeepCopyViewModel> logger)
         : base(logger)
     {
         _getProfile = getProfile;
         _plan = plan;
-        _remove = remove;
-        _change = change;
+        _removal = removal;
     }
 
     /// <summary>Gets or sets what runs afterwards, such as reading the Library again.</summary>
@@ -82,18 +79,10 @@ public sealed partial class KeepCopyViewModel : PageViewModel
 
             var title = Preview.Title ?? "Keeping one copy";
             Clear();
-            if (pending.Preview.Swap is { } swap && pending.Documents is { } documents
-                && (await _change.ApplyAsync(title, new ApplyModPlanRequest(documents, swap), token)).Error is { } failed)
-            {
-                ReportError(failed with { Message = $"Nothing was removed: {failed.Message}" });
-                await RefreshAsync(token);
-                return;
-            }
-
             var ids = pending.Preview.Plan.Removing.Select(e => e.Mod.Id).ToList();
-            var removed = await _change.RunAsync(title, _ => Task.Run(() => _remove.ExecuteAsync(ids, token), token));
+            var failed = await _removal.RunAsync(title, pending.Preview.Swap, pending.Documents, ids, token);
             await RefreshAsync(token);
-            if (removed.Error is { } error)
+            if (failed is { } error)
             {
                 ReportError(error);
             }

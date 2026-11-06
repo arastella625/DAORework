@@ -38,8 +38,21 @@ record that names a mod needs that mod to plan anything, and a moved file can co
 - *Undo* refuses a change whose earlier state names a mod no longer in the Library, and says which. It would otherwise
   leave a record that no later plan can use. The preview says so before anything is removed.
 
+**Keep one of each** *(added by P2.6-42)*.
+- One action clears every set of copies from a single preview. The rules above apply to each set: nothing here removes
+  or swaps in a way *Keep this one* wouldn't.
+- Each set starts on the copy that is on in the selected profile, or else one on in another profile, or else the newest.
+  Starting on what is on means a default clear rarely changes the game, and another profile rarely stops it.
+- The player can change a set's pick, or choose *Keep all of them* to leave that set as it is.
+- Sets whose copies aren't identical come first, however they are picked, and say what would go. The order doesn't change
+  when a pick does, so the player keeps their place in the list.
+- All swaps go in one plan, applied once, and only then is anything removed.
+- A set that can't be cleared, because a copy is on in another profile, stays as it is and says why. The others go ahead:
+  one stuck set shouldn't hold up fifty. An unfinished change still stops everything.
+- Only one of the two previews can be open. Two made before either ran could remove the copy the other keeps.
+
 ## Consequences
-- The extras can be cleared one set at a time, and a new duplicate is caught before it costs a copy.
+- The extras can be cleared in one go, and a new duplicate is caught before it costs a copy.
 - ADR-0012's rule becomes: a library entry's files never change, but the entry can be removed.
 - Removing a copy cuts History off for changes that used it. Copies with the same files lose nothing else.
 - A file only in a removed copy can't be restored by an older *Undo*. It fails with the existing message and changes
@@ -51,6 +64,10 @@ record that names a mod needs that mod to plan anything, and a moved file can co
 - A swap copies the kept mod and backs up the removed copy, like any change, though that backup can't be used without
   adding the copy again. Moving the files instead would save both. Until then, keeping the copy that is on costs nothing.
 - The window comes first. `mods keep` for the command line is a later task.
+- With 51 sets the sheet scrolls its list, as ADR-0038's does, and takes most of a small window. The total, what differs
+  and the buttons stay in view, and the mods list keeps what is left.
+- *Keep one of each* removes many mods for good from one press. The preview leads with what would be lost, but a set whose
+  copies differ still starts on a pick, so a player who doesn't read it can lose those files.
 
 ## Alternatives considered
 - **Refuse a duplicate outright.** Names can't tell a new version from a copy, so this would block real updates.
@@ -58,3 +75,5 @@ record that names a mod needs that mod to plan anything, and a moved file can co
 - **Stop every add until everything found is managed.** Blocks mods that have nothing to do with what was found.
 - **Keep removed copies in a holding folder.** Keeps the 6 GB the owner wants back, and adds a second thing to clear.
 - **Refuse to remove a mod any backup names.** Safe, but nearly every copy that was ever on could then never go.
+- **Stop the whole clear for one stuck set.** Simple, but the player would have to solve every set before clearing any.
+- **A preview per set, one after another.** Keeps each one simple, and is the 51 steps this is meant to remove.

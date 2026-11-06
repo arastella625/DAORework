@@ -5,6 +5,7 @@ using Avalonia.LogicalTree;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using DAORework.App.Views;
+using DAORework.Core.Mods.Library;
 using Xunit;
 
 namespace DAORework.App.Tests;
@@ -32,6 +33,8 @@ public sealed class RealScalePreviewTests : IDisposable
         Assert.Equal(70, RealScaleLibrary.Entries.Count);
         Assert.InRange(files.Count, 7000, 10000);
         Assert.InRange(files.Count(f => f.RelativePath.EndsWith("__folder_managed_by_vortex", StringComparison.Ordinal)), 900, 1000);
+        Assert.Equal(139, RealScaleLibrary.WithCopies.Count);
+        Assert.Equal(51, ModCopies.Find(RealScaleLibrary.WithCopies).Values.Select(c => c.Group).Distinct(StringComparer.OrdinalIgnoreCase).Count());
     }
 
     [AvaloniaFact]

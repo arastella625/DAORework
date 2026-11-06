@@ -21,6 +21,8 @@
                  IsVisible="{Binding LookFirst.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       <TextBlock Name="KeepCopyStatus" Classes="Status" Classes.Error="{Binding KeepCopy.IsError}" Text="{Binding KeepCopy.StatusMessage}" TextWrapping="Wrap"
                  IsVisible="{Binding KeepCopy.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+      <TextBlock Name="KeepEachStatus" Classes="Status" Classes.Error="{Binding KeepEach.IsError}" Text="{Binding KeepEach.StatusMessage}" TextWrapping="Wrap"
+                 IsVisible="{Binding KeepEach.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       <TextBlock Name="ActivationStatus" Classes="Status" Classes.Error="{Binding Activation.IsError}" Text="{Binding Activation.StatusMessage}" TextWrapping="Wrap"
                  IsVisible="{Binding Activation.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       <TextBlock Name="LibraryEmpty" Classes="Secondary" TextWrapping="Wrap"
@@ -32,6 +34,9 @@
         <Button Name="DeactivateSelectedButton" Content="Turn off selected" Command="{Binding Selection.DeactivateSelectedCommand}" />
         <Button Name="SelectAllModsButton" Content="Select all" Command="{Binding Selection.SelectAllCommand}" />
         <Button Name="ClearModsSelectionButton" Content="Clear" Command="{Binding Selection.ClearSelectionCommand}" />
+        <Button Name="KeepEachButton" Content="Keep one of each" Command="{Binding KeepEach.PlanCommand}"
+                ToolTip.Tip="For every mod you have more than once, keep one copy and remove the others from your Library. You'll see a preview first."
+                IsVisible="{Binding Library.CopySets, Converter={x:Static views:CountConverters.IsPositive}}" />
       </StackPanel>
       <ItemsControl Name="LibraryMods" ItemsSource="{Binding Filter.VisibleMods}">
         <ItemsControl.ItemTemplate>
