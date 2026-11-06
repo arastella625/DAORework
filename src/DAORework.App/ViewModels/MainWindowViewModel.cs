@@ -42,6 +42,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
         Home.Watch(ModsTab, Fixes);
         Home.CheckAsync = _ => Diagnostics.RunDiagnosticsCommand.ExecuteAsync(null);
         Home.NavigateAsync = OpenFromHomeAsync;
+        ModsTab.NextMove.OpenAsync = (target, token) => OpenFromHomeAsync(target, null, token);
     }
 
     /// <summary>Gets or sets the tab shown; a next step switches to the tab its plan is on.</summary>

@@ -7,6 +7,7 @@ All notable changes to DAORework are recorded here. The format follows
 ## [Unreleased]
 
 ### Changed
+- Home and the Mods page show one next step, worked out from where you are (P2.6-27): find your game, finish moving from Vortex, take over what's in your game, add your first mod, or turn mods on.
 - A copy with a different name says which mod it's the same as, and finishing an interrupted change shows the progress banner (P2.6-28).
 - Turning a mod on takes over identical files already in your game (P2.6-25, [ADR-0037](docs/adr/0037-a-mod-is-one-thing.md)): they're moved, not copied, so there's no second copy. It's in the preview, and *Undo* puts them back. Files that differ are left alone, and so is anything Vortex can still reach.
 - *Manage* now clears the leftover copies of a mod that's already on (P2.6-23), instead of refusing it. The files are backed up and *Undo* puts them back.

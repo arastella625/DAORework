@@ -31,6 +31,7 @@ public sealed class ModsTabViewModel
         Activation.ActiveModsChanged += (_, _) => Library.ShowActive(Activation.ActiveModIds);
         Filter = new ModListFilter(library.Mods, handInstalled.Candidates);
         Setup = new SetupSummary(this);
+        NextMove = new NextMoveCard(this);
 
         // A change made in one panel shows in the others: a new backup after Apply, what is active after a rollback,
         // an adopted mod in the Library and no longer in the list of mods installed by hand, the new load order.
@@ -81,6 +82,9 @@ public sealed class ModsTabViewModel
 
     /// <summary>Gets the three kinds of mod with what is on and whether each is ready; the cards here and on Home.</summary>
     public SetupSummary Setup { get; }
+
+    /// <summary>Gets the one next step, here and on Home (P2.6-27).</summary>
+    public NextMoveCard NextMove { get; }
 
     /// <summary>Points the panels at <paramref name="profileName"/> and reads the library, which every profile shares.</summary>
     public async Task SelectProfileAsync(string? profileName, CancellationToken cancellationToken = default)

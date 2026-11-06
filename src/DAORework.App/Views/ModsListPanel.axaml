@@ -36,6 +36,7 @@
       </ItemsControl.ItemTemplate>
     </ItemsControl>
 
+    <views:NextMovePanel DataContext="{Binding NextMove}" IsVisible="{Binding IsShown}" x:DataType="vm:NextMoveCard" />
     <views:VortexHandoverPanel DataContext="{Binding Handover}" IsVisible="{Binding IsShown}" x:DataType="vm:VortexHandoverViewModel" />
     <views:NewDownloadsPanel DataContext="{Binding NewDownloads}" IsVisible="{Binding IsShown}" x:DataType="vm:NewDownloadsViewModel" />
 
