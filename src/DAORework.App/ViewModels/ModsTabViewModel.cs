@@ -20,7 +20,6 @@ public sealed class ModsTabViewModel
         HandInstalled = handInstalled;
         Library = library;
         Activation = deployed.Activation;
-        Selection = new LibrarySelectionViewModel(library.Mods, Activation);
         Changes = deployed.Changes;
         LoadOrder = deployed.LoadOrder;
         Handover = deployed.Handover;
@@ -30,6 +29,7 @@ public sealed class ModsTabViewModel
         Handover.TurnOnAsync = TurnOnAsync;
         Activation.ActiveModsChanged += (_, _) => Library.ShowActive(Activation.ActiveModIds);
         Filter = new ModListFilter(library.Mods, handInstalled.Candidates);
+        Selection = new LibrarySelectionViewModel(library.Mods, Filter.VisibleMods, Activation);
         Setup = new SetupSummary(this);
         NextMove = new NextMoveCard(this);
 
