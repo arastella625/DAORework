@@ -235,9 +235,9 @@ public sealed partial class LoadOrderViewModel : PageViewModel
 
         ShowCombined(plan?.Combined ?? [], id => names is not null && names.TryGetValue(id, out var name) ? name : id);
         Conflicts.Clear();
-        foreach (var conflict in plan?.Conflicts.BetweenMods ?? [])
+        foreach (var row in (plan?.Conflicts.BetweenMods ?? []).Select(c => FileConflictRow.From(c, names ?? new Dictionary<string, string>())).OrderBy(r => r.SameContent).ThenBy(r => r.Impact))
         {
-            Conflicts.Add(FileConflictRow.From(conflict, names ?? new Dictionary<string, string>()));
+            Conflicts.Add(row);
         }
 
         ShowShared(plan, names);
@@ -251,7 +251,8 @@ public sealed partial class LoadOrderViewModel : PageViewModel
             ? []
             : SharedFileNotes.Groups(plan?.Conflicts.BetweenMods ?? [], ModActivationPlanWarnings.CombinedAware(id => names is not null && names.TryGetValue(id, out var name) ? name : id));
         SharedRows.Clear();
-        foreach (var row in (groups.Count > 0 ? groups.Select(FileConflictRow.From) : Conflicts).OrderBy(r => r.SameContent).ThenBy(r => r.Impact))
+        IEnumerable<FileConflictRow> rows = groups.Count > 0 ? groups.Select(FileConflictRow.From).OrderBy(r => r.SameContent).ThenBy(r => r.Impact) : Conflicts;
+        foreach (var row in rows)
         {
             SharedRows.Add(row);
         }

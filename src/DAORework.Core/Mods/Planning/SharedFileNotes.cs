@@ -25,7 +25,7 @@ public static class SharedFileNotes
             conflicts.Count == 1 ? "1 file is in more than one mod. The mod lower in the order wins." : $"{ModActivationPlanWarnings.Files(conflicts.Count)} are in more than one mod. For each one, the mod lower in the order wins.",
         };
         var ranked = SharedFileRank.Summary([.. conflicts.Select(c => c.FileName)]);
-        notes.Add(conflicts.Any(IsBehaviour) ? $"{ranked} For what could break quests, look for a compatibility patch." : $"{ranked}");
+        notes.Add(conflicts.Any(IsBehaviour) ? $"{ranked} For what could break quests, look for a compatibility patch." : ranked ?? string.Empty);
 
         var groups = Groups(conflicts, nameOf);
         notes.AddRange(groups.Take(GroupsShown).Select(g => $"{g.Title}: {g.Kinds}."));

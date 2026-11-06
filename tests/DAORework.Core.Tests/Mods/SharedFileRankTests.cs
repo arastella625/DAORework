@@ -38,6 +38,16 @@ public sealed class SharedFileRankTests
     [InlineData("alistair_table.gda", null)]
     public void PlainName_SaysOnlyWhatTheNameMakesPlain(string fileName, string? expected) => Assert.Equal(expected, SharedFileNames.For(fileName));
 
+    [Theory]
+    [InlineData("party_camp.are")]
+    [InlineData("merchant.utc")]
+    [InlineData("zevran_kiss.cut")]
+    public void Meaning_EveryKindThatCouldBreakQuests_SaysWhatToDo(string fileName)
+    {
+        Assert.Equal(SharedFileImpact.CouldBreakQuests, SharedFileRank.Of(fileName));
+        Assert.Contains("compatibility patch", SharedFileMeaning.For(fileName), StringComparison.Ordinal);
+    }
+
     [Fact]
     public void Meaning_AConversation_NamesWhoseItIs() =>
         Assert.StartsWith("It is Alistair's conversation, so ", SharedFileMeaning.For("alistair_main.dlg"), StringComparison.Ordinal);

@@ -11,7 +11,7 @@ public static class SharedFileRank
 {
     private static readonly HashSet<string> _quests = new(StringComparer.OrdinalIgnoreCase)
     {
-        ".ncs", ".gda", ".dlg", ".cnv", ".plo", ".are", ".utc", ".utp",
+        ".ncs", ".gda", ".dlg", ".cnv", ".plo", ".are", ".utc", ".utp", ".cut",
     };
 
     public static SharedFileImpact Of(string fileName)

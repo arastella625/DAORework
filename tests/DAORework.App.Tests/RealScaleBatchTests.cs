@@ -1,5 +1,6 @@
 using Avalonia.Headless.XUnit;
 using DAORework.App.Views;
+using DAORework.Core.Mods.Conflicts;
 using Xunit;
 
 namespace DAORework.App.Tests;
@@ -60,6 +61,7 @@ public sealed class RealScaleBatchTests : IDisposable
         var impacts = order.SharedRows.Where(r => !r.SameContent).Select(r => r.Impact).ToList();
         Assert.NotEmpty(impacts);
         Assert.Equal(impacts.Order(), impacts);
+        Assert.Equal(SharedFileImpact.CouldBreakQuests, order.Conflicts[0].Impact);
         ModsTabScenario.Show<CombinedFilesPanel>(window);
         Screenshots.Save(window, "real-scale-combined-ranked");
     }

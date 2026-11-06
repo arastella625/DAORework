@@ -24,6 +24,7 @@ public static class SharedFileMeaning
             ".erf" or ".rim" => "It is an archive: only one is loaded, and what is inside is not compared yet.",
             ".xml" => "It is a settings file the game reads one copy of.",
             _ when GameDataFiles.Looks.Contains(extension) => "It is a texture or model, so only that mod's look shows.",
+            _ when SharedFileRank.Of(fileName) == SharedFileImpact.CouldBreakQuests => "It is part of how a quest or place works, so the other mod's changes to it are lost. Look for a compatibility patch.",
             _ => null,
         };
     }
