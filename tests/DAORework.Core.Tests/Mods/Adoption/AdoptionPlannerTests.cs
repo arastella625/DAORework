@@ -113,6 +113,22 @@ public sealed class AdoptionPlannerTests
     }
 
     [Fact]
+    public void Plan_OneModFoundTwice_KeepsTheFirst_AndDeletesTheSecond()
+    {
+        var mod = new LibraryMod("hair", "Hair", ModKind.Override, [new LibraryModFile("hair.dds", 1, "aa")]);
+        var first = new AdoptedMod(mod, new Dictionary<string, string> { ["hair.dds"] = "packages/core/override/A/hair.dds" });
+        var second = new AdoptedMod(mod, new Dictionary<string, string> { ["hair.dds"] = "packages/core/override/B/hair.dds" });
+        var input = new PlanInput(DeploymentRecord.Empty, [], [], new Dictionary<string, string>(), []);
+
+        var plan = AdoptionPlanner.Plan(input, [first, second]).Value;
+
+        Assert.Equal(["hair"], plan.TargetModIds);
+        Assert.Equal(["hair", "hair"], plan.AdoptedModIds);
+        Assert.Equal("packages/core/override/A/hair.dds", Assert.Single(plan.Operations, o => o.Action == PlanAction.Move).MovedFrom);
+        Assert.Equal("packages/core/override/B/hair.dds", Assert.Single(plan.Operations, o => o.Action == PlanAction.Delete).TargetPath);
+    }
+
+    [Fact]
     public void Plan_AFileDAOReworkPlaced_IsNeverALeftover()
     {
         var mod = Mod("hair-1", ModKind.Override, ("a.dds", "a"));

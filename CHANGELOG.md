@@ -6,6 +6,9 @@ All notable changes to DAORework are recorded here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+- *Manage* no longer stops on "An item with the same key has already been added" (P2.6-43). It happened when something found in your game was a leftover of a mod already on, and mods shared `chargenmorphcfg.xml`. A mod found in two places is now managed once, with the other copy cleared, and *Swap* works when a leftover is in the same change.
+
 ### Changed
 - *Keep one of each* clears every set of copies from one preview (P2.6-42, [ADR-0039](docs/adr/0039-look-first-and-keep-one-copy.md)). Each set starts on the copy that's on, or else the newest, and you can pick another or *Keep all of them*. Copies that aren't the same come first, the preview says how much space comes back, and every swap is one change. A set that's on in another profile stays as it is and says why, and the others go ahead.
 - *Keep this one* on a mod with copies removes the others from your Library (P2.6-40, [ADR-0039](docs/adr/0039-look-first-and-keep-one-copy.md)). The preview says how much space comes back and what exists only in a copy being removed. A copy that's on gives its place to the one you keep. Removing can't be undone, and *Undo* now says so if it needs a mod that has gone: add the same download again and it works.

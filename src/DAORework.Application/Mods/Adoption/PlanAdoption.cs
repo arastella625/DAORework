@@ -69,7 +69,8 @@ public sealed class PlanAdoption
     private async Task<Result<ModActivationPlan>> PlanAsync(string documents, DeploymentRecord record, List<LibraryMod> active, List<AdoptedMod> adopted, CancellationToken cancellationToken)
     {
         // The adopted mods come after the active ones, so their copies of chargenmorphcfg.xml combine last (ADR-0025).
-        if (!(await CombineChargenMorph.PrepareAsync(_library, [.. active, .. adopted.Select(a => a.Mod)], cancellationToken)).TryGetValue(out var combine, out var error))
+        // One already on, or found twice, is one mod: what else was found of it is a leftover (P2.6-23, P2.6-43).
+        if (!(await CombineChargenMorph.PrepareAsync(_library, [.. active.Concat(adopted.Select(a => a.Mod)).DistinctBy(m => m.Id, StringComparer.OrdinalIgnoreCase)], cancellationToken)).TryGetValue(out var combine, out var error))
         {
             return Failure(error);
         }
