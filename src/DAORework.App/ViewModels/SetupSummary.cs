@@ -65,10 +65,14 @@ public sealed partial class SetupSummary : ObservableObject
         }
 
         var ready = parts.All(p => p.IsReady);
-        Title = ready ? "Everything is in place" : "Almost there";
-        Body = ready
-            ? "Your add-ins, override mods and combined files are all set."
-            : "Some mods change the same file. Arrange them to choose which one wins.";
+        var unmanaged = _mods.Filter.VisibleFound.Count > 0;
+        Title = ready && !unmanaged ? "Everything is in place" : "Almost there";
+        Body = (ready, unmanaged) switch
+        {
+            (_, true) => "Some mods in your game aren't looked after by DAORework yet.",
+            (true, _) => "Your add-ins, override mods and combined files are all set.",
+            _ => "Some mods change the same file. Arrange them to choose which one wins.",
+        };
     }
 
     /// <summary>The card lists files mods share as well as merged ones, so "None needed" is only true of neither.</summary>
