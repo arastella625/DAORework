@@ -42,6 +42,23 @@ public sealed class FolderDownloadsTests
     }
 
     [Fact]
+    public void ReadEntryNames_AnExtractedFolder_GivesItsFilesWithForwardSlashes()
+    {
+        Add(Path.Combine("Blue Hair", "Hair", "a.erf"), "x");
+        Add(Path.Combine("Blue Hair", "readme.txt"), "x");
+
+        Assert.Equal(["Hair/a.erf", "readme.txt"], Downloads.ReadEntryNames(Path.Combine(_folder, "Blue Hair")).Value.Order());
+    }
+
+    [Fact]
+    public void ReadEntryNames_ADazip_IsReadAsTheZipItIs()
+    {
+        _fileSystem.AddFile(Path.Combine(_folder, "mod.dazip"), new MockFileData(Zip("Manifest.xml", "Contents/addins/uid/a.erf")));
+
+        Assert.Equal(["Manifest.xml", "Contents/addins/uid/a.erf"], Downloads.ReadEntryNames(Path.Combine(_folder, "mod.dazip")).Value);
+    }
+
+    [Fact]
     public void ReadEntryNames_AZip_GivesItsFileNamesWithForwardSlashes()
     {
         _fileSystem.AddFile(Path.Combine(_folder, "mod.zip"), new MockFileData(Zip("Hair/a.erf", "readme.txt")));

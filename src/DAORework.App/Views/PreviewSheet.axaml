@@ -7,6 +7,28 @@
   <!-- Every preview on the Mods tab (ADR-0038): docked below the list, which shrinks to make room, so its buttons always
        show and the list stays reachable. Only the plan scrolls. -->
   <StackPanel>
+    <!-- Asked before anything is added (ADR-0039), so taking over comes before a second copy. -->
+    <Border Name="LookFirstSheet" Classes="sheet" IsVisible="{Binding LookFirst.IsShown}">
+      <StackPanel Spacing="8">
+        <TextBlock Classes="SectionTitle" Text="{Binding LookFirst.Title}" />
+        <ScrollViewer MaxHeight="230">
+          <ItemsControl Name="HeldDownloads" ItemsSource="{Binding LookFirst.Held}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:HeldDownloadRow">
+                <TextBlock Margin="0,2" Text="{Binding Line}" TextWrapping="Wrap" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <Button Name="ManageHeldButton" Classes="accent" Content="{Binding LookFirst.ManageLabel}" Command="{Binding LookFirst.ManageHeldCommand}"
+                  IsVisible="{Binding LookFirst.CanManage}" />
+          <Button Name="AddAnywayButton" Content="Add anyway" Command="{Binding LookFirst.AddAnywayCommand}" />
+          <Button Name="CancelHeldButton" Content="Cancel" Command="{Binding LookFirst.CancelCommand}" />
+        </StackPanel>
+      </StackPanel>
+    </Border>
+
     <Border Name="PlanPreview" Classes="sheet"
             IsVisible="{Binding Activation.Preview.Title, Converter={x:Static ObjectConverters.IsNotNull}}">
       <StackPanel Spacing="8">

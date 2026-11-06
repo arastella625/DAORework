@@ -27,7 +27,7 @@ public sealed partial class LibraryPanel : UserControl
         var paths = LocalPaths(e.DataTransfer);
         if (paths.Count > 0 && DataContext is ModsTabViewModel mods)
         {
-            await mods.Library.ImportPathsAsync(paths);
+            await mods.Library.AddPathsAsync(paths);
         }
     }
 }

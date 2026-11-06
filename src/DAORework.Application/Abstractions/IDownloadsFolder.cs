@@ -9,6 +9,6 @@ public interface IDownloadsFolder
     /// <summary>The finished downloads at the folder's top level: not empty, not still being written, and not links.</summary>
     Result<IReadOnlyList<DownloadFile>> ListFinished(string folder);
 
-    /// <summary>An archive's file names, and nothing else: nothing is extracted, hashed or scanned.</summary>
+    /// <summary>The file names in an archive or an extracted folder, and nothing else: nothing is extracted, hashed or scanned.</summary>
     Result<IReadOnlyList<string>> ReadEntryNames(string path);
 }

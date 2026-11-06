@@ -47,8 +47,7 @@ public sealed class FolderDownloads : IDownloadsFolder
     {
         try
         {
-            using var stream = _fileSystem.File.OpenRead(path);
-            var names = _fileSystem.Path.GetExtension(path).Equals(".zip", StringComparison.OrdinalIgnoreCase) ? ZipNames(stream) : ArchiveNames(stream);
+            var names = _fileSystem.Directory.Exists(path) ? FolderNames(path) : ArchiveNames(path);
             return names.Count > FolderModLibrary.MaxFiles
                 ? Unlistable("it holds more files than any mod DAORework accepts")
                 : Result.Success<IReadOnlyList<string>>(names);
@@ -63,6 +62,16 @@ public sealed class FolderDownloads : IDownloadsFolder
 
     private static Result<IReadOnlyList<string>> Unlistable(string reason) =>
         Result.Failure<IReadOnlyList<string>>(new Error(DiagnosticCodes.DownloadsUnreadable, $"An archive couldn't be listed: {reason}."));
+
+    private List<string> FolderNames(string folder) =>
+        [.. _fileSystem.Directory.EnumerateFiles(folder, "*", SearchOption.AllDirectories)
+            .Select(f => _fileSystem.Path.GetRelativePath(folder, f).Replace('\\', '/'))];
+
+    private List<string> ArchiveNames(string path)
+    {
+        using var stream = _fileSystem.File.OpenRead(path);
+        return _fileSystem.Path.GetExtension(path).ToLowerInvariant() is ".zip" or ".dazip" ? ZipNames(stream) : ArchiveNames(stream);
+    }
 
     private static List<string> ZipNames(Stream stream)
     {
