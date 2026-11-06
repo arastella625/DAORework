@@ -5,6 +5,7 @@ using DAORework.Application.Mods.Apply;
 using DAORework.Application.Mods.Changes;
 using DAORework.Application.Profiles;
 using DAORework.Core.Mods.Combining;
+using DAORework.Core.Mods.Conflicts;
 using DAORework.Core.Mods.Library;
 using DAORework.Core.Mods.Planning;
 using Microsoft.Extensions.Logging;
@@ -56,6 +57,10 @@ public sealed partial class LoadOrderViewModel : PageViewModel
     /// <summary>Gets what each mod's row says about its shared files in the saved order (P2.6-33).</summary>
     [ObservableProperty]
     public partial IReadOnlyDictionary<string, string> ConflictMarks { get; private set; } = new Dictionary<string, string>();
+
+    /// <summary>Gets what can go wrong with the shared files, such as <i>3 could break quests, 47 only change how things look</i> (P2.6-54).</summary>
+    [ObservableProperty]
+    public partial string? SharedSummary { get; private set; }
 
     /// <summary>Gets how many shared files differ between mods, set once the list is filled so the cards count it once.</summary>
     [ObservableProperty]
@@ -198,6 +203,7 @@ public sealed partial class LoadOrderViewModel : PageViewModel
         var names = details.Names.ToDictionary(n => n.Key, n => ModDisplayName.For(n.Value), StringComparer.OrdinalIgnoreCase);
         Show(plan.TargetModIds.Select((id, i) => new LoadOrderRow(id, names.TryGetValue(id, out var name) ? name : id, i + 1)).ToList(), plan, names);
         ShowPacked(details, names);
+        SharedSummary = SharedFileRank.Summary([.. plan.Conflicts.BetweenMods.Where(c => !c.SameContent).Select(c => c.FileName), .. details.Packed.Select(p => p.FileName)]);
         IsReordered = !plan.TargetModIds.SequenceEqual(_saved, StringComparer.OrdinalIgnoreCase);
         if (IsReordered)
         {
@@ -229,12 +235,13 @@ public sealed partial class LoadOrderViewModel : PageViewModel
 
         ShowCombined(plan?.Combined ?? [], id => names is not null && names.TryGetValue(id, out var name) ? name : id);
         Conflicts.Clear();
-        foreach (var conflict in plan?.Conflicts.BetweenMods ?? [])
+        foreach (var row in (plan?.Conflicts.BetweenMods ?? []).Select(c => FileConflictRow.From(c, names ?? new Dictionary<string, string>())).OrderBy(r => r.SameContent).ThenBy(r => r.Impact))
         {
-            Conflicts.Add(FileConflictRow.From(conflict, names ?? new Dictionary<string, string>()));
+            Conflicts.Add(row);
         }
 
         ShowShared(plan, names);
+        SharedSummary = null;
         IsReordered = false;
     }
 
@@ -244,7 +251,8 @@ public sealed partial class LoadOrderViewModel : PageViewModel
             ? []
             : SharedFileNotes.Groups(plan?.Conflicts.BetweenMods ?? [], ModActivationPlanWarnings.CombinedAware(id => names is not null && names.TryGetValue(id, out var name) ? name : id));
         SharedRows.Clear();
-        foreach (var row in groups.Count > 0 ? groups.Select(FileConflictRow.From) : Conflicts)
+        IEnumerable<FileConflictRow> rows = groups.Count > 0 ? groups.Select(FileConflictRow.From).OrderBy(r => r.SameContent).ThenBy(r => r.Impact) : Conflicts;
+        foreach (var row in rows)
         {
             SharedRows.Add(row);
         }
@@ -255,10 +263,9 @@ public sealed partial class LoadOrderViewModel : PageViewModel
     private void ShowPacked(LoadOrderDetails details, Dictionary<string, string> names)
     {
         PackedConflicts.Clear();
-        foreach (var conflict in details.Packed.Take(MaxPackedRows))
+        foreach (var conflict in details.Packed.OrderBy(p => SharedFileRank.Of(p.FileName)).Take(MaxPackedRows))
         {
-            var mods = string.Join(", ", conflict.ModIds.Select(id => names.TryGetValue(id, out var name) ? name : id));
-            PackedConflicts.Add(new FileConflictRow(conflict.FileName, "Inside an archive", $"In {mods}. The game uses one copy, and DAORework can't tell which."));
+            PackedConflicts.Add(FileConflictRow.Packed(conflict, string.Join(", ", conflict.ModIds.Select(id => names.TryGetValue(id, out var name) ? name : id))));
         }
 
         if (details.Packed.Count > MaxPackedRows)

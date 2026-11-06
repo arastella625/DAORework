@@ -28,6 +28,7 @@ summary follows these rules. The command line keeps its own words; see the end.
 | Keep this one, Remove the other copy | Delete duplicates, dominant copy | On a mod with copies ([ADR-0039](adr/0039-look-first-and-keep-one-copy.md)). |
 | Keep one of each, Keep all of them | Remove all duplicates, dedupe | Every set of copies in one preview ([ADR-0039](adr/0039-look-first-and-keep-one-copy.md)). *Keep all of them* leaves a set as it is. The next step says *in your Library more than once*: a part of a mod counts, so *twice* wouldn't always be true. |
 | Left out, needs a look | Failed, skipped, error | What a batch went on without (P2.6-53): *Left out: Blue Hair.* in the preview, *Blue Hair needs a look: ...* once it is done. |
+| Could break quests, Only looks | High risk, cosmetic | How a shared file is ranked by its kind (P2.6-54). Always *could*: a kind of file can't prove it. |
 | Who wins, Swap | Conflict resolution | Mods with different files of the same name, in a *Manage* preview. |
 | Found in your game | Installed by hand, unmanaged | A tag on the mod, and a filter. |
 | Undo, Undo to here | Roll back, Roll back to before this | *Undo* is always confirmed first. |

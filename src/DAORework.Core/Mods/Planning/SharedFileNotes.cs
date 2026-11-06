@@ -4,14 +4,12 @@ using DAORework.Core.Mods.Library;
 namespace DAORework.Core.Mods.Planning;
 
 /// <summary>
-/// Files several mods ship, as a few sentences however many there are: how many, which of them lose a mod's behaviour
-/// rather than a look, then one line for each set of mods, biggest first. Pure.
+/// Files several mods ship, as a few sentences however many there are: how many, what can go wrong with them
+/// (<see cref="SharedFileRank"/>), then one line for each set of mods, biggest first. Pure.
 /// </summary>
 public static class SharedFileNotes
 {
     private const int GroupsShown = 3;
-
-    private static readonly HashSet<string> _behaviour = new(StringComparer.OrdinalIgnoreCase) { ".gda", ".ncs", ".tlk" };
 
     /// <param name="conflicts">The conflicts between mods whose copies differ.</param>
     /// <param name="nameOf">How a mod is named.</param>
@@ -26,11 +24,8 @@ public static class SharedFileNotes
         {
             conflicts.Count == 1 ? "1 file is in more than one mod. The mod lower in the order wins." : $"{ModActivationPlanWarnings.Files(conflicts.Count)} are in more than one mod. For each one, the mod lower in the order wins.",
         };
-        var behaviour = conflicts.Count(IsBehaviour);
-        if (behaviour > 0)
-        {
-            notes.Add($"{PlanWords.Count(behaviour, "of them is a data table, script or talk table", "of them are data tables, scripts or talk tables")}, where a mod's changes are lost. Look for a compatibility patch.");
-        }
+        var ranked = SharedFileRank.Summary([.. conflicts.Select(c => c.FileName)]);
+        notes.Add(conflicts.Any(IsBehaviour) ? $"{ranked} For what could break quests, look for a compatibility patch." : ranked ?? string.Empty);
 
         var groups = Groups(conflicts, nameOf);
         notes.AddRange(groups.Take(GroupsShown).Select(g => $"{g.Title}: {g.Kinds}."));
@@ -71,7 +66,7 @@ public static class SharedFileNotes
         };
     }
 
-    private static bool IsBehaviour(OverrideConflict conflict) => _behaviour.Contains(Path.GetExtension(conflict.FileName));
+    private static bool IsBehaviour(OverrideConflict conflict) => SharedFileRank.Of(conflict.FileName) == SharedFileImpact.CouldBreakQuests;
 
     private static (string One, string Many) Kind(string fileName)
     {
@@ -81,6 +76,8 @@ public static class SharedFileNotes
             ".gda" => ("data table", "data tables"),
             ".ncs" => ("script", "scripts"),
             ".tlk" => ("talk table", "talk tables"),
+            ".dlg" or ".cnv" => ("conversation", "conversations"),
+            ".plo" => ("plot file", "plot files"),
             ".erf" or ".rim" => ("archive", "archives"),
             ".xml" => ("settings file", "settings files"),
             _ when GameDataFiles.Looks.Contains(extension) => ("texture or model", "textures and models"),

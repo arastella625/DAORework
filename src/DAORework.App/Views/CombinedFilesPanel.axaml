@@ -11,6 +11,8 @@
       <TextBlock Classes="SectionTitle" Text="Combined files" />
       <TextBlock Classes="Secondary" TextWrapping="Wrap"
                  Text="Files more than one of your mods changes. Some are merged so every mod's part works; for the rest, one copy is used." />
+      <TextBlock Name="SharedSummary" FontWeight="SemiBold" TextWrapping="Wrap" Text="{Binding SharedSummary}"
+                 IsVisible="{Binding SharedSummary, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       <ItemsControl Name="CombinedFiles" ItemsSource="{Binding CombinedFiles}">
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="vm:FileConflictRow">
@@ -32,10 +34,12 @@
             <Border Padding="0,10" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
               <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                 <StackPanel Spacing="2">
+                  <TextBlock FontWeight="SemiBold" Text="{Binding PlainName}" IsVisible="{Binding PlainName, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                   <TextBlock Classes="Mono" FontWeight="SemiBold" Text="{Binding FileName}" />
                   <TextBlock Classes="Secondary" TextWrapping="Wrap" Text="{Binding Detail}" />
                 </StackPanel>
-                <TextBlock Grid.Column="1" Classes="Warning" Text="{Binding Winner}" VerticalAlignment="Top" />
+                <TextBlock Grid.Column="1" Classes="Warning" Text="{Binding Badge}" VerticalAlignment="Top" IsVisible="{Binding IsRisky}" />
+                <TextBlock Grid.Column="1" Classes="Secondary" Text="{Binding Winner}" VerticalAlignment="Top" IsVisible="{Binding !IsRisky}" />
               </Grid>
             </Border>
           </DataTemplate>
@@ -47,12 +51,13 @@
             <Border Padding="0,10" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
               <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                 <StackPanel Spacing="2">
+                  <TextBlock FontWeight="SemiBold" Text="{Binding PlainName}" IsVisible="{Binding PlainName, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                   <TextBlock Classes="Mono" FontWeight="SemiBold" Text="{Binding FileName}" />
                   <TextBlock Text="{Binding Winner}" />
                   <TextBlock Classes="Secondary" TextWrapping="Wrap" Text="{Binding Detail}" />
                 </StackPanel>
-                <TextBlock Grid.Column="1" Classes="Warning" Text="One wins" VerticalAlignment="Top" IsVisible="{Binding !SameContent}" />
-                <TextBlock Grid.Column="1" Classes="Secondary" Text="Same in each" VerticalAlignment="Top" IsVisible="{Binding SameContent}" />
+                <TextBlock Grid.Column="1" Classes="Warning" Text="{Binding Badge}" VerticalAlignment="Top" IsVisible="{Binding IsRisky}" />
+                <TextBlock Grid.Column="1" Classes="Secondary" Text="{Binding Badge}" VerticalAlignment="Top" IsVisible="{Binding !IsRisky}" />
               </Grid>
             </Border>
           </DataTemplate>
@@ -67,7 +72,7 @@
         </TextBlock.IsVisible>
       </TextBlock>
       <TextBlock Classes="Secondary" TextWrapping="Wrap" FontSize="12"
-                 Text="Combined: merged into one file. One wins: can't be merged, like a texture; Arrange chooses which. Some files, like data tables and scripts, need a compatibility patch from the mods' authors." />
+                 Text="Combined: merged into one file. Arrange chooses which mod wins any other file. Could break quests: a script, table or conversation, which may need a compatibility patch from the mods' authors." />
     </StackPanel>
   </controls:Card>
 </UserControl>

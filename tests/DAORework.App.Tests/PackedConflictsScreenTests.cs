@@ -37,6 +37,8 @@ public sealed class PackedConflictsScreenTests : IDisposable
         Assert.Equal("shared_head.mmh", row.FileName);
         Assert.Contains("First Pack, Second Pack", row.Detail, StringComparison.Ordinal);
         Assert.Contains("can't tell which", row.Detail, StringComparison.Ordinal);
+        Assert.Contains("turn one of these mods off", row.Detail, StringComparison.Ordinal);
+        Assert.Equal("1 only changes how things look.", viewModel.ModsTab.LoadOrder.SharedSummary);
         ModsTabScenario.Show<CombinedFilesPanel>(window);
         Assert.False(window.GetVisualDescendants().OfType<TextBlock>().Single(t => t.Name == "NoSharedFiles").IsVisible);
         Screenshots.Save(window, "40-packed-conflicts");

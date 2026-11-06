@@ -18,10 +18,13 @@ public static class SharedFileMeaning
         {
             ".gda" => "It is a data table, so the other mod's changes to it are lost. Look for a compatibility patch; mods that add to a table with their own M2DA files do not clash.",
             ".ncs" => "It is a script, so what the other mod does with it is lost. Look for a compatibility patch.",
+            ".dlg" or ".cnv" => $"It is {SharedFileNames.For(fileName) ?? "a conversation"}, so the other mod's changes to it are lost, and a quest that relies on them can break. Look for a compatibility patch.",
+            ".plo" => "It is a quest's plot file, so the other mod's changes to it are lost, and the quest can break. Look for a compatibility patch.",
             ".tlk" => "It is a talk table, so the other mod's text is not shown.",
             ".erf" or ".rim" => "It is an archive: only one is loaded, and what is inside is not compared yet.",
             ".xml" => "It is a settings file the game reads one copy of.",
             _ when GameDataFiles.Looks.Contains(extension) => "It is a texture or model, so only that mod's look shows.",
+            _ when SharedFileRank.Of(fileName) == SharedFileImpact.CouldBreakQuests => "It is part of how a quest or place works, so the other mod's changes to it are lost. Look for a compatibility patch.",
             _ => null,
         };
     }

@@ -515,6 +515,7 @@ made-up mods, which is how it got through.)*
 with a diagnosis and a way forward, not leave a player stuck. The owner saw a raw error stop a batch of 54 mods.
 
 - P2.6-53 Skip what fails: a batch goes on without the mod that fails and says which and why, and no exception's text reaches the window.
+- P2.6-54 Rank the problems: shared files are counted and ordered by what can go wrong, a file inside an archive says what to do, and `alistair_main.dlg` reads as Alistair's conversation.
 
 **Feeling quick** *(added 2026-11-06, the owner's wish, from clearing copies on a messy real library)*. Buttons don't
 always highlight, and during a wait it isn't clear whether to wait or press again. Measured on `RealScaleLibrary` (138 mods,
