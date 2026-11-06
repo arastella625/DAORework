@@ -29,6 +29,21 @@ public sealed class ModCopiesTests
     }
 
     [Fact]
+    public void Find_TwoDifferentModsOfOneName_ShareALeftoverOnlyOnce()
+    {
+        var copies = ModCopies.Find([Named("v1", "Fantasy", ("a.dds", "aa")), Named("v2", "Fantasy", ("b.dds", "bb")), Named("readme", "Fantasy", ("readme.txt", "cc"))]);
+
+        Assert.Equal(2, copies.Count);
+        Assert.Equal(copies["readme"].Group, copies.Single(c => c.Key != "readme").Value.Group);
+    }
+
+    [Fact]
+    public void Find_NamesWithNoLettersInThem_DoNotMatch()
+    {
+        Assert.Empty(ModCopies.Find([Named("whole", "!!!", ("a.dds", "aa")), Named("left", "---", ("readme.txt", "cc"))]));
+    }
+
+    [Fact]
     public void Find_AReadmeWithNoModOfItsName_IsLeftAlone()
     {
         Assert.Empty(ModCopies.Find([Named("whole", "Fantasy", ("hair.dds", "aa")), Named("readme", "Something Else", ("readme.txt", "cc"))]));

@@ -15,22 +15,30 @@ public static class ModCopies
     public static IReadOnlyDictionary<string, ModCopy> Find(IReadOnlyList<LibraryEntry> entries, IEnumerable<string>? on = null)
     {
         ArgumentNullException.ThrowIfNull(entries);
-        var identical = entries
-            .Select(e => (Entry: e, Key: KeyOf(e.Mod)))
+        var keyed = entries.Select(e => (Entry: e, Key: KeyOf(e.Mod))).ToList();
+        var identical = keyed
             .Where(e => e.Key is not null)
             .GroupBy(e => e.Key!, e => e.Entry, StringComparer.OrdinalIgnoreCase)
             .ToList();
         var wholes = ModParts.Wholes(identical, on ?? []);
         var copies = new Dictionary<string, ModCopy>(StringComparer.Ordinal);
-        var leftovers = entries.Where(e => KeyOf(e.Mod) is null).ToLookup(e => ModParts.Plain(e.Mod.Name), StringComparer.Ordinal);
+        var leftovers = keyed.Where(e => e.Key is null).Select(e => e.Entry).ToList();
         foreach (var set in identical.GroupBy(g => wholes.GetValueOrDefault(g.Key, g.Key), StringComparer.OrdinalIgnoreCase))
         {
             List<LibraryEntry> members = [.. set.SelectMany(g => g)];
-            var names = members.Select(e => ModParts.Plain(e.Mod.Name)).Distinct(StringComparer.Ordinal);
-            Add(copies, set.Key, [.. members, .. names.SelectMany(n => leftovers[n])]);
+            Add(copies, set.Key, [.. members, .. Claim(leftovers, members)]);
         }
 
         return copies;
+    }
+
+    /// <summary>Takes the leftovers named as one of these mods out of the list: a leftover belongs to one set, or the sets would disagree.</summary>
+    private static List<LibraryEntry> Claim(List<LibraryEntry> leftovers, List<LibraryEntry> members)
+    {
+        var names = members.Select(e => ModParts.Plain(e.Mod.Name)).Where(n => n.Length > 0).ToHashSet(StringComparer.Ordinal);
+        var claimed = leftovers.Where(e => names.Contains(ModParts.Plain(e.Mod.Name))).ToList();
+        leftovers.RemoveAll(claimed.Contains);
+        return claimed;
     }
 
     /// <summary>The names and hashes of a mod's game files, which is how the game tells them apart.</summary>
