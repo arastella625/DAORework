@@ -92,6 +92,9 @@ public sealed partial class LoadOrderViewModel : PageViewModel
         return RefreshAsync(cancellationToken);
     }
 
+    /// <summary>Moves a mod to <paramref name="place"/>, counted from 0, as dropping it does (ADR-0038). One move, one preview.</summary>
+    public Task MoveToPlaceAsync(LoadOrderRow mod, int place, CancellationToken cancellationToken = default) => MoveToAsync(mod, place, cancellationToken);
+
     /// <summary>Reads the saved order and its conflicts again, dropping any unapplied reordering.</summary>
     public Task RefreshAsync(CancellationToken cancellationToken = default) => GuardAsync(token => PlanOrderAsync(null, token), cancellationToken);
 
