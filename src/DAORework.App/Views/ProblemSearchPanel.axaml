@@ -11,13 +11,23 @@
       <TextBlock Classes="Secondary" TextWrapping="Wrap" Text="{Binding Body}" />
       <TextBlock Name="SearchStatus" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" TextWrapping="Wrap"
                  IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-      <StackPanel Orientation="Horizontal" Spacing="12" IsVisible="{Binding IsIdle}">
-        <Button Name="StartSearchButton" Content="Start" Command="{Binding StartCommand}" />
+      <StackPanel Spacing="10" IsVisible="{Binding IsIdle}">
+        <TextBox Name="ProblemWords" Text="{Binding Problem}" Watermark="What's going wrong? Such as: the game crashes in Denerim" />
+        <CheckBox Name="KeepLooksOn" Content="Keep my looks on, and test gameplay mods only" IsChecked="{Binding KeepLooksOn}" />
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <Button Name="StartSearchButton" Content="Start" Command="{Binding StartCommand}" />
+          <Button Name="StartPlainButton" Content="Check with no mods first" Command="{Binding StartPlainCommand}"
+                  ToolTip.Tip="Turns every mod off, to learn whether it's a mod at all." />
+        </StackPanel>
       </StackPanel>
-      <StackPanel Orientation="Horizontal" Spacing="12" IsVisible="{Binding IsTesting}">
-        <Button Name="StillHappensButton" Content="It still happens" Command="{Binding StillHappensCommand}" />
-        <Button Name="ItsGoneButton" Content="It's gone" Command="{Binding ItsGoneCommand}" />
-        <Button Name="StopSearchButton" Content="Stop and put everything back" Command="{Binding PutBackCommand}" />
+      <StackPanel Spacing="10" IsVisible="{Binding IsTesting}">
+        <TextBlock Name="YouSaid" TextWrapping="Wrap" Text="{Binding YouSaid}" IsVisible="{Binding YouSaid, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        <TextBlock Name="DontSave" Classes="Warning" TextWrapping="Wrap" Text="{x:Static vm:ProblemSearchViewModel.DontSave}" />
+        <ProgressBar Name="RuledOutBar" Minimum="0" Maximum="100" Value="{Binding RuledOut}" />
+        <TextBlock Classes="Secondary" Text="{Binding Progress}" />
+        <Button Name="StillHappensButton" HorizontalAlignment="Stretch" Content="{Binding StillHappensLabel}" Command="{Binding StillHappensCommand}" />
+        <Button Name="ItsGoneButton" HorizontalAlignment="Stretch" Content="{Binding ItsGoneLabel}" Command="{Binding ItsGoneCommand}" />
+        <Button Name="StopSearchButton" Content="Stop and turn everything back on" Command="{Binding PutBackCommand}" />
       </StackPanel>
       <StackPanel Orientation="Horizontal" Spacing="12" IsVisible="{Binding IsFinished}">
         <Button Name="PutBackWithoutButton" Classes="accent" Content="{Binding PutBackWithoutLabel}" Command="{Binding PutBackWithoutCommand}" IsVisible="{Binding Found}" />

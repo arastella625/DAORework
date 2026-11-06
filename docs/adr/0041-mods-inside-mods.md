@@ -16,8 +16,8 @@ the archives say nothing about that.
 1. **Say so and offer, never preset.** A mod whose files are all in a bigger mod gets a note on its row, *Everything in this
    mod is also in ZDF Complete*, and a *Keep ZDF Complete* button. It does not join a set of copies, so *Keep one of each*
    and the next step stay as ADR-0039 has them, and nothing is picked for the player.
-2. **The button is *Keep this one* for those two mods.** It shows the same preview and follows the same rules: removing is
-   permanent and says so, a mod that is on gives its place, and a mod on in another profile stops it.
+2. **The button is *Keep this one* for those two mods.** It shows the same preview and follows the same rules: removing goes to the Recycle Bin
+   as ADR-0039 says, a mod that is on gives its place, and a mod on in another profile stops it.
 3. **Look inside an `.erf` by name.** A file counts as inside the bigger mod if its name and hash are there. An `.erf` also
    counts if every resource in it is in the bigger mod, inside an archive or loose. Only the table of contents is read,
    which holds no hash, so this can't prove the content is the same, and the note says *looks to be*.
@@ -31,6 +31,6 @@ the archives say nothing about that.
 
 ## Alternatives considered
 - **Count these as parts, so *Keep one of each* offers them.** Rejected by ADR-0039 for the same reason: it starts on
-  removing what may be the mod the player chose, and removing can't be undone.
+  removing what may be the mod the player chose.
 - **Hash each resource inside an archive.** Would prove it, at the price of reading every archive whole on every new mod.
   The note's *looks to be* is enough for an offer the player reads first.

@@ -61,6 +61,33 @@ public sealed class ProblemSearchTests
     [Fact]
     public void RoundsLeft_StartsAtSevenMoreFor137() => Assert.Equal(7, ProblemSearch.Start(_mods).RoundsLeft());
 
+    [Fact]
+    public void Start_LeavingLooksOn_OnlySuspectsTheRest_AndStillKeepsThemOn()
+    {
+        var search = ProblemSearch.Start(["a", "look", "b", "c"], ["look"]);
+
+        Assert.Equal(["a", "b", "c"], search.Suspects);
+        Assert.Contains("look", search.Keeping());
+    }
+
+    [Fact]
+    public void PlainCheck_TurnsOffEverything_EvenWhatTheRoundsLeaveOn() =>
+        Assert.Empty(ProblemSearch.WithPlainCheck(["a", "look"], ["look"]).Keeping());
+
+    [Fact]
+    public void PlainCheck_ProblemGone_ProvesItIsAMod_SoNoLastCheckIsNeeded()
+    {
+        var search = ProblemSearch.WithPlainCheck(["a", "b"]).Answer(stillHappens: false);
+
+        Assert.False(search.PlainCheck);
+        Assert.Equal(1, search.Round);
+        Assert.Equal("a", search.Answer(stillHappens: true).Culprit);
+    }
+
+    [Fact]
+    public void PlainCheck_ProblemGoneWithLooksLeftOut_ProvesNothingAboutTheRest() =>
+        Assert.False(ProblemSearch.WithPlainCheck(["a", "b", "look"], ["look"]).Answer(stillHappens: false).Proven);
+
     private static (ProblemSearch Search, int Rounds) Run(ProblemSearch search, string? culprit)
     {
         var rounds = 0;

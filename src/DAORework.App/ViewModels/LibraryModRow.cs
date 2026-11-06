@@ -35,6 +35,9 @@ public sealed partial class LibraryModRow : ObservableObject
 
     public string? Warning { get; }
 
+    /// <summary>Gets a value indicating whether every game file changes only how things look, so it can't break a quest (ADR-0042).</summary>
+    public bool OnlyLooks { get; private init; }
+
     /// <summary>Gets the bigger mod this one is inside, when it isn't simply a copy of it (ADR-0041).</summary>
     public ModInside? Inside { get; private init; }
 
@@ -144,8 +147,12 @@ public sealed partial class LibraryModRow : ObservableObject
             PageLink = check.IsSuccess ? check.Value.Item?.Source : null,
             Copy = copy,
             Inside = inside,
+            OnlyLooks = ChangesOnlyLooks(entry.Mod),
         };
     }
+
+    private static bool ChangesOnlyLooks(LibraryMod mod) =>
+        mod.Files.All(f => NonModFiles.Is(f.RelativePath) || GameDataFiles.Looks.Contains(Path.GetExtension(f.RelativePath)));
 
     private static string? RelatedNote(ModCopy? copy, ModInside? inside) =>
         copy is not null ? CopyNote(copy) : inside is not null ? InsideNote(inside) : null;

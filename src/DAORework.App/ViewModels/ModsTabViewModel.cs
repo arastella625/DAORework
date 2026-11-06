@@ -148,6 +148,7 @@ public sealed class ModsTabViewModel
         KeepEach.AfterChangeAsync = RefreshAfterChangeAsync;
         ProblemSearch.AfterChangeAsync = RefreshAfterChangeAsync;
         ProblemSearch.ActiveMods = () => Activation.ActiveModIds;
+        ProblemSearch.LooksOnly = () => [.. Library.Mods.Where(m => m.OnlyLooks).Select(m => m.Id)];
         ProblemSearch.Preview.NameOf = NameOf;
         KeepCopy.Preview.NameOf = NameOf;
         KeepEach.Preview.NameOf = NameOf;

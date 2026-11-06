@@ -17,6 +17,9 @@ namespace DAORework.App.ViewModels;
 /// </summary>
 public sealed partial class ProblemSearchViewModel : PageViewModel
 {
+    /// <summary>The warning on every round (ADR-0042).</summary>
+    public const string DontSave = "Don't save while testing. A save made with mods off can break for good. Quit without saving, or use a throwaway save.";
+
     private readonly GetProfile _getProfile;
     private readonly PlanTurnOn _plan;
     private readonly ChangeInProgress _apply;
@@ -35,6 +38,9 @@ public sealed partial class ProblemSearchViewModel : PageViewModel
     /// <summary>Gets or sets what is on now, in its order.</summary>
     public Func<IReadOnlyList<string>>? ActiveMods { get; set; }
 
+    /// <summary>Gets or sets which mods only change how things look.</summary>
+    public Func<IReadOnlyList<string>>? LooksOnly { get; set; }
+
     /// <summary>Gets or sets what runs after a round was applied, such as reading the lists again.</summary>
     public Func<CancellationToken, Task>? AfterChangeAsync { get; set; }
 
@@ -45,12 +51,20 @@ public sealed partial class ProblemSearchViewModel : PageViewModel
     public partial string? ProfileName { get; set; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsIdle), nameof(IsTesting), nameof(IsFinished), nameof(Found), nameof(Headline), nameof(Body), nameof(PutBackWithoutLabel))]
+    [NotifyPropertyChangedFor(nameof(IsIdle), nameof(IsTesting), nameof(IsFinished), nameof(Found), nameof(Headline), nameof(Body), nameof(PutBackWithoutLabel), nameof(YouSaid), nameof(StillHappensLabel), nameof(ItsGoneLabel), nameof(Progress), nameof(RuledOut))]
     public partial ProblemSearch? Search { get; private set; }
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ApplyCommand))]
     public partial bool CanApply { get; set; }
+
+    /// <summary>Gets or sets the problem, in the player's own words.</summary>
+    [ObservableProperty]
+    public partial string? Problem { get; set; }
+
+    /// <summary>Gets or sets a value indicating whether mods that only change looks stay on, which cuts the rounds.</summary>
+    [ObservableProperty]
+    public partial bool KeepLooksOn { get; set; }
 
     public bool IsIdle => Search is null;
 
@@ -60,22 +74,20 @@ public sealed partial class ProblemSearchViewModel : PageViewModel
 
     public bool Found => Search is { End: ProblemSearchEnd.Found };
 
-    public string Headline => Search switch
-    {
-        null => "Find the problem mod",
-        { End: ProblemSearchEnd.Found, Culprit: { } mod } => $"It looks like {Preview.NameOf(mod)}",
-        { End: ProblemSearchEnd.NotFound } => "It doesn't look like one of your mods",
-        { Suspects.Count: 1 } => $"Round {Search.Round}: one last check",
-        _ => $"Round {Search.Round}: {Counted.Of(Search.Suspects.Count, "mod")} could be the one",
-    };
+    public string Headline => ProblemSearchWords.Headline(Search, Preview.NameOf);
 
-    public string Body => Search switch
-    {
-        null => "Something going wrong in your game? This turns off half your mods at a time, and you play to see if the problem still happens, until one is left. Use a save you don't mind losing. Everything goes back at the end.",
-        { End: ProblemSearchEnd.Found } => "The problem went away with it off. Two mods that only clash together can look like this too, so if it comes back, look at what it shares with others.",
-        { End: ProblemSearchEnd.NotFound } => "The problem happened with each of them off. It could be two mods together, or the game itself.",
-        _ => $"Play the game, then say what happened.{(Search.RoundsLeft() > 0 ? $" About {Counted.Of(Search.RoundsLeft(), "more round")} after this." : string.Empty)}",
-    };
+    public string Body => ProblemSearchWords.Body(Search);
+
+    /// <summary>Gets what the player said is wrong, shown on each round.</summary>
+    public string? YouSaid => Search?.Problem is { Length: > 0 } problem ? $"You said the problem is: {problem}" : null;
+
+    public string StillHappensLabel => ProblemSearchWords.StillHappens(Search);
+
+    public string ItsGoneLabel => ProblemSearchWords.ItsGone(Search);
+
+    public string Progress => ProblemSearchWords.Progress(Search);
+
+    public double RuledOut => Search is { Original.Count: > 0 } search ? 100.0 * (search.Original.Count - search.Suspects.Count) / search.Original.Count : 0;
 
     public string? PutBackWithoutLabel => Search?.Culprit is { } mod ? $"Put everything back without {Preview.NameOf(mod)}" : null;
 
@@ -88,17 +100,25 @@ public sealed partial class ProblemSearchViewModel : PageViewModel
     }
 
     [RelayCommand]
-    private Task StartAsync(CancellationToken cancellationToken) => GuardAsync(
+    private Task StartAsync(CancellationToken cancellationToken) => StartWithAsync(ProblemSearch.Start, cancellationToken);
+
+    /// <summary>Everything off first, to learn whether it's a mod at all.</summary>
+    [RelayCommand]
+    private Task StartPlainAsync(CancellationToken cancellationToken) => StartWithAsync(ProblemSearch.WithPlainCheck, cancellationToken);
+
+    private Task StartWithAsync(Func<IReadOnlyList<string>, IReadOnlyList<string>?, ProblemSearch> start, CancellationToken cancellationToken) => GuardAsync(
         async token =>
         {
             var on = ActiveMods?.Invoke() ?? [];
-            if (on.Count == 0)
+            var leaveOn = KeepLooksOn ? LooksOnly?.Invoke() : null;
+            var search = start(on, leaveOn) with { Problem = Problem };
+            if (search.Suspects.Count == 0)
             {
-                ReportStatus("No mods are on, so none of them can be the problem.");
+                ReportStatus(on.Count == 0 ? "No mods are on, so none of them can be the problem." : "Every mod that's on only changes looks, so there's nothing left to test.");
                 return;
             }
 
-            await PlanRoundAsync(ProblemSearch.Start(on), token);
+            await PlanRoundAsync(search, token);
         },
         cancellationToken);
 
@@ -205,7 +225,7 @@ public sealed partial class ProblemSearchViewModel : PageViewModel
         cancellationToken);
 
     private Task PlanRoundAsync(ProblemSearch next, CancellationToken cancellationToken) =>
-        PlanAsync($"Round {next.Round}: turn off {Counted.Of(next.Off.Count, "mod")}", next.Keeping(), next, string.Empty, cancellationToken);
+        PlanAsync(ProblemSearchWords.RoundTitle(next), next.Keeping(), next, string.Empty, cancellationToken);
 
     private async Task PlanAsync(string title, IReadOnlyList<string> ids, ProblemSearch? next, string done, CancellationToken cancellationToken)
     {
