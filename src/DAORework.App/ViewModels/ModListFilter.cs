@@ -151,8 +151,9 @@ public sealed partial class ModListFilter : ObservableObject
 
     private void Update()
     {
+        var alreadyListed = MarkModsInTheGame();
         var mods = _mods.Where(m => OfKind(m.IsAddIn)).ToList();
-        var found = _found.Where(m => OfKind(m.IsAddIn)).ToList();
+        var found = _found.Where(m => OfKind(m.IsAddIn) && !alreadyListed.Contains(m)).ToList();
         var on = mods.Count(m => m.IsActive);
         AllLabel = $"All ({mods.Count + found.Count})";
         OnLabel = $"On ({on})";
@@ -173,6 +174,23 @@ public sealed partial class ModListFilter : ObservableObject
             _ => true,
         }));
         Refill(VisibleFound, Show == ModShowFilter.GameFolder ? inGameFolder : found);
+    }
+
+    /// <summary>
+    /// A mod in the Library and in the game is one mod, shown once (P2.6-26): an off row says so, and turning it on takes
+    /// over what is there. One that is on stays under Found, where its leftovers are cleared, and so does one Vortex holds.
+    /// </summary>
+    private HashSet<HandInstalledModRow> MarkModsInTheGame()
+    {
+        var off = _mods.Where(m => !m.IsActive).ToDictionary(m => m.Id, StringComparer.OrdinalIgnoreCase);
+        var listed = _found.Where(f => f.Candidate is { DeployedByVortex: false, LibraryMatch: { } match } && off.ContainsKey(match.ModId)).ToHashSet();
+        var inGame = listed.Select(f => f.Candidate!.LibraryMatch!.ModId).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        foreach (var mod in _mods)
+        {
+            mod.IsInGame = inGame.Contains(mod.Id);
+        }
+
+        return listed;
     }
 
     private static void Refill<T>(ObservableCollection<T> target, IEnumerable<T> items)
