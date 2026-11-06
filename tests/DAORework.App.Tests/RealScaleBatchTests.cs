@@ -1,5 +1,6 @@
 using Avalonia.Headless.XUnit;
 using DAORework.App.Views;
+using DAORework.Application.Mods.Changes;
 using DAORework.Core.Mods.Conflicts;
 using Xunit;
 
@@ -73,6 +74,23 @@ public sealed class RealScaleBatchTests : IDisposable
 
         Assert.False(keep.IsError, keep.StatusMessage);
         Assert.DoesNotContain(viewModel.Library.Mods, m => m.Title == "Lite Pack");
+    }
+
+    [AvaloniaFact]
+    public async Task WhatChanged_AfterTurningOnNearlyEverything_ReadsInAFewLines()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        var tab = viewModel.ModsTab;
+        await _host.Resolve<RecordPlay>().ExecuteAsync(new ModsTabScenario(_host).DocumentsDirectory, TestContext.Current.CancellationToken);
+
+        await RealScaleScenario.TurnOnEverythingAsync(viewModel);
+        await tab.Activation.LeaveOutCommand.ExecuteAsync(null);
+        await tab.Activation.ApplyCommand.ExecuteAsync(null);
+
+        Assert.StartsWith("If your game last worked ", tab.LastGame.Headline, StringComparison.Ordinal);
+        var added = Assert.Single(tab.LastGame.Lines);
+        Assert.StartsWith("Added 59: ", added, StringComparison.Ordinal);
+        Assert.InRange(added.Length, 1, 120);
     }
 
     [AvaloniaFact]

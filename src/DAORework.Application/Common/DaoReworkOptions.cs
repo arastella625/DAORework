@@ -35,5 +35,8 @@ public sealed class DaoReworkOptions
     /// <summary>Gets the folder of searches for the problem mod, one for each documents folder (ADR-0042).</summary>
     public string ProblemSearchesDirectory => Path.Combine(AppDataDirectory, "problem-searches");
 
+    /// <summary>Gets the folder of recent games, one file for each documents folder (ADR-0043).</summary>
+    public string PlayHistoryDirectory => Path.Combine(AppDataDirectory, "play-history");
+
     public string DeploymentsDirectory => Path.Combine(AppDataDirectory, "deployments");
 }

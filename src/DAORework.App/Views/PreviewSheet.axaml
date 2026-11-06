@@ -99,6 +99,19 @@
       </StackPanel>
     </Border>
 
+    <Border Name="LastGamePlan" Classes="sheet"
+            IsVisible="{Binding LastGame.Preview.Title, Converter={x:Static ObjectConverters.IsNotNull}}">
+      <StackPanel Spacing="8">
+        <ScrollViewer MaxHeight="230">
+          <views:PlanPreviewView DataContext="{Binding LastGame.Preview}" />
+        </ScrollViewer>
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <Button Name="ApplyGoBackButton" Classes="accent" Content="Apply" Command="{Binding LastGame.ApplyCommand}" />
+          <Button Name="CancelGoBackButton" Content="Cancel" Command="{Binding LastGame.CancelPlanCommand}" />
+        </StackPanel>
+      </StackPanel>
+    </Border>
+
     <Border Name="ProblemSearchPlan" Classes="sheet"
             IsVisible="{Binding ProblemSearch.Preview.Title, Converter={x:Static ObjectConverters.IsNotNull}}">
       <StackPanel Spacing="8">
