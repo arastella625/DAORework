@@ -1,6 +1,6 @@
 # ADR-0038: One-line rows, a preview sheet and drag to arrange
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-11-05
 
 ## Context

@@ -1,6 +1,6 @@
 # ADR-0037: A mod is one thing, and turning it on takes over what is in the game
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-11-05
 
 ## Context
@@ -26,6 +26,8 @@ P2.6-20 already finds the override files that are the same as a mod's.
 - The duplicate can't be made, and turning on a mod already in the game costs a rename, not a copy.
 - Mods that are not exact matches for a Library entry are covered too, since it works file by file.
 - A preview can say *moves*, where a player expected *copies*.
+- A moved file may also be used by a mod that isn't managed, so turning the first mod off later takes it from both. The
+  preview says so when a moved file sits beside other files. The Library keeps the file, and *Undo* puts it back.
 - *Manage* stays for files with no Library copy, until the lists merge (P2.6-26).
 
 ## Alternatives considered

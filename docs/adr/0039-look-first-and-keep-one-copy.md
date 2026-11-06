@@ -1,6 +1,6 @@
 # ADR-0039: Look before adding, and keep one copy
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-11-06
 
 ## Context

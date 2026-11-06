@@ -76,7 +76,11 @@ public sealed partial class NextMoveCard : ObservableObject
             case NextMoveKind.TakeOverWhatIsInTheGame:
                 await OpenTargetAsync(HomeTarget.ModsLibrary, cancellationToken);
                 _mods.Filter.ShowOnlyCommand.Execute(ModShowFilter.Found);
-                _mods.HandInstalled.Adoption.LooseFilesName ??= "Loose files";
+                if (string.IsNullOrWhiteSpace(_mods.HandInstalled.Adoption.LooseFilesName))
+                {
+                    _mods.HandInstalled.Adoption.LooseFilesName = "Loose files";
+                }
+
                 _mods.HandInstalled.SelectAllCommand.Execute(null);
                 await _mods.HandInstalled.AdoptSelectedCommand.ExecuteAsync(null);
                 break;

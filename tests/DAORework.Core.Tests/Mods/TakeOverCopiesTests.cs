@@ -12,6 +12,17 @@ public sealed class TakeOverCopiesTests
     private static readonly HashSet<string> _nothing = [];
 
     [Fact]
+    public void Apply_AFileTakenFromBesideOthers_IsCounted_AndAWholeFolderIsNot()
+    {
+        var shared = TakeOverCopies.Apply(Plan(("Old/hair.dds", "a")), _nothing, [Override + "Old/hair.dds", Override + "Old/other.dds"]);
+        var whole = TakeOverCopies.Apply(Plan(("Old/hair.dds", "a")), _nothing, [Override + "Old/hair.dds", Override + "Else/other.dds"]);
+
+        Assert.Equal(1, shared.TakenBesideOtherFiles);
+        Assert.Equal(0, whole.TakenBesideOtherFiles);
+        Assert.Contains(PlanNotes.For(shared, id => id), n => n.StartsWith("1 file being moved sits beside other files.", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void Apply_ACopyOfAFileAlreadyThere_BecomesAMoveOfThatFile()
     {
         var plan = TakeOverCopies.Apply(Plan(("Old/hair.dds", "a")), _nothing);
