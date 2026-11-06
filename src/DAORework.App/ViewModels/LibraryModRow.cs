@@ -46,7 +46,22 @@ public sealed partial class LibraryModRow : ObservableObject
 
     /// <summary>Gets or sets a value indicating whether it is also in the game, so it shows once and turning it on takes that over (ADR-0037).</summary>
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(Glance))]
     public partial bool IsInGame { get; set; }
+
+    /// <summary>Gets or sets a value indicating whether its row is expanded to show its details (ADR-0038).</summary>
+    [ObservableProperty]
+    public partial bool IsExpanded { get; set; }
+
+    /// <summary>Gets what a one-line row says beside the name: its kind, and anything worth a glance (ADR-0038).</summary>
+    public string Glance
+    {
+        get
+        {
+            var kind = Details.Split(" · ")[0].StartsWith("add-in", StringComparison.Ordinal) ? "add-in" : Details.Split(" · ")[0];
+            return string.Join(" · ", new[] { kind, IsInGame ? "in your game" : null, Copy is null ? null : $"{Copy.Count} copies" }.OfType<string>());
+        }
+    }
 
     /// <summary>Gets or sets a value indicating whether it is ticked for <i>Activate selected</i> or <i>Deactivate selected</i> (P2.5-14).</summary>
     [ObservableProperty]
