@@ -18,13 +18,13 @@ namespace DAORework.App.ViewModels;
 public sealed partial class ModActivationViewModel : PageViewModel
 {
     private readonly GetProfile _getProfile;
-    private readonly PlanModChange _plan;
+    private readonly PlanTurnOn _plan;
     private readonly ChangeInProgress _apply;
     private readonly GetModStatus _status;
     private (string Documents, ModActivationPlan Plan)? _pending;
     private PlannedChange? _planned;
 
-    public ModActivationViewModel(GetProfile getProfile, PlanModChange plan, ChangeInProgress apply, GetModStatus status, ILogger<ModActivationViewModel> logger)
+    public ModActivationViewModel(GetProfile getProfile, PlanTurnOn plan, ChangeInProgress apply, GetModStatus status, ILogger<ModActivationViewModel> logger)
         : base(logger)
     {
         _getProfile = getProfile;

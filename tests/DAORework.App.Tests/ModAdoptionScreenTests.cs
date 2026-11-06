@@ -90,9 +90,9 @@ public sealed class ModAdoptionScreenTests : IDisposable
     {
         var (_, viewModel) = await _scenario.OpenAsync();
         var loose = Path.Combine(GamePaths.OverrideDirectory(_scenario.DocumentsDirectory), "Hair Pack", "hair_pack.dds");
-        _host.FileSystem.AddFile(loose, new MockFileData("DDS hair"));
         await _scenario.ImportHairPackAsync(viewModel);
         await _scenario.ActivateHairPackAsync(viewModel);
+        _host.FileSystem.AddFile(loose, new MockFileData("DDS hair"));
         var handInstalled = viewModel.HandInstalled;
         await handInstalled.ScanCommand.ExecuteAsync(null);
 

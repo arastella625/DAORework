@@ -6,7 +6,7 @@ using DAORework.Core.Mods.Planning;
 
 namespace DAORework.Cli.Commands.Mods;
 
-public sealed class ModsDeactivateCommand(GetProfile getProfile, PlanModChange plan, ApplyModPlan apply, ModChangeRenderer renderer, ErrorRenderer errors)
+public sealed class ModsDeactivateCommand(GetProfile getProfile, PlanTurnOn plan, ApplyModPlan apply, ModChangeRenderer renderer, ErrorRenderer errors)
     : ModChangeCommand(getProfile, plan, apply, renderer, errors)
 {
     protected override ModChangeKind Kind => ModChangeKind.Deactivate;

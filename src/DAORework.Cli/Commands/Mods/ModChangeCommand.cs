@@ -15,12 +15,12 @@ namespace DAORework.Cli.Commands.Mods;
 public abstract class ModChangeCommand : AsyncCommand<ModChangeSettings>
 {
     private readonly GetProfile _getProfile;
-    private readonly PlanModChange _plan;
+    private readonly PlanTurnOn _plan;
     private readonly ApplyModPlan _apply;
     private readonly ModChangeRenderer _renderer;
     private readonly ErrorRenderer _errors;
 
-    protected ModChangeCommand(GetProfile getProfile, PlanModChange plan, ApplyModPlan apply, ModChangeRenderer renderer, ErrorRenderer errors)
+    protected ModChangeCommand(GetProfile getProfile, PlanTurnOn plan, ApplyModPlan apply, ModChangeRenderer renderer, ErrorRenderer errors)
     {
         _getProfile = getProfile;
         _plan = plan;

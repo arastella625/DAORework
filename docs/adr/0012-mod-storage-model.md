@@ -55,7 +55,7 @@ The game reads two kinds of mod, both under the documents folder (`Documents\Bio
   first). A file that is not in the record is never modified, moved or deleted. When such a file has the same name as
   a managed one, it is reported as a conflict the game will resolve on its own. *(Amended 2026-11-05, P2.6-20: only for
   a mod the change adds, and not when the file has the same content, since then nothing depends on which copy the game
-  picks. On a real run all 551 files warned about were the same as Vortex's copies.)*
+  picks. On a real run all 551 files warned about were the same as Vortex's copies.)* *(Amended again 2026-11-05: a file with the same content is taken over when the mod is turned on, [ADR-0037](0037-a-mod-is-one-thing.md).)*
 - The record is written last, atomically, after the applied changes are verified (P2-05). A crash before that point
   is handled by the journal, not the record.
 
