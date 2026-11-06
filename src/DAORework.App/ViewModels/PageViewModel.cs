@@ -12,6 +12,9 @@ namespace DAORework.App.ViewModels;
 /// </summary>
 public abstract partial class PageViewModel : ObservableObject
 {
+    // The exception is in the log, which a support bundle carries: its text means nothing to a player.
+    private const string Unexpected = "That didn't work, and DAORework doesn't know why. Try again, and if it keeps happening, save a support bundle in Settings.";
+
     private readonly ILogger _logger;
     private int _shown;
 
@@ -60,6 +63,9 @@ public abstract partial class PageViewModel : ObservableObject
             isError: true);
     }
 
+    /// <summary>Says what went wrong when there is no code to give, such as what a batch couldn't do. It stays until dealt with.</summary>
+    protected void ReportFailure(string message) => Show(message, isError: true);
+
     private void Show(string message, bool isError)
     {
         _shown++;
@@ -98,8 +104,7 @@ public abstract partial class PageViewModel : ObservableObject
         catch (Exception exception)
         {
             _logger.LogError(exception, "Unexpected error in {ViewModel}", GetType().Name);
-            IsError = true;
-            StatusMessage = $"Unexpected error: {exception.Message} (see the log in the app-data folder)";
+            ReportFailure(Unexpected);
         }
         finally
         {

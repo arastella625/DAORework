@@ -6,9 +6,9 @@ namespace DAORework.App.ViewModels;
 /// <param name="Kind">Turning on or off.</param>
 /// <param name="Mods">The mods still in the change.</param>
 /// <param name="RestoredAddIns">Official DLC entries it puts back (ADR-0028 §3).</param>
-/// <param name="LeftOut">The mods taken out of it so far.</param>
+/// <param name="LeftOut">The mods taken out of it so far, and why.</param>
 internal sealed record PlannedChange(
     ModChangeKind Kind,
     IReadOnlyList<LibraryModRow> Mods,
     IReadOnlyList<AddInsListChange> RestoredAddIns,
-    IReadOnlyList<LibraryModRow> LeftOut);
+    IReadOnlyList<LeftOutMod> LeftOut);

@@ -6,7 +6,12 @@ All notable changes to DAORework are recorded here. The format follows
 
 ## [Unreleased]
 
+### Changed
+- A batch goes on without what fails (P2.6-53). *Take them over*, *Turn on selected* and adding several downloads carry on when one mod can't, and say which one and why: "Turned on 53 mods. Blue Hair needs a look: ...". If one mod's file stops a change partway, the change is put back and the rest come back as a preview without that mod. *Keep one of each* removes what it can instead of stopping at the first it can't.
+- A preview of mods to manage offers *Leave out* (P2.6-53), as turning on already did.
+
 ### Fixed
+- An unexpected error no longer shows its raw text (P2.6-53). The window says it didn't work and what to do, and the details stay in the log.
 - An entry holding only a readme or a Mac leftover now counts as part of the mod of its name (P2.6-52), so *Keep one of each* offers to clear it. *Take them over* no longer turns such files into a mod of their own, which is how a list ended up showing mods twice.
 - A preview warns when a file being moved sits beside other files (P2.6-51), since a mod DAORework doesn't look after may use it too.
 - *Take them over* no longer stops when the name for loose files was typed and cleared (P2.6-51), and a right-click on a grip in *Arrange* no longer starts a drag.

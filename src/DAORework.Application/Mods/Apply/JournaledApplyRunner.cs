@@ -44,7 +44,11 @@ public sealed class JournaledApplyRunner
                 return Result.Failure<ApplyReport>(new Error(
                     DiagnosticCodes.ModApplyFailed,
                     $"Step {step + 1} of {journal.StepCount} did not complete: {result.Error!.Message}",
-                    $"Nothing is lost. Finish the change, or roll it back to backup {journal.BackupId}."));
+                    $"Nothing is lost. Finish the change, or roll it back to backup {journal.BackupId}.")
+                {
+                    ModId = step < journal.Operations.Count ? journal.Operations[step].ModId : null,
+                    Cause = result.Error.Message,
+                });
             }
 
             await _journals.MarkDoneAsync(documents, step, cancellationToken);

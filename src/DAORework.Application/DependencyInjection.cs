@@ -110,6 +110,7 @@ public static class DependencyInjection
         services.AddSingleton<RollBackModChange>();
         services.AddSingleton<GetModStatus>();
         services.AddSingleton<ScanForAdoption>();
+        services.AddSingleton<AdoptCandidate>();
         services.AddSingleton<PlanAdoption>();
 
         // One strategy per managed fix (ADR-0013). Add a fix by adding its IManagedFix here.

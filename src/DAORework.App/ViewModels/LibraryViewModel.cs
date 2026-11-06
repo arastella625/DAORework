@@ -87,7 +87,7 @@ public sealed partial class LibraryViewModel : PageViewModel
             async token =>
             {
                 var imported = new List<string>();
-                Error? failure = null;
+                var failed = new List<(string Path, Error Error)>();
                 foreach (var path in paths)
                 {
                     var result = await _importMod.ExecuteAsync(new ImportModRequest(path), token);
@@ -97,20 +97,33 @@ public sealed partial class LibraryViewModel : PageViewModel
                     }
                     else
                     {
-                        failure = error;
+                        failed.Add((path, error));
                     }
                 }
 
                 await RefreshAsync(token);
-                if (failure is not null)
+                if (failed.Count > 0)
                 {
-                    ReportError(imported.Count == 0 ? failure : failure with { Message = $"Added {string.Join(", ", imported)}, but {failure.Message}" });
+                    ReportFailed(imported, failed);
                     return;
                 }
 
                 ReportSuccess(imported.Count == 0 ? string.Empty : $"Added {string.Join(", ", imported)}. Turn {(imported.Count == 1 ? "it" : "them")} on when you want {(imported.Count == 1 ? "it" : "them")} in your game.");
             },
             cancellationToken);
+
+    /// <summary>One download that failed says so in full. Among others, each gets its reason and the rest are still added (P2.6-53).</summary>
+    private void ReportFailed(List<string> imported, List<(string Path, Error Error)> failed)
+    {
+        if (failed.Count == 1 && imported.Count == 0)
+        {
+            ReportError(failed[0].Error);
+            return;
+        }
+
+        var added = imported.Count == 0 ? "Nothing was added." : $"Added {Counted.Of(imported.Count, "mod")}.";
+        ReportFailure(LeftOut.Outcome(added, [.. failed.Select(f => new LeftOutMod(Path.GetFileName(f.Path), f.Error.Message))]));
+    }
 
     [RelayCommand]
     private async Task ImportFileAsync(CancellationToken cancellationToken)

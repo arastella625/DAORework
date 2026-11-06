@@ -4,7 +4,9 @@ using CommunityToolkit.Mvvm.Input;
 using DAORework.Application.Mods.Adoption;
 using DAORework.Application.Mods.Apply;
 using DAORework.Application.Profiles;
+using DAORework.Core.Common;
 using DAORework.Core.Mods.Adoption;
+using DAORework.Core.Mods.Apply;
 using DAORework.Core.Mods.Planning;
 using Microsoft.Extensions.Logging;
 
@@ -24,6 +26,8 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
     private (string Documents, ModActivationPlan Plan, string Name)? _pending;
     private ILookup<string, HandInstalledModRow> _planned = Array.Empty<HandInstalledModRow>().ToLookup(_ => string.Empty);
     private IReadOnlyList<string> _order = [];
+    private List<HandInstalledModRow> _asked = [];
+    private IReadOnlyList<LeftOutMod> _leftOut = [];
 
     public ModAdoptionViewModel(GetProfile getProfile, PlanAdoption plan, ChangeInProgress apply, ILogger<ModAdoptionViewModel> logger)
         : base(logger)
@@ -62,6 +66,15 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
     [NotifyCanExecuteChangedFor(nameof(ApplyCommand))]
     public partial bool CanApply { get; set; }
 
+    /// <summary>Gets a value indicating whether the plan is blocked only by mods it could go ahead without (P2.6-53).</summary>
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(LeaveOutCommand))]
+    public partial bool CanLeaveOut { get; set; }
+
+    /// <summary>Gets what the button that takes those mods out of the plan says.</summary>
+    [ObservableProperty]
+    public partial string? LeaveOutLabel { get; set; }
+
     public void Load(string? profileName)
     {
         ProfileName = profileName;
@@ -74,37 +87,7 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
     /// two of them share), as <c>mods adopt &lt;id&gt;...</c> does: one plan, one backup, one rollback.
     /// </summary>
     public Task PlanAdoptionAsync(IReadOnlyList<HandInstalledModRow> mods, CancellationToken cancellationToken = default) =>
-        GuardAsync(
-            async token =>
-            {
-                ClearPlan();
-                ReportSuccess(string.Empty);
-                var candidates = mods.Where(m => m.Candidate is not null).ToList();
-                if (candidates.Count == 0)
-                {
-                    return;
-                }
-
-                if (!(await ProfileDocuments.ForAsync(_getProfile, ProfileName, token)).TryGetValue(out var documents, out var error)
-                    || !(await _plan.ExecuteAsync(new PlanAdoptionRequest(documents, [.. candidates.Select(m => m.Candidate!)], LooseFilesName), token)).TryGetValue(out var plan, out error))
-                {
-                    ReportError(error);
-                    return;
-                }
-
-                var titles = candidates.Select(m => m.Title).ToList();
-                _pending = (documents, plan, PlanWords.Names(titles, title => title));
-                CanApply = !plan.IsBlocked && !plan.IsEmpty;
-                if (AfterPlanAsync is not null)
-                {
-                    await AfterPlanAsync(token);
-                }
-
-                // Shown once the library has been read again, so the mods planning just imported are named.
-                Preview.Show(PlanPreview.TitleFor("Manage", titles), plan);
-                ShowWhoWins(plan, candidates);
-            },
-            cancellationToken);
+        GuardAsync(token => PlanNowAsync(mods, [], token), cancellationToken);
 
     [RelayCommand]
     private Task AdoptAsync(HandInstalledModRow mod, CancellationToken cancellationToken) => PlanAdoptionAsync([mod], cancellationToken);
@@ -115,7 +98,25 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
     {
         ArgumentNullException.ThrowIfNull(row);
         var leftovers = _planned.Where(g => !_order.Contains(g.Key, StringComparer.OrdinalIgnoreCase)).SelectMany(g => g);
-        return PlanAdoptionAsync([.. AdoptionOrder.Swap(_order, row.WinnerModId, row.OtherModIds).SelectMany(id => _planned[id]), .. leftovers], cancellationToken);
+        var leftOut = _leftOut;
+        return GuardAsync(token => PlanNowAsync([.. AdoptionOrder.Swap(_order, row.WinnerModId, row.OtherModIds).SelectMany(id => _planned[id]), .. leftovers], leftOut, token), cancellationToken);
+    }
+
+    /// <summary>Plans the same change again without the mods that stop it, which stay in the game as they are.</summary>
+    [RelayCommand(CanExecute = nameof(CanLeaveOut))]
+    private Task LeaveOutAsync(CancellationToken cancellationToken)
+    {
+        if (_pending is not { } pending)
+        {
+            return Task.CompletedTask;
+        }
+
+        var ids = LeftOut.Ids(pending.Plan, _order);
+        var rows = ids.SelectMany(id => _planned[id]).ToList();
+        var reasons = ids.Select(id => new LeftOutMod(Preview.NameOf(id), LeftOut.Why(pending.Plan, id, Preview.NameOf)));
+        var asked = _asked;
+        var leftOut = _leftOut;
+        return GuardAsync(token => PlanNowAsync([.. asked.Except(rows)], [.. leftOut, .. reasons], token), cancellationToken);
     }
 
     [RelayCommand(CanExecute = nameof(CanApply))]
@@ -138,13 +139,93 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
 
                 if (!result.TryGetValue(out var report, out var error))
                 {
-                    ReportError(error with { Message = $"Couldn't finish managing {pending.Name}: {error.Message}" });
+                    if (!await GoOnWithoutAsync(error, pending.Documents, token))
+                    {
+                        ReportError(error with { Message = $"Couldn't finish managing {pending.Name}: {error.Message}" });
+                    }
+
                     return;
                 }
 
-                ReportSuccess($"Now managing {pending.Name}. You can undo this in History.");
+                if (_leftOut.Count > 0)
+                {
+                    ReportStatus(LeftOut.Outcome($"Now managing {pending.Name}.", _leftOut));
+                }
+                else
+                {
+                    ReportSuccess($"Now managing {pending.Name}. You can undo this in History.");
+                }
             },
             cancellationToken);
+
+    /// <summary>
+    /// One mod's file stopped a batch partway (P2.6-53): the change is put back as if it never started, and the rest
+    /// comes back as a preview without that mod, so nothing happens that the player hasn't seen.
+    /// </summary>
+    /// <returns>Whether there is a new preview. If not, the change stays unfinished for History to settle.</returns>
+    private async Task<bool> GoOnWithoutAsync(Error error, string documents, CancellationToken cancellationToken)
+    {
+        var failed = error.ModId is { } id ? _planned[id].ToList() : [];
+        if (failed.Count == 0 || failed.Count == _asked.Count
+            || (await _apply.RecoverAsync(new RecoverModPlanRequest(documents, RecoveryChoice.RollBack), cancellationToken)).IsFailure)
+        {
+            return false;
+        }
+
+        if (AfterChangeAsync is not null)
+        {
+            await AfterChangeAsync(cancellationToken);
+        }
+
+        await PlanNowAsync([.. _asked.Except(failed)], [.. _leftOut, new LeftOutMod(failed[0].Title, error.Cause ?? error.Message)], cancellationToken);
+        return true;
+    }
+
+    /// <summary>One mod alone fails as it says; in a batch, what can't be adopted is left out and the rest goes on (P2.6-53).</summary>
+    private async Task PlanNowAsync(IReadOnlyList<HandInstalledModRow> mods, IReadOnlyList<LeftOutMod> leftOut, CancellationToken cancellationToken)
+    {
+        ClearPlan();
+        ReportSuccess(string.Empty);
+        var candidates = mods.Where(m => m.Candidate is not null).ToList();
+        if (candidates.Count == 0)
+        {
+            return;
+        }
+
+        var request = new PlanAdoptionRequest(string.Empty, [.. candidates.Select(m => m.Candidate!)], LooseFilesName) { SkipFailures = candidates.Count > 1 };
+        if (!(await ProfileDocuments.ForAsync(_getProfile, ProfileName, cancellationToken)).TryGetValue(out var documents, out var error)
+            || !(await _plan.ExecuteAsync(request with { DocumentsDirectory = documents }, cancellationToken)).TryGetValue(out var plan, out error))
+        {
+            ReportError(error);
+            return;
+        }
+
+        var skipped = plan.SkippedCandidates.Select(s => s.CandidateId).ToHashSet(StringComparer.Ordinal);
+        var kept = candidates.Where(m => !skipped.Contains(m.Candidate!.Id)).ToList();
+        _leftOut = [.. leftOut, .. plan.SkippedCandidates.Select(s => new LeftOutMod(s.Name, s.Why))];
+        if (AfterPlanAsync is not null)
+        {
+            await AfterPlanAsync(cancellationToken);
+        }
+
+        if (kept.Count == 0)
+        {
+            ReportFailure(LeftOut.Outcome("None of these could be managed.", _leftOut));
+            return;
+        }
+
+        // Shown once the library has been read again, so the mods planning just imported are named.
+        var titles = kept.Select(m => m.Title).ToList();
+        _pending = (documents, plan, PlanWords.Names(titles, title => title));
+        CanApply = !plan.IsBlocked && !plan.IsEmpty;
+        Preview.Show(PlanPreview.TitleFor("Manage", titles), plan);
+        LeftOut.Show(Preview, _leftOut, "in your game as it is");
+        _asked = kept;
+        ShowWhoWins(plan, kept);
+        var leaving = LeftOut.Ids(plan, _order);
+        LeaveOutLabel = LeftOut.Label([.. leaving.Select(Preview.NameOf)]);
+        CanLeaveOut = leaving.Count > 0;
+    }
 
     [RelayCommand]
     private void CancelPlan()
@@ -170,5 +251,6 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
         Preview.Clear();
         WhoWins.Clear();
         CanApply = false;
+        CanLeaveOut = false;
     }
 }

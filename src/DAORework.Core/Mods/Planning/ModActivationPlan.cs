@@ -1,4 +1,5 @@
 using DAORework.Core.Common;
+using DAORework.Core.Mods.Adoption;
 using DAORework.Core.Mods.Combining;
 using DAORework.Core.Mods.Conflicts;
 using DAORework.Core.Mods.Library;
@@ -49,6 +50,9 @@ public sealed record ModActivationPlan(
 
     /// <summary>Gets the mod each thing being adopted turned out to be, in the order asked for; empty for any other plan (P2.6-43).</summary>
     public IReadOnlyList<string> AdoptedModIds { get; init; } = [];
+
+    /// <summary>Gets what an adoption went on without, and why (P2.6-53).</summary>
+    public IReadOnlyList<SkippedCandidate> SkippedCandidates { get; init; } = [];
 
     /// <summary>Gets a value indicating whether the plan must not be applied until its blockers are resolved.</summary>
     public bool IsBlocked => Blockers.Count > 0;

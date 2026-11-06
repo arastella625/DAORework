@@ -15,15 +15,15 @@ namespace DAORework.Application.Mods.Adoption;
 /// </summary>
 public sealed class PlanAdoption
 {
-    private readonly IAdoptionImporter _importer;
+    private readonly AdoptCandidate _adopt;
     private readonly IModLibrary _library;
     private readonly IDeploymentRecordStore _records;
     private readonly IDocumentsScanner _scanner;
     private readonly IApplyJournalStore _journals;
 
-    public PlanAdoption(IAdoptionImporter importer, IModLibrary library, IDeploymentRecordStore records, IDocumentsScanner scanner, IApplyJournalStore journals)
+    public PlanAdoption(AdoptCandidate adopt, IModLibrary library, IDeploymentRecordStore records, IDocumentsScanner scanner, IApplyJournalStore journals)
     {
-        _importer = importer;
+        _adopt = adopt;
         _library = library;
         _records = records;
         _scanner = scanner;
@@ -46,14 +46,22 @@ public sealed class PlanAdoption
 
         var library = (await _library.ListAsync(cancellationToken)).ToDictionary(e => e.Mod.Id, e => e.Mod, StringComparer.OrdinalIgnoreCase);
         var adopted = new List<AdoptedMod>();
+        var skipped = new List<SkippedCandidate>();
         foreach (var candidate in request.Candidates)
         {
-            if (!(await AdoptedAsync(documents, candidate, request.LooseFilesName, library, cancellationToken)).TryGetValue(out var mod, out error))
+            var one = await _adopt.ExecuteAsync(documents, candidate, request.LooseFilesName, library, cancellationToken);
+            if (ProblemWith(one, record, adopted) is not { } problem)
             {
-                return Failure(error);
+                adopted.Add(one.Value);
             }
-
-            adopted.Add(mod);
+            else if (request.SkipFailures)
+            {
+                skipped.Add(new SkippedCandidate(candidate.Id, candidate.Name, problem.Message));
+            }
+            else
+            {
+                return Failure(problem);
+            }
         }
 
         if (record.ActiveModIds.FirstOrDefault(id => !library.ContainsKey(id)) is { } missing)
@@ -61,7 +69,20 @@ public sealed class PlanAdoption
             return Failure(new Error(DiagnosticCodes.ModNotInLibrary, $"Not in the library: {missing}.", "Run mods library for the ids, or mods import to add a mod."));
         }
 
-        return await PlanAsync(documents, record, record.ActiveModIds.Select(id => library[id]).ToList(), adopted, cancellationToken);
+        var planned = await PlanAsync(documents, record, record.ActiveModIds.Select(id => library[id]).ToList(), adopted, cancellationToken);
+        return planned.TryGetValue(out var plan, out error) ? Result.Success(plan with { SkippedCandidates = skipped }) : Failure(error);
+    }
+
+    /// <summary>A leftover, of a mod already on or found twice, needn't have every file: its mod has them (P2.6-23, P2.6-43).</summary>
+    private static Error? ProblemWith(Result<AdoptedMod> one, DeploymentRecord record, List<AdoptedMod> adopted)
+    {
+        if (!one.TryGetValue(out var mod, out var error))
+        {
+            return error;
+        }
+
+        var leftover = record.ActiveModIds.Contains(mod.Mod.Id, StringComparer.OrdinalIgnoreCase) || adopted.Any(a => string.Equals(a.Mod.Id, mod.Mod.Id, StringComparison.OrdinalIgnoreCase));
+        return leftover ? null : AdoptionPlanner.ProblemWith(mod);
     }
 
     private static Result<ModActivationPlan> Failure(Error error) => Result.Failure<ModActivationPlan>(error);
@@ -92,40 +113,5 @@ public sealed class PlanAdoption
         return AdoptionPlanner.Plan(
             new PlanInput(record, active, unmanaged, disk.Hashes, disk.RegisteredAddInUids) { Combined = combine.Combined, CombineProblems = combine.Problems },
             adopted);
-    }
-
-    private async Task<Result<AdoptedMod>> AdoptedAsync(
-        string documents,
-        AdoptionCandidate candidate,
-        string? looseFilesName,
-        Dictionary<string, LibraryMod> library,
-        CancellationToken cancellationToken)
-    {
-        if (candidate is { Kind: AdoptionCandidateKind.VortexMod, DeployedByVortex: true })
-        {
-            return Result.Failure<AdoptedMod>(new Error(
-                DiagnosticCodes.ModAdoptVortexManages,
-                $"Vortex still manages {candidate.Name}, and would put its files back if they were moved.",
-                "Leave it in Vortex for now: taking a mod over from Vortex comes with the handover (ADR-0028)."));
-        }
-
-        if (candidate.LibraryMatch is { IsExact: true } match && library.TryGetValue(match.ModId, out var matched))
-        {
-            return Result.Success(new AdoptedMod(matched, match.Sources));
-        }
-
-        var name = candidate.Kind == AdoptionCandidateKind.LooseOverrideFiles ? looseFilesName : candidate.Name;
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            return Result.Failure<AdoptedMod>(new Error(DiagnosticCodes.ModAdoptNameRequired, "The loose override files need a name to be adopted as one mod.", "Add --name \"<name>\"."));
-        }
-
-        if (!(await _importer.ImportAsync(documents, candidate, name, cancellationToken)).TryGetValue(out var entry, out var error))
-        {
-            return Result.Failure<AdoptedMod>(error);
-        }
-
-        library[entry.Mod.Id] = entry.Mod;
-        return Result.Success(new AdoptedMod(entry.Mod, AdoptionLayout.Sources(candidate)));
     }
 }

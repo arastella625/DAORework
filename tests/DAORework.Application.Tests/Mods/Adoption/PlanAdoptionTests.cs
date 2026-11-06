@@ -6,6 +6,7 @@ using DAORework.Core.Diagnostics;
 using DAORework.Core.Mods.Adoption;
 using DAORework.Core.Mods.Library;
 using DAORework.Core.Mods.Planning;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace DAORework.Application.Tests.Mods.Adoption;
@@ -90,14 +91,67 @@ public sealed class PlanAdoptionTests
         Assert.Equal(DiagnosticCodes.ModApplyUnfinished, result.Error!.Code);
     }
 
-    private PlanAdoption UseCase(IReadOnlyList<LibraryMod> library) => new(_importer, new FakeLibrary(library), _stores, new FakeScanner(), _stores);
+    [Fact]
+    public async Task Execute_OneOfABatchCantBeImported_FailsThePlan_UnlessAskedToGoOn()
+    {
+        var bad = _folder with { Id = "override:Bad", Name = "Bad" };
+        _importer.Failing = "Bad";
+
+        var strict = await UseCase([]).ExecuteAsync(new PlanAdoptionRequest(_documents, [bad, _folder]));
+        var plan = (await UseCase([]).ExecuteAsync(new PlanAdoptionRequest(_documents, [bad, _folder]) { SkipFailures = true })).Value;
+
+        Assert.Equal(DiagnosticCodes.ModImportFailed, strict.Error!.Code);
+        Assert.Equal(new SkippedCandidate("override:Bad", "Bad", "Bad can't be read."), Assert.Single(plan.SkippedCandidates));
+        Assert.Equal([_hair.Id], plan.AdoptedModIds);
+    }
+
+    [Fact]
+    public async Task Execute_ACandidateThrows_IsThatCandidatesFailure_NotTheBatchs()
+    {
+        var bad = _folder with { Id = "override:Bad", Name = "Bad" };
+        _importer.Throwing = "Bad";
+
+        var plan = (await UseCase([]).ExecuteAsync(new PlanAdoptionRequest(_documents, [bad, _folder]) { SkipFailures = true })).Value;
+
+        var skipped = Assert.Single(plan.SkippedCandidates);
+        Assert.DoesNotContain("same key", skipped.Why, StringComparison.Ordinal);
+        Assert.Equal([_hair.Id], plan.AdoptedModIds);
+    }
+
+    [Fact]
+    public async Task Execute_AModWithAFileNotInTheGame_IsSkipped_NotTheEndOfTheBatch()
+    {
+        var partial = _folder with { Id = "override:Partial", Name = "Partial", LibraryMatch = new LibraryMatch("partial", "Partial", 0) };
+        var library = new LibraryMod("partial", "Partial", ModKind.Override, [new LibraryModFile("gone.dds", 4, "g")]);
+
+        var plan = (await UseCase([library]).ExecuteAsync(new PlanAdoptionRequest(_documents, [partial, _folder]) { SkipFailures = true })).Value;
+
+        Assert.Equal("override:Partial", Assert.Single(plan.SkippedCandidates).CandidateId);
+        Assert.Equal([_hair.Id], plan.AdoptedModIds);
+    }
+
+    private PlanAdoption UseCase(IReadOnlyList<LibraryMod> library) => new(new AdoptCandidate(_importer, NullLogger<AdoptCandidate>.Instance), new FakeLibrary(library), _stores, new FakeScanner(), _stores);
 
     private sealed class FakeImporter : IAdoptionImporter
     {
         public List<string> Imported { get; } = [];
 
+        public string? Failing { get; set; }
+
+        public string? Throwing { get; set; }
+
         public Task<Result<LibraryEntry>> ImportAsync(string documentsDirectory, AdoptionCandidate candidate, string name, CancellationToken cancellationToken = default)
         {
+            if (name == Throwing)
+            {
+                throw new ArgumentException("An item with the same key has already been added.");
+            }
+
+            if (name == Failing)
+            {
+                return Task.FromResult(Result.Failure<LibraryEntry>(new Error(DiagnosticCodes.ModImportFailed, $"{name} can't be read.")));
+            }
+
             Imported.Add(name);
             return Task.FromResult(Result.Success(new LibraryEntry(_hair, name, "sha", DateTimeOffset.UnixEpoch)));
         }

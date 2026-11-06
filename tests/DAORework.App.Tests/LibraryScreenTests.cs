@@ -101,8 +101,7 @@ public sealed class LibraryScreenTests : IDisposable
         await viewModel.Library.ImportPathsAsync([pack, broken], TestContext.Current.CancellationToken);
 
         Assert.True(viewModel.Library.IsError);
-        Assert.StartsWith("Added Hair Pack, but ", viewModel.Library.StatusMessage, StringComparison.Ordinal);
-        Assert.EndsWith($"({DiagnosticCodes.ModImportInvalid})", viewModel.Library.StatusMessage, StringComparison.Ordinal);
+        Assert.StartsWith("Added 1 mod. Broken.rar needs a look: ", viewModel.Library.StatusMessage, StringComparison.Ordinal);
         var row = Assert.Single(viewModel.Library.Mods);
         Assert.Contains("It holds 1 program file(s) (tools/setup.exe). They stay in the library and are never installed into the game's folders.", row.Notes);
         Assert.Null(row.Warning);
