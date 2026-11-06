@@ -496,6 +496,7 @@ made-up mods, which is how it got through.)*
 - P2.6-30 Search and sort, and *Select all* ticks only what is shown.
 - P2.6-31 Previews in one sheet under the list, replacing the scroll-into-view fixes.
 - P2.6-32 A quieter preview, and *Worth a look* no longer repeats the next step.
+- P2.6-34 From a review of the stack: a search no longer changes Home's counts, and an unfinished fix is a next step.
 - P2.6-33 Conflict marks on rows: *wins*, *loses*, *wins and loses*. Not on `.erf` contents, where the winner isn't known.
 
 **Keeping the tests honest on Windows** *(added 2026-11-05, from P2.6-02)*.

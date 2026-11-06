@@ -43,15 +43,15 @@ public sealed partial class SetupSummary : ObservableObject
     private void Update()
     {
         var library = _mods.Library.Mods;
-        var found = _mods.HandInstalled.Candidates;
+        var found = _mods.Filter.Unlisted;
         var overlaps = _mods.LoadOrder.OverlapCount;
         var combined = _mods.LoadOrder.CombinedCount;
         SetupPart[] parts =
         [
-            new("Add-ins", Count(library.Count(m => m.IsAddIn && m.IsActive), found.Count(m => m.IsAddIn && _mods.Filter.VisibleFound.Contains(m))), "Ready", true, HomeTarget.ModsLibrary, ModKindFilter.AddIns),
+            new("Add-ins", Count(library.Count(m => m.IsAddIn && m.IsActive), found.Count(m => m.IsAddIn)), "Ready", true, HomeTarget.ModsLibrary, ModKindFilter.AddIns),
             new(
                 "Override mods",
-                Count(library.Count(m => !m.IsAddIn && m.IsActive), found.Count(m => !m.IsAddIn && _mods.Filter.VisibleFound.Contains(m))),
+                Count(library.Count(m => !m.IsAddIn && m.IsActive), found.Count(m => !m.IsAddIn)),
                 overlaps == 0 ? "Ready" : Counted.Of(overlaps, "overlap"),
                 overlaps == 0,
                 overlaps == 0 ? HomeTarget.ModsLibrary : HomeTarget.ModsArrange,
@@ -65,7 +65,7 @@ public sealed partial class SetupSummary : ObservableObject
         }
 
         var ready = parts.All(p => p.IsReady);
-        var unmanaged = _mods.Filter.VisibleFound.Count > 0;
+        var unmanaged = found.Count > 0;
         Title = ready && !unmanaged ? "Everything is in place" : "Almost there";
         Body = (ready, unmanaged) switch
         {

@@ -52,6 +52,20 @@ public sealed class ModListSearchScreenTests : IDisposable
     }
 
     [AvaloniaFact]
+    public async Task Search_DoesNotChangeWhatHomeSays()
+    {
+        var (_, viewModel) = await OpenWithThreeModsAsync();
+        var setup = viewModel.ModsTab.Setup;
+        var before = setup.Parts.Select(p => p.Count).ToList();
+
+        viewModel.ModsTab.Filter.SearchText = "nothing like this";
+        await viewModel.HandInstalled.ScanCommand.ExecuteAsync(null);
+
+        Assert.Equal(before, setup.Parts.Select(p => p.Count));
+        Assert.Equal("Almost there", setup.Title);
+    }
+
+    [AvaloniaFact]
     public async Task Sort_OnFirst_PutsTheModsThatAreOnAtTheTop()
     {
         var (_, viewModel) = await OpenWithThreeModsAsync();
