@@ -83,5 +83,13 @@
     <views:HandInstalledPanel DataContext="{Binding HandInstalled}" IsVisible="{Binding $parent[views:ModsListPanel].((vm:ModsTabViewModel)DataContext).Filter.ShowsFound}" />
     <views:LoadOrderPanel DataContext="{Binding LoadOrder}" IsVisible="{Binding $parent[views:ModsListPanel].((vm:ModsTabViewModel)DataContext).Filter.Arranging}" />
     <views:CombinedFilesPanel DataContext="{Binding LoadOrder}" IsVisible="{Binding $parent[views:ModsListPanel].((vm:ModsTabViewModel)DataContext).Filter.ShowsCombined}" />
+    <views:ProblemSearchPanel DataContext="{Binding ProblemSearch}">
+      <views:ProblemSearchPanel.IsVisible>
+        <MultiBinding Converter="{x:Static BoolConverters.Or}">
+          <Binding Path="$parent[views:ModsListPanel].((vm:ModsTabViewModel)DataContext).Filter.ShowsCombined" />
+          <Binding Path="!IsIdle" />
+        </MultiBinding>
+      </views:ProblemSearchPanel.IsVisible>
+    </views:ProblemSearchPanel>
   </StackPanel>
 </UserControl>

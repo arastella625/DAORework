@@ -26,6 +26,7 @@ public sealed class ModsTabViewModel
         KeepCopy = actions.KeepCopy;
         library.FindInside = KeepCopy.FindInside;
         KeepEach = actions.KeepEach;
+        ProblemSearch = actions.ProblemSearch;
         HandInstalled = handInstalled;
         Library = library;
         Activation = deployed.Activation;
@@ -79,6 +80,9 @@ public sealed class ModsTabViewModel
 
     /// <summary>Gets <i>Keep one of each</i> (ADR-0039).</summary>
     public KeepEachViewModel KeepEach { get; }
+
+    /// <summary>Gets <i>Find the problem mod</i> (ADR-0042).</summary>
+    public ProblemSearchViewModel ProblemSearch { get; }
 
     /// <summary>Gets the look before adding, and what it held back (ADR-0039).</summary>
     public LookFirstViewModel LookFirst { get; }
@@ -134,6 +138,7 @@ public sealed class ModsTabViewModel
         await HandInstalled.RefreshAsync(cancellationToken);
         await Handover.LoadAsync(profileName, cancellationToken);
         await NewDownloads.LoadAsync(cancellationToken);
+        await ProblemSearch.LoadAsync(profileName, cancellationToken);
     }
 
     /// <summary>Only one can be open: a preview made before the other ran could remove the copy the other keeps (ADR-0039).</summary>
@@ -141,6 +146,9 @@ public sealed class ModsTabViewModel
     {
         KeepCopy.AfterChangeAsync = RefreshAfterChangeAsync;
         KeepEach.AfterChangeAsync = RefreshAfterChangeAsync;
+        ProblemSearch.AfterChangeAsync = RefreshAfterChangeAsync;
+        ProblemSearch.ActiveMods = () => Activation.ActiveModIds;
+        ProblemSearch.Preview.NameOf = NameOf;
         KeepCopy.Preview.NameOf = NameOf;
         KeepEach.Preview.NameOf = NameOf;
         CloseWhenOpened(KeepCopy.Preview, KeepEach.CancelCommand);
@@ -174,6 +182,7 @@ public sealed class ModsTabViewModel
         line.Watch(Handover, "Working on your mods from Vortex");
         line.Watch(KeepCopy, "Working out what to keep");
         line.Watch(KeepEach, "Working out what to keep");
+        line.Watch(ProblemSearch, "Working out the next round");
         return line;
     }
 

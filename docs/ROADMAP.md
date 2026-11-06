@@ -516,6 +516,7 @@ with a diagnosis and a way forward, not leave a player stuck. The owner saw a ra
 - P2.6-53 Skip what fails: a batch goes on without the mod that fails and says which and why, and no exception's text reaches the window.
 - P2.6-54 Rank the problems: shared files are counted and ordered by what can go wrong, a file inside an archive says what to do, and `alistair_main.dlg` reads as Alistair's conversation.
 - P2.6-55 Mods that contain each other: a mod whose files are all in a bigger one says so and offers to keep that one, looking inside `.erf` files ([ADR-0041](adr/0041-mods-inside-mods.md)).
+- P2.6-56 Find the problem mod: half the mods go off each round, the player plays and answers, until one is left, about 8 rounds for 137 mods. Every step is a preview with Undo, and everything goes back ([ADR-0042](adr/0042-finding-the-problem-mod.md)).
 
 **Feeling quick** *(added 2026-11-06, the owner's wish, from clearing copies on a messy real library)*. Buttons don't
 always highlight, and during a wait it isn't clear whether to wait or press again. Measured on `RealScaleLibrary` (138 mods,

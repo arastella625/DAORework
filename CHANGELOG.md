@@ -7,6 +7,7 @@ All notable changes to DAORework are recorded here. The format follows
 ## [Unreleased]
 
 ### Changed
+- *Find the problem mod* (P2.6-56, [ADR-0042](docs/adr/0042-finding-the-problem-mod.md)). It turns off half your mods, you play and say whether the problem still happens, and it repeats until one is left: about 8 rounds for 137 mods. Every round is a preview with *Undo*, the search survives closing DAORework, and everything goes back at the end.
 - A mod whose files are all in a bigger one says so and offers to keep that one (P2.6-55, [ADR-0041](docs/adr/0041-mods-inside-mods.md)), such as *ZDF* inside *ZDF Complete*. It looks inside `.erf` files too. Nothing is picked for you, since the smaller mod may be the one you chose.
 - *Combined files* and big previews say what matters (P2.6-54): "3 could break quests, 47 only change how things look". Those that could break quests come first, a file inside an archive says what you can do about it, and a file like `alistair_main.dlg` reads as Alistair's conversation.
 - A batch goes on without what fails (P2.6-53). *Take them over*, *Turn on selected* and adding several downloads carry on when one mod can't, and say which one and why: "Turned on 53 mods. Blue Hair needs a look: ...". If one mod's file stops a change partway, the change is put back and the rest come back as a preview without that mod. *Keep one of each* removes what it can instead of stopping at the first it can't.

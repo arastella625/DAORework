@@ -32,5 +32,8 @@ public sealed class DaoReworkOptions
 
     public string VortexHandoversDirectory => Path.Combine(AppDataDirectory, "vortex-handovers");
 
+    /// <summary>Gets the folder of searches for the problem mod, one for each documents folder (ADR-0042).</summary>
+    public string ProblemSearchesDirectory => Path.Combine(AppDataDirectory, "problem-searches");
+
     public string DeploymentsDirectory => Path.Combine(AppDataDirectory, "deployments");
 }
