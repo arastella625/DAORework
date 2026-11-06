@@ -6,6 +6,9 @@ All notable changes to DAORework are recorded here. The format follows
 
 ## [Unreleased]
 
+### Changed
+- Removed copies go to the Recycle Bin (P2.6-60, [ADR-0039](docs/adr/0039-look-first-and-keep-one-copy.md)), so a mod removed by mistake can be put back. The space comes back when you empty it.
+
 ### Fixed
 - An entry holding only a readme or a Mac leftover now counts as part of the mod of its name (P2.6-52), so *Keep one of each* offers to clear it. *Take them over* no longer turns such files into a mod of their own, which is how a list ended up showing mods twice.
 - A preview warns when a file being moved sits beside other files (P2.6-51), since a mod DAORework doesn't look after may use it too.

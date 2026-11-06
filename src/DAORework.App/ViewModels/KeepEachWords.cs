@@ -1,4 +1,3 @@
-using DAORework.Core.Common;
 using DAORework.Core.Mods.Library;
 
 namespace DAORework.App.ViewModels;
@@ -8,15 +7,12 @@ internal static class KeepEachWords
 {
     public const string Title = "Keep one of each";
 
-    /// <summary>The warning, once for the whole preview.</summary>
-    public const string Permanent = "Removing can't be undone. History can't go back to a time a removed copy was on, unless you add the same download again.";
-
-    public static string Summary(KeepEachPlan plan)
+    public static string Summary(KeepEachPlan plan, bool recycled)
     {
         ArgumentNullException.ThrowIfNull(plan);
         return plan.Clearing.Count == 0
             ? "Nothing is removed, since every copy stays."
-            : $"Removes {Copies(plan.Removing.Count)} of {Mods(plan.Clearing.Count)} from your Library, and gets back {new ByteSize(plan.BytesFreed)}.";
+            : $"Removes {Copies(plan.Removing.Count)} of {Mods(plan.Clearing.Count)} from your Library. {KeepCopyWords.Space(plan.BytesFreed, recycled)}";
     }
 
     public static string Button(KeepEachPlan plan)
@@ -25,14 +21,14 @@ internal static class KeepEachWords
         return plan.Clearing.Count == 0 ? "Remove copies" : $"Remove {Copies(plan.Removing.Count)}";
     }
 
-    public static string Done(KeepEachPlan plan)
+    public static string Done(KeepEachPlan plan, bool recycled)
     {
         ArgumentNullException.ThrowIfNull(plan);
-        return $"Kept one copy of {Mods(plan.Clearing.Count)}, and got back {new ByteSize(plan.BytesFreed)}.";
+        return $"Kept one copy of {Mods(plan.Clearing.Count)}. {KeepCopyWords.Space(plan.BytesFreed, recycled)}";
     }
 
     /// <summary>The notes above the list: what comes first and why, what can't be cleared, and the warning when anything goes.</summary>
-    public static IEnumerable<string> Notes(KeepEachPlan plan)
+    public static IEnumerable<string> Notes(KeepEachPlan plan, bool recycled)
     {
         ArgumentNullException.ThrowIfNull(plan);
         var differ = plan.Sets.Count(s => s.Differs);
@@ -49,7 +45,7 @@ internal static class KeepEachWords
 
         if (plan.Clearing.Count > 0)
         {
-            yield return Permanent;
+            yield return KeepCopyWords.Warning(recycled);
         }
     }
 
