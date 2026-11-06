@@ -23,7 +23,7 @@ public sealed class JournaledApplyRunner
         _records = records;
     }
 
-    public async Task<Result<ApplyReport>> RunAsync(ApplyJournal journal, IReadOnlySet<int> doneSteps, CancellationToken cancellationToken = default)
+    public async Task<Result<ApplyReport>> RunAsync(ApplyJournal journal, IReadOnlySet<int> doneSteps, IProgress<ChangeSteps>? progress = null, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(journal);
         ArgumentNullException.ThrowIfNull(doneSteps);
@@ -49,6 +49,7 @@ public sealed class JournaledApplyRunner
 
             await _journals.MarkDoneAsync(documents, step, cancellationToken);
             ran++;
+            progress?.Report(new ChangeSteps(step + 1, journal.StepCount));
         }
 
         await _records.SaveAsync(documents, journal.Target, cancellationToken);

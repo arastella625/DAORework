@@ -478,6 +478,10 @@ made-up mods, which is how it got through.)*
   which plans again in the new order (ADR-0015's "the user can reorder before confirming"). On the owner's library
   all 46 such files were in different folders, so Vortex's record can't settle them.
 
+- P2.6-22 A big change says how far it has got: *Apply* and *Undo* show a banner across the window, which locks until they
+  end. The owner's 7 GB change took two minutes with the window looking idle, and starting another reported that the
+  first `did not finish`.
+
 **Keeping the tests honest on Windows** *(added 2026-11-05, from P2.6-02)*.
 
 - P2.6-09 Run the tests on Windows in CI: `ci.yml` runs them on Linux only, which is how P2.6-02's failures reached

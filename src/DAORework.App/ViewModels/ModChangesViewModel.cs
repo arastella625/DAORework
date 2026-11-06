@@ -19,8 +19,8 @@ public sealed partial class ModChangesViewModel : RecoverableChangesViewModel
     private readonly GetProfile _getProfile;
     private readonly GetModStatus _status;
 
-    public ModChangesViewModel(GetProfile getProfile, GetModStatus status, RollBackModChange rollBack, RecoverModPlan recover, ILogger<ModChangesViewModel> logger)
-        : base(rollBack, recover, logger)
+    public ModChangesViewModel(GetProfile getProfile, GetModStatus status, ChangeInProgress change, RecoverModPlan recover, ILogger<ModChangesViewModel> logger)
+        : base(change, recover, logger)
     {
         _getProfile = getProfile;
         _status = status;

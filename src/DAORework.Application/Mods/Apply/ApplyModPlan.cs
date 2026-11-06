@@ -45,6 +45,6 @@ public sealed class ApplyModPlan
         // The record names its backup, so a rollback undoes this change even if a later one never got past its backup.
         var journal = new ApplyJournal(request.DocumentsDirectory, backup.Id, plan.Operations, plan.AddInsChanges, plan.NextRecord with { BackupId = backup.Id }, plan.CurrentRecord);
         await _journals.StartAsync(journal, cancellationToken);
-        return await _runner.RunAsync(journal, new HashSet<int>(), cancellationToken);
+        return await _runner.RunAsync(journal, new HashSet<int>(), request.Progress, cancellationToken);
     }
 }
