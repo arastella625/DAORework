@@ -74,6 +74,14 @@ public sealed partial class LibraryModRow : ObservableObject
     [ObservableProperty]
     public partial bool IsSelected { get; set; }
 
+    /// <summary>Whether this row says all that <paramref name="other"/> does, so the row on screen can stay (P2.6-49).</summary>
+    public bool ShowsTheSameAs(LibraryModRow other)
+    {
+        ArgumentNullException.ThrowIfNull(other);
+        return Id == other.Id && Title == other.Title && Details == other.Details && Warning == other.Warning
+            && PageLink == other.PageLink && Copy == other.Copy && Notes.SequenceEqual(other.Notes);
+    }
+
     /// <param name="entry">The library mod.</param>
     /// <param name="check">How its download compares with the catalog's known downloads, or the error that kept it from being compared.</param>
     /// <param name="copy">Where it stands among its copies, when the library holds it more than once.</param>

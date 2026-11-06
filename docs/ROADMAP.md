@@ -537,7 +537,9 @@ Each stage is worth having alone, and they go in this order, so the wait is expl
 - P2.6-47 Read once: a change refreshes the panels from one reading of the Library, instead of each reading it again.
 - P2.6-48 Keep the window free: reading, comparing and planning run off the window's thread.
 - P2.6-49 Long lists: only the rows on screen are built, and a row is kept when its mod hasn't changed, so search and
-  scrolling don't depend on how many mods there are.
+  scrolling don't depend on how many mods there are. *Done for your mods' list: a search keystroke went from about 0.35 s to
+  0.03 s, and reading an unchanged Library from about 0.6 s to 0.17 s. Scrolling hasn't been tried with a real mouse.
+  *Found in your game* and *Arrange* still build every row: *Arrange*'s drag needs each row to exist, so it needs its own look.*
 - P2.6-50 Less disk work: don't hash a file again when its size and time haven't changed, and let a swap move files instead
   of copying and backing them up (ADR-0039's known cost). A saved hash can be wrong, so this needs its own ADR first.
 

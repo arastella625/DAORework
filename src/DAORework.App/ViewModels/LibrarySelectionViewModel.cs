@@ -80,6 +80,7 @@ public sealed partial class LibrarySelectionViewModel : ObservableObject
         // Reading the library again replaces every row at once, so a Reset brings new rows to watch.
         foreach (var mod in e.Action == NotifyCollectionChangedAction.Reset ? _mods : e.NewItems?.OfType<LibraryModRow>() ?? [])
         {
+            mod.PropertyChanged -= OnModChanged; // A row kept from before is already watched.
             mod.PropertyChanged += OnModChanged;
         }
 

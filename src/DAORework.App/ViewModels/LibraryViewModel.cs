@@ -147,15 +147,21 @@ public sealed partial class LibraryViewModel : PageViewModel
         var sets = copies.Values.GroupBy(c => c.Group, StringComparer.OrdinalIgnoreCase).ToList();
         CopySets = sets.Count;
         CopiesToClear = sets.Count(s => s.Any(c => c.HoldsAll));
+        var onScreen = Mods.ToDictionary(m => m.Id, StringComparer.Ordinal);
         var rows = new List<LibraryModRow>();
         foreach (var entry in shown)
         {
-            var row = LibraryModRow.From(entry, _checkKnownDownload.Execute(entry), copies.GetValueOrDefault(entry.Mod.Id));
+            var read = LibraryModRow.From(entry, _checkKnownDownload.Execute(entry), copies.GetValueOrDefault(entry.Mod.Id));
+            var row = onScreen.TryGetValue(read.Id, out var same) && same.ShowsTheSameAs(read) ? same : read;
             row.IsActive = _active.Contains(row.Id);
             row.ConflictMark = _marks.GetValueOrDefault(row.Id);
+            row.IsSelected = false;
+            row.IsExpanded = false;
             rows.Add(row);
         }
 
+        // Building a row on screen is the slowest thing the window does, so one that says the same stays (P2.6-49). The
+        // list is still replaced, since the counts on the cards hear of a change from it, and that alone rebuilds nothing.
         Mods.ReplaceAll(rows);
     }
 }
