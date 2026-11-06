@@ -8,8 +8,20 @@ ADR-0025 combines `chargenmorphcfg.xml`. Every other file two mods share still h
 more: work out where mods can be made compatible, and amalgamate them where possible. P3-08 left combining tables to its
 own ADR, "with the M2DA mechanism as the first answer". This is that ADR.
 
-The real library has 252 files that differ under a shared name. The ones looked at so far are mostly in two mods, *TEST*
-and *DA2 Style 2-Handed Weapons*, which holds `rules_core.ncs` in six versions. What the rest are hasn't been counted.
+Counted on the owner's library on 2026-11-06, once its copies were cleared (63 entries, 6,406 game file names): 50 names
+differ, where 252 did before, so most of those were copies.
+
+| Kind | Names that differ |
+| --- | --- |
+| `.dds` textures | 44 |
+| `.ncs` scripts | 3 |
+| `.mao` materials | 2 |
+| `.cut` cutscenes | 1 |
+| `.gda` tables, `.tlk` talk tables | 0 |
+
+Most of the textures are *JB3* against the armour and clothing mods. `rules_core.ncs`, in seven versions, and
+`talent_singletarget.ncs` are mostly options inside one mod, *DA2 Style 2-Handed Weapons*, not two mods clashing. What
+clashes inside `.erf` archives isn't in this count. It is one library, so it says what to do first, not what never to do.
 
 Not every kind of file can be combined:
 
@@ -23,10 +35,14 @@ Not every kind of file can be combined:
 | Textures and models | No | Only one look can show. The choice is which |
 
 ## Decision
-- **Measure first.** Count the differing files by kind on a real library before building a combiner. The order below
-  changes if the count says so.
-- **Then read tables.** The GFF reader (P3-01) and P3-08 come before any combining. The format is confirmed on real
-  files, from public specifications and clean-room work only.
+- **The count sets the order.** Nothing on this library needs tables combined, so that waits until a library does:
+  1. **Choose who wins for each file, not only each mod.** 46 of the 50 are looks, which can't be combined. A player can
+     still want *JB3*'s robes and another mod's boots.
+  2. **Options inside a mod.** A mod that ships several versions of a file means the player to pick one, so offer that.
+  3. **Count what clashes inside `.erf` archives,** which this count couldn't see.
+  4. **Tables,** as below, when a library has them.
+- **Reading tables comes first.** The GFF reader (P3-01) and P3-08 come before any combining of tables. The format is
+  confirmed on real files, from public specifications and clean-room work only.
 - **The base game's table tells a change from a copy.** A mod that ships a whole table looks as if it changed every row.
   Comparing with the player's own game shows what each mod really changed. This reverses ADR-0025's rule for tables
   only, and it reads the game's archives on the player's PC. No game content enters the repository, and tests use
@@ -53,4 +69,3 @@ Not every kind of file can be combined:
 - **Combine without the base game.** Simpler, but it can't tell a whole-table copy from a real change, so one mod's
   changes would be lost with no warning.
 - **Always write whole tables.** Works for every table, but replaces more of the game than a fragment does.
-- **Choose a winner for each file instead of each mod.** Useful for textures, and a separate decision.
