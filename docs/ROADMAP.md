@@ -508,6 +508,38 @@ made-up mods, which is how it got through.)*
 - P2.6-41 Count the differing files by kind on a real library, which sets the order of P3-01, P3-08 and combining (ADR-0040).
 - P2.6-42 Keep one of each: every set of copies cleared from one preview, parts of mods included, offered as the next step, with each pick changeable and nothing lost unless the player picks ([ADR-0039](adr/0039-look-first-and-keep-one-copy.md)).
 
+**Feeling quick** *(added 2026-11-06, the owner's wish, from clearing copies on a messy real library)*. Buttons don't
+always highlight, and during a wait it isn't clear whether to wait or press again. Measured on `RealScaleLibrary` (138 mods,
+made-up files, no real disk, so a real library is slower):
+
+| What | Time on the window's thread | Note |
+| --- | --- | --- |
+| Reading the Library again | about 0.8 s | 9,730 changes to the list on screen, where about 138 would do, and 278 next-step changes |
+| Reading *Found in your game* again | about 0.5 s | |
+| One search keystroke | about 0.35 s | Nearly all of it is laying out every row |
+| Planning one mod | about 0.25 s | |
+
+After every change the window reads all of it again in turn, so it is stuck for at least 1.5 seconds. Highlights can't
+change while that thread is busy. A button is also disabled while its command runs, so it doesn't highlight then either,
+and no view shows `IsBusy`, so nothing says work is going on. Only three things in the window run off its thread.
+
+Each stage is worth having alone, and they go in this order, so the wait is explained before it is shortened:
+
+- P2.6-44 Measure: limits on the work a reload does, checked on `RealScaleLibrary` (counts, since times vary from one
+  machine to another), and in the log how long each step took and how long the window was held, so a real run can be
+  compared. The owner's messy library is the real check.
+- P2.6-45 Always say what's happening: the window's footer says what it is working on, whichever tab is open. A disabled
+  button looks disabled, and hover shows on every button in every theme.
+- P2.6-46 Stop repeating work: the list and the next step update once for a reload, not once for each mod.
+- P2.6-47 Read once: a change refreshes the panels from one reading of the Library, instead of each reading it again.
+- P2.6-48 Keep the window free: reading, comparing and planning run off the window's thread.
+- P2.6-49 Long lists: only the rows on screen are built, so search and scrolling don't depend on how many mods there are.
+- P2.6-50 Less disk work: don't hash a file again when its size and time haven't changed, and let a swap move files instead
+  of copying and backing them up (ADR-0039's known cost). A saved hash can be wrong, so this needs its own ADR first.
+
+**Done when:** with 140 mods, a press shows a response within 0.1 s, the window's thread is never held for over 0.2 s, and
+a search keystroke takes under 0.05 s, on `RealScaleLibrary` and on the owner's library.
+
 **Keeping the tests honest on Windows** *(added 2026-11-05, from P2.6-02)*.
 
 - P2.6-09 Run the tests on Windows in CI: `ci.yml` runs them on Linux only, which is how P2.6-02's failures reached
