@@ -485,6 +485,14 @@ made-up mods, which is how it got through.)*
 - P2.6-23 *Manage* clears leftovers: a mod already on no longer stops *Manage*. The copies found in the game are deleted
   with a backup, as ADR-0015 now says. Turning mods on before managing them left the owner with two copies of each.
 
+**One path through the window** *(added 2026-11-05, from the owner's first real run; [WORKFLOWS.md](WORKFLOWS.md))*.
+
+- P2.6-24 Map the workflows: the five journeys, where each breaks, and [ADR-0037](adr/0037-a-mod-is-one-thing.md).
+- P2.6-25 *Turn on* takes over what is in the game: identical files are moved, not copied.
+- P2.6-26 One list: a row for each mod, wherever it is, and copies of a mod as one row.
+- P2.6-27 One next step, worked out from where the player is.
+- P2.6-28 Today's small fixes: the copies note names the other copy, and *Finish* shows the progress banner.
+
 **Keeping the tests honest on Windows** *(added 2026-11-05, from P2.6-02)*.
 
 - P2.6-09 Run the tests on Windows in CI: `ci.yml` runs them on Linux only, which is how P2.6-02's failures reached
