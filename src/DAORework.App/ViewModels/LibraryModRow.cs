@@ -35,6 +35,9 @@ public sealed partial class LibraryModRow : ObservableObject
 
     public string? Warning { get; }
 
+    /// <summary>Gets when it was added, for sorting by newest (P2.6-30).</summary>
+    public DateTimeOffset AddedAt { get; private init; }
+
     /// <summary>Gets the page of the known item this mod's download is, or is a copy of (ADR-0034 §7).</summary>
     public string? PageLink { get; private init; }
 
@@ -118,6 +121,7 @@ public sealed partial class LibraryModRow : ObservableObject
             warning)
         {
             IsAddIn = entry.Mod.AddInUid is not null,
+            AddedAt = entry.ImportedAtUtc,
             PageLink = check.IsSuccess ? check.Value.Item?.Source : null,
             Copy = copy,
         };

@@ -43,6 +43,18 @@ public sealed partial class ModListFilter : ObservableObject
     [NotifyPropertyChangedFor(nameof(ShowsList), nameof(ShowsMods), nameof(ShowsFound), nameof(ShowsCombined), nameof(ArrangeLabel))]
     public partial bool Arranging { get; set; }
 
+    /// <summary>Gets or sets what the list is narrowed to, by name (P2.6-30).</summary>
+    [ObservableProperty]
+    public partial string? SearchText { get; set; }
+
+    /// <summary>Gets or sets the sort box's choice, which is a <see cref="ModSort"/>.</summary>
+    [ObservableProperty]
+    public partial int SortIndex { get; set; }
+
+    /// <summary>Gets a value indicating whether a search found nothing, so the page can say so.</summary>
+    [ObservableProperty]
+    public partial bool NothingMatches { get; private set; }
+
     [ObservableProperty]
     public partial string AllLabel { get; set; } = string.Empty;
 
@@ -96,6 +108,10 @@ public sealed partial class ModListFilter : ObservableObject
     partial void OnKindChanged(ModKindFilter value) => Update();
 
     partial void OnShowChanged(ModShowFilter value) => Update();
+
+    partial void OnSearchTextChanged(string? value) => Update();
+
+    partial void OnSortIndexChanged(int value) => Update();
 
     /// <summary>Shows only the mods in one state; the list comes back if the Combined files card was showing.</summary>
     [RelayCommand]
@@ -167,13 +183,15 @@ public sealed partial class ModListFilter : ObservableObject
             Show = ModShowFilter.All; // The chip has gone, and nothing is left under it.
         }
 
-        Refill(VisibleMods, mods.Where(m => Show switch
+        var shown = mods.Where(m => ModListOrder.Matches(m.Title, SearchText) && Show switch
         {
             ModShowFilter.On => m.IsActive,
             ModShowFilter.Off => !m.IsActive,
             _ => true,
-        }));
-        Refill(VisibleFound, Show == ModShowFilter.GameFolder ? inGameFolder : found);
+        });
+        Refill(VisibleMods, ModListOrder.Sorted(shown, (ModSort)SortIndex));
+        Refill(VisibleFound, (Show == ModShowFilter.GameFolder ? inGameFolder : found).Where(m => ModListOrder.Matches(m.Title, SearchText)));
+        NothingMatches = !string.IsNullOrWhiteSpace(SearchText) && VisibleMods.Count == 0 && VisibleFound.Count == 0;
     }
 
     /// <summary>

@@ -9,6 +9,14 @@ public enum ModKindFilter
     CombinedFiles,
 }
 
+/// <summary>How the Mods tab's list is sorted (P2.6-30), in the order the box offers them.</summary>
+public enum ModSort
+{
+    Name,
+    Newest,
+    OnFirst,
+}
+
 /// <summary>Which mods the Mods tab's list shows: all, those on, those off, or those found in the game.</summary>
 public enum ModShowFilter
 {

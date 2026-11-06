@@ -57,6 +57,17 @@
       <Button Name="ArrangeButton" Content="{Binding ArrangeLabel}" Command="{Binding ToggleArrangeCommand}" />
     </WrapPanel>
 
+    <Grid Margin="12,0" ColumnDefinitions="*,Auto" ColumnSpacing="10" DataContext="{Binding Filter}" x:DataType="vm:ModListFilter"
+          IsVisible="{Binding ShowsList}">
+      <TextBox Name="ModSearch" Text="{Binding SearchText}" PlaceholderText="Search your mods" />
+      <ComboBox Name="ModSortBox" Grid.Column="1" MinWidth="130" SelectedIndex="{Binding SortIndex}">
+        <ComboBoxItem Content="By name" />
+        <ComboBoxItem Content="Newest first" />
+        <ComboBoxItem Content="On first" />
+      </ComboBox>
+    </Grid>
+    <TextBlock Name="NothingMatches" Margin="12,0" Classes="Secondary" Text="No mods match that." DataContext="{Binding Filter}"
+               x:DataType="vm:ModListFilter" IsVisible="{Binding NothingMatches}" />
     <StackPanel Margin="12,0" Orientation="Horizontal" Spacing="8" DataContext="{Binding Filter}" x:DataType="vm:ModListFilter"
                 IsVisible="{Binding HasKind}">
       <TextBlock Name="KindNote" Classes="Secondary" VerticalAlignment="Center" Text="{Binding KindNote}" />

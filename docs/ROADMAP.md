@@ -493,6 +493,7 @@ made-up mods, which is how it got through.)*
 - P2.6-27 One next step, worked out from where the player is.
 - P2.6-28 Today's small fixes: the copies note names the other copy, and *Finish* shows the progress banner.
 - P2.6-29 One-line rows that expand in place ([ADR-0038](adr/0038-rows-a-sheet-and-drag.md)).
+- P2.6-30 Search and sort, and *Select all* ticks only what is shown.
 
 **Keeping the tests honest on Windows** *(added 2026-11-05, from P2.6-02)*.
 
