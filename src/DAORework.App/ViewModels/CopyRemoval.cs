@@ -8,6 +8,9 @@ namespace DAORework.App.ViewModels;
 /// <summary>How every preview that removes copies ends (ADR-0039): a swap through the usual change, and only then the removal.</summary>
 public sealed class CopyRemoval(RemoveCopies remove, RecordSwap recordSwap, ChangeInProgress change)
 {
+    /// <summary>Gets a value indicating whether what is removed can still be put back, which decides what the previews say.</summary>
+    public bool GoesToRecycleBin => remove.GoesToRecycleBin;
+
     /// <returns>What went wrong, or null when it all went ahead.</returns>
     public async Task<Error?> RunAsync(string title, ModActivationPlan? swap, string? documents, IReadOnlyList<string> modIds, CancellationToken cancellationToken)
     {

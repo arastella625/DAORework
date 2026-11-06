@@ -58,7 +58,7 @@ public sealed class RollBackModChange
             return Result.Failure<RestoreReport>(new Error(
                 DiagnosticCodes.ModUndoNeedsRemovedMod,
                 $"This can't be undone: it goes back to {string.Join(", ", removed)}, no longer in your Library.",
-                "Add the same download again, then undo."));
+                "Add the same download again, or put both its folder and its .mod.json file back from the Recycle Bin, then undo."));
         }
 
         var restored = await _restore.ExecuteAsync(new RestoreDeploymentRequest(documents, backup.Id), cancellationToken);

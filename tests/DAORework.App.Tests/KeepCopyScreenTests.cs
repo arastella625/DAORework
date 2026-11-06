@@ -109,6 +109,36 @@ public sealed class KeepCopyScreenTests : IDisposable
     }
 
     [AvaloniaFact]
+    public async Task ARemovedCopy_GoesToTheRecycleBin_WithItsRecord()
+    {
+        var (_, viewModel) = await OpenWithTwoCopiesAsync();
+        var keep = viewModel.ModsTab.KeepCopy;
+
+        await keep.PlanKeepCommand.ExecuteAsync(Row(viewModel, "Hair Pack"));
+
+        Assert.EndsWith("goes to the Recycle Bin, and comes back when you empty it.", keep.Preview.Summary, StringComparison.Ordinal);
+
+        await keep.RemoveOthersCommand.ExecuteAsync(null);
+
+        Assert.Equal(2, _host.RecycleBin.Sent.Count);
+        Assert.EndsWith(".mod.json", _host.RecycleBin.Sent[0], StringComparison.Ordinal);
+        Assert.Contains("hair-pack-copy", Path.GetFileName(_host.RecycleBin.Sent[1]), StringComparison.Ordinal);
+    }
+
+    [AvaloniaFact]
+    public async Task WithNoRecycleBin_ThePreviewSaysRemovingIsForGood()
+    {
+        var (_, viewModel) = await OpenWithTwoCopiesAsync();
+        _host.RecycleBin.IsAvailable = false;
+        var keep = viewModel.ModsTab.KeepCopy;
+
+        await keep.PlanKeepCommand.ExecuteAsync(Row(viewModel, "Hair Pack"));
+
+        Assert.Contains(keep.Preview.Notes, n => n.StartsWith("Removing can't be undone.", StringComparison.Ordinal));
+        Assert.Contains("You get back", keep.Preview.Summary, StringComparison.Ordinal);
+    }
+
+    [AvaloniaFact]
     public async Task Cancel_RemovesNothing()
     {
         var (_, viewModel) = await OpenWithTwoCopiesAsync();

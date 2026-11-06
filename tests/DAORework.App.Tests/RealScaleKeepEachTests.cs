@@ -38,7 +38,7 @@ public sealed class RealScaleKeepEachTests : IDisposable
         Settle(window);
 
         Assert.Equal(51, keep.Rows.Count);
-        Assert.Equal("Removes 63 copies of 48 mods from your Library, and gets back 5.34 GB.", keep.Preview.Summary);
+        Assert.Equal("Removes 63 copies of 48 mods from your Library. 5.34 GB goes to the Recycle Bin, and comes back when you empty it.", keep.Preview.Summary);
         Assert.Equal("Remove 63 copies", keep.RemoveLabel);
         Assert.Contains("3 mods have copies that aren't the same, so they come first and stay unless you pick one.", keep.Preview.Notes);
         Assert.All(keep.Rows.Take(3), r => Assert.Null(r.Pick!.ModId));

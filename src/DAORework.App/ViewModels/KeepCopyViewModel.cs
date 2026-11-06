@@ -2,7 +2,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DAORework.Application.Mods.Library;
 using DAORework.Application.Profiles;
-using DAORework.Core.Common;
 using DAORework.Core.Mods.Library;
 using Microsoft.Extensions.Logging;
 
@@ -88,7 +87,7 @@ public sealed partial class KeepCopyViewModel : PageViewModel
             }
             else
             {
-                ReportSuccess($"Kept {ModDisplayName.For(pending.Preview.Plan.Kept.Mod.Name)}, and got back {new ByteSize(pending.Preview.Plan.BytesFreed)}.");
+                ReportSuccess($"Kept {ModDisplayName.For(pending.Preview.Plan.Kept.Mod.Name)}. {KeepCopyWords.Space(pending.Preview.Plan.BytesFreed, _removal.GoesToRecycleBin)}");
             }
         },
         cancellationToken);
@@ -99,7 +98,7 @@ public sealed partial class KeepCopyViewModel : PageViewModel
     private void Show(LibraryModRow row, KeepCopyPreview preview, string? documents)
     {
         var plan = preview.Plan;
-        var summary = $"Removes {KeepCopyWords.Removing(plan)} from your Library, and gets back {new ByteSize(plan.BytesFreed)}.";
+        var summary = $"Removes {KeepCopyWords.Removing(plan)} from your Library. {KeepCopyWords.Space(plan.BytesFreed, _removal.GoesToRecycleBin)}";
         if (preview.Swap is { } swap)
         {
             Preview.Show($"Keep {row.Title}", swap, summary);
@@ -121,7 +120,7 @@ public sealed partial class KeepCopyViewModel : PageViewModel
             Preview.Problems.Add(problem);
         }
 
-        Preview.Notes.Insert(0, KeepCopyWords.Permanent);
+        Preview.Notes.Insert(0, KeepCopyWords.Warning(_removal.GoesToRecycleBin));
         if (KeepCopyWords.Lost(plan.OnlyInRemoved) is { } lost)
         {
             Preview.Notes.Insert(0, lost);
