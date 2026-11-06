@@ -111,6 +111,26 @@ public sealed class KeepEachPartsTests : IDisposable
     }
 
     [AvaloniaFact]
+    public async Task AChangeAfterThePreview_IsNotLost_WhenTheSwapMovesFiles()
+    {
+        var (_, viewModel) = await _sets.OpenAsync(seedInstall: false);
+        await _sets.ImportAsync(viewModel, "Lips.zip", "lips.dds", "DDS lips");
+        await _scenario.ActivateAsync(viewModel, "Eyes");
+        var keep = viewModel.ModsTab.KeepEach;
+        await keep.PlanCommand.ExecuteAsync(null);
+        await PickOtherCopyAsync(keep, "Eyes");
+
+        await _scenario.ActivateAsync(viewModel, "Lips");
+        await keep.RemoveCopiesCommand.ExecuteAsync(null);
+
+        Assert.True(keep.IsError);
+        Assert.Contains("Nothing was removed: What's on has changed", keep.StatusMessage, StringComparison.Ordinal);
+        Assert.Equal(2, viewModel.ModsTab.Activation.ActiveModIds.Count);
+        Assert.True(viewModel.Library.Mods.Single(m => m.Title == "Lips").IsActive);
+        Assert.Equal(5, viewModel.Library.Mods.Count);
+    }
+
+    [AvaloniaFact]
     public async Task EveryRowOfASet_SaysSo()
     {
         var (_, viewModel) = await OpenWithAPartAsync();

@@ -8,7 +8,8 @@ namespace DAORework.Application.Mods.Library;
 /// <summary>
 /// A swap that moves no file (ADR-0039): a copy that is on owns nothing when another copy placed the same files first, so
 /// taking it out only changes the record. With nothing to restore there is no backup, and the record keeps pointing at the
-/// last one. A plan from before another change is refused, since saving it would undo that change in the record.
+/// last one. <see cref="CheckAsync"/> comes first for any swap: the list stays usable under a preview, and a plan from
+/// before another change would drop that change from the record.
 /// </summary>
 public sealed class RecordSwap
 {
@@ -21,7 +22,8 @@ public sealed class RecordSwap
         _journals = journals;
     }
 
-    public async Task<Result> ExecuteAsync(string documentsDirectory, ModActivationPlan plan, CancellationToken cancellationToken = default)
+    /// <summary>Whether <paramref name="plan"/> still starts from what is on, with no change left unfinished.</summary>
+    public async Task<Result> CheckAsync(string documentsDirectory, ModActivationPlan plan, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(plan);
         if (await _journals.LoadAsync(documentsDirectory, cancellationToken) is not null)
@@ -39,7 +41,13 @@ public sealed class RecordSwap
             return Result.Failure(new Error(DiagnosticCodes.ModCopyStillOn, "What's on has changed since this preview.", "Open the preview again."));
         }
 
-        await _records.SaveAsync(documentsDirectory, plan.NextRecord with { BackupId = record.BackupId }, cancellationToken);
         return Result.Success();
+    }
+
+    /// <summary>Saves the record of a checked plan that moves no file.</summary>
+    public Task ExecuteAsync(string documentsDirectory, ModActivationPlan plan, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(plan);
+        return _records.SaveAsync(documentsDirectory, plan.NextRecord with { BackupId = plan.CurrentRecord.BackupId }, cancellationToken);
     }
 }

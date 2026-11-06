@@ -49,7 +49,7 @@ public static class KeepOneOfEach
         {
             On = [.. copies.Where(e => IsOn(e, selected)).Select(e => e.Mod.Id)],
             Differs = holders.Count == 0,
-            HasParts = copies.Any(e => found[e.Mod.Id].IsPart),
+            Parts = [.. copies.Where(e => found[e.Mod.Id].IsPart).Select(e => e.Mod.Id)],
             KeepsAll = (picked && id is null) || (chosen is null && holders.Count == 0),
         };
     }

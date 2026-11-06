@@ -13,15 +13,28 @@ public sealed class CopyRemoval(RemoveCopies remove, RecordSwap recordSwap, Chan
     {
         if (swap is not null && documents is not null)
         {
-            var swapped = swap.IsEmpty
-                ? (await recordSwap.ExecuteAsync(documents, swap, cancellationToken)).Error
-                : (await change.ApplyAsync(title, new ApplyModPlanRequest(documents, swap), cancellationToken)).Error;
-            if (swapped is { } failed)
+            if (await SwapAsync(title, swap, documents, cancellationToken) is { } failed)
             {
                 return failed with { Message = $"Nothing was removed: {failed.Message}" };
             }
         }
 
         return (await change.RunAsync(title, _ => Task.Run(() => remove.ExecuteAsync(modIds, cancellationToken), cancellationToken))).Error;
+    }
+
+    private async Task<Error?> SwapAsync(string title, ModActivationPlan swap, string documents, CancellationToken cancellationToken)
+    {
+        if ((await recordSwap.CheckAsync(documents, swap, cancellationToken)).Error is { } stale)
+        {
+            return stale;
+        }
+
+        if (!swap.IsEmpty)
+        {
+            return (await change.ApplyAsync(title, new ApplyModPlanRequest(documents, swap), cancellationToken)).Error;
+        }
+
+        await recordSwap.ExecuteAsync(documents, swap, cancellationToken);
+        return null;
     }
 }

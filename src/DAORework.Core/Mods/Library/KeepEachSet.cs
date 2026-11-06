@@ -12,8 +12,8 @@ public sealed record KeepEachSet(string Group, IReadOnlyList<LibraryEntry> Copie
     /// <summary>Gets a value indicating whether no copy holds everything, so keeping any one loses something.</summary>
     public bool Differs { get; init; }
 
-    /// <summary>Gets a value indicating whether one copy is only part of another.</summary>
-    public bool HasParts { get; init; }
+    /// <summary>Gets the copies that are only part of another, by id.</summary>
+    public IReadOnlyList<string> Parts { get; init; } = [];
 
     /// <summary>Gets a value indicating whether this set stays as it is: the player chose that, or it differs and they haven't chosen.</summary>
     public bool KeepsAll { get; init; }

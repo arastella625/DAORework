@@ -55,7 +55,9 @@ record that names a mod needs that mod to plan anything, and a moved file can co
   removing is permanent and cuts Undo. Sets that really differ are no next step: a player may mean to keep them.
 - All swaps go in one plan, applied once, and only then is anything removed.
 - A copy can be on and own no file, when another copy placed the same files first. Taking it out moves nothing, so only the
-  record changes, with no backup and no entry in History. It is refused if what is on has changed since the preview.
+  record changes, with no backup and no entry in History.
+- Any swap is refused if what is on has changed since the preview, since the list stays usable under it and the old plan
+  would drop that change from the record.
 - A set that can't be cleared, because a copy is on in another profile, stays as it is and says why. The others go ahead:
   one stuck set shouldn't hold up fifty. An unfinished change still stops everything.
 - Only one of the two previews can be open. Two made before either ran could remove the copy the other keeps.

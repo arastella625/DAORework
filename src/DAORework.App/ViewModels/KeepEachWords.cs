@@ -77,7 +77,7 @@ internal static class KeepEachWords
         }
 
         var plan = set.Plan;
-        var lost = KeepCopyWords.Lost(plan.OnlyInRemoved) ?? (set.HasParts ? "The others are only part of this one, so nothing is lost." : null);
+        var lost = KeepCopyWords.Lost(plan.OnlyInRemoved) ?? (set.Parts.Count > 0 ? "The others are only part of this one, so nothing is lost." : null);
         var swapped = plan.SwappedOut is { } name && !set.On.Contains(plan.Kept.Mod.Id, StringComparer.OrdinalIgnoreCase)
             ? $"{ModDisplayName.For(name)} is on, so this one takes its place."
             : null;
@@ -99,7 +99,7 @@ internal static class KeepEachWords
         var name = entry.Mod.Name == set.Copies[0].Mod.Name ? entry.SourceName : ModDisplayName.For(entry.Mod.Name);
         var on = set.On.Contains(entry.Mod.Id, StringComparer.OrdinalIgnoreCase);
         var newest = ReferenceEquals(entry, set.Copies.MaxBy(e => e.ImportedAtUtc));
-        var part = set.HasParts && entry.Mod.Files.Count < set.Copies[0].Mod.Files.Count;
+        var part = set.Parts.Contains(entry.Mod.Id, StringComparer.OrdinalIgnoreCase);
         return string.Join(", ", new[] { name, on ? "on" : null, newest ? "newest" : null, part ? "only part" : null }.OfType<string>());
     }
 

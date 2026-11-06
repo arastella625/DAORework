@@ -156,7 +156,7 @@ public sealed class KeepOneOfEachTests
 
         var set = Assert.Single(plan.Sets);
         Assert.Equal("whole", set.Plan.Kept.Mod.Id);
-        Assert.True(set.HasParts);
+        Assert.Equal(["part"], set.Parts);
         Assert.False(set.Differs);
         Assert.Equal(["a", "whole"], plan.SwappedOrder);
     }
