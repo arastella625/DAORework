@@ -48,10 +48,10 @@ public sealed partial class SetupSummary : ObservableObject
         var combined = _mods.LoadOrder.CombinedCount;
         SetupPart[] parts =
         [
-            new("Add-ins", Count(library.Count(m => m.IsAddIn && m.IsActive), found.Count(m => m.IsAddIn)), "Ready", true, HomeTarget.ModsLibrary, ModKindFilter.AddIns),
+            new("Add-ins", Count(library.Count(m => m.IsAddIn && m.IsActive), found.Count(m => m.IsAddIn && _mods.Filter.VisibleFound.Contains(m))), "Ready", true, HomeTarget.ModsLibrary, ModKindFilter.AddIns),
             new(
                 "Override mods",
-                Count(library.Count(m => !m.IsAddIn && m.IsActive), found.Count(m => !m.IsAddIn)),
+                Count(library.Count(m => !m.IsAddIn && m.IsActive), found.Count(m => !m.IsAddIn && _mods.Filter.VisibleFound.Contains(m))),
                 overlaps == 0 ? "Ready" : Counted.Of(overlaps, "overlap"),
                 overlaps == 0,
                 overlaps == 0 ? HomeTarget.ModsLibrary : HomeTarget.ModsArrange,

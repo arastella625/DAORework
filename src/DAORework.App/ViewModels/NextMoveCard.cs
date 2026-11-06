@@ -63,6 +63,7 @@ public sealed partial class NextMoveCard : ObservableObject
             case NextMoveKind.TakeOverWhatIsInTheGame:
                 await OpenTargetAsync(HomeTarget.ModsLibrary, cancellationToken);
                 _mods.Filter.ShowOnlyCommand.Execute(ModShowFilter.Found);
+                _mods.HandInstalled.Adoption.LooseFilesName ??= "Loose files";
                 _mods.HandInstalled.SelectAllCommand.Execute(null);
                 await _mods.HandInstalled.AdoptSelectedCommand.ExecuteAsync(null);
                 break;
@@ -84,7 +85,7 @@ public sealed partial class NextMoveCard : ObservableObject
             _mods.HandInstalled.ProfileName is not null,
             _mods.Changes.ChangeUnfinished,
             _mods.Handover.IsShown,
-            _mods.HandInstalled.Candidates.Count(c => c.CanManage),
+            _mods.HandInstalled.Candidates.Count(c => c.CanManage && c.Candidate!.Files.Count > c.Candidate.Programs.Count),
             _mods.Library.Mods.Count,
             _mods.Activation.ActiveModIds.Count));
         Kind = move.Kind;

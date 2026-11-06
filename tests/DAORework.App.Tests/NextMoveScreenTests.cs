@@ -29,7 +29,6 @@ public sealed class NextMoveScreenTests : IDisposable
         ModsTabScenario.Show<HandInstalledPanel>(window);
         Screenshots.Save(window, "next-move");
 
-        viewModel.HandInstalled.Adoption.LooseFilesName = "Loose fixes";
         await card.TakeCommand.ExecuteAsync(null);
 
         var adoption = viewModel.HandInstalled.Adoption;
