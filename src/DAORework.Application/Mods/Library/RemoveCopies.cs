@@ -19,6 +19,9 @@ public sealed class RemoveCopies
         _folders = folders;
     }
 
+    /// <summary>Gets a value indicating whether what is removed can still be put back from the Recycle Bin.</summary>
+    public bool GoesToRecycleBin => _remover.GoesToRecycleBin;
+
     public async Task<Result> ExecuteAsync(IReadOnlyList<string> modIds, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(modIds);

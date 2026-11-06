@@ -33,8 +33,10 @@ record that names a mod needs that mod to plan anything, and a moved file can co
   plan, backup and journal. It is removed only once that change has been applied.
 - A copy on in another profile's documents folder stops the removal, and the preview names the folder. So does an
   unfinished change. This is checked again at the moment of removal.
-- Removing is permanent. The `mod.json` goes first, so a mod is out of the Library as soon as any of it is gone, and a
-  folder left without one is replaced by the next import, as an unfinished import's is today.
+- Removed copies go to the Recycle Bin, so "nothing is ever lost" holds for a mod removed by mistake, and putting back its
+  `mod.json` and folder restores it. Where there is no Recycle Bin, removing is permanent and the preview says so. The
+  `mod.json` goes first, so a mod is out of the Library as soon as any of it is gone, and a folder left without one is
+  replaced by the next import, as an unfinished import's is today.
 - *Undo* refuses a change whose earlier state names a mod no longer in the Library, and says which. It would otherwise
   leave a record that no later plan can use. The preview says so before anything is removed.
 
@@ -66,8 +68,10 @@ record that names a mod needs that mod to plan anything, and a moved file can co
 - The extras can be cleared in one go, and a new duplicate is caught before it costs a copy.
 - ADR-0012's rule becomes: a library entry's files never change, but the entry can be removed.
 - Removing a copy cuts History off for changes that used it. Copies with the same files lose nothing else.
-- A file only in a removed copy can't be restored by an older *Undo*. It fails with the existing message and changes
-  nothing. The preview lists those files first.
+- A file only in a removed copy can't be restored by an older *Undo* until the copy is back. It fails with the existing
+  message and changes nothing. The preview lists those files first.
+- The Recycle Bin keeps the space until it is emptied, so the preview says the space comes back then. Windows may delete
+  a folder too big for the Recycle Bin outright, and the shell gives no way to tell.
 - The swap is an existing kind of change, so ADR-0014 needs no new gate scenario. Removal touches only the Library, and
   its order is covered by tests.
 - A copy on in a folder no profile names any more can't be seen, since records can't be listed. Pointing a profile back
@@ -90,7 +94,9 @@ record that names a mod needs that mod to plan anything, and a moved file can co
 - **Refuse a duplicate outright.** Names can't tell a new version from a copy, so this would block real updates.
 - **Import first, then compare hashes.** Certain, but it extracts and scans gigabytes to learn what names can suggest.
 - **Stop every add until everything found is managed.** Blocks mods that have nothing to do with what was found.
-- **Keep removed copies in a holding folder.** Keeps the 6 GB the owner wants back, and adds a second thing to clear.
+- **Keep removed copies in a holding folder.** Keeps the 6 GB the owner wants back, and adds a second thing to clear. The
+  Recycle Bin is one the player already knows how to empty.
+- **Delete for good.** The first version of this ADR did. The owner chose the Recycle Bin, so a mistake can be put right.
 - **Refuse to remove a mod any backup names.** Safe, but nearly every copy that was ever on could then never go.
 - **Stop the whole clear for one stuck set.** Simple, but the player would have to solve every set before clearing any.
 - **A preview per set, one after another.** Keeps each one simple, and is the 51 steps this is meant to remove.
