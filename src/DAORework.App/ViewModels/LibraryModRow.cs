@@ -52,6 +52,10 @@ public sealed partial class LibraryModRow : ObservableObject
     [NotifyPropertyChangedFor(nameof(Glance))]
     public partial bool IsInGame { get; set; }
 
+    /// <summary>Gets or sets what it does to the files it shares with other mods, or null when it shares none that differ (P2.6-33).</summary>
+    [ObservableProperty]
+    public partial string? ConflictMark { get; set; }
+
     /// <summary>Gets or sets a value indicating whether its row is expanded to show its details (ADR-0038).</summary>
     [ObservableProperty]
     public partial bool IsExpanded { get; set; }

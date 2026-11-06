@@ -59,6 +59,25 @@ public sealed class LoadOrderScreenTests : IDisposable
     }
 
     [AvaloniaFact]
+    public async Task Rows_SayWhichModWinsAFileTheyShare_AndFollowTheSavedOrder()
+    {
+        var (_, viewModel) = await OpenWithTwoHairModsAsync();
+        var mods = viewModel.Library.Mods;
+
+        Assert.Equal("wins", mods.Single(m => m.Title == "Blue Hair").ConflictMark);
+        Assert.Equal("loses", mods.Single(m => m.Title == "Red Hair").ConflictMark);
+
+        var order = viewModel.ModsTab.LoadOrder;
+        await order.MoveUpCommand.ExecuteAsync(order.Order[1]);
+
+        Assert.Equal("wins", mods.Single(m => m.Title == "Blue Hair").ConflictMark);
+
+        await order.ApplyCommand.ExecuteAsync(null);
+
+        Assert.Equal("wins", viewModel.Library.Mods.Single(m => m.Title == "Red Hair").ConflictMark);
+    }
+
+    [AvaloniaFact]
     public async Task Reset_GoesBackToTheSavedOrderAndChangesNothing()
     {
         var (_, viewModel) = await OpenWithTwoHairModsAsync();
