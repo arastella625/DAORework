@@ -11,13 +11,24 @@ namespace DAORework.Application.Mods.Library;
 public sealed class FindModsInside
 {
     private readonly IErfContentsReader _archives;
-    private readonly ConcurrentDictionary<(string ModId, string Path), IReadOnlyList<string>?> _read = new();
+    private readonly ConcurrentDictionary<(string ModId, string Path), IReadOnlyList<string>> _read = new();
 
     public FindModsInside(IErfContentsReader archives)
     {
         _archives = archives;
     }
 
-    public IReadOnlyDictionary<string, ModInside> Execute(IReadOnlyList<LibraryEntry> entries) =>
-        ModsInside.Find(entries, (mod, file) => _read.GetOrAdd((mod.Id, file.RelativePath), key => _archives.ReadNames(key.ModId, key.Path).TryGetValue(out var names, out _) ? names : null));
+    public IReadOnlyDictionary<string, ModInside> Execute(IReadOnlyList<LibraryEntry> entries) => ModsInside.Find(entries, NamesIn);
+
+    /// <summary>An archive that can't be read is tried again next time: it may only have been in use.</summary>
+    private IReadOnlyList<string>? NamesIn(LibraryMod mod, LibraryModFile file)
+    {
+        var key = (mod.Id, file.RelativePath);
+        if (_read.TryGetValue(key, out var known))
+        {
+            return known;
+        }
+
+        return _archives.ReadNames(mod.Id, file.RelativePath).TryGetValue(out var names, out _) ? _read[key] = names : null;
+    }
 }

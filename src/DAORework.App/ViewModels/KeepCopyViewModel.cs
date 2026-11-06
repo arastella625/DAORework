@@ -71,7 +71,7 @@ public sealed partial class KeepCopyViewModel : PageViewModel
             var request = new PlanKeepCopyRequest(keepId, folders.IsSuccess ? folders.Value.Documents : null, folders.IsSuccess ? folders.Value.Install : null) { Removing = removing };
             if ((await _plan.ExecuteAsync(request, token)).TryGetValue(out var preview, out var error))
             {
-                Show(title, preview, request.DocumentsDirectory);
+                Show(title, preview, request.DocumentsDirectory, removing is not null);
             }
             else
             {
@@ -108,7 +108,7 @@ public sealed partial class KeepCopyViewModel : PageViewModel
     [RelayCommand]
     private void Cancel() => Clear();
 
-    private void Show(string title, KeepCopyPreview preview, string? documents)
+    private void Show(string title, KeepCopyPreview preview, string? documents, bool named)
     {
         var plan = preview.Plan;
         var summary = $"Removes {KeepCopyWords.Removing(plan)} from your Library, and gets back {new ByteSize(plan.BytesFreed)}.";
@@ -140,7 +140,7 @@ public sealed partial class KeepCopyViewModel : PageViewModel
         }
 
         _pending = (preview, documents);
-        RemoveLabel = plan.Removing.Count > 1 ? "Remove the other copies" : plan.Removing.Single().Mod.Name == plan.Kept.Mod.Name ? "Remove the other copy" : $"Remove {KeepCopyWords.Removing(plan)}";
+        RemoveLabel = named ? $"Remove {KeepCopyWords.Removing(plan)}" : plan.Removing.Count == 1 ? "Remove the other copy" : "Remove the other copies";
         CanRemove = plan.Problems.Count == 0 && preview.Swap is not { IsBlocked: true };
     }
 
