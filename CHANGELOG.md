@@ -7,6 +7,7 @@ All notable changes to DAORework are recorded here. The format follows
 ## [Unreleased]
 
 ### Changed
+- A preview keeps amber for what stops a change, and its other notes are plain text (P2.6-32). *Worth a look* no longer repeats the next step.
 - Previews on the Mods tab open in a sheet under the list, with *Apply* and *Cancel* always showing (P2.6-31).
 - Search your mods, and sort them by name, newest or on first (P2.6-30). *Select all* now ticks only what's shown, so a search or a chip narrows it.
 - Each mod is one line, and clicking its name opens its details in place (P2.6-29, [ADR-0038](docs/adr/0038-rows-a-sheet-and-drag.md)). Far more fit on a screen, and warnings stay on the row.

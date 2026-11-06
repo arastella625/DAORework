@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DAORework.Application.Catalog;
-using DAORework.Application.Mods.Adoption;
 using DAORework.Application.Mods.Handover;
 using DAORework.Application.Profiles;
 using DAORework.Core.Common;
@@ -23,15 +22,13 @@ public sealed partial class NextStepsViewModel : PageViewModel
 {
     private readonly GetProfile _getProfile;
     private readonly DetectKnownItems _detectKnownItems;
-    private readonly ScanForAdoption _scanForAdoption;
     private readonly ReadVortexHandover _readHandover;
 
-    public NextStepsViewModel(GetProfile getProfile, DetectKnownItems detectKnownItems, ScanForAdoption scanForAdoption, ReadVortexHandover readHandover, ILogger<NextStepsViewModel> logger)
+    public NextStepsViewModel(GetProfile getProfile, DetectKnownItems detectKnownItems, ReadVortexHandover readHandover, ILogger<NextStepsViewModel> logger)
         : base(logger)
     {
         _getProfile = getProfile;
         _detectKnownItems = detectKnownItems;
-        _scanForAdoption = scanForAdoption;
         _readHandover = readHandover;
     }
 
@@ -79,14 +76,14 @@ public sealed partial class NextStepsViewModel : PageViewModel
                         "Preview"));
                 }
 
-                var failure = await AddDxvkStepAsync(profile, token) ?? await AddAdoptStepAsync(profile, token);
+                var failure = await AddDxvkStepAsync(profile, token) ?? await AddVortexStepAsync(profile, token);
                 if (failure is not null)
                 {
                     ReportError(failure);
                 }
                 else if (Steps.Count == 0)
                 {
-                    ReportStatus("Nothing needs you. The 4 GB patch and DXVK are on, and every mod is managed.");
+                    ReportStatus("Nothing else needs you: the 4 GB patch and DXVK are on.");
                 }
 
                 HasContent = true;
@@ -112,29 +109,15 @@ public sealed partial class NextStepsViewModel : PageViewModel
         return null;
     }
 
-    /// <summary>A profile without a documents folder has nothing to adopt yet; the Profile page asks for the folder.</summary>
-    private async Task<Error?> AddAdoptStepAsync(RuntimeProfile profile, CancellationToken cancellationToken)
+    /// <summary>Mods found in the game are the next step's to offer (P2.6-27). This is only Vortex coming back, which it doesn't cover.</summary>
+    private async Task<Error?> AddVortexStepAsync(RuntimeProfile profile, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(profile.UserDocumentsDirectory))
         {
             return null;
         }
 
-        if (!(await _scanForAdoption.ExecuteAsync(profile.UserDocumentsDirectory, cancellationToken)).TryGetValue(out var adoption, out var error))
-        {
-            return error;
-        }
-
-        if (adoption.Candidates.Count > 0)
-        {
-            Steps.Add(new NextStep(
-                NextStepKind.AdoptHandInstalled,
-                $"Manage {Counted.Of(adoption.Candidates.Count, "mod")} found in your game",
-                "DAORework can take them over without reinstalling them, so you can turn them off or undo them like any other mod.",
-                "See them"));
-        }
-
-        if (!(await _readHandover.ExecuteAsync(profile.UserDocumentsDirectory, cancellationToken)).TryGetValue(out var handover, out error))
+        if (!(await _readHandover.ExecuteAsync(profile.UserDocumentsDirectory, cancellationToken)).TryGetValue(out var handover, out var error))
         {
             return error;
         }

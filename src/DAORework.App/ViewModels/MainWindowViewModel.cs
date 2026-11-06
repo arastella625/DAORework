@@ -116,14 +116,9 @@ public sealed partial class MainWindowViewModel : ObservableObject
                 SelectedPage = FixesPage;
                 await Fixes.Change.InstallDxvkCommand.ExecuteAsync(null);
                 break;
-            case NextStepKind.MoveFromVortex:
-                SelectedPage = ModsPage;
-                await ModsTab.Handover.RefreshAsync(cancellationToken);
-                break;
             default:
                 SelectedPage = ModsPage;
-                ModsTab.Filter.ShowOnlyCommand.Execute(ModShowFilter.Found);
-                await HandInstalled.ScanCommand.ExecuteAsync(null);
+                await ModsTab.Handover.RefreshAsync(cancellationToken);
                 break;
         }
     }
