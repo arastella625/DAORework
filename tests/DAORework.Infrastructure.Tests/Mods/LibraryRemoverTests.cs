@@ -17,12 +17,12 @@ public sealed class LibraryRemoverTests
     private LibraryRemover Remover => new(_fileSystem, Options.Create(new DaoReworkOptions { AppDataDirectory = _appData }));
 
     [Fact]
-    public async Task RemoveAsync_TakesTheMod_AndLeavesTheOthers()
+    public void Remove_TakesTheMod_AndLeavesTheOthers()
     {
         Seed("hair-aaaaaaaa");
         Seed("eyes-bbbbbbbb");
 
-        var result = await Remover.RemoveAsync("hair-aaaaaaaa");
+        var result = Remover.Remove("hair-aaaaaaaa");
 
         Assert.True(result.IsSuccess);
         Assert.False(_fileSystem.File.Exists(Path.Combine(_root, "hair-aaaaaaaa.mod.json")));
@@ -31,23 +31,23 @@ public sealed class LibraryRemoverTests
     }
 
     [Fact]
-    public async Task RemoveAsync_AnIdNotInTheLibrary_RemovesNothing()
+    public void Remove_AnIdNotInTheLibrary_RemovesNothing()
     {
         _fileSystem.AddFile(Path.Combine(_root, "orphan", "hair.dds"), new MockFileData("x"));
 
-        var result = await Remover.RemoveAsync("orphan");
+        var result = Remover.Remove("orphan");
 
         Assert.Equal(DiagnosticCodes.ModNotInLibrary, result.Error!.Code);
         Assert.True(_fileSystem.Directory.Exists(Path.Combine(_root, "orphan")));
     }
 
     [Fact]
-    public async Task RemoveAsync_AnIdThatLeavesTheLibrary_IsRefused()
+    public void Remove_AnIdThatLeavesTheLibrary_IsRefused()
     {
         var outside = Path.Combine(_appData, "keep.mod.json");
         _fileSystem.AddFile(outside, new MockFileData("{}"));
 
-        var result = await Remover.RemoveAsync("../keep");
+        var result = Remover.Remove("../keep");
 
         Assert.Equal(DiagnosticCodes.ModNotInLibrary, result.Error!.Code);
         Assert.True(_fileSystem.File.Exists(outside));

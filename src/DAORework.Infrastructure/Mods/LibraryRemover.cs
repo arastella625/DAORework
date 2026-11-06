@@ -23,14 +23,13 @@ public sealed class LibraryRemover : IModRemover
         _root = options.Value.LibraryDirectory;
     }
 
-    public Task<Result> RemoveAsync(string modId, CancellationToken cancellationToken = default)
+    public Result Remove(string modId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(modId);
-        cancellationToken.ThrowIfCancellationRequested();
         var metadata = _fileSystem.Path.Combine(_root, modId + LibraryImporter.MetadataSuffix);
         if (_fileSystem.Path.GetFileName(modId) != modId || !_fileSystem.File.Exists(metadata))
         {
-            return Task.FromResult(Result.Failure(new Error(DiagnosticCodes.ModNotInLibrary, $"{modId} is not in the library.")));
+            return Result.Failure(new Error(DiagnosticCodes.ModNotInLibrary, $"{modId} is not in the library."));
         }
 
         try
@@ -39,7 +38,7 @@ public sealed class LibraryRemover : IModRemover
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
-            return Task.FromResult(Result.Failure(new Error(DiagnosticCodes.ModRemoveFailed, $"{modId} could not be removed: {exception.Message}", "Nothing of it was removed.")));
+            return Result.Failure(new Error(DiagnosticCodes.ModRemoveFailed, $"{modId} could not be removed: {exception.Message}", "Nothing of it was removed."));
         }
 
         try
@@ -50,11 +49,11 @@ public sealed class LibraryRemover : IModRemover
                 _fileSystem.Directory.Delete(folder, recursive: true);
             }
 
-            return Task.FromResult(Result.Success());
+            return Result.Success();
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
-            return Task.FromResult(Result.Failure(new Error(DiagnosticCodes.ModRemoveFailed, $"{modId} could not be removed: {exception.Message}", "It has left the Library. Its files may still take up space until you add it again.")));
+            return Result.Failure(new Error(DiagnosticCodes.ModRemoveFailed, $"{modId} could not be removed: {exception.Message}", "It has left the Library. Its files may still take up space until you add it again."));
         }
     }
 }

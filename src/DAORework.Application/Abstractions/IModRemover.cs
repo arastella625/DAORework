@@ -6,5 +6,5 @@ namespace DAORework.Application.Abstractions;
 public interface IModRemover
 {
     /// <summary>Removes the mod's <c>mod.json</c>, then its files.</summary>
-    Task<Result> RemoveAsync(string modId, CancellationToken cancellationToken = default);
+    Result Remove(string modId);
 }

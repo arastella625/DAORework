@@ -39,7 +39,8 @@ public sealed class RemoveCopies
 
         foreach (var id in modIds)
         {
-            var removed = await _remover.RemoveAsync(id, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+            var removed = _remover.Remove(id);
             if (removed.IsFailure)
             {
                 return removed;

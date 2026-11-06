@@ -43,7 +43,7 @@
     <!-- Said once here instead of on every panel (docs/VOICE.md rule 3). -->
     <Border DockPanel.Dock="Bottom" Padding="16,8" Background="{DynamicResource SurfaceBrush}"
             BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
-      <TextBlock Name="UndoPromise" Classes="Secondary" Text="Every change can be undone in History." />
+      <TextBlock Name="UndoPromise" Classes="Secondary" Text="Every change to your game can be undone in History." />
     </Border>
     <controls:Backdrop>
       <TabControl Name="Pages" Margin="8" SelectedIndex="{Binding SelectedPage}" IsEnabled="{Binding !Change.IsRunning}">

@@ -93,6 +93,22 @@ public sealed class KeepCopyScreenTests : IDisposable
     }
 
     [AvaloniaFact]
+    public async Task ACopyTurnedOnAfterThePreview_IsNotRemoved()
+    {
+        var (_, viewModel) = await OpenWithTwoCopiesAsync();
+        var keep = viewModel.ModsTab.KeepCopy;
+        await keep.PlanKeepCommand.ExecuteAsync(Row(viewModel, "Hair Pack"));
+
+        await _scenario.ActivateAsync(viewModel, "Hair Pack Copy");
+        await keep.RemoveOthersCommand.ExecuteAsync(null);
+
+        Assert.True(keep.IsError);
+        Assert.Contains(DiagnosticCodes.ModCopyStillOn, keep.StatusMessage, StringComparison.Ordinal);
+        Assert.Equal(2, viewModel.Library.Mods.Count);
+        Assert.True(Row(viewModel, "Hair Pack Copy").IsActive);
+    }
+
+    [AvaloniaFact]
     public async Task Cancel_RemovesNothing()
     {
         var (_, viewModel) = await OpenWithTwoCopiesAsync();

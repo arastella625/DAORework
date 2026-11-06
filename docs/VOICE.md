@@ -8,7 +8,7 @@ summary follows these rules. The command line keeps its own words; see the end.
    *Activate long-hair-f7b55346*. Name mods by their names, never their ids.
 2. **Details only when asked.** Ids, file lists, sizes, folder paths and diagnostic codes go behind *Details*, in a
    tooltip, or in *Copy details for a bug report*. The first line is what a player needs to decide.
-3. **Say each reassurance once.** The footer says *Every change can be undone*. A preview does not repeat that a
+3. **Say each reassurance once.** The footer says *Every change to your game can be undone*. A preview does not repeat that a
    backup is taken, and a panel does not open with a paragraph of explanation.
 4. **Let messages go.** A success message fades after a few seconds and says what happened (*Turned on Blue Hair.*).
    An error stays until it is dealt with, and its first button fixes it or shows how.
