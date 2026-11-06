@@ -62,6 +62,8 @@ public static class DependencyInjection
         services.AddSingleton<SetNewDownloads>();
         services.AddSingleton<GetNewDownloadsSettings>();
         services.AddSingleton<ReadLoadOrderDetails>();
+        services.AddSingleton<RecordPlay>();
+        services.AddSingleton<ReadPlayChanges>();
         services.AddSingleton<RunDiagnostics>();
         services.AddSingleton<InstallationProbe>();
         services.AddSingleton<DetectInstallations>();

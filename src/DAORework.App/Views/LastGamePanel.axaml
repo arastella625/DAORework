@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DAORework.App.ViewModels"
+             xmlns:controls="using:DAORework.App.Controls"
+             x:Class="DAORework.App.Views.LastGamePanel"
+             x:DataType="vm:LastGameViewModel">
+  <!-- What changed since the last game with other mods (ADR-0043). Going back opens in the sheet with the other previews. -->
+  <controls:Card Margin="12,0,12,12">
+    <StackPanel Spacing="10">
+      <TextBlock Classes="SectionTitle" Text="What changed" />
+      <TextBlock Name="LastGameHeadline" TextWrapping="Wrap" Text="{Binding Headline}" />
+      <ItemsControl Name="LastGameLines" ItemsSource="{Binding Lines}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="x:String">
+            <TextBlock Classes="Secondary" TextWrapping="Wrap" Text="{Binding}" />
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+      <TextBlock Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" TextWrapping="Wrap"
+                 IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+      <Button Name="GoBackButton" Content="Go back to those mods" Command="{Binding GoBackCommand}" />
+    </StackPanel>
+  </controls:Card>
+</UserControl>

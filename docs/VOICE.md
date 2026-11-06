@@ -31,6 +31,7 @@ summary follows these rules. The command line keeps its own words; see the end.
 | Could break quests, Only looks | High risk, cosmetic | How a shared file is ranked by its kind (P2.6-54). Always *could*: a kind of file can't prove it. |
 | Also in, Keep ZDF Complete | Subset, contained mod | A mod inside a bigger one ([ADR-0041](adr/0041-mods-inside-mods.md)). *Looks to be in* when an archive was compared by name. |
 | Find the problem mod, Round, Still happening, It's gone, Put everything back | Bisect, binary search, a bare Yes / No | Finding which mod causes a problem ([ADR-0042](adr/0042-finding-the-problem-mod.md)). Each answer says what it means: *Yes, still happening. The problem is in the 44 still on*. |
+| What changed, If your game last worked | Last known good, snapshot | The last game with other mods ([ADR-0043](adr/0043-last-known-good.md)). Always *if*: DAORework can't see whether it worked. |
 | Who wins, Swap | Conflict resolution | Mods with different files of the same name, in a *Manage* preview. |
 | Found in your game | Installed by hand, unmanaged | A tag on the mod, and a filter. |
 | Undo, Undo to here | Roll back, Roll back to before this | *Undo* is always confirmed first. |

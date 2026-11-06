@@ -1,7 +1,7 @@
 namespace DAORework.App.ViewModels;
 
 /// <summary>What the Library's rows and buttons reach for, grouped so the Mods tab stays within five dependencies (ENGINEERING_STANDARDS §3).</summary>
-public sealed class LibraryActionsViewModel(ModPageViewModel modPage, LookFirstViewModel lookFirst, KeepCopyViewModel keepCopy, KeepEachViewModel keepEach, ProblemSearchViewModel problemSearch)
+public sealed class LibraryActionsViewModel(ModPageViewModel modPage, LookFirstViewModel lookFirst, KeepCopyViewModel keepCopy, KeepEachViewModel keepEach, TroubleshootingViewModel troubleshooting)
 {
     public ModPageViewModel ModPage { get; } = modPage;
 
@@ -11,5 +11,5 @@ public sealed class LibraryActionsViewModel(ModPageViewModel modPage, LookFirstV
 
     public KeepEachViewModel KeepEach { get; } = keepEach;
 
-    public ProblemSearchViewModel ProblemSearch { get; } = problemSearch;
+    public TroubleshootingViewModel Troubleshooting { get; } = troubleshooting;
 }

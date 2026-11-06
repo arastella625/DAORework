@@ -30,6 +30,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
     {
         Profiles = profiles;
         Launch = launch;
+        Launch.AfterPlayAsync = token => ModsTab.LastGame.RefreshAsync(token);
         Pages = pages;
         Settings = settings;
         Home = home;

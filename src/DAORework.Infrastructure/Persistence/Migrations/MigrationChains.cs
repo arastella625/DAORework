@@ -28,6 +28,9 @@ public static class MigrationChains
     /// <summary>Gets the chain for a search for the problem mod, new at version 1 (ADR-0042).</summary>
     public static JsonMigrationChain ProblemSearches { get; } = new(ProblemSearch.CurrentSchemaVersion, new UnchangedMigration(0));
 
+    /// <summary>Gets the chain for a list of recent games, new at version 1 (ADR-0043).</summary>
+    public static JsonMigrationChain PlayHistories { get; } = new(PlayHistory.CurrentSchemaVersion, new UnchangedMigration(0));
+
     /// <summary>Gets the chain for <c>new-downloads.json</c>, new at version 1 (ADR-0034).</summary>
     public static JsonMigrationChain NewDownloads { get; } = new(NewDownloadsSettings.CurrentSchemaVersion, new UnchangedMigration(0));
 

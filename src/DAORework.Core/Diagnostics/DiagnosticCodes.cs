@@ -145,6 +145,9 @@ public static class DiagnosticCodes
     // P2.6-56: finding the problem mod (ADR-0042).
     public const string ModSearchUnreadable = "DAO_MOD_SEARCH_UNREADABLE";
 
+    // P2.6-57: what changed since the last game (ADR-0043).
+    public const string PlayHistoryUnreadable = "DAO_PLAY_HISTORY_UNREADABLE";
+
     // P2.5-12: mod safety (ADR-0018).
     public const string ModSafetyThreatFound = "DAO_MOD_SAFETY_THREAT_FOUND";
     public const string ModSafetyDownloadDiffers = "DAO_MOD_SAFETY_DOWNLOAD_DIFFERS";

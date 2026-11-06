@@ -26,7 +26,8 @@ public sealed class ModsTabViewModel
         KeepCopy = actions.KeepCopy;
         library.FindInside = KeepCopy.FindInside;
         KeepEach = actions.KeepEach;
-        ProblemSearch = actions.ProblemSearch;
+        ProblemSearch = actions.Troubleshooting.ProblemSearch;
+        LastGame = actions.Troubleshooting.LastGame;
         HandInstalled = handInstalled;
         Library = library;
         Activation = deployed.Activation;
@@ -80,6 +81,9 @@ public sealed class ModsTabViewModel
 
     /// <summary>Gets <i>Keep one of each</i> (ADR-0039).</summary>
     public KeepEachViewModel KeepEach { get; }
+
+    /// <summary>Gets what changed since the last game with other mods (ADR-0043).</summary>
+    public LastGameViewModel LastGame { get; }
 
     /// <summary>Gets <i>Find the problem mod</i> (ADR-0042).</summary>
     public ProblemSearchViewModel ProblemSearch { get; }
@@ -139,6 +143,7 @@ public sealed class ModsTabViewModel
         await Handover.LoadAsync(profileName, cancellationToken);
         await NewDownloads.LoadAsync(cancellationToken);
         await ProblemSearch.LoadAsync(profileName, cancellationToken);
+        await LastGame.LoadAsync(profileName, cancellationToken);
     }
 
     /// <summary>Only one can be open: a preview made before the other ran could remove the copy the other keeps (ADR-0039).</summary>
@@ -150,6 +155,9 @@ public sealed class ModsTabViewModel
         ProblemSearch.ActiveMods = () => Activation.ActiveModIds;
         ProblemSearch.LooksOnly = () => [.. Library.Mods.Where(m => m.OnlyLooks).Select(m => m.Id)];
         ProblemSearch.Preview.NameOf = NameOf;
+        LastGame.AfterChangeAsync = RefreshAfterChangeAsync;
+        LastGame.Preview.NameOf = NameOf;
+        LastGame.InLibrary = id => Library.Mods.Any(m => string.Equals(m.Id, id, StringComparison.OrdinalIgnoreCase));
         KeepCopy.Preview.NameOf = NameOf;
         KeepEach.Preview.NameOf = NameOf;
         CloseWhenOpened(KeepCopy.Preview, KeepEach.CancelCommand);
@@ -184,6 +192,7 @@ public sealed class ModsTabViewModel
         line.Watch(KeepCopy, "Working out what to keep");
         line.Watch(KeepEach, "Working out what to keep");
         line.Watch(ProblemSearch, "Working out the next round");
+        line.Watch(LastGame, "Working out what changed");
         return line;
     }
 
@@ -213,5 +222,6 @@ public sealed class ModsTabViewModel
         await LoadOrder.RefreshAsync(cancellationToken);
         await HandInstalled.RefreshAsync(cancellationToken);
         await Handover.RefreshAsync(cancellationToken);
+        await LastGame.RefreshAsync(cancellationToken);
     }
 }

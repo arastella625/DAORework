@@ -50,6 +50,15 @@
         </MultiBinding>
       </views:ProblemSearchPanel.IsVisible>
     </views:ProblemSearchPanel>
+    <views:LastGamePanel DataContext="{Binding LastGame}">
+      <views:LastGamePanel.IsVisible>
+        <MultiBinding Converter="{x:Static BoolConverters.And}">
+          <Binding Path="$parent[views:ModsListPanel].((vm:ModsTabViewModel)DataContext).Filter.ShowsCombined" />
+          <Binding Path="Headline" Converter="{x:Static ObjectConverters.IsNotNull}" />
+          <Binding Path="$parent[views:ModsListPanel].((vm:ModsTabViewModel)DataContext).ProblemSearch.IsIdle" />
+        </MultiBinding>
+      </views:LastGamePanel.IsVisible>
+    </views:LastGamePanel>
 
     <WrapPanel Margin="12,0" DataContext="{Binding Filter}" x:DataType="vm:ModListFilter">
       <StackPanel Orientation="Horizontal" Spacing="14" Margin="0,0,24,0" IsVisible="{Binding !Arranging}">

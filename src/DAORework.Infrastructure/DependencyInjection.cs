@@ -62,6 +62,7 @@ public static class DependencyInjection
         services.AddSingleton<IHandInstalledModsReader, HandInstalledModsReader>();
         services.AddSingleton<IVortexHandoverStore, JsonVortexHandoverStore>();
         services.AddSingleton<IProblemSearchStore, JsonProblemSearchStore>();
+        services.AddSingleton<IPlayHistoryStore, JsonPlayHistoryStore>();
         services.AddSingleton<IDownloadsFolder, FolderDownloads>();
         services.AddSingleton<IErfContentsReader, LibraryErfContents>();
         services.AddSingleton<INewDownloadsStore, JsonNewDownloadsStore>();
