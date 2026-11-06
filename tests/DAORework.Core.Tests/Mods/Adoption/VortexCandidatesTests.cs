@@ -25,6 +25,14 @@ public sealed class VortexCandidatesTests
         Assert.Equal(name, VortexModNames.Display(folder));
 
     [Fact]
+    public void Scan_AVortexModWithOnlyAReadmeLeft_IsNoMod_AndIsNotOfferedAsLooseFiles()
+    {
+        var snapshot = Snapshot(folders: [], loose: ["readme.txt"], new VortexRecord([Placed("readme.txt", Hairs)]));
+
+        Assert.Empty(Scan(snapshot).Candidates);
+    }
+
+    [Fact]
     public void Scan_EachVortexMod_IsACandidateOfItsFilesWhereverTheySit_AndTheyLeaveTheFolderAndLooseFiles()
     {
         var snapshot = Snapshot(

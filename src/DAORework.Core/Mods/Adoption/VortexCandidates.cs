@@ -21,6 +21,11 @@ internal static class VortexCandidates
             foreach (var mod in byMod)
             {
                 var files = mod.Select(f => present[f.Path]).OrderBy(f => f.Path, StringComparer.Ordinal).ToList();
+                if (files.TrueForAll(f => NonModFiles.Is(f.Path)))
+                {
+                    continue; // A readme left behind isn't a mod (ADR-0036). It stays claimed, so it isn't offered as loose files either.
+                }
+
                 candidates.Add(new AdoptionCandidate(
                     AdoptionIds.VortexMod(mod.Key),
                     AdoptionCandidateKind.VortexMod,

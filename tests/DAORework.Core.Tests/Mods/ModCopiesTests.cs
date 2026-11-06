@@ -8,6 +8,48 @@ public sealed class ModCopiesTests
     private static readonly DateTimeOffset _day = new(2026, 11, 4, 12, 0, 0, TimeSpan.Zero);
 
     [Fact]
+    public void Find_AnEntryWithOnlyAReadme_IsPartOfTheModOfItsName()
+    {
+        var whole = Named("whole", "Fantasy", ("hair.dds", "aa"), ("readme.txt", "bb"));
+        var readme = Named("readme", "Fantasy", ("for chargenmorphcfg.txt", "cc"));
+
+        var copies = ModCopies.Find([whole, readme]);
+
+        Assert.True(copies["whole"].HoldsAll);
+        Assert.True(copies["readme"].IsPart);
+        Assert.Equal(copies["whole"].Group, copies["readme"].Group);
+    }
+
+    [Fact]
+    public void Find_AMacLeftoverUnderAnotherSpelling_IsPartToo()
+    {
+        var copies = ModCopies.Find([Named("whole", "Additional Hairs for DA (Part 1)", ("hair.dds", "aa")), Named("left", "Additional Hairs for DA Part 1", (".DS_Store", "cc"))]);
+
+        Assert.True(copies["left"].IsPart);
+    }
+
+    [Fact]
+    public void Find_TwoDifferentModsOfOneName_ShareALeftoverOnlyOnce()
+    {
+        var copies = ModCopies.Find([Named("v1", "Fantasy", ("a.dds", "aa")), Named("v2", "Fantasy", ("b.dds", "bb")), Named("readme", "Fantasy", ("readme.txt", "cc"))]);
+
+        Assert.Equal(2, copies.Count);
+        Assert.Equal(copies["readme"].Group, copies.Single(c => c.Key != "readme").Value.Group);
+    }
+
+    [Fact]
+    public void Find_NamesWithNoLettersInThem_DoNotMatch()
+    {
+        Assert.Empty(ModCopies.Find([Named("whole", "!!!", ("a.dds", "aa")), Named("left", "---", ("readme.txt", "cc"))]));
+    }
+
+    [Fact]
+    public void Find_AReadmeWithNoModOfItsName_IsLeftAlone()
+    {
+        Assert.Empty(ModCopies.Find([Named("whole", "Fantasy", ("hair.dds", "aa")), Named("readme", "Something Else", ("readme.txt", "cc"))]));
+    }
+
+    [Fact]
     public void Find_AddInsWithOneUid_AreCopiesEvenWithDifferentFiles_NewestFirst()
     {
         var older = Entry("older", 0, "Dog_UID", ("Contents/a.gda", "1"));
@@ -61,6 +103,9 @@ public sealed class ModCopiesTests
 
         Assert.Empty(copies);
     }
+
+    private static LibraryEntry Named(string id, string name, params (string Path, string Sha)[] files) =>
+        new(new LibraryMod(id, name, ModKind.Override, [.. files.Select(f => new LibraryModFile(f.Path, 1, f.Sha))]), "source", "sha", DateTimeOffset.UnixEpoch);
 
     private static LibraryEntry Entry(string id, int days, string? uid, params (string Path, string Sha)[] files)
     {

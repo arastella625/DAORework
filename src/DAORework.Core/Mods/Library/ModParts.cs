@@ -36,7 +36,8 @@ internal static class ModParts
         return key;
     }
 
-    private static string Plain(string name) =>
+    /// <summary>A mod's name without punctuation or letter case, so two spellings of one name match.</summary>
+    internal static string Plain(string name) =>
         string.Concat(ModDisplayName.For(name).Where(char.IsLetterOrDigit).Select(char.ToLowerInvariant));
 
     private sealed record Candidate(string Key, HashSet<string> Files, HashSet<string> Names, bool IsOn)

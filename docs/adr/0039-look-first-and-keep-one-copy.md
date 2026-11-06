@@ -74,6 +74,8 @@ record that names a mod needs that mod to plan anything, and a moved file can co
   there says the mod isn't in the Library, and adding the same download again settles it.
 - A swap copies the kept mod and backs up the removed copy, like any change, though that backup can't be used without
   adding the copy again. Moving the files instead would save both. Until then, keeping the copy that is on costs nothing.
+- An entry with nothing for the game, only a readme or a Mac leftover, is part of the mod of its name, so it goes with
+  the other copies (P2.6-52). Such entries came from *Take them over*, which no longer makes them.
 - The window comes first. `mods keep` for the command line is a later task.
 - With 51 sets the sheet scrolls its list, as ADR-0038's does, and takes most of a small window. The total, what differs
   and the buttons stay in view, and the mods list keeps what is left.
