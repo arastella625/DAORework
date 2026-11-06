@@ -192,9 +192,8 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
             return;
         }
 
-        var request = new PlanAdoptionRequest(string.Empty, [.. candidates.Select(m => m.Candidate!)], LooseFilesName) { SkipFailures = candidates.Count > 1 };
         if (!(await ProfileDocuments.ForAsync(_getProfile, ProfileName, cancellationToken)).TryGetValue(out var documents, out var error)
-            || !(await _plan.ExecuteAsync(request with { DocumentsDirectory = documents }, cancellationToken)).TryGetValue(out var plan, out error))
+            || !(await _plan.ExecuteAsync(new PlanAdoptionRequest(documents, [.. candidates.Select(m => m.Candidate!)], LooseFilesName) { SkipFailures = candidates.Count > 1 }, cancellationToken)).TryGetValue(out var plan, out error))
         {
             ReportError(error);
             return;
