@@ -1,5 +1,4 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using DAORework.Application.Mods.Apply;
 using DAORework.Application.Mods.Changes;
 using DAORework.Application.Profiles;
 using DAORework.Core.Common;
@@ -19,8 +18,8 @@ public sealed partial class ModChangesViewModel : RecoverableChangesViewModel
     private readonly GetProfile _getProfile;
     private readonly GetModStatus _status;
 
-    public ModChangesViewModel(GetProfile getProfile, GetModStatus status, ChangeInProgress change, RecoverModPlan recover, ILogger<ModChangesViewModel> logger)
-        : base(change, recover, logger)
+    public ModChangesViewModel(GetProfile getProfile, GetModStatus status, ChangeInProgress change, ILogger<ModChangesViewModel> logger)
+        : base(change, logger)
     {
         _getProfile = getProfile;
         _status = status;

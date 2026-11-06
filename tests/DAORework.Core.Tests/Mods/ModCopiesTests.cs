@@ -42,6 +42,8 @@ public sealed class ModCopiesTests
         var copies = ModCopies.Find([fromTheFolder, fromInsideIt]);
 
         Assert.Equal(2, copies.Count);
+        Assert.Equal("Anto Hairstyles 2", copies["Anto Hairstyles"].AlsoNamed);
+        Assert.Equal("Anto Hairstyles", copies["Anto Hairstyles 2"].AlsoNamed);
     }
 
     [Fact]

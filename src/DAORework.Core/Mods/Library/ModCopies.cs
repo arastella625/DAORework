@@ -22,7 +22,11 @@ public static class ModCopies
             var newestFirst = group.OrderByDescending(e => e.ImportedAtUtc).ThenBy(e => e.Mod.Id, StringComparer.Ordinal).ToList();
             for (var rank = 0; rank < newestFirst.Count; rank++)
             {
-                copies[newestFirst[rank].Mod.Id] = new ModCopy(group.Key, rank, newestFirst.Count);
+                var mod = newestFirst[rank].Mod;
+                copies[mod.Id] = new ModCopy(group.Key, rank, newestFirst.Count)
+                {
+                    AlsoNamed = newestFirst.Select(e => e.Mod.Name).FirstOrDefault(n => !StringComparer.OrdinalIgnoreCase.Equals(n, mod.Name)),
+                };
             }
         }
 
