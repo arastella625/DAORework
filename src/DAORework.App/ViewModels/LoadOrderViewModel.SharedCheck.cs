@@ -16,7 +16,7 @@ public sealed partial class LoadOrderViewModel
     /// <summary>Gets what <i>Combined files</i> says in place of an answer, or null once there is one.</summary>
     public string? SharedCheckNote => SharedCheck switch
     {
-        SharedFilesCheck.Checking => "Still checking which files your mods share. The first look can take a minute.",
+        SharedFilesCheck.Checking => "Still checking which files your mods share. This can take a minute.",
         SharedFilesCheck.Failed => "Couldn't check which files your mods share.",
         _ => null,
     };

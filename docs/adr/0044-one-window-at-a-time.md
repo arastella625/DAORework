@@ -22,6 +22,9 @@ to appear can do this without knowing.
 - A copy run as administrator holds a name an ordinary copy can't open. That reads as already open, which is true.
 - The second copy doesn't bring the first to the front. That needs a way to talk between copies, and can come later.
 - `dao` running beside the window is still possible.
+- The name is per Windows session, so one person signed in twice on one PC can still open two.
+- On Linux a named mutex lives in a shared folder that can belong to someone else, and any refusal reads as already open.
+  Phase 2.7 must check this before the window ships there.
 
 ## Alternatives considered
 - A lock file: it can be left behind, or fail for reasons that have nothing to do with another copy.

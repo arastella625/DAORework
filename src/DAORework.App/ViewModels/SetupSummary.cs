@@ -96,7 +96,7 @@ public sealed partial class SetupSummary : ObservableObject
             (true, _, _) => "Your mods will show here once you've added some.",
             (_, _, true) => "Some mods in your game aren't looked after by DAORework yet.",
             (_, true, _) => "Your add-ins, override mods and combined files are all set.",
-            _ when checking => "Seeing which files your mods share. The first look can take a minute.",
+            _ when checking => "Seeing which files your mods share. This can take a minute.",
             _ when check == SharedFilesCheck.Failed => "DAORework couldn't check which files your mods share. Combined files says why.",
             _ => "Some mods change the same file. Arrange them to choose which one wins.",
         };

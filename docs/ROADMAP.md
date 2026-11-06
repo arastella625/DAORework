@@ -518,10 +518,10 @@ with a diagnosis and a way forward, not leave a player stuck. The owner saw a ra
 - P2.6-54 Rank the problems: shared files are counted and ordered by what can go wrong, a file inside an archive says what to do, and `alistair_main.dlg` reads as Alistair's conversation.
 - P2.6-55 Mods that contain each other: a mod whose files are all in a bigger one says so and offers to keep that one, looking inside `.erf` files ([ADR-0041](adr/0041-mods-inside-mods.md)).
 - P2.6-56 Find the problem mod: half the mods go off each round, the player plays and answers, until one is left, about 8 rounds for 137 mods. Every step is a preview with Undo, and everything goes back ([ADR-0042](adr/0042-finding-the-problem-mod.md)).
+- P2.6-57 What changed: each *Play* records the exact mods, and the window says what's new since the last game with other mods, with *Go back to those mods* ([ADR-0043](adr/0043-last-known-good.md)).
 - P2.6-61 Nothing says all is well before it's known: until the files mods share have been read, the cards say *Checking*, not *Ready*, and *Combined files* doesn't say none are shared. On the owner's library that read took up to 95 seconds, and the window said *Everything is in place* over 41 files that could break quests.
 - P2.6-62 One window at a time: a second copy says *DAORework is already open* and closes ([ADR-0044](adr/0044-one-window-at-a-time.md)).
 - P2.6-63 *Find the problem mod* within reach: it was only behind the *Combined files* card, which can say *None needed*. Home and the Mods tab now have a button for it.
-- P2.6-57 What changed: each *Play* records the exact mods, and the window says what's new since the last game with other mods, with *Go back to those mods* ([ADR-0043](adr/0043-last-known-good.md)).
 
 **Feeling quick** *(added 2026-11-06, the owner's wish, from clearing copies on a messy real library)*. Buttons don't
 always highlight, and during a wait it isn't clear whether to wait or press again. Measured on `RealScaleLibrary` (138 mods,

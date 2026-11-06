@@ -1,6 +1,8 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using DAORework.App.ViewModels;
 using DAORework.App.Views;
@@ -133,6 +135,25 @@ public sealed class SharedCheckScreenTests : IDisposable
 
         Assert.Equal(MainWindowViewModel.ModsPage, viewModel.SelectedPage);
         Assert.True(viewModel.ModsTab.Filter.ShowsCombined);
+    }
+
+    [AvaloniaFact]
+    public async Task FromFarDownTheList_ItComesIntoView()
+    {
+        var (window, viewModel) = await new RealScaleScenario(_host).OpenAsync();
+        var page = window.GetVisualDescendants().OfType<ModsListPanel>().First().FindAncestorOfType<ScrollViewer>()!;
+        page.Offset = new Vector(0, 3000);
+        window.UpdateLayout();
+        Assert.True(page.Offset.Y > 1000);
+
+        viewModel.SelectedPage = MainWindowViewModel.HomePage;
+        window.UpdateLayout();
+        await viewModel.Home.OpenCommand.ExecuteAsync(HomeTarget.ModsCombined);
+        window.UpdateLayout();
+        Dispatcher.UIThread.RunJobs();
+        window.UpdateLayout();
+
+        Assert.True(page.Offset.Y < 500, $"Still {page.Offset.Y} down the page.");
     }
 
     [AvaloniaFact]
