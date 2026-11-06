@@ -9,6 +9,9 @@ internal sealed record GateScenario(string Name, string Group, bool OnInstall, I
 {
     public static GateScenario Activate { get; } = new("activate two mods", "mods", false, [], ["mods", "activate", "{addin}", "{override}", "-p", GateFixtures.Profile, "--yes"]);
 
+    /// <summary>Gets turning on a mod whose files are already in the game, which moves them and deletes a second copy (ADR-0037).</summary>
+    public static GateScenario ActivateTakingOver { get; } = new("activate a mod already in the game", "mods", false, [], ["mods", "activate", "{taken-over}", "-p", GateFixtures.Profile, "--yes"]);
+
     public static GateScenario Deactivate { get; } = new(
         "deactivate the add-in",
         "mods",

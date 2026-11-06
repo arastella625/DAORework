@@ -33,6 +33,11 @@ internal static partial class GateFixtures
             ("Contents/addins/gate_addin/a2.gda", Content(3, 1_000))));
         Write(Path.Combine(folders.Downloads, "Gate Textures.zip"), Zip(("textures/t0.dds", Content(4, 90_000)), ("textures/t1.dds", Content(5, 2_000))));
         Write(Path.Combine(folders.Downloads, "Gate Textures HD.zip"), Zip(("textures/t0.dds", Content(6, 120_000))));
+        Write(Path.Combine(folders.Downloads, "Gate Taken Over.zip"), Zip(
+            ("over0.dds", Content(20, 60_000)),
+            ("over1.dds", Content(21, 40_000)),
+            ("over2.dds", Content(22, 20_000)),
+            ("over3.dds", Content(23, 1_000))));
         foreach (var version in new[] { "2.2", "2.3" })
         {
             Write(Path.Combine(folders.Downloads, $"dxvk-{version}.zip"), Zip(
@@ -48,6 +53,7 @@ internal static partial class GateFixtures
             ["{addin}"] = Import(folders, "addin.dazip"),
             ["{override}"] = Import(folders, "Gate Textures.zip"),
             ["{override-hd}"] = Import(folders, "Gate Textures HD.zip"),
+            ["{taken-over}"] = Import(folders, "Gate Taken Over.zip"),
             ["{dxvk-2.2}"] = Path.Combine(folders.Downloads, "dxvk-2.2.zip"),
             ["{dxvk-2.3}"] = Path.Combine(folders.Downloads, "dxvk-2.3.zip"),
         };
@@ -77,6 +83,11 @@ internal static partial class GateFixtures
         Write(Path.Combine(overrideFolder, "Hand Hair", "textures", "hair.dds"), Content(12, 80_000));
         Write(Path.Combine(overrideFolder, "Hand Hair", "brow.dds"), Content(13, 2_000));
         Write(Path.Combine(overrideFolder, "Hand Hair Alt", "hair.dds"), Content(14, 50_000));
+        Write(Path.Combine(overrideFolder, "Old Copy", "over0.dds"), Content(20, 60_000));
+        Write(Path.Combine(overrideFolder, "Old Copy", "over1.dds"), Content(21, 40_000));
+        Write(Path.Combine(overrideFolder, "Old Copy", "over2.dds"), Content(22, 20_000));
+        Write(Path.Combine(overrideFolder, "Old Copy", "over3.dds"), Content(23, 1_000));
+        Write(Path.Combine(overrideFolder, "Older Copy", "over3.dds"), Content(23, 1_000));
         Write(Path.Combine(overrideFolder, "loose0.uti"), Content(15, 3_000));
         Write(Path.Combine(overrideFolder, "loose1.uti"), Content(16, 500));
     }
