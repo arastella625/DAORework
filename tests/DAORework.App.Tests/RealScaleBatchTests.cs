@@ -1,4 +1,5 @@
 using Avalonia.Headless.XUnit;
+using DAORework.App.Views;
 using Xunit;
 
 namespace DAORework.App.Tests;
@@ -43,5 +44,23 @@ public sealed class RealScaleBatchTests : IDisposable
         Assert.False(activation.IsError, activation.StatusMessage);
         Assert.StartsWith("Turned on 58 mods. 4 need a look.", activation.StatusMessage, StringComparison.Ordinal);
         Assert.False(viewModel.ModsTab.Changes.ChangeUnfinished);
+    }
+
+    [AvaloniaFact]
+    public async Task CombinedFiles_WithNearlyEveryModOn_SaysWhatMatters_MostSeriousFirst()
+    {
+        var (window, viewModel) = await _scenario.OpenAsync();
+        var activation = viewModel.ModsTab.Activation;
+        await RealScaleScenario.TurnOnEverythingAsync(viewModel);
+        await activation.LeaveOutCommand.ExecuteAsync(null);
+        await activation.ApplyCommand.ExecuteAsync(null);
+        var order = viewModel.ModsTab.LoadOrder;
+
+        Assert.Contains("only change how things look", order.SharedSummary, StringComparison.Ordinal);
+        var impacts = order.SharedRows.Where(r => !r.SameContent).Select(r => r.Impact).ToList();
+        Assert.NotEmpty(impacts);
+        Assert.Equal(impacts.Order(), impacts);
+        ModsTabScenario.Show<CombinedFilesPanel>(window);
+        Screenshots.Save(window, "real-scale-combined-ranked");
     }
 }

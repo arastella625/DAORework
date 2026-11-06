@@ -7,6 +7,7 @@ All notable changes to DAORework are recorded here. The format follows
 ## [Unreleased]
 
 ### Changed
+- *Combined files* and big previews say what matters (P2.6-54): "3 could break quests, 47 only change how things look". Those that could break quests come first, a file inside an archive says what you can do about it, and a file like `alistair_main.dlg` reads as Alistair's conversation.
 - A batch goes on without what fails (P2.6-53). *Take them over*, *Turn on selected* and adding several downloads carry on when one mod can't, and say which one and why: "Turned on 53 mods. Blue Hair needs a look: ...". If one mod's file stops a change partway, the change is put back and the rest come back as a preview without that mod. *Keep one of each* removes what it can instead of stopping at the first it can't.
 - A preview of mods to manage offers *Leave out* (P2.6-53), as turning on already did.
 

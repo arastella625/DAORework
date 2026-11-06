@@ -29,6 +29,7 @@ public sealed class PlanNotesTests
         Assert.Equal(
             [
                 "300 files are in more than one mod. For each one, the mod lower in the order wins.",
+                "300 only change how things look.",
                 "armor wins over pack: 300 textures and models.",
             ],
             notes);
@@ -43,7 +44,7 @@ public sealed class PlanNotesTests
             Mods.Override("rules", "abi_base.gda#1", "party.ncs#1", "x.dds#y"),
             Mods.Override("talents", "abi_base.gda#2", "party.ncs#2"));
 
-        Assert.Equal("2 of them are data tables, scripts or talk tables, where a mod's changes are lost. Look for a compatibility patch.", notes[1]);
+        Assert.Equal("2 could break quests and 51 only change how things look. For what could break quests, look for a compatibility patch.", notes[1]);
         Assert.Equal("talents wins over rules: 1 data table and 1 script.", notes[2]);
         Assert.Equal("armor wins over pack: 50 textures and models.", notes[3]);
     }
@@ -55,7 +56,7 @@ public sealed class PlanNotesTests
 
         var notes = Notes(mods);
 
-        Assert.Equal(5, notes.Count);
+        Assert.Equal(6, notes.Count);
         Assert.Equal("7 more sets of mods share files. Show details lists them.", notes[^1]);
     }
 
@@ -64,7 +65,7 @@ public sealed class PlanNotesTests
     {
         var mods = Enumerable.Range(0, 8).Select(i => Mods.Override($"m{i}", Textures(10, i.ToString(System.Globalization.CultureInfo.InvariantCulture)))).ToArray();
 
-        Assert.Equal("m7 wins over m0, m1, m2 and 4 more: 10 textures and models.", Notes(mods)[1]);
+        Assert.Equal("m7 wins over m0, m1, m2 and 4 more: 10 textures and models.", Notes(mods)[2]);
     }
 
     [Fact]
