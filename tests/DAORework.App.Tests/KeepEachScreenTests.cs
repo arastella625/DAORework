@@ -93,7 +93,7 @@ public sealed class KeepEachScreenTests : IDisposable
         Assert.Equal("Keep one of each", keep.Preview.Title);
         Assert.StartsWith("Removes 2 copies of 2 mods from your Library", keep.Preview.Summary, StringComparison.Ordinal);
         Assert.Equal("Remove 2 copies", keep.RemoveLabel);
-        Assert.Contains(keep.Preview.Notes, n => n.StartsWith("It goes to the Recycle Bin.", StringComparison.Ordinal));
+        Assert.Contains(keep.Preview.Notes, n => n.StartsWith("Removed copies go to the Recycle Bin.", StringComparison.Ordinal));
         Assert.Equal(2, keep.Preview.Lines.Count);
         Assert.Equal("Eyes Copy.zip, on, newest", Set(keep, "Eyes").Pick!.Label);
         Assert.Equal("Hair Pack", Set(keep, "Hair Pack").Choices[1].Label);
@@ -156,7 +156,7 @@ public sealed class KeepEachScreenTests : IDisposable
 
         Assert.Equal("Nothing is removed, since every copy stays.", keep.Preview.Summary);
         Assert.False(keep.CanRemove);
-        Assert.DoesNotContain(keep.Preview.Notes, n => n.StartsWith("It goes to the Recycle Bin.", StringComparison.Ordinal));
+        Assert.DoesNotContain(keep.Preview.Notes, n => n.StartsWith("Removed copies go to the Recycle Bin.", StringComparison.Ordinal));
     }
 
     [AvaloniaFact]

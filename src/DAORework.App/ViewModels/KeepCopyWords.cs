@@ -10,7 +10,7 @@ internal static class KeepCopyWords
 
     /// <summary>The warning, for any copy: a change it was part of can't be undone without it, whether or not it is on now.</summary>
     public static string Warning(bool recycled) => recycled
-        ? "It goes to the Recycle Bin. History can't go back to a time a removed copy was on until you put it back, or add the same download again."
+        ? "Removed copies go to the Recycle Bin. History can't go back to a time one was on until you put it back, or add the same download again."
         : "Removing can't be undone. History can't go back to a time a removed copy was on, unless you add the same download again.";
 
     /// <summary>What happens to the space: the Recycle Bin keeps it until it is emptied.</summary>

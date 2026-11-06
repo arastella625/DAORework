@@ -71,7 +71,8 @@ record that names a mod needs that mod to plan anything, and a moved file can co
 - A file only in a removed copy can't be restored by an older *Undo* until the copy is back. It fails with the existing
   message and changes nothing. The preview lists those files first.
 - The Recycle Bin keeps the space until it is emptied, so the preview says the space comes back then. Windows may delete
-  a folder too big for the Recycle Bin outright, and the shell gives no way to tell.
+  a folder outright when it is too big for the Recycle Bin, or the drive has it turned off, and gives no way to tell.
+- If a locked file stops a send, Windows may show its own error box, and the change waits for the player's answer.
 - The swap is an existing kind of change, so ADR-0014 needs no new gate scenario. Removal touches only the Library, and
   its order is covered by tests.
 - A copy on in a folder no profile names any more can't be seen, since records can't be listed. Pointing a profile back
