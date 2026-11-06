@@ -34,6 +34,25 @@ public sealed class ModCopiesTests
     }
 
     [Fact]
+    public void Find_TheSameModManagedFromInsideItsFolder_IsACopy_UnderAnyName()
+    {
+        var fromTheFolder = Entry("Anto Hairstyles", 0, null, ("Anto Hairstyles/Coolsims/df/hair.mmh", "1"), ("Anto Hairstyles/Coolsims/df/hair.dds", "2"));
+        var fromInsideIt = Entry("Anto Hairstyles 2", 1, null, ("Coolsims/df/hair.dds", "2"), ("Coolsims/df/hair.mmh", "1"));
+
+        var copies = ModCopies.Find([fromTheFolder, fromInsideIt]);
+
+        Assert.Equal(2, copies.Count);
+    }
+
+    [Fact]
+    public void Find_TheSameContentUnderDifferentFileNames_IsNotACopy()
+    {
+        var copies = ModCopies.Find([Entry("red", 0, null, ("red_hair.dds", "1")), Entry("blue", 1, null, ("blue_hair.dds", "1"))]);
+
+        Assert.Empty(copies);
+    }
+
+    [Fact]
     public void Find_ModsWithNothingForTheGame_AreNotCopies()
     {
         var copies = ModCopies.Find([Entry("a", 0, null, ("readme.txt", "a")), Entry("b", 1, null, ("readme.txt", "a"))]);
