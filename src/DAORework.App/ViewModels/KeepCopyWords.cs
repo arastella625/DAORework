@@ -6,6 +6,9 @@ namespace DAORework.App.ViewModels;
 /// <summary>What the <i>Keep this one</i> preview says about what can't come back (ADR-0039).</summary>
 internal static class KeepCopyWords
 {
+    /// <summary>The warning, for any copy: a change it was part of can't be undone without it, whether or not it is on now.</summary>
+    public const string Permanent = "Removing can't be undone. History can't go back to a time this copy was on, unless you add the same download again.";
+
     private const int NamesShown = 5;
 
     /// <summary>What goes, by name when there's one and its name tells it from the kept copy.</summary>
@@ -26,10 +29,6 @@ internal static class KeepCopyWords
         ArgumentNullException.ThrowIfNull(entry);
         return $"Removes {ModDisplayName.For(entry.Mod.Name)}, {new ByteSize(entry.SizeBytes)}, added from {entry.SourceName}";
     }
-
-    public static string Permanent(bool swapped) => swapped
-        ? "Removing can't be undone, and History can't go back past this until you add the copy again."
-        : "Removing can't be undone. You can add the mod again from its download.";
 
     /// <summary>What goes for good, or null when the kept copy holds it all.</summary>
     public static string? Lost(IReadOnlyList<string> onlyInRemoved)

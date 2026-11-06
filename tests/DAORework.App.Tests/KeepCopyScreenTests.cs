@@ -51,6 +51,48 @@ public sealed class KeepCopyScreenTests : IDisposable
     }
 
     [AvaloniaFact]
+    public async Task AnAddInCopyThatIsOn_IsSwappedInPlace_WithItsEntryKept()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        await ImportAddInAsync(viewModel, "Blue One.dazip", "version one");
+        await ImportAddInAsync(viewModel, "Blue Two.dazip", "version two");
+        var rows = viewModel.Library.Mods.OrderBy(m => m.AddedAt).ThenBy(m => m.Details, StringComparer.Ordinal).ToList();
+        Assert.All(rows, r => Assert.NotNull(r.Copy));
+        var activation = viewModel.ModsTab.Activation;
+        await activation.ActivateCommand.ExecuteAsync(rows.First(r => r.Details.Contains("Blue One", StringComparison.Ordinal)));
+        await activation.ApplyCommand.ExecuteAsync(null);
+        Assert.False(activation.IsError, activation.StatusMessage);
+        var keep = viewModel.ModsTab.KeepCopy;
+
+        await keep.PlanKeepCommand.ExecuteAsync(rows.First(r => r.Details.Contains("Blue Two", StringComparison.Ordinal)));
+
+        Assert.True(keep.CanRemove, string.Join(" | ", keep.Preview.Problems.Select(p => p.Title)));
+        Assert.Contains(keep.Preview.Notes, n => n.StartsWith("These copies aren't the same.", StringComparison.Ordinal));
+
+        await keep.RemoveOthersCommand.ExecuteAsync(null);
+
+        Assert.False(keep.IsError, keep.StatusMessage);
+        Assert.Single(viewModel.Library.Mods);
+        Assert.Single(activation.ActiveModIds);
+        var deployed = Path.Combine(_scenario.DocumentsDirectory, "AddIns", "blue_uid", "module", "data.erf");
+        Assert.Equal("version two", _host.FileSystem.File.ReadAllText(deployed));
+        Assert.Contains("blue_uid", _host.FileSystem.File.ReadAllText(Path.Combine(_scenario.DocumentsDirectory, "Settings", "AddIns.xml")), StringComparison.Ordinal);
+    }
+
+    [AvaloniaFact]
+    public async Task ChoosingAnotherProfile_ClosesThePreview()
+    {
+        var (_, viewModel) = await OpenWithTwoCopiesAsync();
+        var keep = viewModel.ModsTab.KeepCopy;
+        await keep.PlanKeepCommand.ExecuteAsync(Row(viewModel, "Hair Pack"));
+
+        await viewModel.SelectProfileAsync("Default", TestContext.Current.CancellationToken);
+
+        Assert.Null(keep.Preview.Title);
+        Assert.False(keep.CanRemove);
+    }
+
+    [AvaloniaFact]
     public async Task Cancel_RemovesNothing()
     {
         var (_, viewModel) = await OpenWithTwoCopiesAsync();
@@ -141,6 +183,16 @@ public sealed class KeepCopyScreenTests : IDisposable
         Assert.False(keep.CanRemove);
         Assert.Contains(keep.Preview.Problems, p => p.Title.StartsWith("Hair Pack Copy is on in", StringComparison.Ordinal));
         Assert.Equal(2, viewModel.Library.Mods.Count);
+    }
+
+    private async Task ImportAddInAsync(MainWindowViewModel viewModel, string fileName, string content)
+    {
+        const string Manifest = """<?xml version="1.0"?><AddInItem UID="blue_uid" Name="Blue" /> """;
+        await _scenario.ImportAsync(
+            viewModel,
+            Path.Combine(MockUnixSupport.Path(@"C:\Users\Me\Downloads"), fileName),
+            ("Manifest.xml", Manifest),
+            ("Contents/addins/blue_uid/module/data.erf", content));
     }
 
     private static LibraryModRow Row(MainWindowViewModel viewModel, string title) => viewModel.Library.Mods.Single(m => m.Title == title);

@@ -17,6 +17,8 @@
       </Grid>
       <TextBlock Name="LibraryStatus" Classes="Status" Classes.Error="{Binding Library.IsError}" Text="{Binding Library.StatusMessage}" TextWrapping="Wrap"
                  IsVisible="{Binding Library.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+      <TextBlock Name="LookFirstStatus" Classes="Status" Classes.Error="{Binding LookFirst.IsError}" Text="{Binding LookFirst.StatusMessage}" TextWrapping="Wrap"
+                 IsVisible="{Binding LookFirst.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       <TextBlock Name="KeepCopyStatus" Classes="Status" Classes.Error="{Binding KeepCopy.IsError}" Text="{Binding KeepCopy.StatusMessage}" TextWrapping="Wrap"
                  IsVisible="{Binding KeepCopy.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       <TextBlock Name="ActivationStatus" Classes="Status" Classes.Error="{Binding Activation.IsError}" Text="{Binding Activation.StatusMessage}" TextWrapping="Wrap"

@@ -2,8 +2,8 @@ using DAORework.Application.Abstractions;
 using DAORework.Application.Mods.Backups;
 using DAORework.Core.Common;
 using DAORework.Core.Diagnostics;
-using DAORework.Core.Fixes;
 using DAORework.Core.Mods.Backups;
+using DAORework.Core.Mods.Library;
 using DAORework.Core.Mods.Planning;
 
 namespace DAORework.Application.Mods.Changes;
@@ -52,7 +52,8 @@ public sealed class RollBackModChange
             return Result.Failure<RestoreReport>(new Error(DiagnosticCodes.ModBackupNotFound, $"There is no change in {documents} to roll back."));
         }
 
-        if (await RemovedModsAsync(backup.PreviousRecord, cancellationToken) is { Count: > 0 } removed)
+        var library = await _library.ListAsync(cancellationToken);
+        if (RemovedMods.In(backup.PreviousRecord.ActiveModIds, library.Select(e => e.Mod.Id)) is { Count: > 0 } removed)
         {
             return Result.Failure<RestoreReport>(new Error(
                 DiagnosticCodes.ModUndoNeedsRemovedMod,
@@ -67,13 +68,6 @@ public sealed class RollBackModChange
         }
 
         return restored;
-    }
-
-    /// <summary>The mods the earlier state names that left the Library (ADR-0039). Going back would leave a record no later plan could use.</summary>
-    private async Task<List<string>> RemovedModsAsync(DeploymentRecord previous, CancellationToken cancellationToken)
-    {
-        var library = (await _library.ListAsync(cancellationToken)).Select(e => e.Mod.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
-        return previous.ActiveModIds.Where(id => !FixIds.IsFixEntry(id) && !library.Contains(id)).ToList();
     }
 
     /// <summary>

@@ -1,5 +1,6 @@
 using DAORework.Application.Mods.Library;
 using DAORework.Core.Mods.Adoption;
+using DAORework.Core.Mods.Library;
 using DAORework.Core.Mods.Planning;
 
 namespace DAORework.App.ViewModels;
@@ -113,7 +114,8 @@ public sealed class ModsTabViewModel
     public async Task SelectProfileAsync(string? profileName, CancellationToken cancellationToken = default)
     {
         Folders.Load(profileName);
-        KeepCopy.ProfileName = profileName;
+        KeepCopy.Load(profileName);
+        LookFirst.CancelCommand.Execute(null);
         HandInstalled.Load(profileName);
         await Activation.LoadAsync(profileName, cancellationToken); // First, so a listed mod's state is known as it is read.
         await Library.LoadAsync(cancellationToken);
@@ -147,7 +149,7 @@ public sealed class ModsTabViewModel
     }
 
     private string NameOf(string modId) =>
-        Library.Mods.FirstOrDefault(m => string.Equals(m.Id, modId, StringComparison.OrdinalIgnoreCase))?.Title ?? modId;
+        Library.Mods.FirstOrDefault(m => string.Equals(m.Id, modId, StringComparison.OrdinalIgnoreCase))?.Title ?? ModIds.ReadableName(modId);
 
     private async Task RefreshAfterChangeAsync(CancellationToken cancellationToken)
     {

@@ -80,6 +80,14 @@ public sealed class KeepOneCopyTests
         Assert.Contains("didn't finish", Assert.Single(plan.Problems).Title, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void RemovedMods_NamesWhatLeft_ButNeverAFix()
+    {
+        var removed = RemovedMods.In(["hair-pack-1a2b3c4d", "kept", "fixes/dxvk-2-3-aaaaaaaa"], ["kept"]);
+
+        Assert.Equal(["Hair pack"], removed);
+    }
+
     private static LibraryEntry Entry(string id, params (string Path, string Sha, long Size)[] files) =>
         new(new LibraryMod(id, id, ModKind.Override, [.. files.Select(f => new LibraryModFile(f.Path, f.Size, f.Sha))]), "source", "sha", DateTimeOffset.UnixEpoch);
 }

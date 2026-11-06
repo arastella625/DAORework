@@ -21,6 +21,8 @@ record that names a mod needs that mod to plan anything, and a moved file can co
   whose UID is held. `chargenmorphcfg.xml` doesn't count, since hair and head mods all ship it (ADR-0025).
 - What is in the game and not managed comes first: the player is offered *Manage it*, *Add anyway* or *Cancel*. What is
   already in the Library offers *Add anyway* or *Cancel*. Other downloads in the same batch are added straight away.
+- Loose files are managed all together, so *Manage it* is offered for them only when they are this download's files and
+  nothing else.
 - Names can't prove two mods are the same, so the window says *looks like* and never refuses. An archive that can't be
   listed, or a `.dazip` wrapped in a zip, is added as before, and the row says it is a copy once it is in.
 
@@ -46,6 +48,8 @@ record that names a mod needs that mod to plan anything, and a moved file can co
   its order is covered by tests.
 - A copy on in a folder no profile names any more can't be seen, since records can't be listed. Pointing a profile back
   there says the mod isn't in the Library, and adding the same download again settles it.
+- A swap copies the kept mod and backs up the removed copy, like any change, though that backup can't be used without
+  adding the copy again. Moving the files instead would save both. Until then, keeping the copy that is on costs nothing.
 - The window comes first. `mods keep` for the command line is a later task.
 
 ## Alternatives considered

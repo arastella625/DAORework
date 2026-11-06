@@ -36,6 +36,14 @@ public sealed class LibraryRemover : IModRemover
         try
         {
             _fileSystem.File.Delete(metadata);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return Task.FromResult(Result.Failure(new Error(DiagnosticCodes.ModRemoveFailed, $"{modId} could not be removed: {exception.Message}", "Nothing of it was removed.")));
+        }
+
+        try
+        {
             var folder = _fileSystem.Path.Combine(_root, modId);
             if (_fileSystem.Directory.Exists(folder))
             {
