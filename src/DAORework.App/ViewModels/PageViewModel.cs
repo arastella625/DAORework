@@ -31,6 +31,9 @@ public abstract partial class PageViewModel : ObservableObject
     [ObservableProperty]
     public partial bool IsBusy { get; set; }
 
+    /// <summary>Gets or sets what runs once the page is busy and before its work starts, so the window can say so first (P2.6-45).</summary>
+    public Func<Task>? BeforeWorkAsync { get; set; }
+
     /// <summary>Gets or sets how long a success message stays before it fades (docs/VOICE.md rule 4).</summary>
     public TimeSpan SuccessFadesAfter { get; set; } = TimeSpan.FromSeconds(6);
 
@@ -82,6 +85,11 @@ public abstract partial class PageViewModel : ObservableObject
         IsBusy = true;
         try
         {
+            if (BeforeWorkAsync is { } before)
+            {
+                await before();
+            }
+
             await action(cancellationToken);
         }
         catch (OperationCanceledException)

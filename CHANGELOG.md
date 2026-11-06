@@ -6,6 +6,9 @@ All notable changes to DAORework are recorded here. The format follows
 
 ## [Unreleased]
 
+### Changed
+- The window's footer says what it's working on (P2.6-45), so a wait no longer looks like nothing happening. Hover now shows on every button in every theme, and a button you can't press yet looks it.
+
 ### Fixed
 - *Manage* no longer stops on "An item with the same key has already been added" (P2.6-43). It happened when something found in your game was a leftover of a mod already on, and mods shared `chargenmorphcfg.xml`. A mod found in two places is now managed once, with the other copy cleared, and *Swap* works when a leftover is in the same change.
 
