@@ -13,7 +13,7 @@ namespace DAORework.App.ViewModels;
 public sealed partial class NextMoveCard : ObservableObject
 {
     private readonly ModsTabViewModel _mods;
-
+    private FixStatusViewModel? _fixes;
     public NextMoveCard(ModsTabViewModel mods)
     {
         ArgumentNullException.ThrowIfNull(mods);
@@ -49,6 +49,15 @@ public sealed partial class NextMoveCard : ObservableObject
 
     public bool HasButton => Button is not null;
 
+    /// <summary>Follows the Fixes tab too, whose unfinished change also stops everything.</summary>
+    public void Watch(FixStatusViewModel fixes)
+    {
+        ArgumentNullException.ThrowIfNull(fixes);
+        _fixes = fixes;
+        fixes.PropertyChanged += (_, _) => Update();
+        Update();
+    }
+
     [RelayCommand]
     private async Task TakeAsync(CancellationToken cancellationToken)
     {
@@ -58,7 +67,7 @@ public sealed partial class NextMoveCard : ObservableObject
                 await OpenTargetAsync(HomeTarget.GameFolders, cancellationToken);
                 break;
             case NextMoveKind.SettleTheLastChange:
-                await OpenTargetAsync(HomeTarget.ModsHistory, cancellationToken);
+                await OpenTargetAsync(_mods.Changes.ChangeUnfinished ? HomeTarget.ModsHistory : HomeTarget.FixesHistory, cancellationToken);
                 break;
             case NextMoveKind.TakeOverWhatIsInTheGame:
                 await OpenTargetAsync(HomeTarget.ModsLibrary, cancellationToken);
@@ -83,7 +92,7 @@ public sealed partial class NextMoveCard : ObservableObject
     {
         var move = NextMoves.For(new NextMoveFacts(
             _mods.HandInstalled.ProfileName is not null,
-            _mods.Changes.ChangeUnfinished,
+            _mods.Changes.ChangeUnfinished || _fixes is { ChangeUnfinished: true },
             _mods.Handover.IsShown,
             _mods.HandInstalled.Candidates.Count(c => c.CanManage && c.Candidate!.Files.Count > c.Candidate.Programs.Count),
             _mods.Library.Mods.Count,

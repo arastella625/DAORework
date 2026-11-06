@@ -31,6 +31,9 @@ public sealed partial class ModListFilter : ObservableObject
 
     public ObservableCollection<HandInstalledModRow> VisibleFound { get; } = [];
 
+    /// <summary>Gets what is found in the game and not already listed as a mod, whatever a search or a chip shows.</summary>
+    public IReadOnlyList<HandInstalledModRow> Unlisted { get; private set; } = [];
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowsList), nameof(ShowsMods), nameof(ShowsFound), nameof(ShowsCombined), nameof(KindNote), nameof(HasKind))]
     public partial ModKindFilter Kind { get; set; }
@@ -168,6 +171,7 @@ public sealed partial class ModListFilter : ObservableObject
     private void Update()
     {
         var alreadyListed = MarkModsInTheGame();
+        Unlisted = [.. _found.Where(m => !alreadyListed.Contains(m))];
         var mods = _mods.Where(m => OfKind(m.IsAddIn)).ToList();
         var found = _found.Where(m => OfKind(m.IsAddIn) && !alreadyListed.Contains(m)).ToList();
         var on = mods.Count(m => m.IsActive);
