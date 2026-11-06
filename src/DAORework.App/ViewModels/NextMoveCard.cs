@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -43,6 +44,9 @@ public sealed partial class NextMoveCard : ObservableObject
 
     [ObservableProperty]
     public partial string? Button { get; private set; }
+
+    /// <summary>Gets the way to a first game with mods, shown until a mod is on (P2.6-36).</summary>
+    public ObservableCollection<FirstStep> FirstSteps { get; } = [];
 
     /// <summary>Gets a value indicating whether there is something to do; Home and the header say the rest.</summary>
     public bool IsShown => Kind != NextMoveKind.Play;
@@ -90,18 +94,24 @@ public sealed partial class NextMoveCard : ObservableObject
 
     private void Update()
     {
-        var move = NextMoves.For(new NextMoveFacts(
+        var facts = new NextMoveFacts(
             _mods.HandInstalled.ProfileName is not null,
             _mods.Changes.ChangeUnfinished || _fixes is { ChangeUnfinished: true },
             _mods.Handover.IsShown,
             _mods.HandInstalled.Candidates.Count(c => c.CanManage && c.Candidate!.Files.Count > c.Candidate.Programs.Count),
             _mods.Library.Mods.Count,
-            _mods.Activation.ActiveModIds.Count));
+            _mods.Activation.ActiveModIds.Count);
+        var move = NextMoves.For(facts);
         Kind = move.Kind;
         Title = move.Title;
         Body = move.Body;
         Button = move.Button;
         OnPropertyChanged(nameof(IsShown));
         OnPropertyChanged(nameof(HasButton));
+        FirstSteps.Clear();
+        foreach (var step in Core.Mods.FirstSteps.AreNeeded(facts) ? Core.Mods.FirstSteps.For(facts) : [])
+        {
+            FirstSteps.Add(step);
+        }
     }
 }

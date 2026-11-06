@@ -66,11 +66,13 @@ public sealed partial class SetupSummary : ObservableObject
 
         var ready = parts.All(p => p.IsReady);
         var unmanaged = found.Count > 0;
-        Title = ready && !unmanaged ? "Everything is in place" : "Almost there";
-        Body = (ready, unmanaged) switch
+        var noMods = library.Count == 0 && !unmanaged;
+        Title = noMods ? "No mods yet" : ready && !unmanaged ? "Everything is in place" : "Almost there";
+        Body = (noMods, ready, unmanaged) switch
         {
-            (_, true) => "Some mods in your game aren't looked after by DAORework yet.",
-            (true, _) => "Your add-ins, override mods and combined files are all set.",
+            (true, _, _) => "Your mods will show here once you've added some.",
+            (_, _, true) => "Some mods in your game aren't looked after by DAORework yet.",
+            (_, true, _) => "Your add-ins, override mods and combined files are all set.",
             _ => "Some mods change the same file. Arrange them to choose which one wins.",
         };
     }

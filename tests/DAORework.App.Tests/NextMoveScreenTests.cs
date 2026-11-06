@@ -46,17 +46,23 @@ public sealed class NextMoveScreenTests : IDisposable
     [AvaloniaFact]
     public async Task ANewPlayer_IsLedToAddMods_ThenToTurnThemOn()
     {
-        var (_, viewModel) = await _scenario.OpenAsync(seedInstall: false);
+        var (window, viewModel) = await _scenario.OpenAsync(seedInstall: false);
         var card = viewModel.ModsTab.NextMove;
 
         Assert.Equal(NextMoveKind.AddMods, card.Kind);
+        Assert.Equal([true, false, false], card.FirstSteps.Select(s => s.IsDone));
+        viewModel.SelectedPage = MainWindowViewModel.HomePage;
+        window.UpdateLayout();
+        Screenshots.Save(window, "first-steps");
 
         await _scenario.ImportHairPackAsync(viewModel);
 
         Assert.Equal(NextMoveKind.TurnOnMods, card.Kind);
+        Assert.Equal([true, true, false], card.FirstSteps.Select(s => s.IsDone));
 
         await _scenario.ActivateHairPackAsync(viewModel);
 
         Assert.Equal(NextMoveKind.Play, card.Kind);
+        Assert.Empty(card.FirstSteps);
     }
 }
