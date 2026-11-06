@@ -478,6 +478,9 @@ made-up mods, which is how it got through.)*
   which plans again in the new order (ADR-0015's "the user can reorder before confirming"). On the owner's library
   all 46 such files were in different folders, so Vortex's record can't settle them.
 
+- P2.6-23 *Manage* clears leftovers: a mod already on no longer stops *Manage*. The copies found in the game are deleted
+  with a backup, as ADR-0015 now says. Turning mods on before managing them left the owner with two copies of each.
+
 **Keeping the tests honest on Windows** *(added 2026-11-05, from P2.6-02)*.
 
 - P2.6-09 Run the tests on Windows in CI: `ci.yml` runs them on Linux only, which is how P2.6-02's failures reached

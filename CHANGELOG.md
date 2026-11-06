@@ -7,6 +7,7 @@ All notable changes to DAORework are recorded here. The format follows
 ## [Unreleased]
 
 ### Changed
+- *Manage* now clears the leftover copies of a mod that's already on (P2.6-23), instead of refusing it. The files are backed up and *Undo* puts them back.
 - *Manage* shows who wins when mods have different files with the same name, and *Swap* changes it before anything moves (P2.6-21). Vortex's record doesn't say which should win, so you choose.
 - A preview no longer warns about a file in your override folder that is the same as the mod's (P2.6-20), since nothing depends on which copy the game picks, and it only mentions the mods you're changing. Files Vortex left there no longer fill a preview with warnings.
 - *Arrange* has *To top* and *To bottom* (P2.6-19): a mod goes all the way in one click and one preview, instead of one for each place.

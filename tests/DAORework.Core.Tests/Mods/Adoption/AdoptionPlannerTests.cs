@@ -95,14 +95,33 @@ public sealed class AdoptionPlannerTests
     }
 
     [Fact]
-    public void Plan_ModAlreadyActive_FailsWithItsCode()
+    public void Plan_ModAlreadyOn_DeletesItsLeftoverCopies_AndChangesNothingElse()
+    {
+        var mod = Mod("hair-1", ModKind.Override, ("a.dds", "a"), ("tools/setup.exe", "x"));
+        var deployed = new RecordedFile(Override + "DAORework/hair-1/a.dds", "a", "hair-1");
+        var current = new DeploymentRecord(["hair-1"], [deployed], []);
+        var input = new PlanInput(current, [mod], [], new Dictionary<string, string>(_disk) { [deployed.TargetPath] = "a" }, []);
+
+        var plan = AdoptionPlanner.Plan(input, [Adopt(mod, ("a.dds", Override + "Hair/a.dds"), ("tools/setup.exe", Override + "Hair/tools/setup.exe"))]).Value;
+
+        var delete = Assert.Single(plan.Operations);
+        Assert.Equal(PlanAction.Delete, delete.Action);
+        Assert.Equal(Override + "Hair/a.dds", delete.TargetPath);
+        Assert.Equal("a", delete.ExpectedSha256);
+        Assert.Equal(["hair-1"], plan.NextRecord.ActiveModIds);
+        Assert.False(plan.IsEmpty);
+    }
+
+    [Fact]
+    public void Plan_AFileDAOReworkPlaced_IsNeverALeftover()
     {
         var mod = Mod("hair-1", ModKind.Override, ("a.dds", "a"));
-        var input = new PlanInput(new DeploymentRecord(["hair-1"], [], []), [mod], [], _disk, []);
+        var deployed = new RecordedFile(Override + "DAORework/hair-1/a.dds", "a", "hair-1");
+        var input = new PlanInput(new DeploymentRecord(["hair-1"], [deployed], []), [mod], [], new Dictionary<string, string>(_disk) { [deployed.TargetPath] = "a" }, []);
 
-        var result = AdoptionPlanner.Plan(input, [Adopt(mod, ("a.dds", Override + "Hair/a.dds"))]);
+        var plan = AdoptionPlanner.Plan(input, [Adopt(mod, ("a.dds", deployed.TargetPath))]).Value;
 
-        Assert.Equal(DiagnosticCodes.ModAdoptAlreadyActive, result.Error!.Code);
+        Assert.Empty(plan.Operations);
     }
 
     [Fact]
