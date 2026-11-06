@@ -1,5 +1,6 @@
 using DAORework.Application.Abstractions;
 using DAORework.Core.Common;
+using DAORework.Core.Diagnostics;
 using DAORework.Core.Mods.Troubleshooting;
 using Microsoft.Extensions.Logging;
 
@@ -46,7 +47,15 @@ public sealed class RecordPlay
             history = PlayHistory.Empty;
         }
 
-        await _history.SaveAsync(documentsDirectory, history.With(new PlayRecord(_clock.GetUtcNow(), record.ActiveModIds)), cancellationToken);
-        return Result.Success();
+        try
+        {
+            await _history.SaveAsync(documentsDirectory, history.With(new PlayRecord(_clock.GetUtcNow(), record.ActiveModIds)), cancellationToken);
+            return Result.Success();
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            _logger.LogWarning(exception, "This game's mods weren't noted");
+            return Result.Failure(new Error(DiagnosticCodes.PlayHistoryUnreadable, $"The list of recent games couldn't be saved: {exception.Message}"));
+        }
     }
 }
