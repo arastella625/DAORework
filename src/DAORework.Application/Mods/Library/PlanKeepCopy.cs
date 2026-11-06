@@ -25,15 +25,16 @@ public sealed class PlanKeepCopy
     {
         ArgumentNullException.ThrowIfNull(request);
         var entries = await _library.ListAsync(cancellationToken);
-        var copies = ModCopies.Find(entries);
-        if (!copies.TryGetValue(request.KeepId, out var kept))
-        {
-            return Result.Failure<KeepCopyPreview>(new Error(DiagnosticCodes.ModNotInLibrary, "This mod has no other copy to remove."));
-        }
-
         if (!(await _folders.ReadAsync(request.DocumentsDirectory, cancellationToken)).TryGetValue(out var folders, out var error))
         {
             return Result.Failure<KeepCopyPreview>(error);
+        }
+
+        var on = folders.FirstOrDefault(f => StringComparer.OrdinalIgnoreCase.Equals(f.DocumentsDirectory, request.DocumentsDirectory))?.ActiveModIds;
+        var copies = ModCopies.Find(entries, on);
+        if (!copies.TryGetValue(request.KeepId, out var kept))
+        {
+            return Result.Failure<KeepCopyPreview>(new Error(DiagnosticCodes.ModNotInLibrary, "This mod has no other copy to remove."));
         }
 
         var others = entries.Where(e => e.Mod.Id != request.KeepId && copies.TryGetValue(e.Mod.Id, out var copy) && copy.Group == kept.Group).ToList();

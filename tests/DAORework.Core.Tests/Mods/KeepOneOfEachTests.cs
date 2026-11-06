@@ -114,10 +114,10 @@ public sealed class KeepOneOfEachTests
     }
 
     [Fact]
-    public void Plan_CopiesThatArentTheSame_ComeFirst_AndStayThereWhateverIsPicked()
+    public void Plan_CopiesThatReallyDiffer_ComeFirst_AndStay_UntilThePlayerPicks()
     {
-        var newAddIn = AddIn("new-zeta", 2, ("zeta.erf", "dd", 10), ("more.erf", "ee", 5));
-        var oldAddIn = AddIn("old-zeta", 1, ("zeta.erf", "dd", 10));
+        var newAddIn = AddIn("new-zeta", 2, ("zeta.erf", "dd", 10), ("new.erf", "ee", 5));
+        var oldAddIn = AddIn("old-zeta", 1, ("zeta.erf", "dd", 10), ("old.erf", "ff", 5));
         LibraryEntry[] entries = [_oldHair, _newHair, oldAddIn, newAddIn];
 
         var first = KeepOneOfEach.Plan(entries, _noPicks, Here, []);
@@ -125,21 +125,50 @@ public sealed class KeepOneOfEachTests
         var kept = KeepOneOfEach.Plan(entries, picks, Here, []);
 
         Assert.True(first.Sets[0].Differs);
+        Assert.True(first.Sets[0].KeepsAll);
         Assert.False(first.Sets[1].Differs);
+        Assert.Equal("old-hair", Assert.Single(first.Removing).Mod.Id);
         Assert.Equal(first.Sets.Select(s => s.Group), kept.Sets.Select(s => s.Group));
-        Assert.True(kept.Sets[0].Differs);
-        Assert.Empty(kept.Sets[0].Plan.OnlyInRemoved);
+        Assert.True(kept.Sets[0].Clears);
+        Assert.Equal(["old.erf"], kept.Sets[0].Plan.OnlyInRemoved);
     }
 
     [Fact]
-    public void Plan_AFileOnlyInARemovedCopy_IsNamed()
+    public void Plan_ACopyThatHoldsEverything_IsKept_SoNothingIsLost()
     {
         var newAddIn = AddIn("new-zeta", 2, ("zeta.erf", "dd", 10));
         var oldAddIn = AddIn("old-zeta", 1, ("zeta.erf", "dd", 10), ("more.erf", "ee", 5));
 
-        var plan = KeepOneOfEach.Plan([oldAddIn, newAddIn], _noPicks, Here, []);
+        var set = Assert.Single(KeepOneOfEach.Plan([oldAddIn, newAddIn], _noPicks, Here, []).Sets);
 
-        Assert.Equal(["more.erf"], Assert.Single(plan.Sets).Plan.OnlyInRemoved);
+        Assert.Equal("old-zeta", set.Plan.Kept.Mod.Id);
+        Assert.False(set.Differs);
+        Assert.Empty(set.Plan.OnlyInRemoved);
+    }
+
+    [Fact]
+    public void Plan_APartThatIsOn_GivesItsPlaceToTheWhole()
+    {
+        var whole = Entry("whole", "Eyes", 1, ("eyes.dds", "bb", 20), ("lids.dds", "dd", 5));
+        var part = Entry("part", "Eyes", 2, ("eyes.dds", "bb", 20));
+
+        var plan = KeepOneOfEach.Plan([part, whole], _noPicks, Here, [new FolderMods(Here, ["a", "part"], false)]);
+
+        var set = Assert.Single(plan.Sets);
+        Assert.Equal("whole", set.Plan.Kept.Mod.Id);
+        Assert.True(set.HasParts);
+        Assert.False(set.Differs);
+        Assert.Equal(["a", "whole"], plan.SwappedOrder);
+    }
+
+    [Fact]
+    public void Plan_AnotherNameInsideAModThatIsOn_IsCleared_ButNotWhileThatModIsOff()
+    {
+        var big = Entry("big", "Big Pack", 1, ("eyes.dds", "bb", 20), ("lids.dds", "dd", 5));
+        var small = Entry("small", "Blue Eyes", 2, ("eyes.dds", "bb", 20));
+
+        Assert.Equal("small", Assert.Single(KeepOneOfEach.Plan([big, small], _noPicks, Here, [new FolderMods(Here, ["big"], false)]).Removing).Mod.Id);
+        Assert.Empty(KeepOneOfEach.Plan([big, small], _noPicks, Here, [new FolderMods(Here, [], false)]).Sets);
     }
 
     [Fact]

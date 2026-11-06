@@ -41,12 +41,21 @@ record that names a mod needs that mod to plan anything, and a moved file can co
 **Keep one of each** *(added by P2.6-42)*.
 - One action clears every set of copies from a single preview. The rules above apply to each set: nothing here removes
   or swaps in a way *Keep this one* wouldn't.
-- Each set starts on the copy that is on in the selected profile, or else one on in another profile, or else the newest.
-  Starting on what is on means a default clear rarely changes the game, and another profile rarely stops it.
-- The player can change a set's pick, or choose *Keep all of them* to leave that set as it is.
-- Sets whose copies aren't identical come first, however they are picked, and say what would go. The order doesn't change
-  when a pick does, so the player keeps their place in the list.
+- **A part counts as a copy.** A mod whose game files, by name and hash, are all inside another counts as part of it, when
+  the two have one name once punctuation and case are ignored, or when the bigger one is on, so the smaller adds nothing
+  to the game. Moving from Vortex leaves such fragments. The same name with different contents is still not a copy, and
+  add-ins stay copies by UID alone, since their files live in their own folder.
+- **Nothing is lost by not reading.** A set where one copy holds everything starts on that copy: the one on in the selected
+  profile, or else one on in another profile, or else the newest. A whole replaces a part that is on, through the swap. A
+  set where no copy holds everything starts on *Keep all of them*, comes first, and goes only if the player picks a copy.
+- The player can change any pick, or choose *Keep all of them* to leave a set as it is. The order doesn't change when a
+  pick does, so the player keeps their place in the list.
+- **The app leads.** When copies can be cleared with nothing lost, that is the next step, after taking over what is in the
+  game and before the ordinary path. Its button opens the filled-in preview. Nothing is ever removed without it, since
+  removing is permanent and cuts Undo. Sets that really differ are no next step: a player may mean to keep them.
 - All swaps go in one plan, applied once, and only then is anything removed.
+- A copy can be on and own no file, when another copy placed the same files first. Taking it out moves nothing, so only the
+  record changes, with no backup and no entry in History. It is refused if what is on has changed since the preview.
 - A set that can't be cleared, because a copy is on in another profile, stays as it is and says why. The others go ahead:
   one stuck set shouldn't hold up fifty. An unfinished change still stops everything.
 - Only one of the two previews can be open. Two made before either ran could remove the copy the other keeps.
@@ -66,8 +75,12 @@ record that names a mod needs that mod to plan anything, and a moved file can co
 - The window comes first. `mods keep` for the command line is a later task.
 - With 51 sets the sheet scrolls its list, as ADR-0038's does, and takes most of a small window. The total, what differs
   and the buttons stay in view, and the mods list keeps what is left.
-- *Keep one of each* removes many mods for good from one press. The preview leads with what would be lost, but a set whose
-  copies differ still starts on a pick, so a player who doesn't read it can lose those files.
+- *Keep one of each* removes many mods for good from one press, but the press loses no game file unless the player
+  picked a copy themselves. A readme only in a removed copy still goes.
+- Whether a smaller mod of another name is a part depends on what is on, so it can stop being one when the bigger mod goes
+  off.
+- The next step stays until the copies go. A player who keeps identical copies, or has a set stuck on another profile,
+  sees it instead of *You're ready to play*, and there is no way to dismiss it yet.
 
 ## Alternatives considered
 - **Refuse a duplicate outright.** Names can't tell a new version from a copy, so this would block real updates.
@@ -77,3 +90,7 @@ record that names a mod needs that mod to plan anything, and a moved file can co
 - **Refuse to remove a mod any backup names.** Safe, but nearly every copy that was ever on could then never go.
 - **Stop the whole clear for one stuck set.** Simple, but the player would have to solve every set before clearing any.
 - **A preview per set, one after another.** Keeps each one simple, and is the 51 steps this is meant to remove.
+- **Clear copies without a preview.** The fewest clicks, but removing is permanent and cuts Undo.
+- **Start sets that differ on the newest.** One click for everything, and a player who doesn't read loses files for good.
+- **Treat any mod inside another as a part.** Would catch more, but a small mod with its own name inside a bigger mod that
+  is off may be the one the player wants.

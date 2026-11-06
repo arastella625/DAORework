@@ -38,11 +38,13 @@ public sealed class RealScaleKeepEachTests : IDisposable
         Settle(window);
 
         Assert.Equal(51, keep.Rows.Count);
-        Assert.Equal("Removes 69 copies of 51 mods from your Library, and gets back 6.04 GB.", keep.Preview.Summary);
-        Assert.Equal("Remove 69 copies", keep.RemoveLabel);
-        Assert.Contains("3 mods have copies that aren't the same, so they come first.", keep.Preview.Notes);
-        Assert.All(keep.Rows.Take(3), r => Assert.StartsWith("These copies aren't the same.", r.Note, StringComparison.Ordinal));
-        Assert.All(keep.Rows.Skip(3), r => Assert.Null(r.Note));
+        Assert.Equal("Removes 63 copies of 48 mods from your Library, and gets back 5.34 GB.", keep.Preview.Summary);
+        Assert.Equal("Remove 63 copies", keep.RemoveLabel);
+        Assert.Contains("3 mods have copies that aren't the same, so they come first and stay unless you pick one.", keep.Preview.Notes);
+        Assert.All(keep.Rows.Take(3), r => Assert.Null(r.Pick!.ModId));
+        Assert.All(keep.Rows.Take(3), r => Assert.StartsWith("These copies aren't the same", r.Note, StringComparison.Ordinal));
+        Assert.Equal(2, keep.Rows.Skip(3).Count(r => r.Note is not null));
+        Assert.Equal(48, viewModel.Library.CopiesToClear);
         Assert.True(keep.CanRemove);
 
         var sheet = Find<Border>(window, "KeepEachSheet");
@@ -72,8 +74,9 @@ public sealed class RealScaleKeepEachTests : IDisposable
         await keep.RemoveCopiesCommand.ExecuteAsync(null);
 
         Assert.False(keep.IsError, keep.StatusMessage);
-        Assert.Equal(RealScaleLibrary.Entries.Count - 1, viewModel.Library.Mods.Count);
-        Assert.Equal(0, viewModel.Library.CopySets);
+        Assert.Equal(RealScaleLibrary.Entries.Count - 1 + 6, viewModel.Library.Mods.Count); // The add-ins' copies differ, so they stay.
+        Assert.Equal(3, viewModel.Library.CopySets);
+        Assert.Equal(0, viewModel.Library.CopiesToClear);
         Assert.Equal(active, viewModel.ModsTab.Activation.ActiveModIds);
         Assert.Equal(backups, viewModel.ModsTab.Changes.Backups.Count);
     }

@@ -39,6 +39,14 @@ public sealed class NextMoveScreenTests : IDisposable
         await adoption.ApplyCommand.ExecuteAsync(null);
 
         Assert.False(adoption.IsError, adoption.StatusMessage);
+
+        // The game held dupe.gda in two places, so taking over leads straight to clearing the copy.
+        Assert.Equal(NextMoveKind.ClearCopies, card.Kind);
+
+        await card.TakeCommand.ExecuteAsync(null);
+        await viewModel.ModsTab.KeepEach.RemoveCopiesCommand.ExecuteAsync(null);
+
+        Assert.False(viewModel.ModsTab.KeepEach.IsError, viewModel.ModsTab.KeepEach.StatusMessage);
         Assert.Equal(NextMoveKind.Play, card.Kind);
         Assert.False(card.IsShown);
     }

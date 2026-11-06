@@ -38,7 +38,7 @@ internal static class KeepEachWords
         var differ = plan.Sets.Count(s => s.Differs);
         if (differ > 0)
         {
-            yield return differ == 1 ? "1 mod has copies that aren't the same, so it comes first." : $"{differ} mods have copies that aren't the same, so they come first.";
+            yield return differ == 1 ? "1 mod has copies that aren't the same, so it comes first and stays unless you pick one." : $"{differ} mods have copies that aren't the same, so they come first and stay unless you pick one.";
         }
 
         var stuck = plan.Sets.Count(s => !s.KeepsAll && !s.Clears);
@@ -57,7 +57,7 @@ internal static class KeepEachWords
     public static List<KeepChoice> Choices(KeepEachSet set)
     {
         ArgumentNullException.ThrowIfNull(set);
-        var choices = set.Copies.Select((e, rank) => new KeepChoice(Label(set, e, rank == 0), e.Mod.Id)).ToList();
+        var choices = set.Copies.Select(e => new KeepChoice(Label(set, e), e.Mod.Id)).ToList();
         choices.Add(new KeepChoice("Keep all of them", null));
         return choices;
     }
@@ -66,13 +66,18 @@ internal static class KeepEachWords
     public static string? Note(KeepEachSet set)
     {
         ArgumentNullException.ThrowIfNull(set);
+        if (set.KeepsAll && set.Differs)
+        {
+            return "These copies aren't the same, so they all stay unless you pick one.";
+        }
+
         if (!set.Clears)
         {
             return null;
         }
 
         var plan = set.Plan;
-        var lost = KeepCopyWords.Lost(plan.OnlyInRemoved) ?? (set.Differs ? "These copies aren't the same, but this one has everything the others do." : null);
+        var lost = KeepCopyWords.Lost(plan.OnlyInRemoved) ?? (set.HasParts ? "The others are only part of this one, so nothing is lost." : null);
         var swapped = plan.SwappedOut is { } name && !set.On.Contains(plan.Kept.Mod.Id, StringComparer.OrdinalIgnoreCase)
             ? $"{ModDisplayName.For(name)} is on, so this one takes its place."
             : null;
@@ -89,11 +94,13 @@ internal static class KeepEachWords
     }
 
     /// <summary>A copy by what tells it from the others: its name, or under the row's own name, the download it came from.</summary>
-    private static string Label(KeepEachSet set, LibraryEntry entry, bool newest)
+    private static string Label(KeepEachSet set, LibraryEntry entry)
     {
         var name = entry.Mod.Name == set.Copies[0].Mod.Name ? entry.SourceName : ModDisplayName.For(entry.Mod.Name);
         var on = set.On.Contains(entry.Mod.Id, StringComparer.OrdinalIgnoreCase);
-        return string.Join(", ", new[] { name, on ? "on" : null, newest ? "newest" : null }.OfType<string>());
+        var newest = ReferenceEquals(entry, set.Copies.MaxBy(e => e.ImportedAtUtc));
+        var part = set.HasParts && entry.Mod.Files.Count < set.Copies[0].Mod.Files.Count;
+        return string.Join(", ", new[] { name, on ? "on" : null, newest ? "newest" : null, part ? "only part" : null }.OfType<string>());
     }
 
     private static string Copies(int count) => count == 1 ? "1 copy" : $"{count} copies";

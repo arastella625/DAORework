@@ -15,11 +15,14 @@ public static class NextMoves
             { ChangeUnfinished: true } => new(NextMoveKind.SettleTheLastChange, "Your last change didn't finish", "Finish it or undo it before making another.", "Open History"),
             { VortexMoveUnderway: true } => new(NextMoveKind.FinishVortexMove, "Finish moving from Vortex", "Your mods are part way there. The card below says what's next.", null),
             { FoundInGame: > 0 } => new(NextMoveKind.TakeOverWhatIsInTheGame, TakeOverTitle(facts.FoundInGame), "DAORework can't turn these off or undo them until it looks after them. You'll see a preview first.", "Take them over"),
+            { CopiesToClear: > 0 } => new(NextMoveKind.ClearCopies, CopiesTitle(facts.CopiesToClear), "Keep one of each and get the space back. You'll see what goes before anything is removed.", "Keep one of each"),
             { InLibrary: 0 } => new(NextMoveKind.AddMods, "Add your first mod", "Adding a mod doesn't change your game until you turn it on.", "Add mods"),
             { On: 0 } => new(NextMoveKind.TurnOnMods, "Turn on the mods you want", "Tick them below, or use the switch on each one.", null),
             _ => new(NextMoveKind.Play, "You're ready to play", "Your mods are in place.", null),
         };
     }
+
+    private static string CopiesTitle(int mods) => mods == 1 ? "1 mod is in your Library more than once" : $"{mods} mods are in your Library more than once";
 
     private static string TakeOverTitle(int found) => found == 1 ? "1 mod is in your game" : $"{found} mods are in your game";
 }

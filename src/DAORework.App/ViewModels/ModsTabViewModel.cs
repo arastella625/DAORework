@@ -177,8 +177,8 @@ public sealed class ModsTabViewModel
 
     private async Task RefreshAfterChangeAsync(CancellationToken cancellationToken)
     {
+        await Activation.RefreshActiveAsync(cancellationToken); // First, since what is on decides which mods are parts of others.
         await Library.LoadAsync(cancellationToken);
-        await Activation.RefreshActiveAsync(cancellationToken);
         await Changes.RefreshAsync(cancellationToken);
         await LoadOrder.RefreshAsync(cancellationToken);
         await HandInstalled.RefreshAsync(cancellationToken);

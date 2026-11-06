@@ -134,9 +134,9 @@ public sealed class KeepEachScreenTests : IDisposable
 
         Assert.Equal(3, keep.Rows.Count);
         Assert.Contains("Zeta", keep.Rows[0].Title, StringComparison.Ordinal);
-        Assert.StartsWith("These copies aren't the same.", keep.Rows[0].Note, StringComparison.Ordinal);
+        Assert.StartsWith("These copies aren't the same", keep.Rows[0].Note, StringComparison.Ordinal);
         Assert.Null(keep.Rows[1].Note);
-        Assert.Contains("1 mod has copies that aren't the same, so it comes first.", keep.Preview.Notes);
+        Assert.Contains("1 mod has copies that aren't the same, so it comes first and stays unless you pick one.", keep.Preview.Notes);
     }
 
     [AvaloniaFact]

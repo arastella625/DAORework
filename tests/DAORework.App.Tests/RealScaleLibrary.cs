@@ -20,10 +20,12 @@ internal static class RealScaleLibrary
     public const string BlockedProgram = "Upscaler Overlay";
     public const string BlockedRegistered = "Party Slots v2";
     public const string BlockedInTheWay = "Extra Dog Slot v1.41";
+    public const string PartSameName = "Better Eyes Silver";
+    public const string PartOfAModThatIsOn = "Leftover Sky";
 
     private const int MarkersPerMod = 14;
     private const int CopySets = 51;
-    private const int TwiceCopied = 18;
+    private const int TwiceCopied = 16;
     private const long CopySizeBytes = 94_000_000;
 
     /// <summary>Each file's text by its hash, so a change applied here finds what the library says it holds.</summary>
@@ -34,7 +36,7 @@ internal static class RealScaleLibrary
 
     public static IReadOnlyList<LibraryEntry> Entries { get; } = Build();
 
-    /// <summary>Gets the same library with the copies a real one gathers: 139 entries, 51 sets and about 6 GB of extras.</summary>
+    /// <summary>Gets the same library with what a real one gathers: 139 entries, 51 sets, about 6 GB of extras, and two parts of mods.</summary>
     public static IReadOnlyList<LibraryEntry> WithCopies { get; } = [.. Entries, .. BuildCopies()];
 
     /// <summary>Writes every mod into the library, and what blocks the two add-ins into the game.</summary>
@@ -106,7 +108,7 @@ internal static class RealScaleLibrary
         return [.. mods.Select(mod => new LibraryEntry(mod, mod.Name + ".zip", Sha(mod.Name), new DateTimeOffset(2026, 11, 4, 12, 0, 0, TimeSpan.Zero)) { Scan = new MalwareScan(MalwareScanStatus.NoThreatFound, "No threats found.") })];
     }
 
-    /// <summary>A copy of 51 mods, a second of 18, all older than the original. The three add-ins' copies aren't the same.</summary>
+    /// <summary>A copy of 51 mods, a second of 16, all older than the original, and two parts. The three add-ins' copies aren't the same.</summary>
     private static List<LibraryEntry> BuildCopies()
     {
         var addIns = Entries.Where(e => AlreadyOn.Contains(e.Mod.Name) && e.Mod.Kind == ModKind.AddIn);
@@ -121,7 +123,21 @@ internal static class RealScaleLibrary
             }
         }
 
+        copies.Add(PartOf(PartSameName, "Better Eyes - Silver"));
+        copies.Add(PartOf(PartOfAModThatIsOn, "Better Skies"));
         return copies;
+    }
+
+    /// <summary>One file of a mod, as moving from Vortex can leave behind.</summary>
+    private static LibraryEntry PartOf(string name, string whole)
+    {
+        var entry = Entries.Single(e => e.Mod.Name == whole);
+        var file = entry.Mod.Files.First(f => f.RelativePath.EndsWith(".dds", StringComparison.Ordinal)) with { SizeBytes = 487 };
+        return entry with
+        {
+            Mod = entry.Mod with { Id = ModIds.Create(name, Sha(name)), Name = name, Files = [file] },
+            SourceName = name,
+        };
     }
 
     private static LibraryEntry CopyOf(LibraryEntry entry, int number)

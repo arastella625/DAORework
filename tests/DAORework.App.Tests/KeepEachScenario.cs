@@ -29,9 +29,10 @@ internal sealed class KeepEachScenario(ModsTabScenario scenario)
     public Task ImportAsync(MainWindowViewModel viewModel, string fileName, string file, string content) =>
         scenario.ImportAsync(viewModel, Path.Combine(_downloads, fileName), (file, content));
 
-    public async Task<(MainWindow Window, MainWindowViewModel ViewModel)> OpenAsync()
+    /// <param name="seedInstall">Whether the game holds mods to take over, which comes first as a next step.</param>
+    public async Task<(MainWindow Window, MainWindowViewModel ViewModel)> OpenAsync(bool seedInstall = true)
     {
-        var opened = await scenario.OpenAsync();
+        var opened = await scenario.OpenAsync(seedInstall);
         await scenario.ImportHairPackAsync(opened.ViewModel);
         await ImportAsync(opened.ViewModel, "Hair Pack Copy.zip", "hair_pack.dds", "DDS hair");
         await ImportAsync(opened.ViewModel, "Eyes.zip", "eyes.dds", "DDS eyes");
