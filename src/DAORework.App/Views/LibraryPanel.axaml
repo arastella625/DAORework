@@ -17,21 +17,6 @@
       </Grid>
       <TextBlock Name="LibraryStatus" Classes="Status" Classes.Error="{Binding Library.IsError}" Text="{Binding Library.StatusMessage}" TextWrapping="Wrap"
                  IsVisible="{Binding Library.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-      <Border Name="PlanPreview" Padding="12" CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource BorderSoftBrush}"
-              IsVisible="{Binding Activation.Preview.Title, Converter={x:Static ObjectConverters.IsNotNull}}">
-        <StackPanel Spacing="8">
-          <views:PlanPreviewView DataContext="{Binding Activation.Preview}" />
-          <TextBlock Classes="Secondary" TextWrapping="Wrap" IsVisible="{Binding Activation.CanApply}"
-                     Text="Nothing changes in your game until you apply it." />
-          <StackPanel Orientation="Horizontal" Spacing="12">
-            <Button Name="ApplyPlanButton" Classes="accent" Content="Apply" Command="{Binding Activation.ApplyCommand}"
-                    IsVisible="{Binding !Activation.CanLeaveOut}" />
-            <Button Name="LeaveOutButton" Classes="accent" Content="{Binding Activation.LeaveOutLabel}" Command="{Binding Activation.LeaveOutCommand}"
-                    IsVisible="{Binding Activation.CanLeaveOut}" />
-            <Button Name="CancelPlanButton" Content="Cancel" Command="{Binding Activation.CancelPlanCommand}" />
-          </StackPanel>
-        </StackPanel>
-      </Border>
       <TextBlock Name="ActivationStatus" Classes="Status" Classes.Error="{Binding Activation.IsError}" Text="{Binding Activation.StatusMessage}" TextWrapping="Wrap"
                  IsVisible="{Binding Activation.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       <TextBlock Name="LibraryEmpty" Classes="Secondary" TextWrapping="Wrap"

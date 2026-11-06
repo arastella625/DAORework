@@ -3,7 +3,6 @@ using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Avalonia.LogicalTree;
 using Avalonia.Threading;
-using Avalonia.VisualTree;
 using DAORework.App.Views;
 using Xunit;
 
@@ -41,12 +40,11 @@ public sealed class RealScaleScreensTests : IDisposable
         Dispatcher.UIThread.RunJobs();
         window.UpdateLayout();
 
-        var panel = window.GetLogicalDescendants().OfType<LoadOrderPanel>().Distinct().Single();
-        var scroller = panel.FindAncestorOfType<ScrollViewer>()!;
-        var apply = panel.GetLogicalDescendants().OfType<Button>().First(b => b.Name == "ApplyOrderButton");
-        var top = apply.TranslatePoint(default, scroller)!.Value.Y;
+        var apply = window.GetLogicalDescendants().OfType<Button>().First(b => b.Name == "ApplyOrderButton");
+        var top = apply.TranslatePoint(default, window)!.Value.Y;
         Assert.True(order.IsReordered);
-        Assert.InRange(top, 0, scroller.Viewport.Height - apply.Bounds.Height);
+        Assert.True(apply.IsEffectivelyVisible);
+        Assert.InRange(top, 0, window.Bounds.Height - apply.Bounds.Height);
         Screenshots.Save(window, "real-scale-screen-arrange-moved");
     }
 

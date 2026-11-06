@@ -59,40 +59,6 @@
                    Text="Mods you put in your game yourself. Manage them to turn them off or undo them later, like any other mod." />
       </StackPanel>
       <TextBlock Name="HandInstalledStatus" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" />
-      <Border Name="AdoptionPlan" Padding="12" CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource BorderSoftBrush}"
-              IsVisible="{Binding Adoption.Preview.Title, Converter={x:Static ObjectConverters.IsNotNull}}">
-        <StackPanel Spacing="8">
-          <views:PlanPreviewView DataContext="{Binding Adoption.Preview}" />
-          <StackPanel Name="WhoWinsSection" Spacing="4"
-                      IsVisible="{Binding Adoption.WhoWins.Count, Converter={x:Static views:CountConverters.IsPositive}}">
-            <TextBlock Classes="Label" Text="Who wins" />
-            <TextBlock Classes="Secondary" TextWrapping="Wrap"
-                       Text="These mods have different files with the same name, and your game can only use one. The other stays in your Library. Swap to change who wins." />
-            <ItemsControl Name="WhoWinsList" ItemsSource="{Binding Adoption.WhoWins}">
-              <ItemsControl.ItemTemplate>
-                <DataTemplate x:DataType="vm:WhoWinsRow">
-                  <Border Padding="0,6" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                      <StackPanel Spacing="2">
-                        <TextBlock Text="{Binding Title}" TextWrapping="Wrap" />
-                        <TextBlock Classes="Secondary" Text="{Binding Kinds}" TextWrapping="Wrap" />
-                      </StackPanel>
-                      <Button Grid.Column="1" Content="Swap" VerticalAlignment="Center" IsVisible="{Binding CanSwap}" CommandParameter="{Binding}"
-                              Command="{Binding $parent[views:HandInstalledPanel].((vm:HandInstalledViewModel)DataContext).Adoption.SwapCommand}" />
-                    </Grid>
-                  </Border>
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
-          </StackPanel>
-          <TextBlock Classes="Secondary" TextWrapping="Wrap"
-                     Text="Planning copied what is adopted into the Library, which writes only DAORework's own folder. Nothing in the documents folder moves until you apply it; a backup is taken first." />
-          <StackPanel Orientation="Horizontal" Spacing="12">
-            <Button Name="ApplyAdoptionButton" Classes="accent" Content="Apply" Command="{Binding Adoption.ApplyCommand}" />
-            <Button Name="CancelAdoptionButton" Content="Cancel" Command="{Binding Adoption.CancelPlanCommand}" />
-          </StackPanel>
-        </StackPanel>
-      </Border>
       <TextBlock Name="AdoptionStatus" Classes="Status" Classes.Error="{Binding Adoption.IsError}" Text="{Binding Adoption.StatusMessage}" TextWrapping="Wrap"
                  IsVisible="{Binding Adoption.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       <StackPanel Name="SelectionBar" Orientation="Horizontal" Spacing="8">

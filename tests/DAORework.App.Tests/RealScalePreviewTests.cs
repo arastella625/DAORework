@@ -72,10 +72,11 @@ public sealed class RealScalePreviewTests : IDisposable
         Dispatcher.UIThread.RunJobs();
         window.UpdateLayout();
 
-        var border = panel.GetLogicalDescendants().OfType<Border>().First(b => b.Name == "PlanPreview");
-        var top = border.TranslatePoint(default, scroller)!.Value.Y;
-        Assert.InRange(top, 0, scroller.Viewport.Height);
-        Assert.InRange(top + border.Bounds.Height, 0, scroller.Viewport.Height);
+        var border = window.GetLogicalDescendants().OfType<Border>().First(b => b.Name == "PlanPreview");
+        var top = border.TranslatePoint(default, window)!.Value.Y;
+        Assert.True(border.IsVisible);
+        Assert.InRange(top, 0, window.Bounds.Height);
+        Assert.InRange(top + border.Bounds.Height, 0, window.Bounds.Height);
         Screenshots.Save(window, "real-scale-03-preview-in-view");
     }
 

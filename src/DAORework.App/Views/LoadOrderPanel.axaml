@@ -31,16 +31,6 @@
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>
-      <Border Name="OrderPlan" Padding="12" CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource BorderSoftBrush}"
-              IsVisible="{Binding IsReordered}">
-        <StackPanel Spacing="8">
-          <views:PlanPreviewView DataContext="{Binding Preview}" />
-          <StackPanel Orientation="Horizontal" Spacing="12">
-            <Button Name="ApplyOrderButton" Classes="accent" Content="Apply" Command="{Binding ApplyCommand}" />
-            <Button Name="ResetOrderButton" Content="Back to the saved order" Command="{Binding ResetCommand}" />
-          </StackPanel>
-        </StackPanel>
-      </Border>
       <TextBlock Name="LoadOrderStatus" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" TextWrapping="Wrap"
                  IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       <TextBlock Classes="Label" Text="Files more than one mod changes"
