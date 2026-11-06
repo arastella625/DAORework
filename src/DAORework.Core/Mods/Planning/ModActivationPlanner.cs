@@ -50,7 +50,7 @@ public static class ModActivationPlanner
             state.Unchanged,
             state.Missing,
             state.Blockers,
-            conflicts)
+            conflicts with { UnmanagedShadows = ShadowsThatMatter.Keep(conflicts.UnmanagedShadows, input.Current.ActiveModIds, input.DiskHashes) })
         {
             CurrentRecord = input.Current,
             NextRecord = NextRecord(input, desired, state.AddInsChanges),

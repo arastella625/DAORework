@@ -66,8 +66,9 @@ public sealed class PlanModChange
             return Result.Failure<ModActivationPlan>(error);
         }
 
+        var hashes = await UnmanagedCopies.WithHashesAsync(_scanner, documents, record, targets, combine.Combined, disk, cancellationToken);
         var installOverride = _installOverride.Execute(request.InstallDirectory);
-        return ModActivationPlanner.Plan(new PlanInput(record, targets, disk.UnmanagedOverridePaths, disk.Hashes, disk.RegisteredAddInUids)
+        return ModActivationPlanner.Plan(new PlanInput(record, targets, disk.UnmanagedOverridePaths, hashes, disk.RegisteredAddInUids)
         {
             Combined = combine.Combined,
             CombineProblems = combine.Problems,
