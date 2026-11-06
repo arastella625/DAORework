@@ -149,6 +149,7 @@ public sealed partial class ModListFilter : ObservableObject
         var added = e.Action == NotifyCollectionChangedAction.Reset ? _mods : e.NewItems?.OfType<LibraryModRow>() ?? [];
         foreach (var row in added)
         {
+            row.PropertyChanged -= OnRowChanged; // A row kept from before is already watched.
             row.PropertyChanged += OnRowChanged;
         }
 

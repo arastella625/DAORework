@@ -20,6 +20,23 @@ public sealed class ModActivationScreenTests : IDisposable
     public void Dispose() => _host.Dispose();
 
     [AvaloniaFact]
+    public async Task WhileAChangeRuns_OnlyTheBannerSpeaks()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        await _scenario.ImportHairPackAsync(viewModel);
+        var activation = viewModel.ModsTab.Activation;
+        await activation.ActivateCommand.ExecuteAsync(viewModel.Library.Mods.Single());
+        var working = viewModel.ModsTab.Working;
+        var spokeDuringTheChange = false;
+        working.PropertyChanged += (_, _) => spokeDuringTheChange |= activation.Change.IsRunning && working.IsWorking;
+
+        await activation.ApplyCommand.ExecuteAsync(null);
+
+        Assert.False(activation.IsError, activation.StatusMessage);
+        Assert.False(spokeDuringTheChange);
+    }
+
+    [AvaloniaFact]
     public async Task ThePreview_SaysItIsBeingWorkedOut_UntilItIsReady()
     {
         var (_, viewModel) = await _scenario.OpenAsync();

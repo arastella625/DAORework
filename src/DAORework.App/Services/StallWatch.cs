@@ -13,7 +13,7 @@ public sealed class StallWatch
     /// <summary>The longest the thread should be held (ROADMAP, <i>Feeling quick</i>).</summary>
     public static readonly TimeSpan Limit = TimeSpan.FromMilliseconds(200);
 
-    private static readonly TimeSpan _tick = TimeSpan.FromMilliseconds(50);
+    private static readonly TimeSpan _tick = TimeSpan.FromMilliseconds(200);
 
     private readonly ILogger<StallWatch> _logger;
     private long _last;

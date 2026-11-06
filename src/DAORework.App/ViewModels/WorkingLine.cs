@@ -7,10 +7,25 @@ namespace DAORework.App.ViewModels;
 /// <summary>
 /// What the window is working on, for its footer (P2.6-45): without this a wait looks the same as nothing happening. The
 /// panels watched get a moment to paint before they start, since work on the window's thread would hold the line back.
+/// A change that is running has its own banner, and a panel stays busy through it, so the line says nothing then.
 /// </summary>
 public sealed partial class WorkingLine : ObservableObject
 {
     private readonly List<(PageViewModel Page, string What)> _watched = [];
+    private readonly ChangeInProgress _change;
+
+    public WorkingLine(ChangeInProgress change)
+    {
+        ArgumentNullException.ThrowIfNull(change);
+        _change = change;
+        change.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(ChangeInProgress.IsRunning))
+            {
+                Update();
+            }
+        };
+    }
 
     /// <summary>Gets what is being done, or null when nothing is.</summary>
     [ObservableProperty]
@@ -35,7 +50,9 @@ public sealed partial class WorkingLine : ObservableObject
     {
         if (e.PropertyName == nameof(PageViewModel.IsBusy))
         {
-            Text = _watched.Where(w => w.Page.IsBusy).Select(w => w.What).LastOrDefault();
+            Update();
         }
     }
+
+    private void Update() => Text = _change.IsRunning ? null : _watched.Where(w => w.Page.IsBusy).Select(w => w.What).LastOrDefault();
 }

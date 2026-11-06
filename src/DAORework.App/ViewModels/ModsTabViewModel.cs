@@ -163,13 +163,14 @@ public sealed class ModsTabViewModel
 
     private WorkingLine WorkingOn()
     {
-        var line = new WorkingLine();
+        var line = new WorkingLine(Activation.Change);
         line.Watch(Library, "Reading your mods");
         line.Watch(HandInstalled, "Looking at what's in your game");
         line.Watch(LoadOrder, "Working out which mods win");
         line.Watch(Activation, "Working out the preview");
         line.Watch(HandInstalled.Adoption, "Copying to your Library and working out the preview");
         line.Watch(LookFirst, "Looking at what you added");
+        line.Watch(Handover, "Working on your mods from Vortex");
         line.Watch(KeepCopy, "Working out what to keep");
         line.Watch(KeepEach, "Working out what to keep");
         return line;

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DAORework.App.Services;
 using DAORework.Core.Common;
 using Microsoft.Extensions.Logging;
 
@@ -11,8 +12,6 @@ namespace DAORework.App.ViewModels;
 /// </summary>
 public abstract partial class PageViewModel : ObservableObject
 {
-    private static readonly TimeSpan _slowWork = TimeSpan.FromMilliseconds(200);
-
     private readonly ILogger _logger;
     private int _shown;
 
@@ -112,7 +111,7 @@ public abstract partial class PageViewModel : ObservableObject
     /// <summary>Notes what took a while (P2.6-44), so a real run can be compared with the last.</summary>
     private void LogIfSlow(TimeSpan took)
     {
-        if (took > _slowWork)
+        if (took > StallWatch.Limit)
         {
             _logger.LogInformation("{ViewModel} took {Milliseconds} ms.", GetType().Name, (long)took.TotalMilliseconds);
         }

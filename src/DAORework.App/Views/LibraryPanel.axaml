@@ -39,6 +39,12 @@
                 IsVisible="{Binding Library.CopySets, Converter={x:Static views:CountConverters.IsPositive}}" />
       </StackPanel>
       <ItemsControl Name="LibraryMods" ItemsSource="{Binding Filter.VisibleMods}">
+        <!-- Only the rows on screen are built, so search and scrolling don't depend on how many mods there are (P2.6-49). -->
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <VirtualizingStackPanel />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="vm:LibraryModRow">
             <Border Padding="0,4" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
