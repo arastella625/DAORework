@@ -163,7 +163,7 @@ public sealed class ModsTabViewModel
 
     private WorkingLine WorkingOn()
     {
-        var line = new WorkingLine();
+        var line = new WorkingLine(Activation.Change);
         line.Watch(Library, "Reading your mods");
         line.Watch(HandInstalled, "Looking at what's in your game");
         line.Watch(LoadOrder, "Working out which mods win");
