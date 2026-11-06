@@ -138,7 +138,7 @@ public sealed class SharedCheckScreenTests : IDisposable
     }
 
     [AvaloniaFact]
-    public async Task FromFarDownTheList_ItComesIntoView()
+    public async Task Home_OpensTheModsTabAtTheTop_NotWhereItWasLeft()
     {
         var (window, viewModel) = await new RealScaleScenario(_host).OpenAsync();
         var page = window.GetVisualDescendants().OfType<ModsListPanel>().First().FindAncestorOfType<ScrollViewer>()!;
@@ -148,12 +148,12 @@ public sealed class SharedCheckScreenTests : IDisposable
 
         viewModel.SelectedPage = MainWindowViewModel.HomePage;
         window.UpdateLayout();
-        await viewModel.Home.OpenCommand.ExecuteAsync(HomeTarget.ModsCombined);
+        await viewModel.Home.OpenCommand.ExecuteAsync(HomeTarget.ModsLibrary); // The long list, where the place really is kept.
         window.UpdateLayout();
         Dispatcher.UIThread.RunJobs();
         window.UpdateLayout();
 
-        Assert.True(page.Offset.Y < 500, $"Still {page.Offset.Y} down the page.");
+        Assert.True(page.Offset.Y < 200, $"Still {page.Offset.Y} down the page.");
     }
 
     [AvaloniaFact]

@@ -168,5 +168,6 @@ public sealed partial class MainWindowViewModel : ObservableObject
         filter.Kind = target == HomeTarget.ModsCombined ? ModKindFilter.CombinedFiles : ModKindFilter.All;
         filter.Show = ModShowFilter.All;
         filter.Arranging = target == HomeTarget.ModsArrange;
+        filter.NoteOpenedFromHome();
     }
 }

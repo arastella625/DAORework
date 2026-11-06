@@ -11,19 +11,13 @@ public sealed partial class ModsListPanel : UserControl
         InitializeComponent();
     }
 
-    /// <summary>The page keeps its place between tabs, so <i>Find the problem mod</i> could otherwise open out of sight (P2.6-63).</summary>
+    /// <summary>The page keeps its place between tabs, so what Home opens, such as <i>Find the problem mod</i>, could be out of sight (P2.6-63).</summary>
     protected override void OnDataContextChanged(EventArgs e)
     {
         base.OnDataContextChanged(e);
-        if (DataContext is ModsTabViewModel { Filter: var filter })
+        if (DataContext is ModsTabViewModel tab)
         {
-            filter.PropertyChanged += (_, changed) =>
-            {
-                if (changed.PropertyName == nameof(ModListFilter.ShowsCombined) && filter.ShowsCombined)
-                {
-                    Dispatcher.UIThread.Post(() => FindProblemPanel.BringIntoView(), DispatcherPriority.Background);
-                }
-            };
+            tab.Filter.OpenedFromHome += (_, _) => Dispatcher.UIThread.Post(() => KindCards.BringIntoView(), DispatcherPriority.Background);
         }
     }
 }
