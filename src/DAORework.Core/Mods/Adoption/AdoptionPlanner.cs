@@ -25,11 +25,8 @@ public static class AdoptionPlanner
         ArgumentNullException.ThrowIfNull(input);
         ArgumentNullException.ThrowIfNull(adopted);
 
-        if (adopted.FirstOrDefault(a => input.Mods.Any(m => _paths.Equals(m.Id, a.Mod.Id))) is { } active)
-        {
-            return Failed(DiagnosticCodes.ModAdoptAlreadyActive, $"{active.Mod.Name} ({active.Mod.Id}) is already active; there is nothing to adopt.");
-        }
-
+        var leftovers = adopted.Where(a => input.Mods.Any(m => _paths.Equals(m.Id, a.Mod.Id))).ToList();
+        adopted = [.. adopted.Except(leftovers)];
         if (!Sources(adopted).TryGetValue(out var sources, out var error))
         {
             return Result.Failure<ModActivationPlan>(error);
@@ -46,7 +43,23 @@ public static class AdoptionPlanner
             return Result.Failure<ModActivationPlan>(error);
         }
 
-        return Result.Success(OnTheRealFolder(plan, current, sources));
+        return Result.Success(WithoutLeftovers(OnTheRealFolder(plan, current, sources), current, leftovers));
+    }
+
+    /// <summary>
+    /// A mod already on has its own deployed copy, so the files found in the game are leftovers, as when mods were turned
+    /// on before Vortex's copies were managed (P2.6-23). They are deleted with a backup; the library keeps the mod. A file
+    /// DAORework placed is never one, and the writer checks each hash again, so a file changed since is left alone.
+    /// </summary>
+    private static ModActivationPlan WithoutLeftovers(ModActivationPlan plan, DeploymentRecord current, List<AdoptedMod> leftovers)
+    {
+        var recorded = current.Files.Select(f => f.TargetPath).ToHashSet(_paths);
+        var deletes = leftovers
+            .SelectMany(a => a.Mod.Files.Where(f => !ProgramFiles.IsProgram(f) && a.SourceByLibraryPath.ContainsKey(f.RelativePath))
+                .Select(f => new PlanOperation(PlanAction.Delete, a.SourceByLibraryPath[f.RelativePath], a.Mod.Id, null, f.Sha256)))
+            .Where(o => !recorded.Contains(o.TargetPath))
+            .DistinctBy(o => o.TargetPath, _paths);
+        return plan with { Operations = [.. plan.Operations.Concat(deletes).OrderBy(o => o.Action).ThenBy(o => o.TargetPath, _paths)] };
     }
 
     private static ModActivationPlan OnTheRealFolder(ModActivationPlan plan, DeploymentRecord current, Dictionary<string, Source> sources)
@@ -101,8 +114,6 @@ public static class AdoptionPlanner
 
         return Result.Success(sources);
     }
-
-    private static Result<ModActivationPlan> Failed(string code, string message) => Result.Failure<ModActivationPlan>(new Error(code, message));
 
     private sealed record Source(string Path, string Sha256, string ModId);
 }

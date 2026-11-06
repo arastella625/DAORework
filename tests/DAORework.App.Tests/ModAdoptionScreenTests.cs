@@ -86,6 +86,38 @@ public sealed class ModAdoptionScreenTests : IDisposable
     }
 
     [AvaloniaFact]
+    public async Task Manage_AModAlreadyOn_ClearsItsLeftoverCopy_AndUndoPutsItBack()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        var loose = Path.Combine(GamePaths.OverrideDirectory(_scenario.DocumentsDirectory), "Hair Pack", "hair_pack.dds");
+        _host.FileSystem.AddFile(loose, new MockFileData("DDS hair"));
+        await _scenario.ImportHairPackAsync(viewModel);
+        await _scenario.ActivateHairPackAsync(viewModel);
+        var handInstalled = viewModel.HandInstalled;
+        await handInstalled.ScanCommand.ExecuteAsync(null);
+
+        await handInstalled.Adoption.AdoptCommand.ExecuteAsync(handInstalled.Candidates.Single(c => c.Title == "Hair Pack"));
+
+        Assert.False(handInstalled.Adoption.IsError, handInstalled.Adoption.StatusMessage);
+        Assert.True(handInstalled.Adoption.ApplyCommand.CanExecute(null));
+        Assert.True(_host.FileSystem.File.Exists(loose));
+
+        await handInstalled.Adoption.ApplyCommand.ExecuteAsync(null);
+
+        Assert.False(handInstalled.Adoption.IsError, handInstalled.Adoption.StatusMessage);
+        Assert.False(_host.FileSystem.File.Exists(loose));
+        Assert.Equal("DDS hair", _scenario.DeployedContent("hair_pack.dds"));
+        Assert.True(viewModel.Library.Mods.Single(m => m.Title == "Hair Pack").IsActive);
+
+        var changes = viewModel.ModsTab.Changes;
+        await changes.RollBackToCommand.ExecuteAsync(changes.Backups[0]);
+        await changes.ConfirmRollbackCommand.ExecuteAsync(null);
+
+        Assert.False(changes.IsError, changes.StatusMessage);
+        Assert.True(_host.FileSystem.File.Exists(loose));
+    }
+
+    [AvaloniaFact]
     public async Task Adopt_LooseFiles_NeedAName()
     {
         var (_, viewModel) = await _scenario.OpenAsync();

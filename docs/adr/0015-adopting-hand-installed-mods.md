@@ -53,6 +53,9 @@ why:
   copies BioWare content into its library, and never edits an official `AddIns.xml` entry.
 - An `AddInItem` with no folder, or a folder with no `AddInItem`, is reported as broken, not adopted.
 - Files DAORework already records are not candidates. They are already managed.
+- **A candidate that is a mod already on** is a leftover: the mod has its own deployed copy, so adopting it deletes the
+  files found in the game, with a backup, and changes nothing else. *(Amended 2026-11-05, P2.6-23: it was refused, which
+  left a player who turned mods on before managing them with two copies and no way to clear one. Same confirmed plan, backup and rollback as any adoption.)*
 
 ### How a candidate becomes a library mod
 Adoption is used in two ways, tried in order:
