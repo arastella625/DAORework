@@ -5,6 +5,7 @@ using DAORework.App.Services;
 using DAORework.App.Themes;
 using DAORework.App.ViewModels;
 using DAORework.App.Views;
+using DAORework.Application.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DAORework.App;
@@ -28,6 +29,14 @@ public sealed partial class App : Avalonia.Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var services = AppComposition.Build();
+            desktop.Exit += (_, _) => services.Dispose();
+            if (!services.GetRequiredService<IWindowLock>().TryTake())
+            {
+                desktop.MainWindow = new AlreadyOpenWindow(); // Two windows on one library could undo each other's changes (ADR-0044).
+                base.OnFrameworkInitializationCompleted();
+                return;
+            }
+
             FriendlyTimeConverter.Clock = services.GetRequiredService<TimeProvider>(); // Times read "Today, 18:05" (docs/VOICE.md).
             var window = services.GetRequiredService<MainWindowViewModel>();
             var looks = services.GetRequiredService<LookPresenter>();
@@ -35,7 +44,6 @@ public sealed partial class App : Avalonia.Application
             desktop.MainWindow = new MainWindow { DataContext = window };
             services.GetRequiredService<StallWatch>().Start();
             _ = services.GetRequiredService<ThemePreference>().ApplySavedAsync();
-            desktop.Exit += (_, _) => services.Dispose();
         }
 
         base.OnFrameworkInitializationCompleted();

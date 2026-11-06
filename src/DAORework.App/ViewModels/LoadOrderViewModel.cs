@@ -100,9 +100,6 @@ public sealed partial class LoadOrderViewModel : PageViewModel
     /// <summary>Moves a mod to <paramref name="place"/>, counted from 0, as dropping it does (ADR-0038). One move, one preview.</summary>
     public Task MoveToPlaceAsync(LoadOrderRow mod, int place, CancellationToken cancellationToken = default) => MoveToAsync(mod, place, cancellationToken);
 
-    /// <summary>Reads the saved order and its conflicts again, dropping any unapplied reordering.</summary>
-    public Task RefreshAsync(CancellationToken cancellationToken = default) => GuardAsync(token => PlanOrderAsync(null, token), cancellationToken);
-
     [RelayCommand]
     private Task MoveUpAsync(LoadOrderRow mod, CancellationToken cancellationToken) => MoveToAsync(mod, mod.Position - 2, cancellationToken);
 
@@ -182,6 +179,7 @@ public sealed partial class LoadOrderViewModel : PageViewModel
         if (!(await ProfileDocuments.FoldersAsync(_getProfile, ProfileName, cancellationToken)).TryGetValue(out var folders, out var error))
         {
             Show([], null);
+            SharedCheck = SharedFilesCheck.Done;
             return;
         }
 
@@ -205,6 +203,7 @@ public sealed partial class LoadOrderViewModel : PageViewModel
         ShowPacked(details, names);
         SharedSummary = SharedFileRank.Summary([.. plan.Conflicts.BetweenMods.Where(c => !c.SameContent).Select(c => c.FileName), .. details.Packed.Select(p => p.FileName)]);
         IsReordered = !plan.TargetModIds.SequenceEqual(_saved, StringComparer.OrdinalIgnoreCase);
+        SharedCheck = order is null ? SharedFilesCheck.Done : SharedCheck;
         if (IsReordered)
         {
             ShowPlan(plan, names);
