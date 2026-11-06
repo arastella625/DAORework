@@ -28,6 +28,13 @@ public sealed class ModsTabViewModel
         NewDownloads.AddAsync = library.ImportPathsAsync;
         Handover.TurnOnAsync = TurnOnAsync;
         Activation.ActiveModsChanged += (_, _) => Library.ShowActive(Activation.ActiveModIds);
+        LoadOrder.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(LoadOrderViewModel.ConflictMarks))
+            {
+                library.ShowConflicts(LoadOrder.ConflictMarks);
+            }
+        };
         Filter = new ModListFilter(library.Mods, handInstalled.Candidates);
         Selection = new LibrarySelectionViewModel(library.Mods, Filter.VisibleMods, Activation);
         Setup = new SetupSummary(this);

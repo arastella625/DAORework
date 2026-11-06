@@ -22,6 +22,7 @@ public sealed partial class LibraryViewModel : PageViewModel
     private readonly CheckKnownDownload _checkKnownDownload;
     private readonly IPathPicker _picker;
     private HashSet<string> _active = new(StringComparer.Ordinal);
+    private IReadOnlyDictionary<string, string> _marks = new Dictionary<string, string>();
 
     public LibraryViewModel(ListLibrary listLibrary, ImportMod importMod, CheckKnownDownload checkKnownDownload, IPathPicker picker, ILogger<LibraryViewModel> logger)
         : base(logger)
@@ -43,6 +44,16 @@ public sealed partial class LibraryViewModel : PageViewModel
         foreach (var row in Mods)
         {
             row.IsActive = _active.Contains(row.Id);
+        }
+    }
+
+    /// <summary>Shows what each mod's row says about its shared files, now and after every refresh (P2.6-33).</summary>
+    public void ShowConflicts(IReadOnlyDictionary<string, string> marks)
+    {
+        _marks = marks;
+        foreach (var row in Mods)
+        {
+            row.ConflictMark = marks.GetValueOrDefault(row.Id);
         }
     }
 
@@ -115,6 +126,7 @@ public sealed partial class LibraryViewModel : PageViewModel
         {
             var row = LibraryModRow.From(entry, _checkKnownDownload.Execute(entry), copies.GetValueOrDefault(entry.Mod.Id));
             row.IsActive = _active.Contains(row.Id);
+            row.ConflictMark = _marks.GetValueOrDefault(row.Id);
             Mods.Add(row);
         }
     }

@@ -53,6 +53,10 @@ public sealed partial class LoadOrderViewModel : PageViewModel
     /// <summary>Gets what <i>Combined files</i> lists: each shared file, or a row for each set of mods once there are too many to read.</summary>
     public ObservableCollection<FileConflictRow> SharedRows { get; } = [];
 
+    /// <summary>Gets what each mod's row says about its shared files in the saved order (P2.6-33).</summary>
+    [ObservableProperty]
+    public partial IReadOnlyDictionary<string, string> ConflictMarks { get; private set; } = new Dictionary<string, string>();
+
     /// <summary>Gets how many shared files differ between mods, set once the list is filled so the cards count it once.</summary>
     [ObservableProperty]
     public partial int OverlapCount { get; set; }
@@ -184,6 +188,7 @@ public sealed partial class LoadOrderViewModel : PageViewModel
         if (order is null)
         {
             _saved = plan.TargetModIds;
+            ConflictMarks = Core.Mods.Conflicts.ConflictMarks.For(plan.Conflicts.BetweenMods);
         }
 
         var details = await _details.ExecuteAsync(plan.TargetModIds, cancellationToken);

@@ -42,6 +42,9 @@
                     <StackPanel Orientation="Horizontal" Spacing="10">
                       <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
                       <TextBlock Classes="Secondary" VerticalAlignment="Center" Text="{Binding Glance}" />
+                      <TextBlock Name="ConflictMark" Classes="Secondary" FontStyle="Italic" VerticalAlignment="Center" Text="{Binding ConflictMark}"
+                                 ToolTip.Tip="This mod shares files with another. Arrange shows which and decides who wins."
+                                 IsVisible="{Binding ConflictMark, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                     </StackPanel>
                   </ToggleButton>
 <StackPanel Spacing="3" Margin="8,0,0,6" IsVisible="{Binding IsExpanded}">
