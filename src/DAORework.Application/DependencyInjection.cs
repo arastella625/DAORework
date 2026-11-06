@@ -99,6 +99,7 @@ public static class DependencyInjection
         services.AddSingleton<ImportMod>();
         services.AddSingleton<LookBeforeAdding>();
         services.AddSingleton<CopyFolders>();
+        services.AddSingleton<FindModsInside>();
         services.AddSingleton<PlanKeepCopy>();
         services.AddSingleton<PlanKeepEach>();
         services.AddSingleton<RecordSwap>();

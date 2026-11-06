@@ -31,13 +31,11 @@ public sealed class PlanKeepCopy
         }
 
         var on = folders.FirstOrDefault(f => StringComparer.OrdinalIgnoreCase.Equals(f.DocumentsDirectory, request.DocumentsDirectory))?.ActiveModIds;
-        var copies = ModCopies.Find(entries, on);
-        if (!copies.TryGetValue(request.KeepId, out var kept))
+        if (Others(request, entries, on) is not { } others)
         {
             return Result.Failure<KeepCopyPreview>(new Error(DiagnosticCodes.ModNotInLibrary, "This mod has no other copy to remove."));
         }
 
-        var others = entries.Where(e => e.Mod.Id != request.KeepId && copies.TryGetValue(e.Mod.Id, out var copy) && copy.Group == kept.Group).ToList();
         var plan = KeepOneCopy.Plan(entries.Single(e => e.Mod.Id == request.KeepId), others, request.DocumentsDirectory, folders);
         if (plan.SwappedOrder is null || plan.Problems.Count > 0 || request.DocumentsDirectory is not { } documents)
         {
@@ -48,5 +46,19 @@ public sealed class PlanKeepCopy
         return (await _plan.ExecuteAsync(new PlanModChangeRequest(documents, change, request.InstallDirectory), cancellationToken)).TryGetValue(out var swap, out error)
             ? Result.Success(new KeepCopyPreview(plan, swap))
             : Result.Failure<KeepCopyPreview>(error);
+    }
+
+    /// <summary>What goes: what was named, or else this mod's copies. Null when there is nothing to remove.</summary>
+    private static List<LibraryEntry>? Others(PlanKeepCopyRequest request, IReadOnlyList<LibraryEntry> entries, IEnumerable<string>? on)
+    {
+        if (request.Removing is { } named)
+        {
+            return [.. entries.Where(e => named.Contains(e.Mod.Id, StringComparer.Ordinal))];
+        }
+
+        var copies = ModCopies.Find(entries, on);
+        return copies.TryGetValue(request.KeepId, out var kept)
+            ? [.. entries.Where(e => e.Mod.Id != request.KeepId && copies.TryGetValue(e.Mod.Id, out var copy) && copy.Group == kept.Group)]
+            : null;
     }
 }

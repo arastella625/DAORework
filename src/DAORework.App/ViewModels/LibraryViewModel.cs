@@ -47,6 +47,9 @@ public sealed partial class LibraryViewModel : PageViewModel
     /// <summary>Gets or sets the look before adding (ADR-0039): it holds back what looks already held, and returns the paths to add now.</summary>
     public Func<IReadOnlyList<string>, CancellationToken, Task<IReadOnlyList<string>>>? LookFirstAsync { get; set; }
 
+    /// <summary>Gets or sets how a row finds the bigger mod it is inside (ADR-0041).</summary>
+    public Func<IReadOnlyList<LibraryEntry>, IReadOnlyDictionary<string, ModInside>>? FindInside { get; set; }
+
     public Task LoadAsync(CancellationToken cancellationToken = default) => GuardAsync(RefreshAsync, cancellationToken);
 
     /// <summary>Marks the mods active in the selected profile's documents folder, now and after every refresh.</summary>
@@ -173,6 +176,7 @@ public sealed partial class LibraryViewModel : PageViewModel
         // Nothing of a mod like a folder of Mac leftovers reaches the game (ADR-0036), so it isn't one; if it is on, it can still be turned off.
         var shown = entries.Where(e => _active.Contains(e.Mod.Id) || !e.Mod.Files.All(f => NonModFiles.Is(f.RelativePath))).ToList();
         var copies = ModCopies.Find(shown, _active);
+        var inside = FindInside?.Invoke(shown) ?? new Dictionary<string, ModInside>();
         var sets = copies.Values.GroupBy(c => c.Group, StringComparer.OrdinalIgnoreCase).ToList();
         CopySets = sets.Count;
         CopiesToClear = sets.Count(s => s.Any(c => c.HoldsAll));
@@ -180,7 +184,8 @@ public sealed partial class LibraryViewModel : PageViewModel
         var rows = new List<LibraryModRow>();
         foreach (var entry in shown)
         {
-            var read = LibraryModRow.From(entry, _checkKnownDownload.Execute(entry), copies.GetValueOrDefault(entry.Mod.Id));
+            var copy = copies.GetValueOrDefault(entry.Mod.Id);
+            var read = LibraryModRow.From(entry, _checkKnownDownload.Execute(entry), copy, copy is null ? inside.GetValueOrDefault(entry.Mod.Id) : null);
             var row = onScreen.TryGetValue(read.Id, out var same) && same.ShowsTheSameAs(read) ? same : read;
             row.IsActive = _active.Contains(row.Id);
             row.ConflictMark = _marks.GetValueOrDefault(row.Id);

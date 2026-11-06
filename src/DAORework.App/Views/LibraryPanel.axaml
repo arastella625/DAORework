@@ -77,6 +77,10 @@
                               ToolTip.Tip="Remove this mod's other copies from your Library. You'll see a preview first."
                               IsVisible="{Binding Copy, Converter={x:Static ObjectConverters.IsNotNull}}"
                               Command="{Binding $parent[views:LibraryPanel].((vm:ModsTabViewModel)DataContext).KeepCopy.PlanKeepCommand}" />
+                      <Button Name="KeepWholeButton" Content="{Binding KeepWholeLabel}" HorizontalAlignment="Left" CommandParameter="{Binding}"
+                              ToolTip.Tip="Remove this mod from your Library and keep the bigger one. You'll see a preview first."
+                              IsVisible="{Binding Inside, Converter={x:Static ObjectConverters.IsNotNull}}"
+                              Command="{Binding $parent[views:LibraryPanel].((vm:ModsTabViewModel)DataContext).KeepCopy.PlanKeepWholeCommand}" />
                       <Button Content="Open the mod's page" HorizontalAlignment="Left" CommandParameter="{Binding PageLink}"
                               IsVisible="{Binding PageLink, Converter={x:Static ObjectConverters.IsNotNull}}"
                               Command="{Binding $parent[views:LibraryPanel].((vm:ModsTabViewModel)DataContext).ModPage.OpenCommand}" />

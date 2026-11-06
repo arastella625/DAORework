@@ -48,6 +48,34 @@ public sealed class RealScaleBatchTests : IDisposable
     }
 
     [AvaloniaFact]
+    public async Task AModInsideABiggerOne_OfAnotherName_SaysSo_AndOffersToKeepTheBiggerOne()
+    {
+        var whole = RealScaleLibrary.Entries.First(e => e.Mod.Name == "Big Texture Pack");
+        var mod = whole.Mod with { Id = "lite-pack-1", Name = "Lite Pack", Files = [.. whole.Mod.Files.Take(20)] };
+        var (_, viewModel) = await _scenario.OpenAsync(extra: [whole with { Mod = mod }]);
+
+        var row = viewModel.Library.Mods.Single(m => m.Title == "Lite Pack");
+
+        Assert.Equal(whole.Mod.Id, row.Inside!.WholeId);
+        Assert.Equal("Keep Big Texture Pack", row.KeepWholeLabel);
+        Assert.Contains(row.Notes, n => n.StartsWith("Everything in this mod is also in Big Texture Pack", StringComparison.Ordinal));
+        Assert.Null(row.Copy);
+
+        await viewModel.ModsTab.KeepCopy.PlanKeepWholeCommand.ExecuteAsync(row);
+
+        var keep = viewModel.ModsTab.KeepCopy;
+        Assert.False(keep.IsError, keep.StatusMessage);
+        Assert.Equal("Keep Big Texture Pack", keep.Preview.Title);
+        Assert.Equal("Remove Lite Pack", keep.RemoveLabel);
+        Assert.StartsWith("Removes Lite Pack from your Library", keep.Preview.Summary, StringComparison.Ordinal);
+
+        await keep.RemoveOthersCommand.ExecuteAsync(null);
+
+        Assert.False(keep.IsError, keep.StatusMessage);
+        Assert.DoesNotContain(viewModel.Library.Mods, m => m.Title == "Lite Pack");
+    }
+
+    [AvaloniaFact]
     public async Task CombinedFiles_WithNearlyEveryModOn_SaysWhatMatters_MostSeriousFirst()
     {
         var (window, viewModel) = await _scenario.OpenAsync();
