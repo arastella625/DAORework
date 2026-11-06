@@ -470,6 +470,10 @@ made-up mods, which is how it got through.)*
 - P2.6-19 Arrange moves a mod far in one step ([#144](https://github.com/arastella625/DAORework/issues/144)): *To top*
   and *To bottom*, each with one preview. Dragging a mod to a place in the middle waits for the design pass's answer.
 
+- P2.6-21 *Manage* shows who wins: mods with different files of the same name are listed by set, each with *Swap*,
+  which plans again in the new order (ADR-0015's "the user can reorder before confirming"). On the owner's library
+  all 46 such files were in different folders, so Vortex's record can't settle them.
+
 **Keeping the tests honest on Windows** *(added 2026-11-05, from P2.6-02)*.
 
 - P2.6-09 Run the tests on Windows in CI: `ci.yml` runs them on Linux only, which is how P2.6-02's failures reached

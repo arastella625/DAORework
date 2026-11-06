@@ -64,7 +64,11 @@ public static class SharedFileNotes
             $"{nameOf(first.Winner.ModId)} wins over {PlanWords.Names(first.OtherModIds, nameOf)}",
             PlanWords.List(kinds),
             [.. group.Select(c => c.FileName)],
-            group.TrueForAll(c => c.SameContent));
+            group.TrueForAll(c => c.SameContent))
+        {
+            WinnerModId = first.Winner.ModId,
+            OtherModIds = first.OtherModIds,
+        };
     }
 
     private static bool IsBehaviour(OverrideConflict conflict) => _behaviour.Contains(Path.GetExtension(conflict.FileName));
