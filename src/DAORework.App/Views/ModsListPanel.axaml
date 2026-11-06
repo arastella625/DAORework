@@ -36,7 +36,10 @@
       </ItemsControl.ItemTemplate>
     </ItemsControl>
 
-    <views:NextMovePanel DataContext="{Binding NextMove}" IsVisible="{Binding IsShown}" x:DataType="vm:NextMoveCard" />
+    <!-- Not while arranging: it has no job there, and the list needs the room. -->
+    <Panel IsVisible="{Binding !Filter.Arranging}">
+      <views:NextMovePanel DataContext="{Binding NextMove}" IsVisible="{Binding IsShown}" x:DataType="vm:NextMoveCard" />
+    </Panel>
     <views:VortexHandoverPanel DataContext="{Binding Handover}" IsVisible="{Binding IsShown}" x:DataType="vm:VortexHandoverViewModel" />
     <views:NewDownloadsPanel DataContext="{Binding NewDownloads}" IsVisible="{Binding IsShown}" x:DataType="vm:NewDownloadsViewModel" />
 
