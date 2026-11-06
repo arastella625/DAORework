@@ -170,6 +170,7 @@ public sealed class ModsTabViewModel
         line.Watch(Activation, "Working out the preview");
         line.Watch(HandInstalled.Adoption, "Copying to your Library and working out the preview");
         line.Watch(LookFirst, "Looking at what you added");
+        line.Watch(Handover, "Working on your mods from Vortex");
         line.Watch(KeepCopy, "Working out what to keep");
         line.Watch(KeepEach, "Working out what to keep");
         return line;

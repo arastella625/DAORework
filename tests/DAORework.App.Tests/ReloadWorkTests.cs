@@ -125,6 +125,6 @@ public sealed class ReloadWorkTests : IDisposable
 
         await handInstalled.RefreshAsync(TestContext.Current.CancellationToken);
 
-        Assert.InRange(changes, 1, 2 + handInstalled.Candidates.Count(c => c.IsInGameFolder));
+        Assert.InRange(changes, 1, 1 + handInstalled.Candidates.Count(c => c.IsInGameFolder));
     }
 }

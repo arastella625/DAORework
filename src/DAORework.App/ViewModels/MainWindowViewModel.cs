@@ -45,6 +45,9 @@ public sealed partial class MainWindowViewModel : ObservableObject
         Diagnostics.AfterReportAsync = Home.ShowReportAsync;
         NextSteps.TakeStepAsync = TakeStepAsync;
         Home.Watch(ModsTab, Fixes);
+        ModsTab.Working.Watch(Diagnostics, "Checking your game");
+        ModsTab.Working.Watch(Fixes.Change, "Working out the preview");
+        ModsTab.Working.Watch(Saves, "Working on your saves");
         Home.CheckAsync = _ => Diagnostics.RunDiagnosticsCommand.ExecuteAsync(null);
         Home.NavigateAsync = OpenFromHomeAsync;
         ModsTab.NextMove.OpenAsync = (target, token) => OpenFromHomeAsync(target, null, token);

@@ -137,18 +137,22 @@ public sealed partial class HandInstalledViewModel : PageViewModel
 
     private void ClearCandidates()
     {
-        foreach (var candidate in Candidates)
-        {
-            candidate.PropertyChanged -= OnCandidateChanged;
-        }
-
+        Unwatch();
         Candidates.Clear();
         SelectionChanged();
     }
 
+    private void Unwatch()
+    {
+        foreach (var candidate in Candidates)
+        {
+            candidate.PropertyChanged -= OnCandidateChanged;
+        }
+    }
+
     private void Show(AdoptionScan scan)
     {
-        ClearCandidates();
+        Unwatch();
         NotAdoptable.Clear();
         var rows = scan.Candidates.Select(HandInstalledModRow.From).ToList();
         rows.ForEach(r => r.PropertyChanged += OnCandidateChanged);

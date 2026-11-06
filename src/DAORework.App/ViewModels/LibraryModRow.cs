@@ -79,7 +79,7 @@ public sealed partial class LibraryModRow : ObservableObject
     {
         ArgumentNullException.ThrowIfNull(other);
         return Id == other.Id && Title == other.Title && Details == other.Details && Warning == other.Warning
-            && PageLink == other.PageLink && Copy == other.Copy && Notes.SequenceEqual(other.Notes);
+            && PageLink == other.PageLink && AddedAt == other.AddedAt && Copy == other.Copy && Notes.SequenceEqual(other.Notes);
     }
 
     /// <param name="entry">The library mod.</param>
