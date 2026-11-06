@@ -48,6 +48,9 @@ public static class AdoptionPlanner
         return Result.Success(WithoutLeftovers(OnTheRealFolder(plan, current, sources), current, leftovers) with { AdoptedModIds = [.. asked.Select(a => a.Mod.Id)] });
     }
 
+    /// <summary>What stops this one mod being adopted, if anything, so a batch can go on without it (P2.6-53).</summary>
+    public static Error? ProblemWith(AdoptedMod mod) => Sources([mod]).Error;
+
     /// <summary>
     /// A mod already on has its own deployed copy, so the files found in the game are leftovers, as when mods were turned
     /// on before Vortex's copies were managed (P2.6-23). They are deleted with a backup; the library keeps the mod. A file

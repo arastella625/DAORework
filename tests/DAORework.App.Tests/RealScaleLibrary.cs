@@ -34,6 +34,9 @@ internal static class RealScaleLibrary
     /// <summary>Gets the mods that are on before the player does anything, as in the library this is modelled on.</summary>
     public static IReadOnlyList<string> AlreadyOn { get; } = ["Item Pack", "Companion Gifts", "Dye Kit", "Tactics Slots", "Better Skies", "Forest Retexture", "Mage Staves"];
 
+    /// <summary>Gets the mods whose preview stops until they are left out.</summary>
+    public static IReadOnlyList<string> Blocked { get; } = [BlockedProgram, BlockedRegistered, BlockedInTheWay];
+
     public static IReadOnlyList<LibraryEntry> Entries { get; } = Build();
 
     /// <summary>Gets the same library with what a real one gathers: 139 entries, 51 sets, about 6 GB of extras, and two parts of mods.</summary>

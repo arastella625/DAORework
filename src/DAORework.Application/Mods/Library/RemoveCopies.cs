@@ -40,16 +40,20 @@ public sealed class RemoveCopies
             return Result.Failure(new Error(DiagnosticCodes.ModCopyStillOn, $"A copy is still on in {on.DocumentsDirectory}, so nothing was removed.", "Turn it off there first."));
         }
 
-        for (var done = 0; done < modIds.Count; done++)
+        var failed = modIds.Select(id => (Id: id, Error: Remove(id, cancellationToken))).Where(r => r.Error is not null).ToList();
+        if (failed.Count > 0)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            var removed = _remover.Remove(modIds[done]);
-            if (removed.Error is { } failed)
-            {
-                return done == 0 ? removed : Result.Failure(failed with { Message = $"Stopped after removing {done} of {modIds.Count}: {failed.Message}" });
-            }
+            var removed = modIds.Count - failed.Count;
+            var first = failed[0].Error!; // The filter above keeps only failures.
+            return Result.Failure(removed == 0 ? first : first with { Message = $"Removed {removed} of {modIds.Count}. {first.Message}" });
         }
 
         return Result.Success();
+    }
+
+    private Error? Remove(string modId, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return _remover.Remove(modId).Error;
     }
 }

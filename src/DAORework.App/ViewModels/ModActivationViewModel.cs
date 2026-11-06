@@ -5,6 +5,7 @@ using DAORework.Application.Mods.Apply;
 using DAORework.Application.Mods.Changes;
 using DAORework.Application.Profiles;
 using DAORework.Core.Common;
+using DAORework.Core.Mods.Apply;
 using DAORework.Core.Mods.Planning;
 using Microsoft.Extensions.Logging;
 
@@ -97,11 +98,16 @@ public sealed partial class ModActivationViewModel : PageViewModel
                 }
 
                 var title = Preview.Title ?? "Making the change";
+                var planned = _planned;
                 ClearPlan();
                 if (!(await _apply.ApplyAsync(title, new ApplyModPlanRequest(pending.Documents, pending.Plan), token)).TryGetValue(out var report, out var error))
                 {
-                    ReportError(error with { Message = $"The change did not complete: {error.Message}" });
-                    await ReadActiveAsync(token);
+                    if (!await GoOnWithoutAsync(error, pending.Documents, planned, token))
+                    {
+                        ReportError(error with { Message = $"The change did not complete: {error.Message}" });
+                        await ReadActiveAsync(token);
+                    }
+
                     return;
                 }
 
@@ -111,9 +117,40 @@ public sealed partial class ModActivationViewModel : PageViewModel
                     await AfterChangeAsync(token);
                 }
 
-                ReportSuccess("Done. You can undo it in History.");
+                if (planned is { LeftOut.Count: > 0 })
+                {
+                    ReportStatus(LeftOut.Outcome($"Turned on {Counted.Of(planned.Mods.Count, "mod")}.", planned.LeftOut));
+                }
+                else
+                {
+                    ReportSuccess("Done. You can undo it in History.");
+                }
             },
             cancellationToken);
+
+    /// <summary>
+    /// One mod's file stopped a batch partway (P2.6-53): the change is put back as if it never started, and the rest
+    /// comes back as a preview without that mod, so nothing happens that the player hasn't seen.
+    /// </summary>
+    /// <returns>Whether there is a new preview. If not, the change stays unfinished for History to settle.</returns>
+    private async Task<bool> GoOnWithoutAsync(Error error, string documents, PlannedChange? planned, CancellationToken cancellationToken)
+    {
+        if (planned is not { Kind: ModChangeKind.Activate, Mods.Count: > 1 }
+            || planned.Mods.FirstOrDefault(m => string.Equals(m.Id, error.ModId, StringComparison.OrdinalIgnoreCase)) is not { } failed
+            || (await _apply.RecoverAsync(new RecoverModPlanRequest(documents, RecoveryChoice.RollBack), cancellationToken)).IsFailure)
+        {
+            return false;
+        }
+
+        await ReadActiveAsync(cancellationToken);
+        if (AfterChangeAsync is not null)
+        {
+            await AfterChangeAsync(cancellationToken);
+        }
+
+        await PlanNowAsync(planned with { Mods = [.. planned.Mods.Except([failed])], LeftOut = [.. planned.LeftOut, new LeftOutMod(failed.Title, "One of its files couldn't be placed.", error.Cause)] }, cancellationToken);
+        return true;
+    }
 
     /// <summary>Plans the same change again without the mods that stop it, which stay in the Library and can be turned on later.</summary>
     [RelayCommand(CanExecute = nameof(CanLeaveOut))]
@@ -125,7 +162,8 @@ public sealed partial class ModActivationViewModel : PageViewModel
         }
 
         var leftOut = LeftOut.Of(pending.Plan, planned.Mods);
-        return PlanAsync(planned with { Mods = [.. planned.Mods.Except(leftOut)], LeftOut = [.. planned.LeftOut, .. leftOut] }, cancellationToken);
+        var reasons = leftOut.Select(m => new LeftOutMod(m.Title, LeftOut.Why(pending.Plan, m.Id, Preview.NameOf)));
+        return GuardAsync(token => PlanNowAsync(planned with { Mods = [.. planned.Mods.Except(leftOut)], LeftOut = [.. planned.LeftOut, .. reasons] }, token), cancellationToken);
     }
 
     [RelayCommand]
@@ -144,42 +182,35 @@ public sealed partial class ModActivationViewModel : PageViewModel
 
     /// <summary>Plans the change as above, and puts back official DLC entries too (ADR-0028 §3).</summary>
     public Task PlanChangeAsync(ModChangeKind kind, IReadOnlyList<LibraryModRow> mods, IReadOnlyList<AddInsListChange> restoredAddIns, CancellationToken cancellationToken) =>
-        PlanAsync(new PlannedChange(kind, mods, restoredAddIns, []), cancellationToken);
+        GuardAsync(token => PlanNowAsync(new PlannedChange(kind, mods, restoredAddIns, []), token), cancellationToken);
 
-    private Task PlanAsync(PlannedChange change, CancellationToken cancellationToken) =>
-        GuardAsync(
-            async token =>
-            {
-                ClearPlan();
-                ReportSuccess(string.Empty);
-                if (change.Mods.Count == 0)
-                {
-                    return;
-                }
+    private async Task PlanNowAsync(PlannedChange change, CancellationToken cancellationToken)
+    {
+        ClearPlan();
+        ReportSuccess(string.Empty);
+        if (change.Mods.Count == 0)
+        {
+            return;
+        }
 
-                var request = new ModChange(change.Kind, [.. change.Mods.Select(m => m.Id)]);
-                if (!(await ProfileDocuments.FoldersAsync(_getProfile, ProfileName, token)).TryGetValue(out var folders, out var error)
-                    || !(await _plan.ExecuteAsync(new PlanModChangeRequest(folders.Documents, request, folders.Install) { RestoredAddIns = change.RestoredAddIns }, token)).TryGetValue(out var plan, out error))
-                {
-                    ReportError(error);
-                    return;
-                }
+        var request = new ModChange(change.Kind, [.. change.Mods.Select(m => m.Id)]);
+        if (!(await ProfileDocuments.FoldersAsync(_getProfile, ProfileName, cancellationToken)).TryGetValue(out var folders, out var error)
+            || !(await _plan.ExecuteAsync(new PlanModChangeRequest(folders.Documents, request, folders.Install) { RestoredAddIns = change.RestoredAddIns }, cancellationToken)).TryGetValue(out var plan, out error))
+        {
+            ReportError(error);
+            return;
+        }
 
-                var verb = change.Kind == ModChangeKind.Activate ? "Turn on" : "Turn off";
-                Preview.Show(PlanPreview.TitleFor(verb, [.. change.Mods.Select(m => m.Title)]), plan);
-                if (change.LeftOut.Count > 0)
-                {
-                    Preview.Notes.Insert(0, LeftOut.Note(change.LeftOut));
-                }
-
-                _pending = (folders.Documents, plan);
-                _planned = change;
-                CanApply = !plan.IsBlocked && !plan.IsEmpty;
-                var leftOut = change.Kind == ModChangeKind.Activate ? LeftOut.Of(plan, change.Mods) : [];
-                LeaveOutLabel = LeftOut.Label(leftOut);
-                CanLeaveOut = leftOut.Count > 0;
-            },
-            cancellationToken);
+        var verb = change.Kind == ModChangeKind.Activate ? "Turn on" : "Turn off";
+        Preview.Show(PlanPreview.TitleFor(verb, [.. change.Mods.Select(m => m.Title)]), plan);
+        LeftOut.Show(Preview, change.LeftOut, "in your Library, off");
+        _pending = (folders.Documents, plan);
+        _planned = change;
+        CanApply = !plan.IsBlocked && !plan.IsEmpty;
+        var leftOut = change.Kind == ModChangeKind.Activate ? LeftOut.Of(plan, change.Mods) : [];
+        LeaveOutLabel = LeftOut.Label([.. leftOut.Select(m => m.Title)]);
+        CanLeaveOut = leftOut.Count > 0;
+    }
 
     /// <summary>
     /// What is active in the profile's documents folder. A profile without one simply has nothing active, which the

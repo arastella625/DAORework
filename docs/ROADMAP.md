@@ -511,6 +511,11 @@ made-up mods, which is how it got through.)*
 - P2.6-41 Count the differing files by kind on a real library, which sets the order of P3-01, P3-08 and combining (ADR-0040). *Done: of 50 names that differ, 44 are textures, 3 scripts, 2 materials and 1 a cutscene, with no tables. Choosing who wins for each file comes first, and tables wait.*
 - P2.6-42 Keep one of each: every set of copies cleared from one preview, parts of mods included, offered as the next step, with each pick changeable and nothing lost unless the player picks ([ADR-0039](adr/0039-look-first-and-keep-one-copy.md)).
 
+**When something goes wrong** *(added 2026-11-06, the owner's focus on less technical players)*. A problem should come
+with a diagnosis and a way forward, not leave a player stuck. The owner saw a raw error stop a batch of 54 mods.
+
+- P2.6-53 Skip what fails: a batch goes on without the mod that fails and says which and why, and no exception's text reaches the window.
+
 **Feeling quick** *(added 2026-11-06, the owner's wish, from clearing copies on a messy real library)*. Buttons don't
 always highlight, and during a wait it isn't clear whether to wait or press again. Measured on `RealScaleLibrary` (138 mods,
 made-up files, no real disk, so a real library is slower):

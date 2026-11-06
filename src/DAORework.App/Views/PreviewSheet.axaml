@@ -132,7 +132,10 @@
           </StackPanel>
         </ScrollViewer>
         <StackPanel Orientation="Horizontal" Spacing="12">
-          <Button Name="ApplyAdoptionButton" Classes="accent" Content="Apply" Command="{Binding HandInstalled.Adoption.ApplyCommand}" />
+          <Button Name="ApplyAdoptionButton" Classes="accent" Content="Apply" Command="{Binding HandInstalled.Adoption.ApplyCommand}"
+                  IsVisible="{Binding !HandInstalled.Adoption.CanLeaveOut}" />
+          <Button Name="LeaveOutAdoptionButton" Classes="accent" Content="{Binding HandInstalled.Adoption.LeaveOutLabel}" Command="{Binding HandInstalled.Adoption.LeaveOutCommand}"
+                  IsVisible="{Binding HandInstalled.Adoption.CanLeaveOut}" />
           <Button Name="CancelAdoptionButton" Content="Cancel" Command="{Binding HandInstalled.Adoption.CancelPlanCommand}" />
         </StackPanel>
       </StackPanel>
