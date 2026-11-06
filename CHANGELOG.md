@@ -7,6 +7,7 @@ All notable changes to DAORework are recorded here. The format follows
 ## [Unreleased]
 
 ### Changed
+- A preview no longer warns about a file in your override folder that is the same as the mod's (P2.6-20), since nothing depends on which copy the game picks, and it only mentions the mods you're changing. Files Vortex left there no longer fill a preview with warnings.
 - *Arrange* has *To top* and *To bottom* (P2.6-19): a mod goes all the way in one click and one preview, instead of one for each place.
 - A mod you hold twice says so, and *Select all* picks one copy (P2.6-18): the one that's on, or else the newest. Two copies of an add-in can't be on together, so selecting both used to stop the preview.
 - *Combined files* stays readable with many mods (P2.6-16): past 30 shared files it shows a row for each set of mods. History counts the mods that are on once there are more than three.

@@ -470,6 +470,10 @@ made-up mods, which is how it got through.)*
 - P2.6-19 Arrange moves a mod far in one step ([#144](https://github.com/arastella625/DAORework/issues/144)): *To top*
   and *To bottom*, each with one preview. Dragging a mod to a place in the middle waits for the design pass's answer.
 
+- P2.6-20 A preview warns only when it matters: a file in the override folder that DAORework doesn't manage is compared
+  with the mod's, and one with the same content isn't mentioned; only mods the change adds are. On the owner's library
+  all 551 files warned about were the same as Vortex's copies. ADR-0012 is amended.
+
 **Keeping the tests honest on Windows** *(added 2026-11-05, from P2.6-02)*.
 
 - P2.6-09 Run the tests on Windows in CI: `ci.yml` runs them on Linux only, which is how P2.6-02's failures reached
