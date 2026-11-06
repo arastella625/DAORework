@@ -44,6 +44,8 @@ record that names a mod needs that mod to plan anything, and a moved file can co
   nothing. The preview lists those files first.
 - The swap is an existing kind of change, so ADR-0014 needs no new gate scenario. Removal touches only the Library, and
   its order is covered by tests.
+- A copy on in a folder no profile names any more can't be seen, since records can't be listed. Pointing a profile back
+  there says the mod isn't in the Library, and adding the same download again settles it.
 - The window comes first. `mods keep` for the command line is a later task.
 
 ## Alternatives considered

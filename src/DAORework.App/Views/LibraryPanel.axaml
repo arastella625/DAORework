@@ -17,6 +17,8 @@
       </Grid>
       <TextBlock Name="LibraryStatus" Classes="Status" Classes.Error="{Binding Library.IsError}" Text="{Binding Library.StatusMessage}" TextWrapping="Wrap"
                  IsVisible="{Binding Library.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+      <TextBlock Name="KeepCopyStatus" Classes="Status" Classes.Error="{Binding KeepCopy.IsError}" Text="{Binding KeepCopy.StatusMessage}" TextWrapping="Wrap"
+                 IsVisible="{Binding KeepCopy.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       <TextBlock Name="ActivationStatus" Classes="Status" Classes.Error="{Binding Activation.IsError}" Text="{Binding Activation.StatusMessage}" TextWrapping="Wrap"
                  IsVisible="{Binding Activation.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       <TextBlock Name="LibraryEmpty" Classes="Secondary" TextWrapping="Wrap"
@@ -58,6 +60,10 @@
                           </DataTemplate>
                         </ItemsControl.ItemTemplate>
                       </ItemsControl>
+                      <Button Name="KeepCopyButton" Content="Keep this one" HorizontalAlignment="Left" CommandParameter="{Binding}"
+                              ToolTip.Tip="Remove this mod's other copies from your Library. You'll see a preview first."
+                              IsVisible="{Binding Copy, Converter={x:Static ObjectConverters.IsNotNull}}"
+                              Command="{Binding $parent[views:LibraryPanel].((vm:ModsTabViewModel)DataContext).KeepCopy.PlanKeepCommand}" />
                       <Button Content="Open the mod's page" HorizontalAlignment="Left" CommandParameter="{Binding PageLink}"
                               IsVisible="{Binding PageLink, Converter={x:Static ObjectConverters.IsNotNull}}"
                               Command="{Binding $parent[views:LibraryPanel].((vm:ModsTabViewModel)DataContext).ModPage.OpenCommand}" />

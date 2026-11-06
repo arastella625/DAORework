@@ -2,6 +2,7 @@ using DAORework.Application.Abstractions;
 using DAORework.Application.Mods.Backups;
 using DAORework.Core.Common;
 using DAORework.Core.Diagnostics;
+using DAORework.Core.Fixes;
 using DAORework.Core.Mods.Backups;
 using DAORework.Core.Mods.Planning;
 
@@ -17,9 +18,11 @@ public sealed class RollBackModChange
     private readonly IDeploymentBackupStore _backups;
     private readonly RestoreDeployment _restore;
     private readonly IDeploymentRecordStore _records;
+    private readonly IModLibrary _library;
 
-    public RollBackModChange(IApplyJournalStore journals, IDeploymentBackupStore backups, RestoreDeployment restore, IDeploymentRecordStore records)
+    public RollBackModChange(IApplyJournalStore journals, IDeploymentBackupStore backups, RestoreDeployment restore, IDeploymentRecordStore records, IModLibrary library)
     {
+        _library = library;
         _journals = journals;
         _backups = backups;
         _restore = restore;
@@ -49,6 +52,14 @@ public sealed class RollBackModChange
             return Result.Failure<RestoreReport>(new Error(DiagnosticCodes.ModBackupNotFound, $"There is no change in {documents} to roll back."));
         }
 
+        if (await RemovedModsAsync(backup.PreviousRecord, cancellationToken) is { Count: > 0 } removed)
+        {
+            return Result.Failure<RestoreReport>(new Error(
+                DiagnosticCodes.ModUndoNeedsRemovedMod,
+                $"This can't be undone: it goes back to {string.Join(", ", removed)}, no longer in your Library.",
+                "Add the same download again, then undo."));
+        }
+
         var restored = await _restore.ExecuteAsync(new RestoreDeploymentRequest(documents, backup.Id), cancellationToken);
         if (restored.IsSuccess)
         {
@@ -56,6 +67,13 @@ public sealed class RollBackModChange
         }
 
         return restored;
+    }
+
+    /// <summary>The mods the earlier state names that left the Library (ADR-0039). Going back would leave a record no later plan could use.</summary>
+    private async Task<List<string>> RemovedModsAsync(DeploymentRecord previous, CancellationToken cancellationToken)
+    {
+        var library = (await _library.ListAsync(cancellationToken)).Select(e => e.Mod.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        return previous.ActiveModIds.Where(id => !FixIds.IsFixEntry(id) && !library.Contains(id)).ToList();
     }
 
     /// <summary>

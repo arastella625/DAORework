@@ -169,7 +169,7 @@ public sealed class ModChangeUseCaseTests
     private Task<Result<ModActivationPlan>> Plan(ModChangeKind kind, params string[] ids) =>
         new PlanModChange(_stores, _library, _scanner, _stores, new ReadInstallOverride(new MockFileSystem())).ExecuteAsync(new PlanModChangeRequest(Documents, new ModChange(kind, ids)));
 
-    private RollBackModChange RollBack() => new(_stores, _backups, new RestoreDeployment(_backups), _stores);
+    private RollBackModChange RollBack() => new(_stores, _backups, new RestoreDeployment(_backups), _stores, _library);
 
     private sealed class FakeLibrary : IModLibrary
     {

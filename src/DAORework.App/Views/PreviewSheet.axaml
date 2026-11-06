@@ -29,6 +29,19 @@
       </StackPanel>
     </Border>
 
+    <Border Name="KeepCopySheet" Classes="sheet"
+            IsVisible="{Binding KeepCopy.Preview.Title, Converter={x:Static ObjectConverters.IsNotNull}}">
+      <StackPanel Spacing="8">
+        <ScrollViewer MaxHeight="230">
+          <views:PlanPreviewView DataContext="{Binding KeepCopy.Preview}" />
+        </ScrollViewer>
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <Button Name="RemoveOthersButton" Classes="accent" Content="{Binding KeepCopy.RemoveLabel}" Command="{Binding KeepCopy.RemoveOthersCommand}" />
+          <Button Name="CancelKeepButton" Content="Cancel" Command="{Binding KeepCopy.CancelCommand}" />
+        </StackPanel>
+      </StackPanel>
+    </Border>
+
     <Border Name="PlanPreview" Classes="sheet"
             IsVisible="{Binding Activation.Preview.Title, Converter={x:Static ObjectConverters.IsNotNull}}">
       <StackPanel Spacing="8">

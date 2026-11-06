@@ -20,6 +20,9 @@ public static class FixIds
     /// <summary>The entry's folder relative to the library, as a deployment record and a plan name it.</summary>
     public static string LibraryId(string entryId) => $"{LibraryFolder}/{entryId}";
 
+    /// <summary>Whether a record's library id is a fix's rather than a mod's.</summary>
+    public static bool IsFixEntry(string libraryId) => libraryId.StartsWith($"{LibraryFolder}/", StringComparison.OrdinalIgnoreCase);
+
     /// <summary>Whether a record's library id is an entry of <paramref name="fix"/>: its id starts with the fix's name.</summary>
     public static bool IsEntryOf(string libraryId, string fix) =>
         libraryId.StartsWith($"{LibraryFolder}/{fix}-", StringComparison.OrdinalIgnoreCase);

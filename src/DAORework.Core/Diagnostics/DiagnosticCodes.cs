@@ -105,6 +105,9 @@ public static class DiagnosticCodes
     // P2-06: the mods activate, deactivate, rollback and recover commands.
     public const string ModNotInLibrary = "DAO_MOD_NOT_IN_LIBRARY";
     public const string ModNotActive = "DAO_MOD_NOT_ACTIVE";
+    public const string ModRemoveFailed = "DAO_MOD_REMOVE_FAILED";
+    public const string ModCopyStillOn = "DAO_MOD_COPY_STILL_ON";
+    public const string ModUndoNeedsRemovedMod = "DAO_MOD_UNDO_NEEDS_REMOVED_MOD";
     public const string ModDocumentsNotSet = "DAO_MOD_DOCUMENTS_NOT_SET";
     public const string ModScanFailed = "DAO_MOD_SCAN_FAILED";
 

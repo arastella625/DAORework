@@ -21,6 +21,7 @@ public sealed class ModsTabViewModel
         Folders = folders;
         ModPage = actions.ModPage;
         LookFirst = actions.LookFirst;
+        KeepCopy = actions.KeepCopy;
         HandInstalled = handInstalled;
         Library = library;
         Activation = deployed.Activation;
@@ -53,16 +54,21 @@ public sealed class ModsTabViewModel
         Changes.AfterChangeAsync = RefreshAfterChangeAsync;
         LoadOrder.AfterChangeAsync = RefreshAfterChangeAsync;
         handInstalled.Adoption.AfterChangeAsync = RefreshAfterChangeAsync;
+        KeepCopy.AfterChangeAsync = RefreshAfterChangeAsync;
         handInstalled.Adoption.AfterPlanAsync = library.LoadAsync;
 
         // Plans and Changes name mods by their Library names, not their ids (P2.5-18, P2.5-19).
         Activation.Preview.NameOf = NameOf;
+        KeepCopy.Preview.NameOf = NameOf;
         handInstalled.Adoption.Preview.NameOf = NameOf;
         Changes.NameOf = NameOf;
     }
 
     /// <summary>Gets opening a known mod's page in the browser (ADR-0034 §7).</summary>
     public ModPageViewModel ModPage { get; }
+
+    /// <summary>Gets <i>Keep this one</i> (ADR-0039).</summary>
+    public KeepCopyViewModel KeepCopy { get; }
 
     /// <summary>Gets the look before adding, and what it held back (ADR-0039).</summary>
     public LookFirstViewModel LookFirst { get; }
@@ -107,6 +113,7 @@ public sealed class ModsTabViewModel
     public async Task SelectProfileAsync(string? profileName, CancellationToken cancellationToken = default)
     {
         Folders.Load(profileName);
+        KeepCopy.ProfileName = profileName;
         HandInstalled.Load(profileName);
         await Activation.LoadAsync(profileName, cancellationToken); // First, so a listed mod's state is known as it is read.
         await Library.LoadAsync(cancellationToken);
