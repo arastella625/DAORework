@@ -80,6 +80,10 @@ public sealed partial class NextMoveCard : ObservableObject
                 _mods.HandInstalled.SelectAllCommand.Execute(null);
                 await _mods.HandInstalled.AdoptSelectedCommand.ExecuteAsync(null);
                 break;
+            case NextMoveKind.ClearCopies:
+                await OpenTargetAsync(HomeTarget.ModsLibrary, cancellationToken);
+                await _mods.KeepEach.PlanCommand.ExecuteAsync(null);
+                break;
             case NextMoveKind.AddMods:
                 await OpenTargetAsync(HomeTarget.ModsLibrary, cancellationToken);
                 await _mods.Library.ImportFileCommand.ExecuteAsync(null);
@@ -100,7 +104,8 @@ public sealed partial class NextMoveCard : ObservableObject
             _mods.Handover.IsShown,
             _mods.HandInstalled.Candidates.Count(c => c.CanManage && c.Candidate!.Files.Count > c.Candidate.Programs.Count),
             _mods.Library.Mods.Count,
-            _mods.Activation.ActiveModIds.Count);
+            _mods.Activation.ActiveModIds.Count,
+            _mods.Library.CopiesToClear);
         var move = NextMoves.For(facts);
         Kind = move.Kind;
         Title = move.Title;

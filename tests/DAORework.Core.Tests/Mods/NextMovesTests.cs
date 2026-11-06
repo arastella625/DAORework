@@ -6,6 +6,21 @@ namespace DAORework.Core.Tests.Mods;
 /// <summary>One next step, worked out from where the player is (P2.6-27).</summary>
 public sealed class NextMovesTests
 {
+    [Fact]
+    public void For_CopiesToClear_ComeAfterTakingOver_AndBeforeTheOrdinaryPath()
+    {
+        var facts = new NextMoveFacts(true, false, false, 0, 139, 40, 51);
+
+        var move = NextMoves.For(facts);
+
+        Assert.Equal(NextMoveKind.ClearCopies, move.Kind);
+        Assert.Equal("51 mods are in your Library more than once", move.Title);
+        Assert.Equal("Keep one of each", move.Button);
+        Assert.Equal(NextMoveKind.TakeOverWhatIsInTheGame, NextMoves.For(facts with { FoundInGame = 2 }).Kind);
+        Assert.Equal(NextMoveKind.Play, NextMoves.For(facts with { CopiesToClear = 0 }).Kind);
+        Assert.Equal("1 mod is in your Library more than once", NextMoves.For(facts with { CopiesToClear = 1 }).Title);
+    }
+
     [Theory]
     [InlineData(false, true, true, 5, 5, 5, NextMoveKind.SetUpTheGame)]
     [InlineData(true, true, true, 5, 5, 5, NextMoveKind.SettleTheLastChange)]

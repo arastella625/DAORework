@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DAORework.App.Services;
 using DAORework.Application.Mods.Library;
@@ -34,6 +35,14 @@ public sealed partial class LibraryViewModel : PageViewModel
     }
 
     public ObservableCollection<LibraryModRow> Mods { get; } = [];
+
+    /// <summary>Gets how many mods the library holds more than once (ADR-0039).</summary>
+    [ObservableProperty]
+    public partial int CopySets { get; private set; }
+
+    /// <summary>Gets how many of those lose nothing by keeping one, which the next step offers. One whose copies differ is the player's to raise.</summary>
+    [ObservableProperty]
+    public partial int CopiesToClear { get; private set; }
 
     /// <summary>Gets or sets the look before adding (ADR-0039): it holds back what looks already held, and returns the paths to add now.</summary>
     public Func<IReadOnlyList<string>, CancellationToken, Task<IReadOnlyList<string>>>? LookFirstAsync { get; set; }
@@ -137,7 +146,10 @@ public sealed partial class LibraryViewModel : PageViewModel
 
         // Nothing of a mod like a folder of Mac leftovers reaches the game (ADR-0036), so it isn't one; if it is on, it can still be turned off.
         var shown = entries.Where(e => _active.Contains(e.Mod.Id) || !e.Mod.Files.All(f => NonModFiles.Is(f.RelativePath))).ToList();
-        var copies = ModCopies.Find(shown);
+        var copies = ModCopies.Find(shown, _active);
+        var sets = copies.Values.GroupBy(c => c.Group, StringComparer.OrdinalIgnoreCase).ToList();
+        CopySets = sets.Count;
+        CopiesToClear = sets.Count(s => s.Any(c => c.HoldsAll));
         foreach (var entry in shown)
         {
             var row = LibraryModRow.From(entry, _checkKnownDownload.Execute(entry), copies.GetValueOrDefault(entry.Mod.Id));

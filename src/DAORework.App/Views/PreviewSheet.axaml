@@ -42,6 +42,43 @@
       </StackPanel>
     </Border>
 
+    <!-- Every set at once (ADR-0039). The plan and the list scroll apart, so what comes back and the first sets stay in view. -->
+    <Border Name="KeepEachSheet" Classes="sheet"
+            IsVisible="{Binding KeepEach.Preview.Title, Converter={x:Static ObjectConverters.IsNotNull}}">
+      <StackPanel Spacing="8">
+        <ScrollViewer MaxHeight="{Binding $parent[Window].Bounds.Height, Converter={x:Static views:SheetHeights.PlanFor}}">
+          <views:PlanPreviewView DataContext="{Binding KeepEach.Preview}" />
+        </ScrollViewer>
+        <ScrollViewer Name="KeepEachScroller" MaxHeight="{Binding $parent[Window].Bounds.Height, Converter={x:Static views:SheetHeights.ListFor}}">
+          <ItemsControl Name="KeepEachSets" ItemsSource="{Binding KeepEach.Rows}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:KeepEachRow">
+                <Grid Margin="0,1,12,1" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="8">
+                  <TextBlock VerticalAlignment="Center" Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                  <ComboBox Grid.Column="1" Name="KeepPick" Width="300" MinHeight="26" Padding="8,2" ItemsSource="{Binding Choices}" SelectedItem="{Binding Pick}"
+                            ToolTip.Tip="Which copy to keep">
+                    <ComboBox.ItemTemplate>
+                      <DataTemplate x:DataType="vm:KeepChoice">
+                        <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
+                      </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                  </ComboBox>
+                  <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Classes="Secondary" Text="{Binding Note}" TextWrapping="Wrap"
+                             IsVisible="{Binding Note, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                  <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Classes="Warning" Text="{Binding Stopped}" TextWrapping="Wrap"
+                             IsVisible="{Binding Stopped, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <Button Name="RemoveCopiesButton" Classes="accent" Content="{Binding KeepEach.RemoveLabel}" Command="{Binding KeepEach.RemoveCopiesCommand}" />
+          <Button Name="CancelKeepEachButton" Content="Cancel" Command="{Binding KeepEach.CancelCommand}" />
+        </StackPanel>
+      </StackPanel>
+    </Border>
+
     <Border Name="PlanPreview" Classes="sheet"
             IsVisible="{Binding Activation.Preview.Title, Converter={x:Static ObjectConverters.IsNotNull}}">
       <StackPanel Spacing="8">

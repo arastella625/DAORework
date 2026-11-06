@@ -9,13 +9,15 @@ internal sealed class RealScaleScenario(AppTestHost host)
 {
     private readonly ModsTabScenario _scenario = new(host);
 
-    public async Task<(MainWindow Window, MainWindowViewModel ViewModel)> OpenAsync()
+    /// <param name="withCopies">Whether the library holds <see cref="RealScaleLibrary.WithCopies"/>.</param>
+    public async Task<(MainWindow Window, MainWindowViewModel ViewModel)> OpenAsync(bool withCopies = false)
     {
+        var entries = withCopies ? RealScaleLibrary.WithCopies : RealScaleLibrary.Entries;
         host.SeedRealisticInstall();
-        RealScaleLibrary.Seed(host);
+        RealScaleLibrary.Seed(host, entries);
         var (window, viewModel) = await _scenario.OpenAsync(seedInstall: false);
         await viewModel.Library.LoadAsync(TestContext.Current.CancellationToken);
-        Assert.Equal(RealScaleLibrary.Entries.Count - 1, viewModel.Library.Mods.Count); // __MACOSX has nothing for the game.
+        Assert.Equal(entries.Count - 1, viewModel.Library.Mods.Count); // __MACOSX has nothing for the game.
         Pick(viewModel, RealScaleLibrary.AlreadyOn.Contains);
         await viewModel.ModsTab.Selection.ActivateSelectedCommand.ExecuteAsync(null);
         await viewModel.ModsTab.Activation.ApplyCommand.ExecuteAsync(null);
@@ -36,7 +38,7 @@ internal sealed class RealScaleScenario(AppTestHost host)
     {
         foreach (var mod in viewModel.Library.Mods)
         {
-            mod.IsSelected = picked(mod.Title);
+            mod.IsSelected = mod.Copy is not { Rank: > 0 } && picked(mod.Title);
         }
     }
 }

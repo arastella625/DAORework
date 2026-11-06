@@ -7,6 +7,7 @@ public enum NextMoveKind
     SettleTheLastChange,
     FinishVortexMove,
     TakeOverWhatIsInTheGame,
+    ClearCopies,
     AddMods,
     TurnOnMods,
     Play,

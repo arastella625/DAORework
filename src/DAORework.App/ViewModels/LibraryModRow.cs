@@ -133,7 +133,13 @@ public sealed partial class LibraryModRow : ObservableObject
 
     private static string CopyNote(ModCopy copy)
     {
-        var what = copy.AlsoNamed is { } other ? $"This is the same mod as {ModDisplayName.For(other)}." : $"You have {copy.Count} copies of this mod.";
+        var what = (copy.IsPart, copy.AlsoNamed) switch
+        {
+            (true, { } other) => $"Everything in this mod is also in {ModDisplayName.For(other)}.",
+            (true, null) => "Everything in this mod is also in its other copy.",
+            (false, { } other) => $"This is the same mod as {ModDisplayName.For(other)}.",
+            _ => $"You have {copy.Count} copies of this mod.",
+        };
         return $"{what} Select all picks the one that's on, or else the newest.";
     }
 

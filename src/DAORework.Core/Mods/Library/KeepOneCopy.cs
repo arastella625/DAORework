@@ -32,7 +32,7 @@ public static class KeepOneCopy
     }
 
     /// <summary>The order with the kept copy where the first removed one was, or null when no removed copy is on.</summary>
-    private static List<string>? Swap(IReadOnlyList<string> active, string kept, HashSet<string> removing)
+    internal static List<string>? Swap(IReadOnlyList<string> active, string kept, HashSet<string> removing)
     {
         if (!active.Any(removing.Contains))
         {
@@ -59,10 +59,7 @@ public static class KeepOneCopy
 
     private static List<PlanProblem> Problems(IReadOnlyList<LibraryEntry> others, FolderMods? selected, IReadOnlyList<FolderMods> folders)
     {
-        var problems = folders
-            .Where(f => f.Unfinished)
-            .Select(f => new PlanProblem($"A change in {f.DocumentsDirectory} didn't finish.", "Finish it or undo it in History first."))
-            .ToList();
+        var problems = Unfinished(folders);
         foreach (var folder in folders.Where(f => !ReferenceEquals(f, selected)))
         {
             problems.AddRange(others
@@ -72,6 +69,12 @@ public static class KeepOneCopy
 
         return problems;
     }
+
+    /// <summary>What stops any removal: a change that didn't finish, in any folder.</summary>
+    internal static List<PlanProblem> Unfinished(IReadOnlyList<FolderMods> folders) => folders
+        .Where(f => f.Unfinished)
+        .Select(f => new PlanProblem($"A change in {f.DocumentsDirectory} didn't finish.", "Finish it or undo it in History first."))
+        .ToList();
 
     /// <summary>The game files only the removed copies hold, by name: what goes for good.</summary>
     private static List<string> OnlyIn(IReadOnlyList<LibraryEntry> others, LibraryEntry kept)

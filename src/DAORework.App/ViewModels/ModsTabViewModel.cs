@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.Input;
 using DAORework.Application.Mods.Library;
 using DAORework.Core.Mods.Adoption;
 using DAORework.Core.Mods.Library;
@@ -23,6 +24,7 @@ public sealed class ModsTabViewModel
         ModPage = actions.ModPage;
         LookFirst = actions.LookFirst;
         KeepCopy = actions.KeepCopy;
+        KeepEach = actions.KeepEach;
         HandInstalled = handInstalled;
         Library = library;
         Activation = deployed.Activation;
@@ -55,12 +57,11 @@ public sealed class ModsTabViewModel
         Changes.AfterChangeAsync = RefreshAfterChangeAsync;
         LoadOrder.AfterChangeAsync = RefreshAfterChangeAsync;
         handInstalled.Adoption.AfterChangeAsync = RefreshAfterChangeAsync;
-        KeepCopy.AfterChangeAsync = RefreshAfterChangeAsync;
+        WireKeepPreviews();
         handInstalled.Adoption.AfterPlanAsync = library.LoadAsync;
 
         // Plans and Changes name mods by their Library names, not their ids (P2.5-18, P2.5-19).
         Activation.Preview.NameOf = NameOf;
-        KeepCopy.Preview.NameOf = NameOf;
         handInstalled.Adoption.Preview.NameOf = NameOf;
         Changes.NameOf = NameOf;
     }
@@ -70,6 +71,9 @@ public sealed class ModsTabViewModel
 
     /// <summary>Gets <i>Keep this one</i> (ADR-0039).</summary>
     public KeepCopyViewModel KeepCopy { get; }
+
+    /// <summary>Gets <i>Keep one of each</i> (ADR-0039).</summary>
+    public KeepEachViewModel KeepEach { get; }
 
     /// <summary>Gets the look before adding, and what it held back (ADR-0039).</summary>
     public LookFirstViewModel LookFirst { get; }
@@ -115,6 +119,7 @@ public sealed class ModsTabViewModel
     {
         Folders.Load(profileName);
         KeepCopy.Load(profileName);
+        KeepEach.Load(profileName);
         LookFirst.CancelCommand.Execute(null);
         HandInstalled.Load(profileName);
         await Activation.LoadAsync(profileName, cancellationToken); // First, so a listed mod's state is known as it is read.
@@ -124,6 +129,25 @@ public sealed class ModsTabViewModel
         await HandInstalled.RefreshAsync(cancellationToken);
         await Handover.LoadAsync(profileName, cancellationToken);
         await NewDownloads.LoadAsync(cancellationToken);
+    }
+
+    /// <summary>Only one can be open: a preview made before the other ran could remove the copy the other keeps (ADR-0039).</summary>
+    private void WireKeepPreviews()
+    {
+        KeepCopy.AfterChangeAsync = RefreshAfterChangeAsync;
+        KeepEach.AfterChangeAsync = RefreshAfterChangeAsync;
+        KeepCopy.Preview.NameOf = NameOf;
+        KeepEach.Preview.NameOf = NameOf;
+        CloseWhenOpened(KeepCopy.Preview, KeepEach.CancelCommand);
+        CloseWhenOpened(KeepEach.Preview, KeepCopy.CancelCommand);
+
+        static void CloseWhenOpened(PlanPreview opened, IRelayCommand close) => opened.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(PlanPreview.Title) && opened.Title is not null)
+            {
+                close.Execute(null);
+            }
+        };
     }
 
     private Task TurnOnAsync(IReadOnlyList<string> modIds, IReadOnlyList<AddInsListChange> restoredAddIns, CancellationToken cancellationToken)
@@ -153,8 +177,8 @@ public sealed class ModsTabViewModel
 
     private async Task RefreshAfterChangeAsync(CancellationToken cancellationToken)
     {
+        await Activation.RefreshActiveAsync(cancellationToken); // First, since what is on decides which mods are parts of others.
         await Library.LoadAsync(cancellationToken);
-        await Activation.RefreshActiveAsync(cancellationToken);
         await Changes.RefreshAsync(cancellationToken);
         await LoadOrder.RefreshAsync(cancellationToken);
         await HandInstalled.RefreshAsync(cancellationToken);

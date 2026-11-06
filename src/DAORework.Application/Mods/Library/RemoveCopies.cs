@@ -37,13 +37,13 @@ public sealed class RemoveCopies
             return Result.Failure(new Error(DiagnosticCodes.ModCopyStillOn, $"A copy is still on in {on.DocumentsDirectory}, so nothing was removed.", "Turn it off there first."));
         }
 
-        foreach (var id in modIds)
+        for (var done = 0; done < modIds.Count; done++)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var removed = _remover.Remove(id);
-            if (removed.IsFailure)
+            var removed = _remover.Remove(modIds[done]);
+            if (removed.Error is { } failed)
             {
-                return removed;
+                return done == 0 ? removed : Result.Failure(failed with { Message = $"Stopped after removing {done} of {modIds.Count}: {failed.Message}" });
             }
         }
 
