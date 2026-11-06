@@ -74,7 +74,7 @@ public sealed partial class LibraryModRow : ObservableObject
 
         if (copy is not null)
         {
-            notes.Add($"You have {copy.Count} copies of this mod. Select all picks the one that's on, or else the newest.");
+            notes.Add(CopyNote(copy));
         }
 
         string? warning = null;
@@ -102,6 +102,12 @@ public sealed partial class LibraryModRow : ObservableObject
             PageLink = check.IsSuccess ? check.Value.Item?.Source : null,
             Copy = copy,
         };
+    }
+
+    private static string CopyNote(ModCopy copy)
+    {
+        var what = copy.AlsoNamed is { } other ? $"This is the same mod as {ModDisplayName.For(other)}." : $"You have {copy.Count} copies of this mod.";
+        return $"{what} Select all picks the one that's on, or else the newest.";
     }
 
     private static string KindOf(LibraryMod mod) => mod.Kind switch

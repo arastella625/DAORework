@@ -21,14 +21,12 @@ public abstract partial class RecoverableChangesViewModel : PageViewModel
     private const int MaxBackups = 10;
 
     private readonly ChangeInProgress _change;
-    private readonly RecoverModPlan _recover;
     private (string Folder, string BackupId)? _pending;
 
-    protected RecoverableChangesViewModel(ChangeInProgress change, RecoverModPlan recover, ILogger logger)
+    protected RecoverableChangesViewModel(ChangeInProgress change, ILogger logger)
         : base(logger)
     {
         _change = change;
-        _recover = recover;
     }
 
     /// <summary>Gets or sets what runs after a rollback or a recovery, such as reading another panel again.</summary>
@@ -159,7 +157,7 @@ public abstract partial class RecoverableChangesViewModel : PageViewModel
                     return;
                 }
 
-                var result = await _recover.ExecuteAsync(new RecoverModPlanRequest(folder, choice), token);
+                var result = await _change.RecoverAsync(new RecoverModPlanRequest(folder, choice), token);
                 await AfterAsync(token);
                 if (!result.TryGetValue(out var report, out error))
                 {

@@ -17,11 +17,13 @@ public sealed partial class ChangeInProgress : ObservableObject
 
     private readonly ApplyModPlan _apply;
     private readonly RollBackModChange _rollBack;
+    private readonly RecoverModPlan _recover;
 
-    public ChangeInProgress(ApplyModPlan apply, RollBackModChange rollBack)
+    public ChangeInProgress(ApplyModPlan apply, RollBackModChange rollBack, RecoverModPlan recover)
     {
         _apply = apply;
         _rollBack = rollBack;
+        _recover = recover;
     }
 
     [ObservableProperty]
@@ -48,6 +50,10 @@ public sealed partial class ChangeInProgress : ObservableObject
     /// <summary>Undoes a change. Its steps aren't counted, so the window only says it is working.</summary>
     public Task<Result<RestoreReport>> UndoAsync(RollBackModChangeRequest request, CancellationToken cancellationToken = default) =>
         RunAsync("Undoing this change", _ => _rollBack.ExecuteAsync(request, cancellationToken));
+
+    /// <summary>Settles a change that did not finish. Its steps aren't counted either.</summary>
+    public Task<Result<ApplyReport>> RecoverAsync(RecoverModPlanRequest request, CancellationToken cancellationToken = default) =>
+        RunAsync("Sorting out the last change", _ => _recover.ExecuteAsync(request, cancellationToken));
 
     /// <summary>Runs <paramref name="work"/> as the change in progress, however it ends.</summary>
     public async Task<T> RunAsync<T>(string title, Func<IProgress<ChangeSteps>, Task<T>> work)
