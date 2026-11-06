@@ -3,6 +3,8 @@ using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Avalonia.LogicalTree;
 using DAORework.App.ViewModels;
+using DAORework.Application.Abstractions;
+using DAORework.Application.Mods.Library;
 using DAORework.Core.Common;
 using DAORework.Core.Diagnostics;
 using DAORework.Core.Profiles;
@@ -27,6 +29,41 @@ public sealed class KeepEachScreenTests : IDisposable
     }
 
     public void Dispose() => _host.Dispose();
+
+    [AvaloniaFact]
+    public async Task AnEntryThatIsOnlyAReadme_IsOfferedAndCleared_AndTheModStaysOn()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        await _scenario.ImportAsync(viewModel, Path.Combine(_downloads, "Fantasy.zip"), ("fantasy.dds", "DDS"), ("readme.txt", "words"));
+        await _scenario.ActivateAsync(viewModel, "Fantasy");
+        await _scenario.ImportAsync(viewModel, Path.Combine(_downloads, "left", "Fantasy.zip"), ("readme.txt", "words"));
+
+        // Take them over used to leave an entry like this on, owning no file. Nothing can make one now, so the record says it.
+        var token = TestContext.Current.CancellationToken;
+        var documents = _scenario.DocumentsDirectory;
+        var leftover = (await _host.Resolve<ListLibrary>().ExecuteAsync(token)).Value.Single(e => e.Mod.Files.Count == 1).Mod.Id;
+        var records = _host.Resolve<IDeploymentRecordStore>();
+        var record = (await records.LoadAsync(documents, token)).Value;
+        await records.SaveAsync(documents, record with { ActiveModIds = [.. record.ActiveModIds, leftover] }, token);
+        var activation = viewModel.ModsTab.Activation;
+        await activation.RefreshActiveAsync(token);
+        await viewModel.Library.LoadAsync(token);
+        Assert.Equal(2, activation.ActiveModIds.Count);
+        var keep = viewModel.ModsTab.KeepEach;
+
+        Assert.All(viewModel.Library.Mods, m => Assert.NotNull(m.Copy));
+        Assert.Equal(1, viewModel.Library.CopiesToClear);
+
+        await keep.PlanCommand.ExecuteAsync(null);
+        Assert.True(keep.CanRemove);
+        await keep.RemoveCopiesCommand.ExecuteAsync(null);
+
+        Assert.False(keep.IsError, keep.StatusMessage);
+        var left = Assert.Single(viewModel.Library.Mods);
+        Assert.True(left.IsActive);
+        Assert.Contains("2 files", left.Details, StringComparison.Ordinal);
+        Assert.Equal("DDS", _scenario.DeployedContent("fantasy.dds"));
+    }
 
     [AvaloniaFact]
     public async Task TheButton_ShowsOnlyWhileThereAreCopies()

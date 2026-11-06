@@ -4,7 +4,8 @@ namespace DAORework.Core.Mods.Library;
 /// Finds the mods the library holds more than once (P2.6-18): add-ins with one UID, which cannot be on together, other
 /// mods with the same mod files, and mods that are only part of another (<see cref="ModParts"/>). The game finds override
 /// files by name in any subfolder (ADR-0012), so a folder is no difference: a mod managed once from its own folder and
-/// once from inside it is one mod, under either name. Different versions of an override mod are different mods. Pure.
+/// once from inside it is one mod, under either name. Different versions of an override mod are different mods. An entry
+/// with nothing for the game, only a readme or a Mac leftover, is part of the mod of its name (P2.6-52). Pure.
 /// </summary>
 public static class ModCopies
 {
@@ -21,9 +22,12 @@ public static class ModCopies
             .ToList();
         var wholes = ModParts.Wholes(identical, on ?? []);
         var copies = new Dictionary<string, ModCopy>(StringComparer.Ordinal);
+        var leftovers = entries.Where(e => KeyOf(e.Mod) is null).ToLookup(e => ModParts.Plain(e.Mod.Name), StringComparer.Ordinal);
         foreach (var set in identical.GroupBy(g => wholes.GetValueOrDefault(g.Key, g.Key), StringComparer.OrdinalIgnoreCase))
         {
-            Add(copies, set.Key, [.. set.SelectMany(g => g)]);
+            List<LibraryEntry> members = [.. set.SelectMany(g => g)];
+            var names = members.Select(e => ModParts.Plain(e.Mod.Name)).Distinct(StringComparer.Ordinal);
+            Add(copies, set.Key, [.. members, .. names.SelectMany(n => leftovers[n])]);
         }
 
         return copies;

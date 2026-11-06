@@ -506,6 +506,7 @@ made-up mods, which is how it got through.)*
 - P2.6-40 Keep one copy: *Keep this one* removes a mod's other copies from the Library, with a preview.
 - P2.6-43 *Manage* gets past a mod it meets twice: a leftover of a mod that is on, or one mod found in two places, is one mod.
 - P2.6-51 From the review of #156 to #169: an emptied name no longer stops *Take them over*, and only the left button drags.
+- P2.6-52 Readmes aren't mods: on the owner's library 26 of 88 entries held only readmes, PDFs, `.DS_Store` or `Thumbs.db`, each a copy of what its full mod holds. *Take them over* no longer makes them, and those there count as part of the mod of their name.
 - P2.6-41 Count the differing files by kind on a real library, which sets the order of P3-01, P3-08 and combining (ADR-0040).
 - P2.6-42 Keep one of each: every set of copies cleared from one preview, parts of mods included, offered as the next step, with each pick changeable and nothing lost unless the player picks ([ADR-0039](adr/0039-look-first-and-keep-one-copy.md)).
 
@@ -539,8 +540,8 @@ Each stage is worth having alone, and they go in this order, so the wait is expl
 - P2.6-48 Keep the window free: reading, comparing and planning run off the window's thread.
 - P2.6-49 Long lists: only the rows on screen are built, and a row is kept when its mod hasn't changed, so search and
   scrolling don't depend on how many mods there are. *Done for your mods' list: a search keystroke went from about 0.35 s to
-  0.03 s, and reading an unchanged Library from about 0.6 s to 0.17 s. Scrolling hasn't been tried with a real mouse.
-  Nor has the Tab key: rows that aren't built can't take focus, so check a keyboard can still reach them all.
+  0.03 s, and reading an unchanged Library from about 0.6 s to 0.17 s. The owner tried both on a real library: scrolling is fine, though
+  the scrollbar doesn't take the mouse for a moment, and the Tab key works.
   *Found in your game* and *Arrange* still build every row: *Arrange*'s drag needs each row to exist, so it needs its own look.*
 - P2.6-50 Less disk work: don't hash a file again when its size and time haven't changed, and let a swap move files instead
   of copying and backing them up (ADR-0039's known cost). A saved hash can be wrong, so this needs its own ADR first.
