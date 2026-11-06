@@ -32,7 +32,9 @@ hand, and the rounds take days of playing, with the app closed in between.
   mods*, and the window says so.
 - A save made with a mod off may not load the same with it on, so the card says to test on a save the player doesn't mind
   losing.
-- Changes the player makes during a search stay theirs: the next round plans from its own list.
+- Each round goes by the search's own list, so a mod turned on during a search goes off again in the next round. The
+  preview shows it first, and *Forget this search* keeps the mods as they are.
+- *Start* sits with *Combined files*. A search under way shows near the top of the Mods tab, whichever chip is on.
 
 ## Alternatives considered
 - **Turn off one mod at a time.** Simple, and up to 137 rounds of playing.
