@@ -6,10 +6,17 @@ namespace DAORework.App.ViewModels;
 /// <summary>What the <i>Keep this one</i> preview says about what can't come back (ADR-0039).</summary>
 internal static class KeepCopyWords
 {
-    /// <summary>The warning, for any copy: a change it was part of can't be undone without it, whether or not it is on now.</summary>
-    public const string Permanent = "Removing can't be undone. History can't go back to a time this copy was on, unless you add the same download again.";
-
     private const int NamesShown = 5;
+
+    /// <summary>The warning, for any copy: a change it was part of can't be undone without it, whether or not it is on now.</summary>
+    public static string Warning(bool recycled) => recycled
+        ? "Removed copies go to the Recycle Bin. History can't go back to a time one was on until you put it back, or add the same download again."
+        : "Removing can't be undone. History can't go back to a time a removed copy was on, unless you add the same download again.";
+
+    /// <summary>What happens to the space: the Recycle Bin keeps it until it is emptied.</summary>
+    public static string Space(long bytes, bool recycled) => recycled
+        ? $"{new ByteSize(bytes)} goes to the Recycle Bin, and comes back when you empty it."
+        : $"You get back {new ByteSize(bytes)}.";
 
     /// <summary>What goes, by name when there's one and its name tells it from the kept copy.</summary>
     public static string Removing(KeepCopyPlan plan)
