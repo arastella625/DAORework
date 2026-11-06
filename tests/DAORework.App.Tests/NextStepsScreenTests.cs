@@ -16,15 +16,15 @@ public sealed class NextStepsScreenTests : IDisposable
     public void Dispose() => _host.Dispose();
 
     [AvaloniaFact]
-    public async Task FirstProfile_IsDiagnosed_AndSuggestsThePatchDxvkAndAdopting()
+    public async Task FirstProfile_IsDiagnosed_AndSuggestsThePatchAndDxvk_LeavingTheModsToTheNextStep()
     {
         var (window, viewModel) = await CreateFirstProfileAsync();
 
         Assert.True(viewModel.Diagnostics.HasReport);
         Assert.Equal(
-            [NextStepKind.ApplyLargeAddressAware, NextStepKind.InstallDxvk, NextStepKind.AdoptHandInstalled],
+            [NextStepKind.ApplyLargeAddressAware, NextStepKind.InstallDxvk],
             viewModel.NextSteps.Steps.Select(s => s.Kind));
-        Assert.StartsWith("Manage 4 mods", viewModel.NextSteps.Steps[2].Title, StringComparison.Ordinal);
+        Assert.Equal("4 mods are in your game", viewModel.ModsTab.NextMove.Title);
         Assert.Equal(MainWindowViewModel.HomePage, viewModel.SelectedPage);
         Screenshots.Save(window, "21-next-steps");
     }
@@ -39,19 +39,6 @@ public sealed class NextStepsScreenTests : IDisposable
         Assert.Equal(MainWindowViewModel.FixesPage, viewModel.SelectedPage);
         Assert.Equal("Apply 4 GB patch", viewModel.Fixes.Change.PlanTitle);
         Assert.Equal(_executable, _host.FileSystem.File.ReadAllBytes(GamePaths.GameExecutable(AppTestHost.InstallDirectory)));
-    }
-
-    [AvaloniaFact]
-    public async Task AdoptStep_ListsTheModsOnTheModsTab()
-    {
-        var (_, viewModel) = await CreateFirstProfileAsync();
-
-        await viewModel.NextSteps.TakeCommand.ExecuteAsync(viewModel.NextSteps.Steps.Single(s => s.Kind == NextStepKind.AdoptHandInstalled));
-
-        Assert.Equal(MainWindowViewModel.ModsPage, viewModel.SelectedPage);
-        Assert.Equal(ModShowFilter.Found, viewModel.ModsTab.Filter.Show);
-        Assert.Equal(4, viewModel.HandInstalled.Candidates.Count);
-        Assert.Equal("Found in your game (4)", viewModel.HandInstalled.SectionHeader);
     }
 
     [AvaloniaFact]

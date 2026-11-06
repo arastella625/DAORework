@@ -495,6 +495,7 @@ made-up mods, which is how it got through.)*
 - P2.6-29 One-line rows that expand in place ([ADR-0038](adr/0038-rows-a-sheet-and-drag.md)).
 - P2.6-30 Search and sort, and *Select all* ticks only what is shown.
 - P2.6-31 Previews in one sheet under the list, replacing the scroll-into-view fixes.
+- P2.6-32 A quieter preview, and *Worth a look* no longer repeats the next step.
 
 **Keeping the tests honest on Windows** *(added 2026-11-05, from P2.6-02)*.
 

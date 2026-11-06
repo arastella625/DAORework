@@ -5,7 +5,6 @@ public enum NextStepKind
 {
     ApplyLargeAddressAware,
     InstallDxvk,
-    AdoptHandInstalled,
     MoveFromVortex,
 }
 

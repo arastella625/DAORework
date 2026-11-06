@@ -26,10 +26,8 @@
     <ItemsControl Name="PlanNotes" ItemsSource="{Binding Notes}">
       <ItemsControl.ItemTemplate>
         <DataTemplate x:DataType="x:String">
-          <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" Margin="0,2">
-            <PathIcon Classes="Warning" Data="{StaticResource IconWarning}" VerticalAlignment="Top" />
-            <TextBlock Grid.Column="1" Classes="Warning" Text="{Binding}" TextWrapping="Wrap" />
-          </Grid>
+          <!-- Plain text: amber is kept for what stops a change, or a screen of it stops meaning anything. -->
+          <TextBlock Classes="Secondary" Margin="0,2" Text="{Binding}" TextWrapping="Wrap" />
         </DataTemplate>
       </ItemsControl.ItemTemplate>
     </ItemsControl>
