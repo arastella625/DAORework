@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DAORework.App.Services;
@@ -34,7 +33,7 @@ public sealed partial class LibraryViewModel : PageViewModel
         _picker = picker;
     }
 
-    public ObservableCollection<LibraryModRow> Mods { get; } = [];
+    public RowList<LibraryModRow> Mods { get; } = [];
 
     /// <summary>Gets how many mods the library holds more than once (ADR-0039).</summary>
     [ObservableProperty]
@@ -142,20 +141,21 @@ public sealed partial class LibraryViewModel : PageViewModel
             return;
         }
 
-        Mods.Clear();
-
         // Nothing of a mod like a folder of Mac leftovers reaches the game (ADR-0036), so it isn't one; if it is on, it can still be turned off.
         var shown = entries.Where(e => _active.Contains(e.Mod.Id) || !e.Mod.Files.All(f => NonModFiles.Is(f.RelativePath))).ToList();
         var copies = ModCopies.Find(shown, _active);
         var sets = copies.Values.GroupBy(c => c.Group, StringComparer.OrdinalIgnoreCase).ToList();
         CopySets = sets.Count;
         CopiesToClear = sets.Count(s => s.Any(c => c.HoldsAll));
+        var rows = new List<LibraryModRow>();
         foreach (var entry in shown)
         {
             var row = LibraryModRow.From(entry, _checkKnownDownload.Execute(entry), copies.GetValueOrDefault(entry.Mod.Id));
             row.IsActive = _active.Contains(row.Id);
             row.ConflictMark = _marks.GetValueOrDefault(row.Id);
-            Mods.Add(row);
+            rows.Add(row);
         }
+
+        Mods.ReplaceAll(rows);
     }
 }

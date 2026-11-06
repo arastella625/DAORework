@@ -7,6 +7,7 @@ All notable changes to DAORework are recorded here. The format follows
 ## [Unreleased]
 
 ### Changed
+- Reading your mods again does less work (P2.6-46). A list of 138 mods changed 9,730 times and now changes once, and *Found in your game* reads about four times faster. Building every row again is still slow, which P2.6-49 is for.
 - The window's footer says what it's working on (P2.6-45), so a wait no longer looks like nothing happening. Hover now shows on every button in every theme, and a button you can't press yet looks it.
 
 ### Fixed
