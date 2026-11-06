@@ -44,6 +44,9 @@ public sealed record ModActivationPlan(
     /// <summary>Gets why the install folder's override could not be read, if it could not.</summary>
     public string? InstallOverrideProblem { get; init; }
 
+    /// <summary>Gets the mod each thing being adopted turned out to be, in the order asked for; empty for any other plan (P2.6-43).</summary>
+    public IReadOnlyList<string> AdoptedModIds { get; init; } = [];
+
     /// <summary>Gets a value indicating whether the plan must not be applied until its blockers are resolved.</summary>
     public bool IsBlocked => Blockers.Count > 0;
 

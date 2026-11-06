@@ -20,6 +20,8 @@ public sealed class ModAdoptionScreenTests : IDisposable
 
     public void Dispose() => _host.Dispose();
 
+    private static string Morph(string hair) => $"""<morph_config><hairs><human_male><resource name="{hair}" /></human_male></hairs></morph_config>""";
+
     [AvaloniaFact]
     public async Task Adopt_AnOverrideFolder_ShowsThePlan_ThenTakesItOver()
     {
@@ -83,6 +85,82 @@ public sealed class ModAdoptionScreenTests : IDisposable
         Assert.False(adoption.IsError, adoption.StatusMessage);
         Assert.Equal("alpha", _scenario.DeployedContent("look.dds"));
         Assert.Empty(adoption.WhoWins);
+    }
+
+    [AvaloniaFact]
+    public async Task Manage_ALeftoverOfAModWithACombinedFile_DoesNotStop()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        var downloads = MockUnixSupport.Path(@"C:\Users\Me\Downloads");
+        await _scenario.ImportAsync(viewModel, Path.Combine(downloads, "Long Hair.zip"), (GamePaths.ChargenMorphFileName, Morph("long")), ("long.dds", "DDS long"));
+        await _scenario.ImportAsync(viewModel, Path.Combine(downloads, "Short Hair.zip"), (GamePaths.ChargenMorphFileName, Morph("short")), ("short.dds", "DDS short"));
+        await _scenario.ActivateAsync(viewModel, "Long Hair");
+        await _scenario.ActivateAsync(viewModel, "Short Hair");
+        var left = Path.Combine(GamePaths.OverrideDirectory(_scenario.DocumentsDirectory), "Old Long");
+        _host.FileSystem.AddFile(Path.Combine(left, GamePaths.ChargenMorphFileName), new MockFileData(Morph("long")));
+        _host.FileSystem.AddFile(Path.Combine(left, "long.dds"), new MockFileData("DDS long"));
+        var handInstalled = viewModel.HandInstalled;
+        await handInstalled.ScanCommand.ExecuteAsync(null);
+
+        await handInstalled.Adoption.AdoptCommand.ExecuteAsync(handInstalled.Candidates.Single(c => c.Title == "Old Long"));
+
+        Assert.False(handInstalled.Adoption.IsError, handInstalled.Adoption.StatusMessage);
+
+        await handInstalled.Adoption.ApplyCommand.ExecuteAsync(null);
+
+        Assert.False(handInstalled.Adoption.IsError, handInstalled.Adoption.StatusMessage);
+        Assert.False(_host.FileSystem.File.Exists(Path.Combine(left, "long.dds")));
+        Assert.Equal(2, viewModel.ModsTab.Activation.ActiveModIds.Count);
+    }
+
+    [AvaloniaFact]
+    public async Task Manage_OneModFoundTwice_TurnsItOnOnce_AndClearsTheOtherCopy()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        var overrideFolder = GamePaths.OverrideDirectory(_scenario.DocumentsDirectory);
+        _host.FileSystem.AddFile(Path.Combine(overrideFolder, "Copy A", "hair_pack.dds"), new MockFileData("DDS hair"));
+        _host.FileSystem.AddFile(Path.Combine(overrideFolder, "Copy B", "hair_pack.dds"), new MockFileData("DDS hair"));
+        await _scenario.ImportHairPackAsync(viewModel);
+        var handInstalled = viewModel.HandInstalled;
+        await handInstalled.ScanCommand.ExecuteAsync(null);
+
+        await handInstalled.Adoption.PlanAdoptionAsync([.. handInstalled.Candidates.Where(c => c.Title.StartsWith("Copy", StringComparison.Ordinal))], TestContext.Current.CancellationToken);
+
+        Assert.False(handInstalled.Adoption.IsError, handInstalled.Adoption.StatusMessage);
+
+        await handInstalled.Adoption.ApplyCommand.ExecuteAsync(null);
+
+        Assert.False(handInstalled.Adoption.IsError, handInstalled.Adoption.StatusMessage);
+        Assert.Single(viewModel.ModsTab.Activation.ActiveModIds);
+        Assert.Single(_scenario.DeployedHair());
+    }
+
+    [AvaloniaFact]
+    public async Task Swap_WithALeftoverInTheSameChange_StillSwaps_AndStillClearsIt()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        await _scenario.ImportHairPackAsync(viewModel);
+        await _scenario.ActivateHairPackAsync(viewModel);
+        var overrideFolder = GamePaths.OverrideDirectory(_scenario.DocumentsDirectory);
+        _host.FileSystem.AddFile(Path.Combine(overrideFolder, "Old Pack", "hair_pack.dds"), new MockFileData("DDS hair"));
+        _host.FileSystem.AddFile(Path.Combine(overrideFolder, "Red", "shared.dds"), new MockFileData("DDS red"));
+        _host.FileSystem.AddFile(Path.Combine(overrideFolder, "Blue", "shared.dds"), new MockFileData("DDS blue"));
+        var handInstalled = viewModel.HandInstalled;
+        await handInstalled.ScanCommand.ExecuteAsync(null);
+        var adoption = handInstalled.Adoption;
+        var rows = handInstalled.Candidates.Where(c => c.Title is "Blue" or "Old Pack" or "Red").OrderBy(c => c.Title, StringComparer.Ordinal).ToList();
+        await adoption.PlanAdoptionAsync(rows, TestContext.Current.CancellationToken);
+        Assert.False(adoption.IsError, adoption.StatusMessage);
+        var row = Assert.Single(adoption.WhoWins);
+        Assert.True(row.CanSwap);
+
+        await adoption.SwapCommand.ExecuteAsync(row);
+
+        Assert.False(adoption.IsError, adoption.StatusMessage);
+        await adoption.ApplyCommand.ExecuteAsync(null);
+        Assert.False(adoption.IsError, adoption.StatusMessage);
+        Assert.False(_host.FileSystem.File.Exists(Path.Combine(overrideFolder, "Old Pack", "hair_pack.dds")));
+        Assert.Equal("DDS blue", _scenario.DeployedContent("shared.dds"));
     }
 
     [AvaloniaFact]

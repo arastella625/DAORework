@@ -25,8 +25,10 @@ public static class AdoptionPlanner
         ArgumentNullException.ThrowIfNull(input);
         ArgumentNullException.ThrowIfNull(adopted);
 
-        var leftovers = adopted.Where(a => input.Mods.Any(m => _paths.Equals(m.Id, a.Mod.Id))).ToList();
-        adopted = [.. adopted.Except(leftovers)];
+        // A mod already on, or found a second time, has its copy: what else was found of it is left over.
+        var asked = adopted;
+        adopted = [.. asked.Where(a => !input.Mods.Any(m => _paths.Equals(m.Id, a.Mod.Id))).DistinctBy(a => a.Mod.Id, _paths)];
+        var leftovers = asked.Except(adopted).ToList();
         if (!Sources(adopted).TryGetValue(out var sources, out var error))
         {
             return Result.Failure<ModActivationPlan>(error);
@@ -43,7 +45,7 @@ public static class AdoptionPlanner
             return Result.Failure<ModActivationPlan>(error);
         }
 
-        return Result.Success(WithoutLeftovers(OnTheRealFolder(plan, current, sources), current, leftovers));
+        return Result.Success(WithoutLeftovers(OnTheRealFolder(plan, current, sources), current, leftovers) with { AdoptedModIds = [.. asked.Select(a => a.Mod.Id)] });
     }
 
     /// <summary>

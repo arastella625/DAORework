@@ -22,7 +22,7 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
     private readonly PlanAdoption _plan;
     private readonly ChangeInProgress _apply;
     private (string Documents, ModActivationPlan Plan, string Name)? _pending;
-    private Dictionary<string, HandInstalledModRow> _planned = new(StringComparer.OrdinalIgnoreCase);
+    private ILookup<string, HandInstalledModRow> _planned = Array.Empty<HandInstalledModRow>().ToLookup(_ => string.Empty);
     private IReadOnlyList<string> _order = [];
 
     public ModAdoptionViewModel(GetProfile getProfile, PlanAdoption plan, ChangeInProgress apply, ILogger<ModAdoptionViewModel> logger)
@@ -114,7 +114,8 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
     private Task SwapAsync(WhoWinsRow row, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(row);
-        return PlanAdoptionAsync([.. AdoptionOrder.Swap(_order, row.WinnerModId, row.OtherModIds).Select(id => _planned[id])], cancellationToken);
+        var leftovers = _planned.Where(g => !_order.Contains(g.Key, StringComparer.OrdinalIgnoreCase)).SelectMany(g => g);
+        return PlanAdoptionAsync([.. AdoptionOrder.Swap(_order, row.WinnerModId, row.OtherModIds).SelectMany(id => _planned[id]), .. leftovers], cancellationToken);
     }
 
     [RelayCommand(CanExecute = nameof(CanApply))]
@@ -152,11 +153,11 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
         ReportSuccess("Nothing in the documents folder was changed. The copy planning made stays in the Library.");
     }
 
-    /// <summary>The adopted mods are the plan's last, in the order given, whatever their library ids turned out to be.</summary>
+    /// <summary>Each row with the mod it turned out to be. Only mods new to the game have an order to change: a leftover goes wherever its mod already is.</summary>
     private void ShowWhoWins(ModActivationPlan plan, List<HandInstalledModRow> candidates)
     {
-        _order = [.. plan.TargetModIds.TakeLast(candidates.Count)];
-        _planned = _order.Zip(candidates).DistinctBy(p => p.First, StringComparer.OrdinalIgnoreCase).ToDictionary(p => p.First, p => p.Second, StringComparer.OrdinalIgnoreCase);
+        _order = [.. plan.AdoptedModIds.Distinct(StringComparer.OrdinalIgnoreCase).Except(plan.CurrentModIds, StringComparer.OrdinalIgnoreCase)];
+        _planned = plan.AdoptedModIds.Zip(candidates).ToLookup(p => p.First, p => p.Second, StringComparer.OrdinalIgnoreCase);
         foreach (var group in SharedFileNotes.Groups([.. plan.Conflicts.BetweenMods.Where(c => !c.SameContent)], Preview.NameOf))
         {
             WhoWins.Add(new WhoWinsRow(group.Title, group.Kinds, group.WinnerModId, group.OtherModIds, AdoptionOrder.CanSwap(_order, group.WinnerModId, group.OtherModIds)));
