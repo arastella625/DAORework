@@ -7,6 +7,7 @@ All notable changes to DAORework are recorded here. The format follows
 ## [Unreleased]
 
 ### Fixed
+- A preview warns when a file being moved sits beside other files (P2.6-51), since a mod DAORework doesn't look after may use it too.
 - *Take them over* no longer stops when the name for loose files was typed and cleared (P2.6-51), and a right-click on a grip in *Arrange* no longer starts a drag.
 
 ### Changed

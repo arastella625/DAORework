@@ -18,8 +18,17 @@ public static class PlanNotes
         nameOf = ModActivationPlanWarnings.CombinedAware(nameOf);
         var differing = plan.Conflicts.BetweenMods.Where(c => !c.SameContent).ToList();
         var sentences = differing.Select(c => ModActivationPlanWarnings.Shared(c, nameOf)).Concat(ModActivationPlanWarnings.Others(plan, nameOf)).ToList();
-        return sentences.Count <= MaxSentences ? sentences : [.. SharedFileNotes.For(differing, nameOf), .. Grouped(plan, nameOf)];
+        List<string> notes = sentences.Count <= MaxSentences ? [.. sentences] : [.. SharedFileNotes.For(differing, nameOf), .. Grouped(plan, nameOf)];
+        if (plan.TakenBesideOtherFiles > 0)
+        {
+            notes.Add(TakenBeside(plan.TakenBesideOtherFiles));
+        }
+
+        return notes;
     }
+
+    private static string TakenBeside(int count) =>
+        $"{ModActivationPlanWarnings.Files(count)} being moved {Verb(count, "sits", "sit")} beside other files. If a mod DAORework doesn't look after uses {(count == 1 ? "it" : "them")}, turning this one off later takes {(count == 1 ? "it" : "them")} away from that mod too.";
 
     private static List<string> Grouped(ModActivationPlan plan, Func<string, string> nameOf)
     {

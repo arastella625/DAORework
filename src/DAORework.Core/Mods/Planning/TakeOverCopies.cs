@@ -13,7 +13,8 @@ public static class TakeOverCopies
 
     /// <param name="plan">The plan, with the files that are the same as a mod's.</param>
     /// <param name="leaveAlone">Documents-relative paths not to touch: what a live Vortex would put back (ADR-0028 §2).</param>
-    public static ModActivationPlan Apply(ModActivationPlan plan, IReadOnlySet<string> leaveAlone)
+    /// <param name="inGame">The documents-relative paths of what is in <c>override</c>, to tell a file taken from beside others.</param>
+    public static ModActivationPlan Apply(ModActivationPlan plan, IReadOnlySet<string> leaveAlone, IReadOnlyCollection<string>? inGame = null)
     {
         ArgumentNullException.ThrowIfNull(plan);
         ArgumentNullException.ThrowIfNull(leaveAlone);
@@ -41,6 +42,19 @@ public static class TakeOverCopies
             operations.AddRange(found.Skip(1).Select(p => new PlanOperation(PlanAction.Delete, p, mod, null, sha)));
         }
 
-        return plan with { Operations = [.. operations.OrderBy(o => o.Action).ThenBy(o => o.TargetPath, _paths)] };
+        return plan with
+        {
+            Operations = [.. operations.OrderBy(o => o.Action).ThenBy(o => o.TargetPath, _paths)],
+            TakenBesideOtherFiles = Beside(taken, inGame ?? []),
+        };
     }
+
+    /// <summary>How many taken files leave something behind in their folder: a mod not managed yet may need them too.</summary>
+    private static int Beside(HashSet<string> taken, IReadOnlyCollection<string> inGame)
+    {
+        var folders = inGame.Where(p => !taken.Contains(p)).Select(FolderOf).ToHashSet(_paths);
+        return taken.Count(p => folders.Contains(FolderOf(p)));
+    }
+
+    private static string FolderOf(string path) => path[..Math.Max(path.LastIndexOf('/'), 0)];
 }

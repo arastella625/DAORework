@@ -36,6 +36,7 @@ public sealed class PlanTurnOn
         var live = snapshot.VortexRecords
             .SelectMany(r => r.Files.Where(f => r.IsLive(f.Mod)).Select(f => f.Path))
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
-        return Result.Success(TakeOverCopies.Apply(plan, live));
+        var inGame = snapshot.OverrideFolders.Values.SelectMany(f => f).Concat(snapshot.LooseOverrideFiles).Select(f => f.Path).ToList();
+        return Result.Success(TakeOverCopies.Apply(plan, live, inGame));
     }
 }
