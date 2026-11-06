@@ -1,0 +1,18 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DAORework.App.ViewModels"
+             xmlns:controls="using:DAORework.App.Controls"
+             x:Class="DAORework.App.Views.NextMovePanel"
+             x:DataType="vm:NextMoveCard">
+  <!-- The one next step (docs/WORKFLOWS.md). Not an accent button: each screen keeps its one main button (docs/VOICE.md rule 6). -->
+  <controls:Card Name="NextMove" Margin="12,0">
+    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+      <StackPanel Spacing="2">
+        <TextBlock Name="NextMoveTitle" FontWeight="SemiBold" TextWrapping="Wrap" Text="{Binding Title}" />
+        <TextBlock Classes="Secondary" TextWrapping="Wrap" Text="{Binding Body}" />
+      </StackPanel>
+      <Button Name="NextMoveButton" Grid.Column="1" VerticalAlignment="Center" Content="{Binding Button}"
+              Command="{Binding TakeCommand}" IsVisible="{Binding HasButton}" />
+    </Grid>
+  </controls:Card>
+</UserControl>

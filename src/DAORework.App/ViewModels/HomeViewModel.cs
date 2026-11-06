@@ -26,6 +26,10 @@ public sealed partial class HomeViewModel : ObservableObject
     [ObservableProperty]
     public partial SetupSummary? Setup { get; private set; }
 
+    /// <summary>Gets the one next step, once <see cref="Watch"/> has given it the Mods tab (P2.6-27).</summary>
+    [ObservableProperty]
+    public partial NextMoveCard? NextMove { get; private set; }
+
     /// <summary>Gets the question about new downloads and how many are waiting, once <see cref="Watch"/> has given it the Mods tab.</summary>
     [ObservableProperty]
     public partial NewDownloadsViewModel? NewDownloads { get; private set; }
@@ -70,6 +74,7 @@ public sealed partial class HomeViewModel : ObservableObject
         ArgumentNullException.ThrowIfNull(mods);
         ArgumentNullException.ThrowIfNull(fixes);
         Setup = mods.Setup;
+        NextMove = mods.NextMove;
         NewDownloads = mods.NewDownloads;
         NotifyCollectionChangedEventHandler changed = (_, _) => ShowLastChange(mods.Changes.Backups, fixes.Status.Backups);
         mods.Changes.Backups.CollectionChanged += changed;

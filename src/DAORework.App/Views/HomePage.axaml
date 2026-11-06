@@ -82,7 +82,8 @@
       </controls:Card>
 
       <views:NewDownloadsHomePanel DataContext="{Binding NewDownloads}" />
-      <views:NextStepsPanel DataContext="{Binding NextSteps}" />
+      <views:NextMovePanel DataContext="{Binding NextMove}" IsVisible="{Binding IsShown, FallbackValue=False}" x:DataType="vm:NextMoveCard" />
+          <views:NextStepsPanel DataContext="{Binding NextSteps}" />
     </StackPanel>
   </ScrollViewer>
 </UserControl>
