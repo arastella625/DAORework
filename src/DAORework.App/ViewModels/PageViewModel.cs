@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DAORework.Core.Common;
 using Microsoft.Extensions.Logging;
@@ -10,6 +11,8 @@ namespace DAORework.App.ViewModels;
 /// </summary>
 public abstract partial class PageViewModel : ObservableObject
 {
+    private static readonly TimeSpan _slowWork = TimeSpan.FromMilliseconds(200);
+
     private readonly ILogger _logger;
     private int _shown;
 
@@ -75,6 +78,7 @@ public abstract partial class PageViewModel : ObservableObject
     protected async Task GuardAsync(Func<CancellationToken, Task> action, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(action);
+        var started = Stopwatch.GetTimestamp();
         IsBusy = true;
         try
         {
@@ -93,6 +97,16 @@ public abstract partial class PageViewModel : ObservableObject
         finally
         {
             IsBusy = false;
+            LogIfSlow(Stopwatch.GetElapsedTime(started));
+        }
+    }
+
+    /// <summary>Notes what took a while (P2.6-44), so a real run can be compared with the last.</summary>
+    private void LogIfSlow(TimeSpan took)
+    {
+        if (took > _slowWork)
+        {
+            _logger.LogInformation("{ViewModel} took {Milliseconds} ms.", GetType().Name, (long)took.TotalMilliseconds);
         }
     }
 }

@@ -28,6 +28,7 @@ public static class AppServices
         services.AddTransient<HandInstalledViewModel>();
         services.AddTransient<LibraryViewModel>();
         services.AddSingleton<ChangeInProgress>();
+        services.AddSingleton<StallWatch>();
         services.AddTransient<ModActivationViewModel>();
         services.AddTransient<ModChangesViewModel>();
         services.AddTransient<LoadOrderViewModel>();

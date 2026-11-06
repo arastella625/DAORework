@@ -1,6 +1,7 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using DAORework.App.Composition;
+using DAORework.App.Services;
 using DAORework.App.Themes;
 using DAORework.App.ViewModels;
 using DAORework.App.Views;
@@ -32,6 +33,7 @@ public sealed partial class App : Avalonia.Application
             var looks = services.GetRequiredService<LookPresenter>();
             window.Profiles.SelectionChanged += (_, profile) => _ = looks.ShowForProfileAsync(profile); // A profile can have its own look (ADR-0017).
             desktop.MainWindow = new MainWindow { DataContext = window };
+            services.GetRequiredService<StallWatch>().Start();
             _ = services.GetRequiredService<ThemePreference>().ApplySavedAsync();
             desktop.Exit += (_, _) => services.Dispose();
         }
