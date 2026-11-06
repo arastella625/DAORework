@@ -138,7 +138,8 @@ public sealed class BatchSkipsWhatFailsTests : IDisposable
 
         Assert.False(activation.IsError, activation.StatusMessage);
         Assert.Equal("Turn on Blue", activation.Preview.Title);
-        Assert.StartsWith("Left out: Red.", activation.Preview.Notes[0], StringComparison.Ordinal);
+        Assert.Equal("Left out: Red. One of its files couldn't be placed. It stays in your Library, off.", activation.Preview.Notes[0]);
+        Assert.Contains(red.Id, activation.Preview.Lines[0], StringComparison.Ordinal);
         Assert.False(viewModel.ModsTab.Changes.ChangeUnfinished);
 
         await activation.ApplyCommand.ExecuteAsync(null);
@@ -178,6 +179,20 @@ public sealed class BatchSkipsWhatFailsTests : IDisposable
 
         Assert.True(viewModel.Library.IsError);
         Assert.StartsWith("Added 1 mod. Bad.zip needs a look: ", viewModel.Library.StatusMessage, StringComparison.Ordinal);
+        Assert.Contains(viewModel.Library.Mods, m => m.Title == "Good");
+    }
+
+    [AvaloniaFact]
+    public async Task Add_OneDownloadThrows_TheRestAreStillAdded()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        var good = MockUnixSupport.Path(@"C:\Users\Me\Downloads\Good.zip");
+        _scenario.SaveZip(good, ("good.dds", "good"));
+
+        await viewModel.Library.ImportPathsAsync(["bad\0name.zip", good], TestContext.Current.CancellationToken);
+
+        Assert.True(viewModel.Library.IsError);
+        Assert.StartsWith("Added 1 mod.", viewModel.Library.StatusMessage, StringComparison.Ordinal);
         Assert.Contains(viewModel.Library.Mods, m => m.Title == "Good");
     }
 

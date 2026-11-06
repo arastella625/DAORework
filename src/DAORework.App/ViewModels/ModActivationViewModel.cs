@@ -148,7 +148,7 @@ public sealed partial class ModActivationViewModel : PageViewModel
             await AfterChangeAsync(cancellationToken);
         }
 
-        await PlanNowAsync(planned with { Mods = [.. planned.Mods.Except([failed])], LeftOut = [.. planned.LeftOut, new LeftOutMod(failed.Title, error.Cause ?? error.Message)] }, cancellationToken);
+        await PlanNowAsync(planned with { Mods = [.. planned.Mods.Except([failed])], LeftOut = [.. planned.LeftOut, new LeftOutMod(failed.Title, "One of its files couldn't be placed.", error.Cause)] }, cancellationToken);
         return true;
     }
 

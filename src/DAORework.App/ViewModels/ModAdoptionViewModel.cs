@@ -177,7 +177,7 @@ public sealed partial class ModAdoptionViewModel : PageViewModel
             await AfterChangeAsync(cancellationToken);
         }
 
-        await PlanNowAsync([.. _asked.Except(failed)], [.. _leftOut, new LeftOutMod(failed[0].Title, error.Cause ?? error.Message)], cancellationToken);
+        await PlanNowAsync([.. _asked.Except(failed)], [.. _leftOut, new LeftOutMod(failed[0].Title, "One of its files couldn't be moved.", error.Cause)], cancellationToken);
         return true;
     }
 

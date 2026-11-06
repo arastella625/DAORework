@@ -53,12 +53,9 @@ internal static class LeftOut
         preview.Notes.Insert(0, mods.Count == 1
             ? string.Join(' ', new[] { $"Left out: {names}.", mods[0].Why, $"It stays {where}." }.Where(part => part.Length > 0))
             : $"Left out: {names}. They stay {where}.");
-        if (mods.Count > 1)
+        foreach (var (mod, place) in mods.Where(m => mods.Count > 1 || m.Detail is not null).Select((m, i) => (m, i)))
         {
-            foreach (var (mod, place) in mods.Select((m, i) => (m, i)))
-            {
-                preview.Lines.Insert(place, $"Left out {mod.Title}: {mod.Why}");
-            }
+            preview.Lines.Insert(place, $"Left out {mod.Title}: {mod.Detail ?? mod.Why}");
         }
     }
 

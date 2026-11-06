@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using DAORework.App.Services;
 using DAORework.Application.Mods.Library;
 using DAORework.Core.Common;
+using DAORework.Core.Diagnostics;
 using DAORework.Core.Mods.Downloads;
 using DAORework.Core.Mods.Library;
 using Microsoft.Extensions.Logging;
@@ -90,7 +91,7 @@ public sealed partial class LibraryViewModel : PageViewModel
                 var failed = new List<(string Path, Error Error)>();
                 foreach (var path in paths)
                 {
-                    var result = await _importMod.ExecuteAsync(new ImportModRequest(path), token);
+                    var result = await ImportOneAsync(path, token);
                     if (result.TryGetValue(out var import, out var error))
                     {
                         imported.Add(import.AlreadyInLibrary ? $"{import.Entry.Mod.Name} (already in the library)" : import.Entry.Mod.Name);
@@ -111,6 +112,21 @@ public sealed partial class LibraryViewModel : PageViewModel
                 ReportSuccess(imported.Count == 0 ? string.Empty : $"Added {string.Join(", ", imported)}. Turn {(imported.Count == 1 ? "it" : "them")} on when you want {(imported.Count == 1 ? "it" : "them")} in your game.");
             },
             cancellationToken);
+
+    private async Task<Result<LibraryImport>> ImportOneAsync(string path, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await _importMod.ExecuteAsync(new ImportModRequest(path), cancellationToken);
+        }
+
+        // STANDARDS-EXCEPTION: one download is the boundary of a batch. The failure is logged and named, never lost.
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            LogUnexpected(exception);
+            return Result.Failure<LibraryImport>(new Error(DiagnosticCodes.ModImportFailed, "Something unexpected went wrong while reading it."));
+        }
+    }
 
     /// <summary>One download that failed says so in full. Among others, each gets its reason and the rest are still added (P2.6-53).</summary>
     private void ReportFailed(List<string> imported, List<(string Path, Error Error)> failed)

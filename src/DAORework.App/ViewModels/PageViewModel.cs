@@ -103,7 +103,7 @@ public abstract partial class PageViewModel : ObservableObject
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Unexpected error in {ViewModel}", GetType().Name);
+            LogUnexpected(exception);
             ReportFailure(Unexpected);
         }
         finally
@@ -112,6 +112,9 @@ public abstract partial class PageViewModel : ObservableObject
             LogIfSlow(Stopwatch.GetElapsedTime(started));
         }
     }
+
+    /// <summary>Keeps an exception's details for a support bundle, since its text means nothing to a player.</summary>
+    protected void LogUnexpected(Exception exception) => _logger.LogError(exception, "Unexpected error in {ViewModel}", GetType().Name);
 
     /// <summary>Notes what took a while (P2.6-44), so a real run can be compared with the last.</summary>
     private void LogIfSlow(TimeSpan took)
