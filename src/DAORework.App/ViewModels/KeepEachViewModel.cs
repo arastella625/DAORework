@@ -97,7 +97,7 @@ public sealed partial class KeepEachViewModel : PageViewModel
             }
             else
             {
-                ReportSuccess(KeepEachWords.Done(plan));
+                ReportSuccess(KeepEachWords.Done(plan, _removal.GoesToRecycleBin));
             }
         },
         cancellationToken);
@@ -138,7 +138,7 @@ public sealed partial class KeepEachViewModel : PageViewModel
             return;
         }
 
-        var summary = KeepEachWords.Summary(plan);
+        var summary = KeepEachWords.Summary(plan, _removal.GoesToRecycleBin);
         Preview.Clear();
         if (preview.Swap is { } swap)
         {
@@ -160,7 +160,7 @@ public sealed partial class KeepEachViewModel : PageViewModel
             Preview.Problems.Add(problem);
         }
 
-        foreach (var (note, place) in KeepEachWords.Notes(plan).Select((n, i) => (n, i)))
+        foreach (var (note, place) in KeepEachWords.Notes(plan, _removal.GoesToRecycleBin).Select((n, i) => (n, i)))
         {
             Preview.Notes.Insert(place, note);
         }

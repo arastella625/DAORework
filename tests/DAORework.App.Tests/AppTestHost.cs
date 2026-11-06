@@ -24,6 +24,7 @@ internal sealed class AppTestHost : IDisposable
 
     public AppTestHost()
     {
+        RecycleBin = new FakeRecycleBin(FileSystem);
         var services = new ServiceCollection()
             .AddLogging()
             .AddApplication()
@@ -37,6 +38,7 @@ internal sealed class AppTestHost : IDisposable
         services.Replace(ServiceDescriptor.Singleton<IRegistry>(new EmptyRegistry()));
         services.Replace(ServiceDescriptor.Singleton<IHostPlatform>(new WindowsHost()));
         services.Replace(ServiceDescriptor.Singleton<IMalwareScanner>(new FakeMalwareScanner()));
+        services.Replace(ServiceDescriptor.Singleton<IRecycleBin>(RecycleBin));
         _services = services.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true });
     }
 
@@ -44,6 +46,8 @@ internal sealed class AppTestHost : IDisposable
     public static string SteamLibrary { get; } = MockUnixSupport.Path(@"D:\SteamLibrary");
 
     public static string InstallDirectory { get; } = Path.Combine(SteamLibrary, "steamapps", "common", "Dragon Age Ultimate Edition");
+
+    public FakeRecycleBin RecycleBin { get; }
 
     public MockFileSystem FileSystem { get; } = new();
 
