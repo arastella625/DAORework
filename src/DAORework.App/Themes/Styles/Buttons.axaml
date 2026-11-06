@@ -26,6 +26,22 @@
 
   <!-- An on/off switch: a dark groove and a gem knob that sits right and glows when on, pewter and left when off.
        The button's label (On or Off) stays beside it, so the state is never color alone. -->
+  <!-- A mod's name on its one-line row (ADR-0038): reads as text, and shows it can be pressed only when pointed at. -->
+  <Style Selector="ToggleButton.rowName">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="8,4" />
+  </Style>
+  <Style Selector="ToggleButton.rowName /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+  </Style>
+  <Style Selector="ToggleButton.rowName:checked /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+  <Style Selector="ToggleButton.rowName:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource BorderSoftBrush}" />
+  </Style>
   <Style Selector="Button.switch">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="Padding" Value="0" />

@@ -51,6 +51,23 @@ public sealed class RealScaleScreensTests : IDisposable
     }
 
     [AvaloniaFact]
+    public async Task ModRows_AreOneLine_UntilExpanded()
+    {
+        var (window, viewModel) = await _scenario.OpenAsync();
+        ModsTabScenario.Show<LibraryPanel>(window);
+        window.UpdateLayout();
+        var list = window.GetLogicalDescendants().OfType<ItemsControl>().First(i => i.Name == "LibraryMods");
+
+        var closed = list.ContainerFromIndex(0)!.Bounds.Height;
+        viewModel.Library.Mods[0].IsExpanded = true;
+        window.UpdateLayout();
+        Screenshots.Save(window, "real-scale-rows");
+
+        Assert.InRange(closed, 1, 46);
+        Assert.True(list.ContainerFromIndex(0)!.Bounds.Height > closed);
+    }
+
+    [AvaloniaFact]
     public async Task EveryMainScreen_WithNearlyEveryModOn_StaysReadable()
     {
         var (window, viewModel) = await _scenario.OpenAsync();

@@ -7,6 +7,7 @@ All notable changes to DAORework are recorded here. The format follows
 ## [Unreleased]
 
 ### Changed
+- Each mod is one line, and clicking its name opens its details in place (P2.6-29, [ADR-0038](docs/adr/0038-rows-a-sheet-and-drag.md)). Far more fit on a screen, and warnings stay on the row.
 - A mod that's in your Library and your game shows once (P2.6-26): *Found in your game* lists only what DAORework doesn't have yet.
 - Home and the Mods page show one next step, worked out from where you are (P2.6-27): find your game, finish moving from Vortex, take over what's in your game, add your first mod, or turn mods on.
 - A copy with a different name says which mod it's the same as, and finishing an interrupted change shows the progress banner (P2.6-28).

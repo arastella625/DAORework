@@ -47,30 +47,39 @@
       <ItemsControl Name="LibraryMods" ItemsSource="{Binding Filter.VisibleMods}">
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="vm:LibraryModRow">
-            <Border Padding="0,10" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
+            <Border Padding="0,4" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
               <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                 <CheckBox VerticalAlignment="Top" IsChecked="{Binding IsSelected}" ToolTip.Tip="Tick to activate or deactivate it with the others" />
+                <!-- One line, with details in place (ADR-0038). A warning stays outside: it is never behind a click. -->
                 <StackPanel Grid.Column="1" Spacing="3">
-                  <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
-                  <TextBlock Classes="Mono Secondary" Text="{Binding Details}" TextWrapping="Wrap" />
+                  <ToggleButton Name="ModDetails" Classes="rowName" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" IsChecked="{Binding IsExpanded}"
+                                ToolTip.Tip="Show or hide its details">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                      <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
+                      <TextBlock Classes="Secondary" VerticalAlignment="Center" Text="{Binding Glance}" />
+                    </StackPanel>
+                  </ToggleButton>
+<StackPanel Spacing="3" Margin="8,0,0,6" IsVisible="{Binding IsExpanded}">
+                      <TextBlock Classes="Mono Secondary" Text="{Binding Details}" TextWrapping="Wrap" />
+                      <TextBlock Classes="Secondary" TextWrapping="Wrap" IsVisible="{Binding IsInGame}"
+                                 Text="Already in your game. Turning it on takes that copy over, so there's no second one." />
+                      <ItemsControl ItemsSource="{Binding Notes}">
+                        <ItemsControl.ItemTemplate>
+                          <DataTemplate x:DataType="x:String">
+                            <TextBlock Text="{Binding}" TextWrapping="Wrap" />
+                          </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                      </ItemsControl>
+                      <Button Content="Open the mod's page" HorizontalAlignment="Left" CommandParameter="{Binding PageLink}"
+                              IsVisible="{Binding PageLink, Converter={x:Static ObjectConverters.IsNotNull}}"
+                              Command="{Binding $parent[views:LibraryPanel].((vm:ModsTabViewModel)DataContext).ModPage.OpenCommand}" />
+                    </StackPanel>
                   <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" IsVisible="{Binding Warning, Converter={x:Static ObjectConverters.IsNotNull}}">
                     <PathIcon Classes="Warning" Data="{StaticResource IconWarning}" VerticalAlignment="Top" />
                     <TextBlock Grid.Column="1" Classes="Warning" Text="{Binding Warning}" TextWrapping="Wrap" />
                   </Grid>
-                  <TextBlock Classes="Secondary" TextWrapping="Wrap" IsVisible="{Binding IsInGame}"
-                             Text="Already in your game. Turning it on takes that copy over, so there's no second one." />
-                  <ItemsControl ItemsSource="{Binding Notes}">
-                    <ItemsControl.ItemTemplate>
-                      <DataTemplate x:DataType="x:String">
-                        <TextBlock Text="{Binding}" TextWrapping="Wrap" />
-                      </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                  </ItemsControl>
-                  <Button Content="Open the mod's page" HorizontalAlignment="Left" CommandParameter="{Binding PageLink}"
-                          IsVisible="{Binding PageLink, Converter={x:Static ObjectConverters.IsNotNull}}"
-                          Command="{Binding $parent[views:LibraryPanel].((vm:ModsTabViewModel)DataContext).ModPage.OpenCommand}" />
                 </StackPanel>
-                <StackPanel Grid.Column="2" VerticalAlignment="Top">
+<StackPanel Grid.Column="2" VerticalAlignment="Top">
                   <!-- A switch (ADR-0026 §4): clicking it shows the preview; it moves once the change is applied. -->
                   <Button Classes="switch" Content="Off" IsVisible="{Binding !IsActive}" CommandParameter="{Binding}"
                           AutomationProperties.Name="{Binding Title, StringFormat='Turn on {0}'}" ToolTip.Tip="Turn on"
