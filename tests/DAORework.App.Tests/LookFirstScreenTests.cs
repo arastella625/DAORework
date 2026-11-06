@@ -52,17 +52,36 @@ public sealed class LookFirstScreenTests : IDisposable
         var (_, viewModel) = await _scenario.OpenAsync();
         _host.FileSystem.AddFile(Path.Combine(GamePaths.OverrideDirectory(_scenario.DocumentsDirectory), "hair_pack.dds"), new MockFileData("DDS hair"));
         await viewModel.HandInstalled.ScanCommand.ExecuteAsync(null);
-        _scenario.SaveZip(_hairPack, ("hair_pack.dds", "DDS hair"));
+        var loose = viewModel.HandInstalled.Candidates.Single(c => c.NeedsName).Candidate!.Files;
+        _scenario.SaveZip(_hairPack, [.. loose.Select(f => (Path.GetFileName(f.Path), "same"))]);
         var lookFirst = viewModel.ModsTab.LookFirst;
 
         await viewModel.Library.AddPathsAsync([_hairPack], TestContext.Current.CancellationToken);
 
         Assert.Equal("Hair Pack looks like it's already in your game, as loose files.", Assert.Single(lookFirst.Held).Line);
+        Assert.True(lookFirst.CanManage);
 
         await lookFirst.ManageHeldCommand.ExecuteAsync(null);
 
         Assert.False(viewModel.HandInstalled.Adoption.IsError, viewModel.HandInstalled.Adoption.StatusMessage);
         Assert.Equal("Hair Pack", viewModel.HandInstalled.Adoption.LooseFilesName);
+    }
+
+    [AvaloniaFact]
+    public async Task LooseFiles_ThatHoldOtherMods_AreNotOfferedManage()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        var overrideFolder = GamePaths.OverrideDirectory(_scenario.DocumentsDirectory);
+        _host.FileSystem.AddFile(Path.Combine(overrideFolder, "hair_pack.dds"), new MockFileData("DDS hair"));
+        _host.FileSystem.AddFile(Path.Combine(overrideFolder, "someone_elses.dds"), new MockFileData("DDS other"));
+        await viewModel.HandInstalled.ScanCommand.ExecuteAsync(null);
+        _scenario.SaveZip(_hairPack, ("hair_pack.dds", "DDS hair"));
+        var lookFirst = viewModel.ModsTab.LookFirst;
+
+        await viewModel.Library.AddPathsAsync([_hairPack], TestContext.Current.CancellationToken);
+
+        Assert.Single(lookFirst.Held);
+        Assert.False(lookFirst.CanManage);
     }
 
     [AvaloniaFact]

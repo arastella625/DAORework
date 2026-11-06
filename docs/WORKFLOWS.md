@@ -64,8 +64,8 @@ Still wrong: *Check the game* isn't part of the next step, so a game that won't 
 ## What this asks of the window
 
 - **Turning a mod on takes over what is already in the game.** Done (P2.6-25).
-- **One list, one row per mod,** wherever it is. In part (P2.6-26): copies of a mod are still separate rows, until a copy
-  can be removed.
+- **One list, one row per mod,** wherever it is. In part (P2.6-26): copies of a mod are still separate rows, and *Keep
+  this one* clears them one set at a time (P2.6-40).
 - **One next step,** worked out from where the player is, in the same place every time. Done (P2.6-27).
 - **Words that say what happens.** Not done: *Manage* is the first to question.
 

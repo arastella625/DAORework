@@ -15,8 +15,12 @@ public sealed class HeldDownloadRow
 
     public HeldDownload Download { get; }
 
-    /// <summary>Gets a value indicating whether what it looks like is in the game and can be managed. Vortex would put back what a live mod of its moved.</summary>
-    public bool CanManage => Download.Held.InGame is { DeployedByVortex: false };
+    /// <summary>
+    /// Gets a value indicating whether what it looks like is in the game and can be managed. Vortex would put back what a
+    /// live mod of its moved, and loose files are managed all together, so that must be only this mod's.
+    /// </summary>
+    public bool CanManage => Download.Held is { InGame.DeployedByVortex: false } held
+        && (held.NothingElse || held.InGame!.Kind != AdoptionCandidateKind.LooseOverrideFiles);
 
     /// <summary>Gets what the sheet says about it.</summary>
     public string Line

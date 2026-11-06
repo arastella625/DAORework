@@ -46,7 +46,7 @@ public static class AlreadyHeld
         var inGame = notManaged.FirstOrDefault(c => c.Kind == AdoptionCandidateKind.AddIn && _names.Equals(FileName(c.Path), uid));
         if (inGame is not null)
         {
-            return new HeldElsewhere(inGame.Name, inGame);
+            return new HeldElsewhere(inGame.Name, inGame) { NothingElse = true };
         }
 
         return library.FirstOrDefault(m => _names.Equals(m.AddInUid, uid)) is { } mod ? new HeldElsewhere(mod.Name, null) : null;
@@ -60,7 +60,7 @@ public static class AlreadyHeld
             .MinBy(c => c.Files.Count);
         if (inGame is not null)
         {
-            return new HeldElsewhere(inGame.Name, inGame);
+            return new HeldElsewhere(inGame.Name, inGame) { NothingElse = names.SetEquals(GameFileNames(inGame.Files.Select(f => f.Path))) };
         }
 
         var closest = library

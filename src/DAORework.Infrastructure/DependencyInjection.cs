@@ -56,6 +56,7 @@ public static class DependencyInjection
         services.AddSingleton<IApplyJournalStore, FileApplyJournalStore>();
         services.AddSingleton<IDeploymentWriter, DocumentsDeploymentWriter>();
         services.AddSingleton<IModLibrary, FolderModLibrary>();
+        services.AddSingleton<IModRemover, LibraryRemover>();
         services.AddSingleton<IDocumentsScanner, DocumentsScanner>();
         services.AddSingleton<IHandInstalledModsReader, HandInstalledModsReader>();
         services.AddSingleton<IVortexHandoverStore, JsonVortexHandoverStore>();

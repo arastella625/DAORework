@@ -22,6 +22,14 @@ public static class ModIds
         return trimmed.Length == 0 ? fileNameWithoutExtension : trimmed;
     }
 
+    /// <summary>A name to show for a mod no longer in the library, which only its id remembers.</summary>
+    public static string ReadableName(string id)
+    {
+        ArgumentNullException.ThrowIfNull(id);
+        var hash = id.LastIndexOf('-');
+        return ModDisplayName.For((hash > 0 ? id[..hash] : id).Replace('-', ' '));
+    }
+
     public static string Create(string name, string sourceSha256)
     {
         ArgumentNullException.ThrowIfNull(name);

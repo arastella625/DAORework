@@ -98,6 +98,9 @@ public static class DependencyInjection
         services.AddSingleton<RecoverModPlan>();
         services.AddSingleton<ImportMod>();
         services.AddSingleton<LookBeforeAdding>();
+        services.AddSingleton<CopyFolders>();
+        services.AddSingleton<PlanKeepCopy>();
+        services.AddSingleton<RemoveCopies>();
         services.AddSingleton<CheckKnownDownload>();
         services.AddSingleton<ListLibrary>();
         services.AddSingleton<PlanModChange>();

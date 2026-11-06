@@ -8,7 +8,7 @@ summary follows these rules. The command line keeps its own words; see the end.
    *Activate long-hair-f7b55346*. Name mods by their names, never their ids.
 2. **Details only when asked.** Ids, file lists, sizes, folder paths and diagnostic codes go behind *Details*, in a
    tooltip, or in *Copy details for a bug report*. The first line is what a player needs to decide.
-3. **Say each reassurance once.** The footer says *Every change can be undone*. A preview does not repeat that a
+3. **Say each reassurance once.** The footer says *Every change to your game can be undone*. A preview does not repeat that a
    backup is taken, and a panel does not open with a paragraph of explanation.
 4. **Let messages go.** A success message fades after a few seconds and says what happened (*Turned on Blue Hair.*).
    An error stays until it is dealt with, and its first button fixes it or shows how.
@@ -25,6 +25,7 @@ summary follows these rules. The command line keeps its own words; see the end.
 | Manage | Adopt | Taking over a mod the player installed by hand. |
 | Take them over | Manage all, adopt all | The next step's button for everything found in the game. |
 | Manage it, Add anyway | Duplicate detected | Asked before adding a mod that looks already held ([ADR-0039](adr/0039-look-first-and-keep-one-copy.md)). Always *looks like*: names can't prove it. |
+| Keep this one, Remove the other copy | Delete duplicates, dominant copy | On a mod with copies ([ADR-0039](adr/0039-look-first-and-keep-one-copy.md)). |
 | Who wins, Swap | Conflict resolution | Mods with different files of the same name, in a *Manage* preview. |
 | Found in your game | Installed by hand, unmanaged | A tag on the mod, and a filter. |
 | Undo, Undo to here | Roll back, Roll back to before this | *Undo* is always confirmed first. |
