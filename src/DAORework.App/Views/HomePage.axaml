@@ -8,6 +8,8 @@
   <!-- Home (ADR-0026, P2.5-25): ready or not, the setup at a glance, the last change, and what is worth a look. -->
   <ScrollViewer>
     <StackPanel Margin="12" Spacing="12">
+      <!-- First, so a new player sees it: it was below the fold when last in the list. -->
+      <views:NextMovePanel DataContext="{Binding NextMove}" IsVisible="{Binding IsShown, FallbackValue=False}" x:DataType="vm:NextMoveCard" />
       <Grid ColumnDefinitions="3*,12,2*">
         <controls:Card>
           <Panel ClipToBounds="True">
@@ -82,8 +84,7 @@
       </controls:Card>
 
       <views:NewDownloadsHomePanel DataContext="{Binding NewDownloads}" />
-      <views:NextMovePanel DataContext="{Binding NextMove}" IsVisible="{Binding IsShown, FallbackValue=False}" x:DataType="vm:NextMoveCard" />
-          <views:NextStepsPanel DataContext="{Binding NextSteps}" />
+      <views:NextStepsPanel DataContext="{Binding NextSteps}" />
     </StackPanel>
   </ScrollViewer>
 </UserControl>

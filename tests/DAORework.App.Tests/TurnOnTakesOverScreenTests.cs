@@ -51,6 +51,25 @@ public sealed class TurnOnTakesOverScreenTests : IDisposable
     }
 
     [AvaloniaFact]
+    public async Task AModInTheLibraryAndTheGame_ShowsOnce_AndTurningItOnClearsTheNote()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        var overrideFolder = GamePaths.OverrideDirectory(_scenario.DocumentsDirectory);
+        _host.FileSystem.AddFile(Path.Combine(overrideFolder, "Hair Pack", "hair_pack.dds"), new MockFileData("DDS hair"));
+        await _scenario.ImportHairPackAsync(viewModel);
+        await viewModel.HandInstalled.ScanCommand.ExecuteAsync(null);
+        var filter = viewModel.ModsTab.Filter;
+
+        Assert.DoesNotContain(filter.VisibleFound, f => f.Title == "Hair Pack");
+        Assert.True(viewModel.Library.Mods.Single(m => m.Title == "Hair Pack").IsInGame);
+
+        await _scenario.ActivateHairPackAsync(viewModel);
+
+        Assert.DoesNotContain(viewModel.HandInstalled.Candidates, f => f.Title == "Hair Pack");
+        Assert.False(viewModel.Library.Mods.Single(m => m.Title == "Hair Pack").IsInGame);
+    }
+
+    [AvaloniaFact]
     public async Task TurnOn_AModWhoseFileDiffers_LeavesTheOtherFileWhereItIs()
     {
         var (_, viewModel) = await _scenario.OpenAsync();

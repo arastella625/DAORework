@@ -53,3 +53,27 @@ These are what sets DAORework apart, and nothing above needs them changed.
 2. Should the preview open beside the list, or as a sheet over it?
 3. Is drag enough for Arrange, or are numbered positions wanted too?
 4. Are saved sets of mods wanted now, given profiles exist already?
+
+## After the workflow work (2026-11-05)
+
+**The owner's answers:** a mod's details expand in place on its row, the preview opens as a sheet over the list, *Arrange*
+gets drag only, and saved sets of mods wait, since profiles exist.
+
+**What the walkthrough changed.** [WORKFLOWS.md](WORKFLOWS.md) came first, and walking its journeys through the window
+showed the screens disagreeing with each other more than any one screen looking wrong:
+
+- Home opened on *Not checked yet*, *Everything is in place* and new-download questions all at once, with no order among
+  them. The next step now comes first, but Home still has more cards than it has things to say.
+- *Worth a look* and the next step can both suggest the same thing. They should become one.
+- Each row repeats *Antivirus: No threats found*, which says nothing unless it fails.
+
+**The list now, in order:**
+1. Show antivirus only when it isn't clean, which alone shortens every row.
+2. One-line rows that expand in place.
+3. Search and sort.
+4. The preview sheet, which replaces today's scroll-into-view fixes.
+5. A quieter preview.
+6. Merge *Worth a look* into the next step, and thin Home to what it needs.
+7. Conflict marks on rows.
+8. Drag in *Arrange*.
+9. The cozy guide, last, since it describes the rest.

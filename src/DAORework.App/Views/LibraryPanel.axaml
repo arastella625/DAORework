@@ -57,6 +57,8 @@
                     <PathIcon Classes="Warning" Data="{StaticResource IconWarning}" VerticalAlignment="Top" />
                     <TextBlock Grid.Column="1" Classes="Warning" Text="{Binding Warning}" TextWrapping="Wrap" />
                   </Grid>
+                  <TextBlock Classes="Secondary" TextWrapping="Wrap" IsVisible="{Binding IsInGame}"
+                             Text="Already in your game. Turning it on takes that copy over, so there's no second one." />
                   <ItemsControl ItemsSource="{Binding Notes}">
                     <ItemsControl.ItemTemplate>
                       <DataTemplate x:DataType="x:String">

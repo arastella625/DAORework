@@ -52,7 +52,7 @@ public sealed class HomeScreenTests : IDisposable
         var home = viewModel.Home;
         var overrides = Assert.Single(home.Setup!.Parts, p => p.Title == "Override mods");
         Assert.StartsWith("1 on", overrides.Count, StringComparison.Ordinal);
-        Assert.Equal("Everything is in place", home.Setup.Title);
+        Assert.Equal("Almost there", home.Setup.Title);
         Assert.Equal("Turned on Hair Pack", home.LastChange);
         viewModel.SelectedPage = MainWindowViewModel.HomePage;
         window.UpdateLayout();

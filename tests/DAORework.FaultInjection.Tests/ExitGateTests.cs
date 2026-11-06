@@ -13,6 +13,7 @@ public sealed class ExitGateTests
     private static Dictionary<string, GateScenario> Gate { get; } = new[]
     {
         GateScenario.Activate,
+        GateScenario.ActivateTakingOver,
         GateScenario.Deactivate,
         GateScenario.Switch,
         GateScenario.ApplyLargeAddressAware,

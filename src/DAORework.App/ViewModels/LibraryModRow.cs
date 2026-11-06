@@ -44,6 +44,10 @@ public sealed partial class LibraryModRow : ObservableObject
     [ObservableProperty]
     public partial bool IsActive { get; set; }
 
+    /// <summary>Gets or sets a value indicating whether it is also in the game, so it shows once and turning it on takes that over (ADR-0037).</summary>
+    [ObservableProperty]
+    public partial bool IsInGame { get; set; }
+
     /// <summary>Gets or sets a value indicating whether it is ticked for <i>Activate selected</i> or <i>Deactivate selected</i> (P2.5-14).</summary>
     [ObservableProperty]
     public partial bool IsSelected { get; set; }
