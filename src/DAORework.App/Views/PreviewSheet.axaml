@@ -99,6 +99,19 @@
       </StackPanel>
     </Border>
 
+    <Border Name="ProblemSearchPlan" Classes="sheet"
+            IsVisible="{Binding ProblemSearch.Preview.Title, Converter={x:Static ObjectConverters.IsNotNull}}">
+      <StackPanel Spacing="8">
+        <ScrollViewer MaxHeight="230">
+          <views:PlanPreviewView DataContext="{Binding ProblemSearch.Preview}" />
+        </ScrollViewer>
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <Button Name="ApplyRoundButton" Classes="accent" Content="Apply" Command="{Binding ProblemSearch.ApplyCommand}" />
+          <Button Name="CancelRoundButton" Content="Cancel" Command="{Binding ProblemSearch.CancelPlanCommand}" />
+        </StackPanel>
+      </StackPanel>
+    </Border>
+
     <Border Name="AdoptionPlan" Classes="sheet"
             IsVisible="{Binding HandInstalled.Adoption.Preview.Title, Converter={x:Static ObjectConverters.IsNotNull}}">
       <StackPanel Spacing="8">

@@ -41,6 +41,7 @@ public static class AppServices
         services.AddTransient<CopyRemoval>();
         services.AddTransient<KeepCopyViewModel>();
         services.AddTransient<KeepEachViewModel>();
+        services.AddTransient<ProblemSearchViewModel>();
         services.AddTransient<LibraryActionsViewModel>();
         services.AddTransient<ModsTabViewModel>();
         services.AddTransient<SavesPageViewModel>();

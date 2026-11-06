@@ -61,6 +61,7 @@ public static class DependencyInjection
         services.AddSingleton<IDocumentsScanner, DocumentsScanner>();
         services.AddSingleton<IHandInstalledModsReader, HandInstalledModsReader>();
         services.AddSingleton<IVortexHandoverStore, JsonVortexHandoverStore>();
+        services.AddSingleton<IProblemSearchStore, JsonProblemSearchStore>();
         services.AddSingleton<IDownloadsFolder, FolderDownloads>();
         services.AddSingleton<IErfContentsReader, LibraryErfContents>();
         services.AddSingleton<INewDownloadsStore, JsonNewDownloadsStore>();

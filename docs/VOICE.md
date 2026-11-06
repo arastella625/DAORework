@@ -30,6 +30,7 @@ summary follows these rules. The command line keeps its own words; see the end.
 | Left out, needs a look | Failed, skipped, error | What a batch went on without (P2.6-53): *Left out: Blue Hair.* in the preview, *Blue Hair needs a look: ...* once it is done. |
 | Could break quests, Only looks | High risk, cosmetic | How a shared file is ranked by its kind (P2.6-54). Always *could*: a kind of file can't prove it. |
 | Also in, Keep ZDF Complete | Subset, contained mod | A mod inside a bigger one ([ADR-0041](adr/0041-mods-inside-mods.md)). *Looks to be in* when an archive was compared by name. |
+| Find the problem mod, Round, Still happening, It's gone, Put everything back | Bisect, binary search, a bare Yes / No | Finding which mod causes a problem ([ADR-0042](adr/0042-finding-the-problem-mod.md)). Each answer says what it means: *Yes, still happening. The problem is in the 44 still on*. |
 | Who wins, Swap | Conflict resolution | Mods with different files of the same name, in a *Manage* preview. |
 | Found in your game | Installed by hand, unmanaged | A tag on the mod, and a filter. |
 | Undo, Undo to here | Roll back, Roll back to before this | *Undo* is always confirmed first. |

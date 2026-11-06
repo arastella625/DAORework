@@ -42,6 +42,14 @@
     </Panel>
     <views:VortexHandoverPanel DataContext="{Binding Handover}" IsVisible="{Binding IsShown}" x:DataType="vm:VortexHandoverViewModel" />
     <views:NewDownloadsPanel DataContext="{Binding NewDownloads}" IsVisible="{Binding IsShown}" x:DataType="vm:NewDownloadsViewModel" />
+    <views:ProblemSearchPanel DataContext="{Binding ProblemSearch}">
+      <views:ProblemSearchPanel.IsVisible>
+        <MultiBinding Converter="{x:Static BoolConverters.Or}">
+          <Binding Path="$parent[views:ModsListPanel].((vm:ModsTabViewModel)DataContext).Filter.ShowsCombined" />
+          <Binding Path="!IsIdle" />
+        </MultiBinding>
+      </views:ProblemSearchPanel.IsVisible>
+    </views:ProblemSearchPanel>
 
     <WrapPanel Margin="12,0" DataContext="{Binding Filter}" x:DataType="vm:ModListFilter">
       <StackPanel Orientation="Horizontal" Spacing="14" Margin="0,0,24,0" IsVisible="{Binding !Arranging}">

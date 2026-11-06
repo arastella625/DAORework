@@ -142,6 +142,9 @@ public static class DiagnosticCodes
     public const string VortexHandoverUnreadable = "DAO_VORTEX_HANDOVER_UNREADABLE";
     public const string ModAdoptVortexManages = "DAO_MOD_ADOPT_VORTEX_MANAGES";
 
+    // P2.6-56: finding the problem mod (ADR-0042).
+    public const string ModSearchUnreadable = "DAO_MOD_SEARCH_UNREADABLE";
+
     // P2.5-12: mod safety (ADR-0018).
     public const string ModSafetyThreatFound = "DAO_MOD_SAFETY_THREAT_FOUND";
     public const string ModSafetyDownloadDiffers = "DAO_MOD_SAFETY_DOWNLOAD_DIFFERS";
