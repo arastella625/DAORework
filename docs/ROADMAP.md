@@ -501,6 +501,10 @@ made-up mods, which is how it got through.)*
 - P2.6-36 First steps: a short path on the next-step card, gone once a mod is on.
 - P2.6-37 After the run: WORKFLOWS.md brought up to date, the new words in VOICE.md, and draft release notes.
 - P2.6-33 Conflict marks on rows: *wins*, *loses*, *wins and loses*. Not on `.erf` contents, where the winner isn't known.
+- P2.6-38 Decide how to look before adding, keep one copy and combine more files ([ADR-0039](adr/0039-look-first-and-keep-one-copy.md), [ADR-0040](adr/0040-combining-more-than-one-file.md)).
+- P2.6-39 Look before adding: a download that looks already held offers *Manage it* or *Add anyway* first.
+- P2.6-40 Keep one copy: *Keep this one* removes a mod's other copies from the Library, with a preview.
+- P2.6-41 Count the differing files by kind on a real library, which sets the order of P3-01, P3-08 and combining (ADR-0040).
 
 **Keeping the tests honest on Windows** *(added 2026-11-05, from P2.6-02)*.
 
