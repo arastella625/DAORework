@@ -1,5 +1,6 @@
 using DAORework.App.ViewModels;
 using DAORework.App.Views;
+using DAORework.Core.Mods.Library;
 using Xunit;
 
 namespace DAORework.App.Tests;
@@ -10,9 +11,10 @@ internal sealed class RealScaleScenario(AppTestHost host)
     private readonly ModsTabScenario _scenario = new(host);
 
     /// <param name="withCopies">Whether the library holds <see cref="RealScaleLibrary.WithCopies"/>.</param>
-    public async Task<(MainWindow Window, MainWindowViewModel ViewModel)> OpenAsync(bool withCopies = false)
+    /// <param name="extra">Mods to add to it.</param>
+    public async Task<(MainWindow Window, MainWindowViewModel ViewModel)> OpenAsync(bool withCopies = false, IReadOnlyList<LibraryEntry>? extra = null)
     {
-        var entries = withCopies ? RealScaleLibrary.WithCopies : RealScaleLibrary.Entries;
+        IReadOnlyList<LibraryEntry> entries = [.. withCopies ? RealScaleLibrary.WithCopies : RealScaleLibrary.Entries, .. extra ?? []];
         host.SeedRealisticInstall();
         RealScaleLibrary.Seed(host, entries);
         var (window, viewModel) = await _scenario.OpenAsync(seedInstall: false);

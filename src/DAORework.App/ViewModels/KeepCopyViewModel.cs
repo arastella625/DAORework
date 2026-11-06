@@ -15,15 +15,17 @@ public sealed partial class KeepCopyViewModel : PageViewModel
 {
     private readonly GetProfile _getProfile;
     private readonly PlanKeepCopy _plan;
+    private readonly FindModsInside _inside;
     private readonly CopyRemoval _removal;
     private string? _profileName;
     private (KeepCopyPreview Preview, string? Documents)? _pending;
 
-    public KeepCopyViewModel(GetProfile getProfile, PlanKeepCopy plan, CopyRemoval removal, ILogger<KeepCopyViewModel> logger)
+    public KeepCopyViewModel(GetProfile getProfile, PlanKeepCopy plan, CopyRemoval removal, FindModsInside inside, ILogger<KeepCopyViewModel> logger)
         : base(logger)
     {
         _getProfile = getProfile;
         _plan = plan;
+        _inside = inside;
         _removal = removal;
     }
 
@@ -48,17 +50,27 @@ public sealed partial class KeepCopyViewModel : PageViewModel
         ReportSuccess(string.Empty);
     }
 
+    /// <summary>What each mod is inside (ADR-0041), for the Library's rows.</summary>
+    public IReadOnlyDictionary<string, ModInside> FindInside(IReadOnlyList<LibraryEntry> entries) => _inside.Execute(entries);
+
     [RelayCommand]
-    private Task PlanKeepAsync(LibraryModRow row, CancellationToken cancellationToken) => GuardAsync(
+    private Task PlanKeepAsync(LibraryModRow row, CancellationToken cancellationToken) => PlanAsync(row.Id, row.Title, null, cancellationToken);
+
+    /// <summary>Plans keeping the bigger mod this one is inside, and removing this one (ADR-0041).</summary>
+    [RelayCommand]
+    private Task PlanKeepWholeAsync(LibraryModRow row, CancellationToken cancellationToken) =>
+        row.Inside is { } inside ? PlanAsync(inside.WholeId, ModDisplayName.For(inside.WholeName), [row.Id], cancellationToken) : Task.CompletedTask;
+
+    private Task PlanAsync(string keepId, string title, IReadOnlyList<string>? removing, CancellationToken cancellationToken) => GuardAsync(
         async token =>
         {
             Clear();
             ReportSuccess(string.Empty);
             var folders = await ProfileDocuments.FoldersAsync(_getProfile, _profileName, token);
-            var request = new PlanKeepCopyRequest(row.Id, folders.IsSuccess ? folders.Value.Documents : null, folders.IsSuccess ? folders.Value.Install : null);
+            var request = new PlanKeepCopyRequest(keepId, folders.IsSuccess ? folders.Value.Documents : null, folders.IsSuccess ? folders.Value.Install : null) { Removing = removing };
             if ((await _plan.ExecuteAsync(request, token)).TryGetValue(out var preview, out var error))
             {
-                Show(row, preview, request.DocumentsDirectory);
+                Show(title, preview, request.DocumentsDirectory, removing is not null);
             }
             else
             {
@@ -95,18 +107,18 @@ public sealed partial class KeepCopyViewModel : PageViewModel
     [RelayCommand]
     private void Cancel() => Clear();
 
-    private void Show(LibraryModRow row, KeepCopyPreview preview, string? documents)
+    private void Show(string title, KeepCopyPreview preview, string? documents, bool named)
     {
         var plan = preview.Plan;
         var summary = $"Removes {KeepCopyWords.Removing(plan)} from your Library. {KeepCopyWords.Space(plan.BytesFreed, _removal.GoesToRecycleBin)}";
         if (preview.Swap is { } swap)
         {
-            Preview.Show($"Keep {row.Title}", swap, summary);
+            Preview.Show($"Keep {title}", swap, summary);
             Preview.Notes.Insert(0, $"{ModDisplayName.For(plan.SwappedOut!)} is on, so this one takes its place.");
         }
         else
         {
-            Preview.Title = $"Keep {row.Title}";
+            Preview.Title = $"Keep {title}";
             Preview.Summary = summary;
         }
 
@@ -127,7 +139,7 @@ public sealed partial class KeepCopyViewModel : PageViewModel
         }
 
         _pending = (preview, documents);
-        RemoveLabel = plan.Removing.Count == 1 ? "Remove the other copy" : "Remove the other copies";
+        RemoveLabel = named ? $"Remove {KeepCopyWords.Removing(plan)}" : plan.Removing.Count == 1 ? "Remove the other copy" : "Remove the other copies";
         CanRemove = plan.Problems.Count == 0 && preview.Swap is not { IsBlocked: true };
     }
 

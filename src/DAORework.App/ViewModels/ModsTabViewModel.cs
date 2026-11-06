@@ -24,6 +24,7 @@ public sealed class ModsTabViewModel
         ModPage = actions.ModPage;
         LookFirst = actions.LookFirst;
         KeepCopy = actions.KeepCopy;
+        library.FindInside = KeepCopy.FindInside;
         KeepEach = actions.KeepEach;
         HandInstalled = handInstalled;
         Library = library;

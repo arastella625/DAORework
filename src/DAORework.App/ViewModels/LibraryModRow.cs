@@ -35,6 +35,12 @@ public sealed partial class LibraryModRow : ObservableObject
 
     public string? Warning { get; }
 
+    /// <summary>Gets the bigger mod this one is inside, when it isn't simply a copy of it (ADR-0041).</summary>
+    public ModInside? Inside { get; private init; }
+
+    /// <summary>Gets what the button that keeps the bigger mod says.</summary>
+    public string? KeepWholeLabel => Inside is { } inside ? $"Keep {ModDisplayName.For(inside.WholeName)}" : null;
+
     /// <summary>Gets when it was added, for sorting by newest (P2.6-30).</summary>
     public DateTimeOffset AddedAt { get; private init; }
 
@@ -79,13 +85,14 @@ public sealed partial class LibraryModRow : ObservableObject
     {
         ArgumentNullException.ThrowIfNull(other);
         return Id == other.Id && Title == other.Title && Details == other.Details && Warning == other.Warning
-            && PageLink == other.PageLink && AddedAt == other.AddedAt && Copy == other.Copy && Notes.SequenceEqual(other.Notes);
+            && PageLink == other.PageLink && AddedAt == other.AddedAt && Copy == other.Copy && Inside == other.Inside && Notes.SequenceEqual(other.Notes);
     }
 
     /// <param name="entry">The library mod.</param>
     /// <param name="check">How its download compares with the catalog's known downloads, or the error that kept it from being compared.</param>
     /// <param name="copy">Where it stands among its copies, when the library holds it more than once.</param>
-    public static LibraryModRow From(LibraryEntry entry, Result<DownloadCheck> check, ModCopy? copy = null)
+    /// <param name="inside">The bigger mod it is inside (ADR-0041), when it is.</param>
+    public static LibraryModRow From(LibraryEntry entry, Result<DownloadCheck> check, ModCopy? copy = null, ModInside? inside = null)
     {
         ArgumentNullException.ThrowIfNull(entry);
         ArgumentNullException.ThrowIfNull(check);
@@ -106,9 +113,9 @@ public sealed partial class LibraryModRow : ObservableObject
             notes.Add($"Was in {entry.Origin.AdoptedPath} before DAORework managed it.");
         }
 
-        if (copy is not null)
+        if (RelatedNote(copy, inside) is { } related)
         {
-            notes.Add(CopyNote(copy));
+            notes.Add(related);
         }
 
         string? warning = null;
@@ -136,8 +143,15 @@ public sealed partial class LibraryModRow : ObservableObject
             AddedAt = entry.ImportedAtUtc,
             PageLink = check.IsSuccess ? check.Value.Item?.Source : null,
             Copy = copy,
+            Inside = inside,
         };
     }
+
+    private static string? RelatedNote(ModCopy? copy, ModInside? inside) =>
+        copy is not null ? CopyNote(copy) : inside is not null ? InsideNote(inside) : null;
+
+    private static string InsideNote(ModInside inside) =>
+        $"Everything in this mod {(inside.ByName ? "looks to be" : "is")} {(inside.ByName ? "in" : "also in")} {ModDisplayName.For(inside.WholeName)}{(inside.ByName ? " too" : string.Empty)}, so you could keep just that one. If this smaller mod is the one you chose, leave it.";
 
     private static string CopyNote(ModCopy copy)
     {
