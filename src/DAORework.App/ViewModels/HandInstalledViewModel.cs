@@ -33,7 +33,7 @@ public sealed partial class HandInstalledViewModel : PageViewModel
     /// <summary>Gets adopting the listed candidates (P3-04).</summary>
     public ModAdoptionViewModel Adoption { get; }
 
-    public ObservableCollection<HandInstalledModRow> Candidates { get; } = [];
+    public RowList<HandInstalledModRow> Candidates { get; } = [];
 
     /// <summary>Gets the section's name on the Mods tab, with how many mods could be adopted (P2.5-17).</summary>
     public string SectionHeader => Candidates.Count == 0 ? "Found in your game" : $"Found in your game ({Candidates.Count})";
@@ -150,12 +150,9 @@ public sealed partial class HandInstalledViewModel : PageViewModel
     {
         ClearCandidates();
         NotAdoptable.Clear();
-        foreach (var candidate in scan.Candidates)
-        {
-            var row = HandInstalledModRow.From(candidate);
-            row.PropertyChanged += OnCandidateChanged;
-            Candidates.Add(row);
-        }
+        var rows = scan.Candidates.Select(HandInstalledModRow.From).ToList();
+        rows.ForEach(r => r.PropertyChanged += OnCandidateChanged);
+        Candidates.ReplaceAll(rows);
 
         SelectionChanged();
 

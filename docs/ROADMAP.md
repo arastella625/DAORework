@@ -530,10 +530,14 @@ Each stage is worth having alone, and they go in this order, so the wait is expl
   compared. The owner's messy library is the real check.
 - P2.6-45 Always say what's happening: the window's footer says what it is working on, whichever tab is open. A disabled
   button looks disabled, and hover shows on every button in every theme.
-- P2.6-46 Stop repeating work: the list and the next step update once for a reload, not once for each mod.
+- P2.6-46 Stop repeating work: the list and the next step update once for a reload, not once for each mod. *Done: 9,730
+  list changes became 1. *Found in your game* went from about 0.5 s to 0.13 s and planning one mod from 0.25 s to 0.12 s, but
+  reading the Library only from about 0.8 s to 0.6 s and search not at all. Laying out every row is the real cost, so
+  P2.6-49 matters more than this list first suggested, and should come next.*
 - P2.6-47 Read once: a change refreshes the panels from one reading of the Library, instead of each reading it again.
 - P2.6-48 Keep the window free: reading, comparing and planning run off the window's thread.
-- P2.6-49 Long lists: only the rows on screen are built, so search and scrolling don't depend on how many mods there are.
+- P2.6-49 Long lists: only the rows on screen are built, and a row is kept when its mod hasn't changed, so search and
+  scrolling don't depend on how many mods there are.
 - P2.6-50 Less disk work: don't hash a file again when its size and time haven't changed, and let a swap move files instead
   of copying and backing them up (ADR-0039's known cost). A saved hash can be wrong, so this needs its own ADR first.
 

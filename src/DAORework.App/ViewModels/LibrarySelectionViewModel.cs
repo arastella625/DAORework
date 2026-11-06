@@ -77,8 +77,8 @@ public sealed partial class LibrarySelectionViewModel : ObservableObject
 
     private void OnModsChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        // Reading the library again replaces every row (a Reset), so each new row is watched as it arrives.
-        foreach (var mod in e.NewItems?.OfType<LibraryModRow>() ?? [])
+        // Reading the library again replaces every row at once, so a Reset brings new rows to watch.
+        foreach (var mod in e.Action == NotifyCollectionChangedAction.Reset ? _mods : e.NewItems?.OfType<LibraryModRow>() ?? [])
         {
             mod.PropertyChanged += OnModChanged;
         }

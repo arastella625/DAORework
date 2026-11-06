@@ -27,9 +27,9 @@ public sealed partial class ModListFilter : ObservableObject
         Update();
     }
 
-    public ObservableCollection<LibraryModRow> VisibleMods { get; } = [];
+    public RowList<LibraryModRow> VisibleMods { get; } = [];
 
-    public ObservableCollection<HandInstalledModRow> VisibleFound { get; } = [];
+    public RowList<HandInstalledModRow> VisibleFound { get; } = [];
 
     /// <summary>Gets what is found in the game and not already listed as a mod, whatever a search or a chip shows.</summary>
     public IReadOnlyList<HandInstalledModRow> Unlisted { get; private set; } = [];
@@ -145,7 +145,9 @@ public sealed partial class ModListFilter : ObservableObject
     // A row's IsActive changes when a change is applied, without the list itself changing.
     private void OnModsChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        foreach (var row in e.NewItems?.OfType<LibraryModRow>() ?? [])
+        // Reading the library again replaces every row at once, so a Reset brings new rows to watch.
+        var added = e.Action == NotifyCollectionChangedAction.Reset ? _mods : e.NewItems?.OfType<LibraryModRow>() ?? [];
+        foreach (var row in added)
         {
             row.PropertyChanged += OnRowChanged;
         }
@@ -215,12 +217,13 @@ public sealed partial class ModListFilter : ObservableObject
         return listed;
     }
 
-    private static void Refill<T>(ObservableCollection<T> target, IEnumerable<T> items)
+    /// <summary>Changes the list only if what it shows has changed: building every row again is the slowest thing the window does.</summary>
+    private static void Refill<T>(RowList<T> target, IEnumerable<T> items)
     {
-        target.Clear();
-        foreach (var item in items)
+        var rows = items.ToList();
+        if (!target.SequenceEqual(rows))
         {
-            target.Add(item);
+            target.ReplaceAll(rows);
         }
     }
 }
