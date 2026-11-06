@@ -25,7 +25,8 @@ public sealed partial class LoadOrderPanel : UserControl
 
     private void OnPressed(object? sender, PointerPressedEventArgs e)
     {
-        if (e.Source is StyledElement { DataContext: LoadOrderRow row } grip && grip.Classes.Contains("dragGrip"))
+        if (e.Source is StyledElement { DataContext: LoadOrderRow row } grip && grip.Classes.Contains("dragGrip")
+            && e.GetCurrentPoint(Order).Properties.IsLeftButtonPressed)
         {
             _dragged = row;
             e.Pointer.Capture(Order);

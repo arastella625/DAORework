@@ -6,6 +6,9 @@ All notable changes to DAORework are recorded here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+- *Take them over* no longer stops when the name for loose files was typed and cleared (P2.6-51), and a right-click on a grip in *Arrange* no longer starts a drag.
+
 ### Changed
 - Reading your mods again does less work (P2.6-46). A list of 138 mods changed 9,730 times and now changes once, and *Found in your game* reads about four times faster.
 - Long lists stay quick (P2.6-49). Only the rows on screen are built, and a row stays when its mod hasn't changed, so a search keystroke takes about a tenth of the time it did with 138 mods.

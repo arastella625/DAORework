@@ -1,6 +1,8 @@
+using System.IO.Abstractions.TestingHelpers;
 using Avalonia.Headless.XUnit;
 using DAORework.App.ViewModels;
 using DAORework.App.Views;
+using DAORework.Core.Common;
 using DAORework.Core.Mods;
 using Xunit;
 
@@ -18,6 +20,20 @@ public sealed class NextMoveScreenTests : IDisposable
     }
 
     public void Dispose() => _host.Dispose();
+
+    [AvaloniaFact]
+    public async Task TakeThemOver_AClearedNameForLooseFiles_StillGoesAhead()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        _host.FileSystem.AddFile(Path.Combine(GamePaths.OverrideDirectory(_scenario.DocumentsDirectory), "loose_hair.dds"), new MockFileData("DDS"));
+        await viewModel.HandInstalled.ScanCommand.ExecuteAsync(null);
+        viewModel.HandInstalled.Adoption.LooseFilesName = string.Empty;
+
+        await viewModel.ModsTab.NextMove.TakeCommand.ExecuteAsync(null);
+
+        Assert.False(viewModel.HandInstalled.Adoption.IsError, viewModel.HandInstalled.Adoption.StatusMessage);
+        Assert.Equal("Loose files", viewModel.HandInstalled.Adoption.LooseFilesName);
+    }
 
     [AvaloniaFact]
     public async Task ModsFoundInTheGame_TakeThemOver_OpensOnePreview_ThenTheStepMovesOn()
