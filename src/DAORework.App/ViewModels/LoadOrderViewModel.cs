@@ -38,9 +38,6 @@ public sealed partial class LoadOrderViewModel : PageViewModel
         _details = details;
     }
 
-    /// <summary>Raised after <i>To top</i> or <i>To bottom</i>: the mod has left the place it was pressed, so its preview is brought into view.</summary>
-    public event EventHandler? MovedFar;
-
     /// <summary>Gets or sets what runs after a new order was applied, such as reading the other panels again.</summary>
     public Func<CancellationToken, Task>? AfterChangeAsync { get; set; }
 
@@ -102,11 +99,11 @@ public sealed partial class LoadOrderViewModel : PageViewModel
 
     /// <summary>Moves a mod to the top in one step and one preview (P2.6-19), where the others' copies of its files win.</summary>
     [RelayCommand]
-    private Task MoveToTopAsync(LoadOrderRow mod, CancellationToken cancellationToken) => MoveFarAsync(mod, 0, cancellationToken);
+    private Task MoveToTopAsync(LoadOrderRow mod, CancellationToken cancellationToken) => MoveToAsync(mod, 0, cancellationToken);
 
     /// <summary>Moves a mod to the bottom in one step and one preview (P2.6-19), where its copies of files win.</summary>
     [RelayCommand]
-    private Task MoveToBottomAsync(LoadOrderRow mod, CancellationToken cancellationToken) => MoveFarAsync(mod, Order.Count - 1, cancellationToken);
+    private Task MoveToBottomAsync(LoadOrderRow mod, CancellationToken cancellationToken) => MoveToAsync(mod, Order.Count - 1, cancellationToken);
 
     [RelayCommand(CanExecute = nameof(CanApply))]
     private Task ApplyAsync(CancellationToken cancellationToken) =>
@@ -145,12 +142,6 @@ public sealed partial class LoadOrderViewModel : PageViewModel
                 ReportSuccess("Back to the saved order; nothing was changed.");
             },
             cancellationToken);
-
-    private async Task MoveFarAsync(LoadOrderRow mod, int to, CancellationToken cancellationToken)
-    {
-        await MoveToAsync(mod, to, cancellationToken);
-        MovedFar?.Invoke(this, EventArgs.Empty);
-    }
 
     private Task MoveToAsync(LoadOrderRow mod, int to, CancellationToken cancellationToken) =>
         GuardAsync(

@@ -26,6 +26,14 @@
 
   <!-- An on/off switch: a dark groove and a gem knob that sits right and glows when on, pewter and left when off.
        The button's label (On or Off) stays beside it, so the state is never color alone. -->
+  <!-- A preview docked under the Mods tab's list (ADR-0038). -->
+  <Style Selector="Border.sheet">
+    <Setter Property="Padding" Value="14,12" />
+    <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource BorderSoftBrush}" />
+    <Setter Property="BorderThickness" Value="0,1,0,0" />
+  </Style>
+
   <!-- A mod's name on its one-line row (ADR-0038): reads as text, and shows it can be pressed only when pointed at. -->
   <Style Selector="ToggleButton.rowName">
     <Setter Property="Background" Value="Transparent" />

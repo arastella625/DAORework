@@ -14,7 +14,7 @@ repeats on every row. The owner answered its questions on 2026-11-05.
 - **What stays on the row:** a warning. Anything that needs the player's attention is never behind a click.
 - **What moves behind it:** file counts, where a mod came from, and the antivirus verdict. ADR-0018's wording is unchanged,
   and a mod that wasn't scanned says so when expanded. *(This narrows where ADR-0018's notes show, not what they say.)*
-- **The preview opens as a sheet over the list**, with its buttons always visible.
+- **The preview opens as a sheet docked under the list**, which shrinks to make room. Its buttons always show, only the plan scrolls, and the list stays reachable, which *Arrange* needs while a preview is open.
 - ***Arrange* gets drag,** with one preview for the whole move, and no numbered positions.
 
 The six tabs, the plain words, the gilded-tome style and previews before every change stay as ADR-0026 has them.
@@ -28,4 +28,5 @@ The six tabs, the plain words, the gilded-tome style and previews before every c
 ## Alternatives considered
 - **A details panel beside the list.** Shows more at once, but squeezes the list at the minimum width.
 - **A preview panel beside the list.** The same squeeze.
+- **A sheet floating over the list.** Hides the rows under it, which *Arrange* still needs.
 - **Numbered positions in *Arrange*.** Adds a box to every row for a rare need.

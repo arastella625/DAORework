@@ -51,9 +51,12 @@
           <views:HomePage DataContext="{Binding Home}" />
         </TabItem>
         <TabItem Header="Mods">
-          <ScrollViewer>
-            <views:ModsListPanel Margin="0,12,0,0" DataContext="{Binding ModsTab}" />
-          </ScrollViewer>
+          <DockPanel>
+            <views:PreviewSheet DockPanel.Dock="Bottom" DataContext="{Binding ModsTab}" />
+            <ScrollViewer>
+              <views:ModsListPanel Margin="0,12,0,0" DataContext="{Binding ModsTab}" />
+            </ScrollViewer>
+          </DockPanel>
         </TabItem>
         <TabItem Header="Fixes">
           <ScrollViewer>
