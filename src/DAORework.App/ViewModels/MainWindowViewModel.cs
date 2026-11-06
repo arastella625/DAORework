@@ -24,6 +24,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
     public const int SettingsPage = 5;
 
     private Task? _initialization;
+    private Task _selecting = Task.CompletedTask;
 
     public MainWindowViewModel(ProfileListViewModel profiles, LaunchViewModel launch, PagesViewModel pages, SettingsPageViewModel settings, HomeViewModel home)
     {
@@ -32,11 +33,15 @@ public sealed partial class MainWindowViewModel : ObservableObject
         Pages = pages;
         Settings = settings;
         Home = home;
-        Profiles.SelectionChanged += (_, name) => _ = SelectProfileAsync(name);
+        Profiles.SelectionChanged += (_, name) => _selecting = SelectProfileAsync(name);
         Settings.Looks.ListChanged += (_, _) => _ = Pages.Profile.Look.RefreshAsync(); // The Profile page offers the looks made in Settings.
 
         // The first-run flow (P2.5-07): the first profile is diagnosed at once, and the diagnosis ends in next steps.
-        Profiles.AfterFirstProfileAsync = _ => Diagnostics.RunDiagnosticsCommand.ExecuteAsync(null);
+        Profiles.AfterFirstProfileAsync = async _ =>
+        {
+            await _selecting; // The check reads the profile, so every page has to be pointed at it first.
+            await Diagnostics.RunDiagnosticsCommand.ExecuteAsync(null);
+        };
         Diagnostics.AfterReportAsync = Home.ShowReportAsync;
         NextSteps.TakeStepAsync = TakeStepAsync;
         Home.Watch(ModsTab, Fixes);

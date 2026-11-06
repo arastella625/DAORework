@@ -45,6 +45,8 @@ summary follows these rules. The command line keeps its own words; see the end.
 | Check the game, Check again | Run diagnostics | Diagnostics are *Troubleshooting* in Settings. |
 | Copy details for a bug report, Save a support bundle | Export support bundle | Copying comes with the Settings move (P2.5-27). |
 
+A wait says what it's doing in the footer, in the *-ing* form: *Reading your mods*, *Working out the preview*.
+
 ## Patterns
 
 **A preview**: a title that is the action, one line of what it changes, any warning, then the buttons.

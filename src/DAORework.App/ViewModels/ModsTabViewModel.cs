@@ -46,6 +46,7 @@ public sealed class ModsTabViewModel
                 library.ShowConflicts(LoadOrder.ConflictMarks);
             }
         };
+        Working = WorkingOn();
         Filter = new ModListFilter(library.Mods, handInstalled.Candidates);
         Selection = new LibrarySelectionViewModel(library.Mods, Filter.VisibleMods, Activation);
         Setup = new SetupSummary(this);
@@ -68,6 +69,9 @@ public sealed class ModsTabViewModel
 
     /// <summary>Gets opening a known mod's page in the browser (ADR-0034 §7).</summary>
     public ModPageViewModel ModPage { get; }
+
+    /// <summary>Gets what the window is working on, for its footer (P2.6-45).</summary>
+    public WorkingLine Working { get; }
 
     /// <summary>Gets <i>Keep this one</i> (ADR-0039).</summary>
     public KeepCopyViewModel KeepCopy { get; }
@@ -155,6 +159,20 @@ public sealed class ModsTabViewModel
         Filter.ShowOnlyCommand.Execute(ModShowFilter.All); // The preview shows with your mods, which a chip may be hiding.
         var rows = modIds.Select(id => Library.Mods.FirstOrDefault(m => string.Equals(m.Id, id, StringComparison.OrdinalIgnoreCase))).OfType<LibraryModRow>().ToList();
         return Activation.PlanChangeAsync(ModChangeKind.Activate, rows, restoredAddIns, cancellationToken);
+    }
+
+    private WorkingLine WorkingOn()
+    {
+        var line = new WorkingLine();
+        line.Watch(Library, "Reading your mods");
+        line.Watch(HandInstalled, "Looking at what's in your game");
+        line.Watch(LoadOrder, "Working out which mods win");
+        line.Watch(Activation, "Working out the preview");
+        line.Watch(HandInstalled.Adoption, "Copying to your Library and working out the preview");
+        line.Watch(LookFirst, "Looking at what you added");
+        line.Watch(KeepCopy, "Working out what to keep");
+        line.Watch(KeepEach, "Working out what to keep");
+        return line;
     }
 
     private List<AdoptionCandidate> FoundInGame() => [.. HandInstalled.Candidates.Select(c => c.Candidate).OfType<AdoptionCandidate>()];

@@ -16,8 +16,17 @@
   <Style Selector="Button.accent /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="BorderBrush" Value="{DynamicResource HeadingBrush}" />
   </Style>
+  <!-- The border changes too: some themes have no glow, and hover has to show in all of them (P2.6-45). -->
   <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="BoxShadow" Value="{DynamicResource GlowShadow}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource FocusGlowBrush}" />
+  </Style>
+  <Style Selector="ToggleButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="BorderBrush" Value="{DynamicResource FocusGlowBrush}" />
+  </Style>
+  <!-- A button that can't be pressed right now has to look it, or it reads as one that didn't respond. -->
+  <Style Selector="Button:disabled, ToggleButton:disabled">
+    <Setter Property="Opacity" Value="0.55" />
   </Style>
   <Style Selector="Button:focus-visible /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="BoxShadow" Value="{DynamicResource GlowShadow}" />

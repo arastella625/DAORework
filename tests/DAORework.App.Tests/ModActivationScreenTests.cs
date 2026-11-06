@@ -20,6 +20,21 @@ public sealed class ModActivationScreenTests : IDisposable
     public void Dispose() => _host.Dispose();
 
     [AvaloniaFact]
+    public async Task ThePreview_SaysItIsBeingWorkedOut_UntilItIsReady()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        await _scenario.ImportHairPackAsync(viewModel);
+        var working = viewModel.ModsTab.Working;
+        var said = new List<string?>();
+        working.PropertyChanged += (_, _) => said.Add(working.Text);
+
+        await viewModel.ModsTab.Activation.ActivateCommand.ExecuteAsync(viewModel.Library.Mods.Single());
+
+        Assert.Contains("Working out the preview", said);
+        Assert.False(working.IsWorking);
+    }
+
+    [AvaloniaFact]
     public async Task Activate_ProfileWithoutADocumentsFolder_SaysWhereToChooseOne()
     {
         var (_, viewModel) = await _scenario.OpenAsync(seedInstall: false);

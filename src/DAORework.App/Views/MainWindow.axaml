@@ -43,7 +43,15 @@
     <!-- Said once here instead of on every panel (docs/VOICE.md rule 3). -->
     <Border DockPanel.Dock="Bottom" Padding="16,8" Background="{DynamicResource SurfaceBrush}"
             BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
-      <TextBlock Name="UndoPromise" Classes="Secondary" Text="Every change to your game can be undone in History." />
+      <Panel>
+        <TextBlock Name="UndoPromise" Classes="Secondary" Text="Every change to your game can be undone in History."
+                   IsVisible="{Binding !ModsTab.Working.IsWorking}" />
+        <!-- A wait looks like nothing happening unless something says otherwise (P2.6-45). -->
+        <StackPanel Name="WorkingNow" Orientation="Horizontal" Spacing="10" IsVisible="{Binding ModsTab.Working.IsWorking}">
+          <ProgressBar IsIndeterminate="True" Width="90" MinWidth="90" VerticalAlignment="Center" />
+          <TextBlock Name="WorkingText" Text="{Binding ModsTab.Working.Text}" />
+        </StackPanel>
+      </Panel>
     </Border>
     <controls:Backdrop>
       <TabControl Name="Pages" Margin="8" SelectedIndex="{Binding SelectedPage}" IsEnabled="{Binding !Change.IsRunning}">
