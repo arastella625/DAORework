@@ -27,6 +27,9 @@ public sealed partial class ModListFilter : ObservableObject
         Update();
     }
 
+    /// <summary>Raised when Home opens the page, which should start at the top and not where it was left (P2.6-63).</summary>
+    public event EventHandler? OpenedFromHome;
+
     public RowList<LibraryModRow> VisibleMods { get; } = [];
 
     public RowList<HandInstalledModRow> VisibleFound { get; } = [];
@@ -135,6 +138,9 @@ public sealed partial class ModListFilter : ObservableObject
         Kind = Kind == kind ? ModKindFilter.All : kind;
         Arranging = false;
     }
+
+    /// <summary>Tells the page Home has just opened it.</summary>
+    public void NoteOpenedFromHome() => OpenedFromHome?.Invoke(this, EventArgs.Empty);
 
     [RelayCommand]
     private void ToggleArrange() => Arranging = !Arranging;

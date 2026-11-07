@@ -32,9 +32,13 @@ public sealed partial class SetupSummary : ObservableObject
     [ObservableProperty]
     public partial string Body { get; set; } = string.Empty;
 
+    /// <summary>Gets a value indicating whether any mod is on, so a problem could come from one.</summary>
+    [ObservableProperty]
+    public partial bool HasModsOn { get; private set; }
+
     private void OnLoadOrderChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(LoadOrderViewModel.CombinedCount) or nameof(LoadOrderViewModel.OverlapCount))
+        if (e.PropertyName is nameof(LoadOrderViewModel.CombinedCount) or nameof(LoadOrderViewModel.OverlapCount) or nameof(LoadOrderViewModel.SharedCheck))
         {
             Update();
         }
@@ -44,19 +48,13 @@ public sealed partial class SetupSummary : ObservableObject
     {
         var library = _mods.Library.Mods;
         var found = _mods.Filter.Unlisted;
-        var overlaps = _mods.LoadOrder.OverlapCount;
-        var combined = _mods.LoadOrder.CombinedCount;
+        HasModsOn = library.Any(m => m.IsActive);
+        var check = HasModsOn ? _mods.LoadOrder.SharedCheck : SharedFilesCheck.Done; // With nothing on, nothing can be shared.
         SetupPart[] parts =
         [
             new("Add-ins", Count(library.Count(m => m.IsAddIn && m.IsActive), found.Count(m => m.IsAddIn)), "Ready", true, HomeTarget.ModsLibrary, ModKindFilter.AddIns),
-            new(
-                "Override mods",
-                Count(library.Count(m => !m.IsAddIn && m.IsActive), found.Count(m => !m.IsAddIn)),
-                overlaps == 0 ? "Ready" : Counted.Of(overlaps, "overlap"),
-                overlaps == 0,
-                overlaps == 0 ? HomeTarget.ModsLibrary : HomeTarget.ModsArrange,
-                ModKindFilter.OverrideMods),
-            new("Combined files", CombinedCount(combined, overlaps), "Ready", true, HomeTarget.ModsCombined, ModKindFilter.CombinedFiles),
+            OverrideMods(Count(library.Count(m => !m.IsAddIn && m.IsActive), found.Count(m => !m.IsAddIn)), check),
+            CombinedFiles(check),
         ];
         Parts.Clear();
         foreach (var part in parts)
@@ -64,18 +62,53 @@ public sealed partial class SetupSummary : ObservableObject
             Parts.Add(part);
         }
 
-        var ready = parts.All(p => p.IsReady);
-        var unmanaged = found.Count > 0;
-        var noMods = library.Count == 0 && !unmanaged;
-        Title = noMods ? "No mods yet" : ready && !unmanaged ? "Everything is in place" : "Almost there";
+        Say(parts.All(p => p.IsReady), found.Count > 0, library.Count == 0 && found.Count == 0, check);
+    }
+
+    private SetupPart OverrideMods(string count, SharedFilesCheck check)
+    {
+        var overlaps = _mods.LoadOrder.OverlapCount;
+        return new(
+            "Override mods",
+            count,
+            Unknown(check) ?? (overlaps == 0 ? "Ready" : Counted.Of(overlaps, "overlap")),
+            check == SharedFilesCheck.Done && overlaps == 0,
+            overlaps == 0 ? HomeTarget.ModsLibrary : HomeTarget.ModsArrange,
+            ModKindFilter.OverrideMods,
+            check == SharedFilesCheck.Checking);
+    }
+
+    private SetupPart CombinedFiles(SharedFilesCheck check) => new(
+        "Combined files",
+        check == SharedFilesCheck.Done ? CombinedCount(_mods.LoadOrder.CombinedCount, _mods.LoadOrder.OverlapCount) : "Not known yet",
+        Unknown(check) ?? "Ready",
+        check == SharedFilesCheck.Done,
+        HomeTarget.ModsCombined,
+        ModKindFilter.CombinedFiles,
+        check == SharedFilesCheck.Checking);
+
+    private void Say(bool ready, bool unmanaged, bool noMods, SharedFilesCheck check)
+    {
+        var checking = check == SharedFilesCheck.Checking && !unmanaged;
+        Title = noMods ? "No mods yet" : checking ? "Checking your mods" : ready && !unmanaged ? "Everything is in place" : "Almost there";
         Body = (noMods, ready, unmanaged) switch
         {
             (true, _, _) => "Your mods will show here once you've added some.",
             (_, _, true) => "Some mods in your game aren't looked after by DAORework yet.",
             (_, true, _) => "Your add-ins, override mods and combined files are all set.",
+            _ when checking => "Seeing which files your mods share. This can take a minute.",
+            _ when check == SharedFilesCheck.Failed => "DAORework couldn't check which files your mods share. Combined files says why.",
             _ => "Some mods change the same file. Arrange them to choose which one wins.",
         };
     }
+
+    /// <summary>What a card says in place of <i>Ready</i> until the shared files are known.</summary>
+    private static string? Unknown(SharedFilesCheck check) => check switch
+    {
+        SharedFilesCheck.Checking => "Checking",
+        SharedFilesCheck.Failed => "Couldn't check",
+        _ => null,
+    };
 
     /// <summary>The card lists files mods share as well as merged ones, so "None needed" is only true of neither.</summary>
     private static string CombinedCount(int combined, int shared) => (combined, shared) switch

@@ -7,7 +7,8 @@ namespace DAORework.App.ViewModels;
 /// <param name="IsReady">Whether nothing about this kind needs a look.</param>
 /// <param name="Target">Where the part opens from Home.</param>
 /// <param name="Kind">The kind the part filters the Mods tab to.</param>
-public sealed record SetupPart(string Title, string Count, string Status, bool IsReady, HomeTarget Target, ModKindFilter Kind)
+/// <param name="IsChecking">Whether the answer isn't known yet, so the part neither passes nor asks for a look.</param>
+public sealed record SetupPart(string Title, string Count, string Status, bool IsReady, HomeTarget Target, ModKindFilter Kind, bool IsChecking = false)
 {
-    public bool NeedsALook => !IsReady;
+    public bool NeedsALook => !IsReady && !IsChecking;
 }

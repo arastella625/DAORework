@@ -1,0 +1,15 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="DAORework.App.Views.AlreadyOpenWindow"
+        Title="DAORework"
+        Width="420" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource BackgroundBrush}">
+  <!-- Shown instead of the main window when another copy has this library open (ADR-0044). -->
+  <StackPanel Margin="24" Spacing="12">
+    <TextBlock Classes="SectionTitle" Text="DAORework is already open" />
+    <TextBlock Name="AlreadyOpenBody" Classes="Secondary" TextWrapping="Wrap"
+               Text="Look for it on your taskbar. Only one window can work on your mods at a time, so two changes can't get in each other's way." />
+    <Button Name="AlreadyOpenClose" Content="Close" HorizontalAlignment="Right" Click="OnClose" />
+  </StackPanel>
+</Window>

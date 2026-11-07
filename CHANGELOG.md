@@ -16,6 +16,9 @@ All notable changes to DAORework are recorded here. The format follows
 - Removed copies go to the Recycle Bin (P2.6-60, [ADR-0039](docs/adr/0039-look-first-and-keep-one-copy.md)), so a mod removed by mistake can be put back. The space comes back when you empty it.
 
 ### Fixed
+- The window no longer says all is well before it knows (P2.6-61). Until it has read which files your mods share, which can take a minute the first time, the cards say *Checking* instead of *Ready*, and *Combined files* doesn't say none are shared.
+- A second copy of DAORework no longer opens on the same mods (P2.6-62, [ADR-0044](docs/adr/0044-one-window-at-a-time.md)). It says *DAORework is already open* and closes, since two windows could undo each other's changes.
+- *Find the problem mod* is easier to reach (P2.6-63). Home and the Mods tab each have a button for it, as it was only behind the *Combined files* card.
 - An unexpected error no longer shows its raw text (P2.6-53). The window says it didn't work and what to do, and the details stay in the log.
 - An entry holding only a readme or a Mac leftover now counts as part of the mod of its name (P2.6-52), so *Keep one of each* offers to clear it. *Take them over* no longer turns such files into a mod of their own, which is how a list ended up showing mods twice.
 - A preview warns when a file being moved sits beside other files (P2.6-51), since a mod DAORework doesn't look after may use it too.

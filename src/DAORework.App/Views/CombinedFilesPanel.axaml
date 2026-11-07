@@ -68,9 +68,14 @@
           <MultiBinding Converter="{x:Static BoolConverters.And}">
             <Binding Path="!Conflicts.Count" />
             <Binding Path="!PackedConflicts.Count" />
+            <Binding Path="SharedCheckNote" Converter="{x:Static StringConverters.IsNullOrEmpty}" />
           </MultiBinding>
         </TextBlock.IsVisible>
       </TextBlock>
+      <TextBlock Name="SharedCheckNote" Classes="Secondary" TextWrapping="Wrap" Text="{Binding SharedCheckNote}"
+                 IsVisible="{Binding SharedCheckNote, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+      <TextBlock Name="SharedCheckError" Classes="Status" Classes.Error="{Binding IsError}" TextWrapping="Wrap" Text="{Binding StatusMessage}"
+                 IsVisible="{Binding SharedCheckFailed}" />
       <TextBlock Classes="Secondary" TextWrapping="Wrap" FontSize="12"
                  Text="Combined: merged into one file. Arrange chooses which mod wins any other file. Could break quests: a script, table or conversation, which may need a compatibility patch from the mods' authors." />
     </StackPanel>
