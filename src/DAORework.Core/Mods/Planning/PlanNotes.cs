@@ -1,3 +1,5 @@
+using DAORework.Core.Mods.Conflicts;
+
 namespace DAORework.Core.Mods.Planning;
 
 /// <summary>
@@ -16,7 +18,7 @@ public static class PlanNotes
         ArgumentNullException.ThrowIfNull(plan);
         ArgumentNullException.ThrowIfNull(nameOf);
         nameOf = ModActivationPlanWarnings.CombinedAware(nameOf);
-        var differing = plan.Conflicts.BetweenMods.Where(c => !c.SameContent).ToList();
+        var differing = Touched(plan).Where(c => !c.SameContent).ToList();
         var sentences = differing.Select(c => ModActivationPlanWarnings.Shared(c, nameOf)).Concat(ModActivationPlanWarnings.Others(plan, nameOf)).ToList();
         List<string> notes = sentences.Count <= MaxSentences ? [.. sentences] : [.. SharedFileNotes.For(differing, nameOf), .. Grouped(plan, nameOf)];
         if (plan.TakenBesideOtherFiles > 0)
@@ -25,6 +27,20 @@ public static class PlanNotes
         }
 
         return notes;
+    }
+
+    /// <summary>
+    /// The conflicts this change has a hand in (P2.6-66), since one the mods already had isn't news: turning off an 8-byte mod
+    /// warned about 46 files it has nothing to do with. A new order touches them all.
+    /// </summary>
+    private static IEnumerable<OverrideConflict> Touched(ModActivationPlan plan)
+    {
+        var changed = plan.TargetModIds.Except(plan.CurrentModIds, StringComparer.OrdinalIgnoreCase)
+            .Concat(plan.CurrentModIds.Except(plan.TargetModIds, StringComparer.OrdinalIgnoreCase))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        return changed.Count == 0
+            ? plan.Conflicts.BetweenMods
+            : plan.Conflicts.BetweenMods.Where(c => changed.Contains(c.Winner.ModId) || c.OtherModIds.Any(changed.Contains));
     }
 
     private static string TakenBeside(int count) =>

@@ -43,6 +43,27 @@ public static class ModActivationPlanText
         return lines;
     }
 
+    /// <summary>Which mods go on and off, for the window's details, where two whole lists say neither (P2.6-66). Empty for a new order.</summary>
+    public static IReadOnlyList<string> Changes(ModActivationPlan plan, Func<string, string> nameOf)
+    {
+        ArgumentNullException.ThrowIfNull(plan);
+        ArgumentNullException.ThrowIfNull(nameOf);
+        var off = plan.CurrentModIds.Except(plan.TargetModIds, StringComparer.OrdinalIgnoreCase).ToList();
+        var on = plan.TargetModIds.Except(plan.CurrentModIds, StringComparer.OrdinalIgnoreCase).ToList();
+        var lines = new List<string>();
+        if (off.Count > 0)
+        {
+            lines.Add($"Turning off {off.Count}: {string.Join(", ", off.Select(nameOf))}");
+        }
+
+        if (on.Count > 0)
+        {
+            lines.Add($"Turning on {on.Count}: {string.Join(", ", on.Select(nameOf))}");
+        }
+
+        return lines;
+    }
+
     private static void Summary(ModActivationPlan plan, List<string> lines, Func<string, string> nameOf)
     {
         lines.Add($"  Copy      {Files(plan.Count(PlanAction.Copy))}");

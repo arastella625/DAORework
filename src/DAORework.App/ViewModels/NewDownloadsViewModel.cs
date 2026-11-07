@@ -30,7 +30,7 @@ public sealed partial class NewDownloadsViewModel : PageViewModel
     }
 
     /// <summary>Gets or sets how a file is added: the Library's import, as <i>Add mods</i> does.</summary>
-    public Func<IReadOnlyList<string>, CancellationToken, Task>? AddAsync { get; set; }
+    public Func<IReadOnlyList<string>, CancellationToken, Task<IReadOnlyList<string>>>? AddAsync { get; set; }
 
     public NewDownloadsSettingsViewModel Settings { get; }
 
@@ -109,14 +109,10 @@ public sealed partial class NewDownloadsViewModel : PageViewModel
     private Task AddRowsAsync(IReadOnlyList<NewDownloadRow> rows, CancellationToken cancellationToken) => InTurnAsync(
         async token =>
         {
-            if (AddAsync is { } add)
+            IReadOnlyList<string> notAdded = AddAsync is { } add ? await add([.. rows.Select(r => r.Download.File.Path)], token) : [];
+            foreach (var row in rows.Where(r => !notAdded.Contains(r.Download.File.Path)))
             {
-                await add([.. rows.Select(r => r.Download.File.Path)], token);
-            }
-
-            foreach (var row in rows)
-            {
-                await DealtWithAsync(row, token);
+                await DealtWithAsync(row, token); // What failed stays on the card, to try again (#181).
             }
         },
         cancellationToken);

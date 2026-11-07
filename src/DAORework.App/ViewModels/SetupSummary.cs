@@ -38,7 +38,7 @@ public sealed partial class SetupSummary : ObservableObject
 
     private void OnLoadOrderChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(LoadOrderViewModel.CombinedCount) or nameof(LoadOrderViewModel.OverlapCount) or nameof(LoadOrderViewModel.SharedCheck))
+        if (e.PropertyName is nameof(LoadOrderViewModel.CombinedCount) or nameof(LoadOrderViewModel.OverlapCount) or nameof(LoadOrderViewModel.SharedCount) or nameof(LoadOrderViewModel.SharedCheck))
         {
             Update();
         }
@@ -80,7 +80,7 @@ public sealed partial class SetupSummary : ObservableObject
 
     private SetupPart CombinedFiles(SharedFilesCheck check) => new(
         "Combined files",
-        check == SharedFilesCheck.Done ? CombinedCount(_mods.LoadOrder.CombinedCount, _mods.LoadOrder.OverlapCount) : "Not known yet",
+        check == SharedFilesCheck.Done ? CombinedCount(_mods.LoadOrder.CombinedCount, _mods.LoadOrder.SharedCount) : "Not known yet",
         Unknown(check) ?? "Ready",
         check == SharedFilesCheck.Done,
         HomeTarget.ModsCombined,
