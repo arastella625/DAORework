@@ -19,8 +19,6 @@ namespace DAORework.App.ViewModels;
 /// </summary>
 public sealed partial class LoadOrderViewModel : PageViewModel
 {
-    private const int MaxPackedRows = 50;
-
     private const int MaxSharedRows = 30;
 
     private readonly GetProfile _getProfile;
@@ -179,6 +177,7 @@ public sealed partial class LoadOrderViewModel : PageViewModel
         if (!(await ProfileDocuments.FoldersAsync(_getProfile, ProfileName, cancellationToken)).TryGetValue(out var folders, out var error))
         {
             Show([], null);
+            SharedCount = 0;
             SharedCheck = SharedFilesCheck.Done;
             return;
         }
@@ -262,15 +261,12 @@ public sealed partial class LoadOrderViewModel : PageViewModel
     private void ShowPacked(LoadOrderDetails details, Dictionary<string, string> names)
     {
         PackedConflicts.Clear();
-        foreach (var conflict in details.Packed.OrderBy(p => SharedFileRank.Of(p.FileName)).Take(MaxPackedRows))
+        foreach (var row in PackedRows.For(details.Packed, names))
         {
-            PackedConflicts.Add(FileConflictRow.Packed(conflict, string.Join(", ", conflict.ModIds.Select(id => names.TryGetValue(id, out var name) ? name : id))));
+            PackedConflicts.Add(row);
         }
 
-        if (details.Packed.Count > MaxPackedRows)
-        {
-            PackedConflicts.Add(new FileConflictRow($"{details.Packed.Count - MaxPackedRows} more", "Inside an archive", "More files these mods share inside their archives."));
-        }
+        SharedCount = OverlapCount + details.Packed.Count;
     }
 
     private void ShowCombined(IReadOnlyList<CombinedOverride> combined, Func<string, string> nameOf)

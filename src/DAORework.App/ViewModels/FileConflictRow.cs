@@ -71,16 +71,35 @@ public sealed record FileConflictRow(string FileName, string Winner, string Deta
     {
         ArgumentNullException.ThrowIfNull(conflict);
         var impact = SharedFileRank.Of(conflict.FileName);
-        var next = impact switch
-        {
-            SharedFileImpact.Looks => "It only changes how things look, so you can leave it. If you don't like what you see, turn one of these mods off.",
-            SharedFileImpact.CouldBreakQuests => "A quest could break. If something goes wrong there, turn one of these mods off to see if it stops, or look for a compatibility patch.",
-            _ => "If something seems wrong, turn one of these mods off to see if it stops.",
-        };
-        return new FileConflictRow(conflict.FileName, "Inside an archive", $"In {mods}. The game uses one copy, and DAORework can't tell which. {next}")
+        return new FileConflictRow(conflict.FileName, "Inside an archive", $"In {mods}. The game uses one copy, and DAORework can't tell which. {NextStep(impact)}")
         {
             Impact = impact,
             PlainName = SharedFileNames.For(conflict.FileName),
         };
     }
+
+    /// <summary>Many files the same mods hold inside archives, with the same risk, as one row (P2.6-65).</summary>
+    /// <param name="files">What the mods share.</param>
+    /// <param name="mods">The mods, named.</param>
+    /// <param name="impact">What can go wrong with these files.</param>
+    public static FileConflictRow PackedSet(IReadOnlyList<PackedConflict> files, string mods, SharedFileImpact impact)
+    {
+        ArgumentNullException.ThrowIfNull(files);
+        var names = string.Join(", ", files.Take(FilesNamed).Select(f => f.FileName));
+        return new FileConflictRow(mods, "Inside an archive", $"{files.Count} files, such as {names}. The game uses one copy of each, and DAORework can't tell which. {NextStepForMany(impact)}")
+        {
+            Impact = impact,
+        };
+    }
+
+    private static string NextStepForMany(SharedFileImpact impact) => impact == SharedFileImpact.Looks
+        ? "They only change how things look, so you can leave them. If you don't like what you see, turn one of these mods off."
+        : NextStep(impact);
+
+    private static string NextStep(SharedFileImpact impact) => impact switch
+    {
+        SharedFileImpact.Looks => "It only changes how things look, so you can leave it. If you don't like what you see, turn one of these mods off.",
+        SharedFileImpact.CouldBreakQuests => "A quest could break. If something goes wrong there, turn one of these mods off to see if it stops, or look for a compatibility patch.",
+        _ => "If something seems wrong, turn one of these mods off to see if it stops.",
+    };
 }
