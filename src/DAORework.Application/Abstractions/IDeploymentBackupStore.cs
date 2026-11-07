@@ -11,7 +11,10 @@ namespace DAORework.Application.Abstractions;
 /// </summary>
 public interface IDeploymentBackupStore
 {
-    /// <summary>Captures <paramref name="targets"/>, with the deployment record from before the change. A failure leaves no backup behind.</summary>
+    /// <summary>
+    /// Captures <paramref name="targets"/>, with the deployment record from before the change. A file that record names and
+    /// the Library holds is not copied (ADR-0045). A failure leaves no backup behind.
+    /// </summary>
     Task<Result<DeploymentBackup>> SaveAsync(
         string documentsDirectory,
         IReadOnlyList<BackupTarget> targets,

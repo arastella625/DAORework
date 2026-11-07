@@ -525,6 +525,7 @@ with a diagnosis and a way forward, not leave a player stuck. The owner saw a ra
 - P2.6-64 A download that couldn't be added stays in *New downloads* ([#181](https://github.com/arastella625/DAORework/issues/181)).
 - P2.6-65 *Combined files* says each thing once: the owner's 41 rows that could break quests were nearly all one pair of mods. Files inside archives with the same mods and risk are one row, and the card counts what the list shows, where it said 46 over a list of 116.
 - P2.6-66 Previews say what this change does: warnings only about conflicts it has a hand in, and *Show details* names the mods going on and off.
+- P2.6-67 Backups reuse the Library: a file DAORework placed that the Library still holds isn't copied, and a restore checks every such file before it changes anything ([ADR-0045](adr/0045-backups-reuse-the-library.md)). The owner's backups had reached 22.6 GB, 7.4 GB of it from one round of *Find the problem mod*.
 
 **Feeling quick** *(added 2026-11-06, the owner's wish, from clearing copies on a messy real library)*. Buttons don't
 always highlight, and during a wait it isn't clear whether to wait or press again. Measured on `RealScaleLibrary` (138 mods,

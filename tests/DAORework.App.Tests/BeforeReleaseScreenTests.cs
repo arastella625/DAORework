@@ -6,7 +6,7 @@ using Xunit;
 
 namespace DAORework.App.Tests;
 
-/// <summary>What the first test on a real library left to fix before a release (P2.6-64 to 66).</summary>
+/// <summary>What the first test on a real library left to fix before a release (P2.6-64 to 67).</summary>
 public sealed class BeforeReleaseScreenTests : IDisposable
 {
     private readonly AppTestHost _host = new();
@@ -38,6 +38,26 @@ public sealed class BeforeReleaseScreenTests : IDisposable
 
         Assert.Equal("Red Hair", Assert.Single(downloads.Rows).Title);
         Assert.Equal("Blue Hair", Assert.Single(viewModel.Library.Mods).Title);
+    }
+
+    [AvaloniaFact]
+    public async Task TurningAModOff_CopiesNothingIntoTheBackup_AndUndoBringsItBack()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        await _scenario.ImportHairPackAsync(viewModel);
+        await _scenario.ActivateHairPackAsync(viewModel);
+        await viewModel.ModsTab.Activation.DeactivateCommand.ExecuteAsync(viewModel.Library.Mods.Single(m => m.Title == "Hair Pack"));
+        await viewModel.ModsTab.Activation.ApplyCommand.ExecuteAsync(null);
+        Assert.Empty(_scenario.DeployedHair());
+
+        Assert.DoesNotContain(_host.FileSystem.AllFiles, f => f.Contains("deployment-backups", StringComparison.Ordinal) && Path.GetFileName(f).StartsWith("000", StringComparison.Ordinal));
+
+        var changes = viewModel.ModsTab.Changes;
+        await changes.RollBackToCommand.ExecuteAsync(changes.Backups[0]);
+        await changes.ConfirmRollbackCommand.ExecuteAsync(null);
+
+        Assert.False(changes.IsError, changes.StatusMessage);
+        Assert.Equal("DDS hair", _scenario.DeployedContent("hair_pack.dds"));
     }
 
     [Fact]
