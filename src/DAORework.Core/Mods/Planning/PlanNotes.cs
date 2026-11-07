@@ -31,16 +31,18 @@ public static class PlanNotes
 
     /// <summary>
     /// The conflicts this change has a hand in (P2.6-66), since one the mods already had isn't news: turning off an 8-byte mod
-    /// warned about 46 files it has nothing to do with. A new order touches them all.
+    /// warned about 46 files it has nothing to do with. That is any with a mod going on or off, or a file this plan writes, as
+    /// when the mod that won goes and the next one's copy takes over. A new order touches them all.
     /// </summary>
     private static IEnumerable<OverrideConflict> Touched(ModActivationPlan plan)
     {
         var changed = plan.TargetModIds.Except(plan.CurrentModIds, StringComparer.OrdinalIgnoreCase)
             .Concat(plan.CurrentModIds.Except(plan.TargetModIds, StringComparer.OrdinalIgnoreCase))
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var written = plan.Operations.Select(o => Path.GetFileName(o.TargetPath)).ToHashSet(StringComparer.OrdinalIgnoreCase);
         return changed.Count == 0
             ? plan.Conflicts.BetweenMods
-            : plan.Conflicts.BetweenMods.Where(c => changed.Contains(c.Winner.ModId) || c.OtherModIds.Any(changed.Contains));
+            : plan.Conflicts.BetweenMods.Where(c => written.Contains(c.FileName) || changed.Contains(c.Winner.ModId) || c.OtherModIds.Any(changed.Contains));
     }
 
     private static string TakenBeside(int count) =>

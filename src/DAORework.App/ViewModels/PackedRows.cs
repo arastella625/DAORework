@@ -18,7 +18,7 @@ public static class PackedRows
     {
         ArgumentNullException.ThrowIfNull(packed);
         ArgumentNullException.ThrowIfNull(names);
-        string Mods(PackedConflict conflict) => string.Join(", ", conflict.ModIds.Select(id => names.TryGetValue(id, out var name) ? name : id));
+        string Mods(PackedConflict conflict) => string.Join(", ", conflict.ModIds.Select(id => names.TryGetValue(id, out var name) ? name : id).Order(StringComparer.OrdinalIgnoreCase));
         var rows = packed
             .GroupBy(p => (Mods: Mods(p), Impact: SharedFileRank.Of(p.FileName)))
             .SelectMany(set => set.Count() > MostFilesShownAlone
@@ -28,6 +28,6 @@ public static class PackedRows
             .ToList();
         return rows.Count <= MaxRows
             ? rows
-            : [.. rows.Take(MaxRows), new FileConflictRow($"{rows.Count - MaxRows} more", "Inside an archive", "More files these mods share inside their archives.")];
+            : [.. rows.Take(MaxRows), new FileConflictRow($"{rows.Count - MaxRows} more", "Inside an archive", "More of what these mods share inside their archives.")];
     }
 }

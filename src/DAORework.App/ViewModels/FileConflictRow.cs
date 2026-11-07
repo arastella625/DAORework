@@ -86,11 +86,15 @@ public sealed record FileConflictRow(string FileName, string Winner, string Deta
     {
         ArgumentNullException.ThrowIfNull(files);
         var names = string.Join(", ", files.Take(FilesNamed).Select(f => f.FileName));
-        return new FileConflictRow(mods, "Inside an archive", $"{files.Count} files, such as {names}. The game uses one copy of each, and DAORework can't tell which. {NextStep(impact)}")
+        return new FileConflictRow(mods, "Inside an archive", $"{files.Count} files, such as {names}. The game uses one copy of each, and DAORework can't tell which. {NextStepForMany(impact)}")
         {
             Impact = impact,
         };
     }
+
+    private static string NextStepForMany(SharedFileImpact impact) => impact == SharedFileImpact.Looks
+        ? "They only change how things look, so you can leave them. If you don't like what you see, turn one of these mods off."
+        : NextStep(impact);
 
     private static string NextStep(SharedFileImpact impact) => impact switch
     {

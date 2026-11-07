@@ -64,6 +64,17 @@ public sealed class BeforeReleaseScreenTests : IDisposable
     }
 
     [Fact]
+    public void ManyLooks_ReadAsMany_AndTheOrderOfTheModsDoesNotSplitThem()
+    {
+        var names = new Dictionary<string, string> { ["a"] = "Alpha", ["b"] = "Beta" };
+        var packed = Enumerable.Range(0, 4).Select(i => new PackedConflict($"look_{i}.dds", i % 2 == 0 ? ["a", "b"] : ["b", "a"])).ToList();
+
+        var row = Assert.Single(PackedRows.For(packed, names));
+
+        Assert.Contains("They only change how things look", row.Detail, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void MoreRowsThanFit_SayHowManyMore()
     {
         var packed = Enumerable.Range(0, 60).Select(i => new PackedConflict($"file_{i}.dds", [$"a{i}", $"b{i}"])).ToList();
@@ -96,6 +107,23 @@ public sealed class BeforeReleaseScreenTests : IDisposable
 
         await activation.DeactivateCommand.ExecuteAsync(viewModel.Library.Mods.Single(m => m.Title == "Right"));
         Assert.Equal("Turning off 1: Right", activation.Preview.Lines[0]);
+    }
+
+    [AvaloniaFact]
+    public async Task TurningOffTheModThatWon_StillWarns_SinceTheNextCopyTakesOver()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        var downloads = Path.Combine(_host.KnownFolders.MyDocuments, "..", "Downloads");
+        foreach (var name in new[] { "One", "Two", "Three" })
+        {
+            await _scenario.ImportAsync(viewModel, Path.Combine(downloads, name + ".zip"), ("shared.dds", name));
+            await _scenario.ActivateAsync(viewModel, name);
+        }
+
+        var activation = viewModel.ModsTab.Activation;
+        await activation.DeactivateCommand.ExecuteAsync(viewModel.Library.Mods.Single(m => m.Title == "Three"));
+
+        Assert.Contains(activation.Preview.Notes, n => n.Contains("shared.dds", StringComparison.Ordinal));
     }
 
     [AvaloniaFact]
