@@ -18,7 +18,8 @@ namespace DAORework.Infrastructure.Mods;
 /// Backups of mod changes as plain folders, <c>deployment-backups/{documentsKey}/{yyyyMMdd-HHmmss-fff}-{4 hex}/</c>,
 /// holding <c>files/00000</c>... and a <c>manifest.json</c>. A backup is built under a <c>.tmp</c> name and renamed
 /// only once every copy is verified and the manifest written, so a half-made backup is never listed or restored.
-/// Folders rather than zips, since texture packs are large and restore works file by file.
+/// Folders rather than zips, since texture packs are large and restore works file by file. A file DAORework placed that the
+/// Library still holds is not copied at all (ADR-0045).
 /// </summary>
 public sealed class FolderDeploymentBackupStore : IDeploymentBackupStore
 {
@@ -55,10 +56,11 @@ public sealed class FolderDeploymentBackupStore : IDeploymentBackupStore
         try
         {
             _fileSystem.Directory.CreateDirectory(_fileSystem.Path.Combine(staging, "files"));
+            var held = await Copies().HeldAsync(targets, previousRecord, cancellationToken);
             var entries = new List<BackupEntry>();
             for (var i = 0; i < targets.Count; i++)
             {
-                var entry = await CaptureAsync(documentsDirectory, targets[i], staging, $"files/{i:D5}", cancellationToken);
+                var entry = await CaptureAsync(documentsDirectory, targets[i], staging, held.Contains(targets[i].TargetPath) ? null : $"files/{i:D5}", cancellationToken);
                 if (!entry.TryGetValue(out var captured, out var error))
                 {
                     return Result.Failure<DeploymentBackup>(error);
@@ -120,7 +122,8 @@ public sealed class FolderDeploymentBackupStore : IDeploymentBackupStore
             return Result.Failure<RestoreReport>(new Error(DiagnosticCodes.ModBackupNotFound, $"The backup {backup.Id} is no longer in {_root}."));
         }
 
-        var restorer = new BackupRestorer(_fileSystem, backup, folder, new MovedFileRestorer(_fileSystem, backup.DocumentsDirectory, FindInLibraryAsync));
+        var copies = Copies();
+        var restorer = new BackupRestorer(_fileSystem, backup, folder, new MovedFileRestorer(_fileSystem, backup.DocumentsDirectory, copies.FindAsync), copies);
         try
         {
             return await restorer.RestoreAsync(cancellationToken);
@@ -145,7 +148,15 @@ public sealed class FolderDeploymentBackupStore : IDeploymentBackupStore
             _ => null,
         };
 
-    private async Task<Result<BackupEntry>> CaptureAsync(string documents, BackupTarget target, string staging, string storedAs, CancellationToken cancellationToken)
+    private static Result<BackupEntry> ChangedSincePlan(BackupTarget target) =>
+        Result.Failure<BackupEntry>(new Error(DiagnosticCodes.ModBackupFailed, $"{target.TargetPath} changed after the plan was made.", "Make the plan again."));
+
+    /// <param name="documents">The documents folder.</param>
+    /// <param name="target">The path to capture.</param>
+    /// <param name="staging">The backup being built.</param>
+    /// <param name="storedAs">Where its copy goes, or null when the Library holds it, so that nothing is copied.</param>
+    /// <param name="cancellationToken">Stops the capture.</param>
+    private async Task<Result<BackupEntry>> CaptureAsync(string documents, BackupTarget target, string staging, string? storedAs, CancellationToken cancellationToken)
     {
         if (target.MovedFrom is { } movedFrom)
         {
@@ -164,11 +175,18 @@ public sealed class FolderDeploymentBackupStore : IDeploymentBackupStore
             return Result.Success(new BackupEntry(target.TargetPath, null, null, target.AfterSha256));
         }
 
+        if (storedAs is null)
+        {
+            return FileHashes.Same(await FileHashes.ComputeAsync(_fileSystem, path, cancellationToken), target.ExpectedSha256!)
+                ? Result.Success(new BackupEntry(target.TargetPath, target.ExpectedSha256, null, target.AfterSha256))
+                : ChangedSincePlan(target);
+        }
+
         var copy = _fileSystem.Path.Combine(staging, storedAs);
         var sourceHash = await FileHashes.CopyAsync(_fileSystem, path, copy, cancellationToken);
         if (target.ExpectedSha256 is not null && !FileHashes.Same(sourceHash, target.ExpectedSha256))
         {
-            return Result.Failure<BackupEntry>(new Error(DiagnosticCodes.ModBackupFailed, $"{target.TargetPath} changed after the plan was made.", "Make the plan again."));
+            return ChangedSincePlan(target);
         }
 
         if (!FileHashes.Same(await FileHashes.ComputeAsync(_fileSystem, copy, cancellationToken), sourceHash))
@@ -196,23 +214,7 @@ public sealed class FolderDeploymentBackupStore : IDeploymentBackupStore
         return Result.Success(new BackupEntry(target.TargetPath, null, null, target.AfterSha256) { MovedFrom = movedFrom });
     }
 
-    /// <summary>A file in the library with this SHA-256, for a moved file that is gone (ADR-0015).</summary>
-    private async Task<string?> FindInLibraryAsync(string sha256, CancellationToken cancellationToken)
-    {
-        foreach (var entry in await _library.ListAsync(cancellationToken))
-        {
-            foreach (var file in entry.Mod.Files.Where(f => FileHashes.Same(f.Sha256, sha256)))
-            {
-                var path = _fileSystem.Path.Combine(_libraryRoot, entry.Mod.Id, file.RelativePath.Replace('/', _fileSystem.Path.DirectorySeparatorChar));
-                if (_fileSystem.File.Exists(path))
-                {
-                    return path;
-                }
-            }
-        }
-
-        return null;
-    }
+    private LibraryCopies Copies() => new(_fileSystem, _library, _libraryRoot);
 
     private string Folder(string documentsDirectory) => _fileSystem.Path.Combine(_root, DocumentsKey.For(documentsDirectory));
 }

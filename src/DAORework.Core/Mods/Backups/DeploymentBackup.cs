@@ -8,8 +8,11 @@ namespace DAORework.Core.Mods.Backups;
 /// </summary>
 public sealed record DeploymentBackup(string Id, DateTimeOffset CreatedAtUtc, string DocumentsDirectory, IReadOnlyList<BackupEntry> Entries)
 {
-    /// <summary>Version 2 adds <see cref="BackupEntry.MovedFrom"/>; a build before it would delete a moved file on rollback.</summary>
-    public const int CurrentSchemaVersion = 2;
+    /// <summary>
+    /// Version 2 adds <see cref="BackupEntry.MovedFrom"/>; a build before it would delete a moved file on rollback. Version 3
+    /// leaves files to the Library (ADR-0045), which a build before it has no way to put back.
+    /// </summary>
+    public const int CurrentSchemaVersion = 3;
 
     public int SchemaVersion { get; init; } = CurrentSchemaVersion;
 
