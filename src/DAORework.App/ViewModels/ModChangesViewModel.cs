@@ -59,6 +59,6 @@ public sealed partial class ModChangesViewModel : RecoverableChangesViewModel
                 ? $"On now: {active.Count} mods, {Counted.Of(status.Record.Files.Count, "file")}. Arrange shows them in order."
                 : $"On now, in order: {string.Join(", ", active.Select(NameOf))} ({Counted.Of(status.Record.Files.Count, "file")}).";
         ChangeUnfinished = status.ChangeUnfinished;
-        ShowBackups(status.Backups, active, DeploymentChangeText.Mods, NameOf, "no mods");
+        ShowBackups(status.Backups, active, status.Record, DeploymentChangeText.Mods, NameOf, "no mods");
     }
 }

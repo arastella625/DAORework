@@ -50,6 +50,6 @@ public sealed class GetFixStatus
         }).ToList();
 
         var unfinished = await _journals.LoadAsync(installDirectory, cancellationToken) is not null;
-        return Result.Success(new FixStatus(applied, unfinished, await _backups.ListAsync(installDirectory, cancellationToken)));
+        return Result.Success(new FixStatus(applied, unfinished, await _backups.ListAsync(installDirectory, cancellationToken)) { Record = record });
     }
 }
