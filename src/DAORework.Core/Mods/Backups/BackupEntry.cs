@@ -3,7 +3,8 @@ namespace DAORework.Core.Mods.Backups;
 /// <summary>
 /// One path a plan touches, as it was before. <see cref="BeforeSha256"/> null means nothing was there: restoring
 /// removes whatever the plan put there, but only while it still hashes to <see cref="AfterSha256"/> (or always, when
-/// that is not known, as for <c>AddIns.xml</c>). Otherwise <see cref="StoredAs"/> names the saved copy to put back.
+/// that is not known, as for <c>AddIns.xml</c>). Otherwise <see cref="StoredAs"/> names the saved copy to put back, or is
+/// null when the Library holds the file, found by <see cref="BeforeSha256"/> (ADR-0045).
 /// </summary>
 public sealed record BackupEntry(string TargetPath, string? BeforeSha256, string? StoredAs, string? AfterSha256)
 {
