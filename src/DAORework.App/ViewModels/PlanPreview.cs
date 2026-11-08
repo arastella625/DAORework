@@ -64,7 +64,9 @@ public sealed partial class PlanPreview : ObservableObject
             Notes.Add(note);
         }
 
-        foreach (var line in ModActivationPlanText.Render(plan, nameOf: NameOf))
+        var text = ModActivationPlanText.Render(plan, nameOf: NameOf);
+        var changes = ModActivationPlanText.Changes(plan, ModActivationPlanWarnings.CombinedAware(NameOf));
+        foreach (var line in changes.Count > 0 ? [.. changes, .. text.Skip(1)] : text)
         {
             Lines.Add(line);
         }

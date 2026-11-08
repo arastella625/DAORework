@@ -10,6 +10,10 @@ public sealed partial class LoadOrderViewModel
     [NotifyPropertyChangedFor(nameof(SharedCheckNote), nameof(SharedCheckFailed))]
     public partial SharedFilesCheck SharedCheck { get; private set; }
 
+    /// <summary>Gets how many files <i>Combined files</i> counts as shared: those that differ, and those inside archives (P2.6-65).</summary>
+    [ObservableProperty]
+    public partial int SharedCount { get; private set; }
+
     /// <summary>Gets a value indicating whether the last check failed, so <i>Combined files</i> shows why.</summary>
     public bool SharedCheckFailed => SharedCheck == SharedFilesCheck.Failed;
 

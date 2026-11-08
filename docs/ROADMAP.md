@@ -522,6 +522,9 @@ with a diagnosis and a way forward, not leave a player stuck. The owner saw a ra
 - P2.6-61 Nothing says all is well before it's known: until the files mods share have been read, the cards say *Checking*, not *Ready*, and *Combined files* doesn't say none are shared. On the owner's library that read took up to 95 seconds, and the window said *Everything is in place* over 41 files that could break quests.
 - P2.6-62 One window at a time: a second copy says *DAORework is already open* and closes ([ADR-0044](adr/0044-one-window-at-a-time.md)).
 - P2.6-63 *Find the problem mod* within reach: it was only behind the *Combined files* card, which can say *None needed*. Home and the Mods tab now have a button for it.
+- P2.6-64 A download that couldn't be added stays in *New downloads* ([#181](https://github.com/arastella625/DAORework/issues/181)).
+- P2.6-65 *Combined files* says each thing once: the owner's 41 rows that could break quests were nearly all one pair of mods. Files inside archives with the same mods and risk are one row, and the card counts what the list shows, where it said 46 over a list of 116.
+- P2.6-66 Previews say what this change does: warnings only about conflicts it has a hand in, and *Show details* names the mods going on and off.
 
 **Feeling quick** *(added 2026-11-06, the owner's wish, from clearing copies on a messy real library)*. Buttons don't
 always highlight, and during a wait it isn't clear whether to wait or press again. Measured on `RealScaleLibrary` (138 mods,

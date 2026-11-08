@@ -73,21 +73,26 @@ public sealed partial class LibraryViewModel : PageViewModel
     }
 
     /// <summary>Adds what the player chose: anything that looks already held is asked about first, and the rest is imported.</summary>
-    public Task AddPathsAsync(IReadOnlyList<string> paths, CancellationToken cancellationToken = default) =>
-        GuardAsync(
+    /// <returns>The paths that didn't get in and weren't held back to ask about, so they can be tried again.</returns>
+    public async Task<IReadOnlyList<string>> AddPathsAsync(IReadOnlyList<string> paths, CancellationToken cancellationToken = default)
+    {
+        IReadOnlyList<string> notAdded = paths;
+        await GuardAsync(
             async token =>
             {
                 var toAdd = LookFirstAsync is { } look ? await look(paths, token) : paths;
-                if (toAdd.Count > 0)
-                {
-                    await ImportPathsAsync(toAdd, token);
-                }
+                notAdded = toAdd.Count > 0 ? await ImportPathsAsync(toAdd, token) : [];
             },
             cancellationToken);
+        return notAdded;
+    }
 
     /// <summary>Imports each path in turn (a drop can hold several) and shows the library afterwards.</summary>
-    public Task ImportPathsAsync(IReadOnlyList<string> paths, CancellationToken cancellationToken = default) =>
-        GuardAsync(
+    /// <returns>The paths that didn't get in, including any not reached.</returns>
+    public async Task<IReadOnlyList<string>> ImportPathsAsync(IReadOnlyList<string> paths, CancellationToken cancellationToken = default)
+    {
+        var notAdded = paths.ToList();
+        await GuardAsync(
             async token =>
             {
                 var imported = new List<string>();
@@ -97,6 +102,7 @@ public sealed partial class LibraryViewModel : PageViewModel
                     var result = await ImportOneAsync(path, token);
                     if (result.TryGetValue(out var import, out var error))
                     {
+                        notAdded.Remove(path);
                         imported.Add(import.AlreadyInLibrary ? $"{import.Entry.Mod.Name} (already in the library)" : import.Entry.Mod.Name);
                     }
                     else
@@ -115,6 +121,8 @@ public sealed partial class LibraryViewModel : PageViewModel
                 ReportSuccess(imported.Count == 0 ? string.Empty : $"Added {string.Join(", ", imported)}. Turn {(imported.Count == 1 ? "it" : "them")} on when you want {(imported.Count == 1 ? "it" : "them")} in your game.");
             },
             cancellationToken);
+        return notAdded;
+    }
 
     private async Task<Result<LibraryImport>> ImportOneAsync(string path, CancellationToken cancellationToken)
     {
