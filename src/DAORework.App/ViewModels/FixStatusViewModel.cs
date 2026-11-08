@@ -61,7 +61,7 @@ public sealed partial class FixStatusViewModel : RecoverableChangesViewModel
         Summary = status.Applied.Count == 0 ? $"No fixes are applied through DAORework in {install}." : $"Install folder: {install}";
         ChangeUnfinished = status.ChangeUnfinished;
 
-        ShowBackups(status.Backups, [.. status.Applied.Select(f => f.LibraryId)], DeploymentChangeText.Fixes, FixName, "no fixes");
+        ShowBackups(status.Backups, [.. status.Applied.Select(f => f.LibraryId)], status.Record, DeploymentChangeText.Fixes, FixName, "no fixes");
     }
 
     /// <summary>

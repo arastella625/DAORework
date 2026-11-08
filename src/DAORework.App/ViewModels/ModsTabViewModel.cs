@@ -223,5 +223,6 @@ public sealed class ModsTabViewModel
         await HandInstalled.RefreshAsync(cancellationToken);
         await Handover.RefreshAsync(cancellationToken);
         await LastGame.RefreshAsync(cancellationToken);
+        ProblemSearch.Recheck();
     }
 }

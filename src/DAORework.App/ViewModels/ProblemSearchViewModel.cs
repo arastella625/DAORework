@@ -51,7 +51,7 @@ public sealed partial class ProblemSearchViewModel : PageViewModel
     public partial string? ProfileName { get; set; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsIdle), nameof(IsTesting), nameof(IsFinished), nameof(Found), nameof(Headline), nameof(Body), nameof(PutBackWithoutLabel), nameof(YouSaid), nameof(StillHappensLabel), nameof(ItsGoneLabel), nameof(Progress), nameof(RuledOut))]
+    [NotifyPropertyChangedFor(nameof(IsIdle), nameof(IsTesting), nameof(IsFinished), nameof(Found), nameof(Headline), nameof(Body), nameof(PutBackWithoutLabel), nameof(YouSaid), nameof(StillHappensLabel), nameof(ItsGoneLabel), nameof(Progress), nameof(RuledOut), nameof(IsOutOfStep), nameof(CanAnswer))]
     public partial ProblemSearch? Search { get; private set; }
 
     [ObservableProperty]
@@ -160,18 +160,22 @@ public sealed partial class ProblemSearchViewModel : PageViewModel
             var title = Preview.Title ?? "Making the change";
             ClearPlan();
             var result = await _apply.ApplyAsync(title, new ApplyModPlanRequest(pending.Documents, pending.Plan), token);
+
+            // The search moves on first, so the refresh doesn't hold the new mods up to the old round (P2.6-69).
+            var done = result.TryGetValue(out _, out var error);
+            if (done)
+            {
+                await MoveOnAsync(pending.Documents, pending.Next, pending.Done, token);
+            }
+
             if (AfterChangeAsync is { } refresh)
             {
                 await refresh(token);
             }
 
-            if (result.TryGetValue(out _, out var error))
+            if (!done)
             {
-                await MoveOnAsync(pending.Documents, pending.Next, pending.Done, token);
-            }
-            else
-            {
-                ReportError(error with { Message = $"That round didn't finish: {error.Message}" });
+                ReportError(error! with { Message = $"That round didn't finish: {error!.Message}" });
             }
         },
         cancellationToken);

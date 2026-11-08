@@ -6,6 +6,7 @@ using DAORework.Application.Mods.Changes;
 using DAORework.Core.Common;
 using DAORework.Core.Mods.Apply;
 using DAORework.Core.Mods.Backups;
+using DAORework.Core.Mods.Planning;
 using Microsoft.Extensions.Logging;
 
 namespace DAORework.App.ViewModels;
@@ -69,12 +70,14 @@ public abstract partial class RecoverableChangesViewModel : PageViewModel
     /// words them. What came after a backup's change is what the next newer one had before it, and for the newest, what
     /// is active now (P2.5-19).
     /// </summary>
-    protected void ShowBackups(IReadOnlyList<DeploymentBackup> backups, IReadOnlyList<string> active, ChangeWords words, Func<string, string> name, string none)
+    protected void ShowBackups(IReadOnlyList<DeploymentBackup> backups, IReadOnlyList<string> active, DeploymentRecord? record, ChangeWords words, Func<string, string> name, string none)
     {
         ArgumentNullException.ThrowIfNull(backups);
         Backups.Clear();
         IReadOnlyList<string>? after = active;
-        foreach (var backup in backups)
+
+        // An unfinished change's backup is newer than the record too, and recovering it needs its row.
+        foreach (var backup in StandingChanges.Of(backups, ChangeUnfinished ? null : record))
         {
             if (Backups.Count == MaxBackups)
             {

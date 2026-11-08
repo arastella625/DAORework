@@ -43,6 +43,7 @@ public sealed class ProblemSearchScreenTests : IDisposable
         while (search.IsTesting)
         {
             Assert.False(search.IsError, search.StatusMessage);
+            Assert.True(search.CanAnswer, $"Round {search.Search!.Round} reads as out of step."); // P2.6-69.
             var answer = tab.Activation.ActiveModIds.Contains(culprit) ? search.StillHappensCommand : search.ItsGoneCommand;
             await answer.ExecuteAsync(null);
             if (search.CanApply)

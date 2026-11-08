@@ -20,6 +20,9 @@ All notable changes to DAORework are recorded here. The format follows
 - *Combined files* no longer repeats itself (P2.6-65). Many files inside archives with the same mods and the same risk are one row, and the card counts what the list shows.
 - A preview warns about what this change touches, not every file your mods already share, and *Show details* says which mods go on and off (P2.6-66).
 - Backups stop filling your drive (P2.6-67, [ADR-0045](docs/adr/0045-backups-reuse-the-library.md)). A file DAORework placed that your Library still has isn't copied again, and *Undo* brings it back from the Library. One round of *Find the problem mod* added 7.4 GB on a real library. Backups you already have keep their copies and the space they use.
+- Coming back to the window no longer moves the page (P2.6-68). It scrolled to whatever had focus before you left, so the click that brought the window back could land on something else. Moving with Tab still scrolls.
+- *Find the problem mod* waits when your mods change under it (P2.6-69). After an *Undo* in History it still asked about "the 31 still on" with all 62 back on. It now says so and offers *Put this round's mods back*.
+- An undone change leaves History (P2.6-70), where it read *Changed no mods*.
 - The window no longer says all is well before it knows (P2.6-61). Until it has read which files your mods share, which can take a minute the first time, the cards say *Checking* instead of *Ready*, and *Combined files* doesn't say none are shared.
 - A second copy of DAORework no longer opens on the same mods (P2.6-62, [ADR-0044](docs/adr/0044-one-window-at-a-time.md)). It says *DAORework is already open* and closes, since two windows could undo each other's changes.
 - *Find the problem mod* is easier to reach (P2.6-63). Home and the Mods tab each have a button for it, as it was only behind the *Combined files* card.
