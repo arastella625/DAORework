@@ -29,6 +29,7 @@
                 <TextBlock Classes="Secondary" TextWrapping="Wrap" Text="{Binding Count}" />
                 <TextBlock Classes="Status" Text="{Binding Status}" IsVisible="{Binding IsReady}" />
                 <TextBlock Classes="Warning" Text="{Binding Status}" IsVisible="{Binding NeedsALook}" />
+                <TextBlock Classes="Secondary" Text="{Binding Status}" IsVisible="{Binding IsChecking}" />
               </StackPanel>
             </Grid>
           </Button>
@@ -75,6 +76,8 @@
                      Command="{Binding ShowOnlyCommand}" CommandParameter="{x:Static vm:ModShowFilter.GameFolder}" />
       </StackPanel>
       <Button Name="ArrangeButton" Content="{Binding ArrangeLabel}" Command="{Binding ToggleArrangeCommand}" />
+      <Button Name="FindProblemModButton" Margin="10,0,0,0" Content="Find the problem mod" IsVisible="{Binding ShowsList}"
+              Command="{Binding PickKindCommand}" CommandParameter="{x:Static vm:ModKindFilter.CombinedFiles}" />
     </WrapPanel>
 
     <Grid Margin="12,0" ColumnDefinitions="*,Auto" ColumnSpacing="10" DataContext="{Binding Filter}" x:DataType="vm:ModListFilter"

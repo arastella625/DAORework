@@ -74,6 +74,7 @@
                       <TextBlock Classes="Secondary" TextWrapping="Wrap" Text="{Binding Count}" />
                       <TextBlock Classes="Status" Text="{Binding Status}" IsVisible="{Binding IsReady}" />
                       <TextBlock Classes="Warning" Text="{Binding Status}" IsVisible="{Binding NeedsALook}" />
+                      <TextBlock Classes="Secondary" Text="{Binding Status}" IsVisible="{Binding IsChecking}" />
                     </StackPanel>
                   </Grid>
                 </Button>
@@ -81,6 +82,14 @@
             </ItemsControl.ItemTemplate>
           </ItemsControl>
         </StackPanel>
+      </controls:Card>
+
+      <controls:Card IsVisible="{Binding Setup.HasModsOn, FallbackValue=False}">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+          <TextBlock Classes="Secondary" VerticalAlignment="Center" TextWrapping="Wrap" Text="Something going wrong in your game? This finds which mod is the cause." />
+          <Button Name="FindProblemButton" Grid.Column="1" Content="Find the problem mod"
+                  Command="{Binding OpenCommand}" CommandParameter="{x:Static vm:HomeTarget.ModsCombined}" />
+        </Grid>
       </controls:Card>
 
       <views:NewDownloadsHomePanel DataContext="{Binding NewDownloads}" />

@@ -58,6 +58,7 @@ public static class DependencyInjection
         services.AddSingleton<IModLibrary, FolderModLibrary>();
         services.AddSingleton<IModRemover, LibraryRemover>();
         services.AddSingleton<IRecycleBin, ShellRecycleBin>();
+        services.AddSingleton<IWindowLock, DataFolderWindowLock>();
         services.AddSingleton<IDocumentsScanner, DocumentsScanner>();
         services.AddSingleton<IHandInstalledModsReader, HandInstalledModsReader>();
         services.AddSingleton<IVortexHandoverStore, JsonVortexHandoverStore>();
