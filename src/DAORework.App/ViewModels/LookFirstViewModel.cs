@@ -22,8 +22,14 @@ public sealed partial class LookFirstViewModel : PageViewModel
         Held.CollectionChanged += (_, _) => Changed();
     }
 
-    /// <summary>Gets or sets how a held download is added after all: the Library's import.</summary>
-    public Func<IReadOnlyList<string>, CancellationToken, Task>? AddAsync { get; set; }
+    /// <summary>Gets or sets how a held download is added after all: the Library's import, which returns what didn't get in.</summary>
+    public Func<IReadOnlyList<string>, CancellationToken, Task<IReadOnlyList<string>>>? AddAsync { get; set; }
+
+    /// <summary>
+    /// Gets or sets what hears of the downloads the player answered for, managed instead or added after all, so
+    /// <i>New downloads</i> lets them go. One cancelled, or that couldn't be added, isn't answered for (#189).
+    /// </summary>
+    public Func<IReadOnlyList<string>, CancellationToken, Task>? AnsweredAsync { get; set; }
 
     /// <summary>Gets or sets how what was found in the game is managed instead.</summary>
     public Func<IReadOnlyList<HeldDownload>, CancellationToken, Task>? ManageAsync { get; set; }
@@ -69,6 +75,8 @@ public sealed partial class LookFirstViewModel : PageViewModel
             {
                 await manage(manageable, token);
             }
+
+            await AnsweredForAsync([.. manageable.Select(d => d.Path)], token);
         },
         cancellationToken);
 
@@ -80,10 +88,19 @@ public sealed partial class LookFirstViewModel : PageViewModel
             Held.Clear();
             if (AddAsync is { } add)
             {
-                await add(paths, token);
+                var notAdded = await add(paths, token);
+                await AnsweredForAsync([.. paths.Where(p => !notAdded.Contains(p))], token);
             }
         },
         cancellationToken);
+
+    private async Task AnsweredForAsync(IReadOnlyList<string> paths, CancellationToken cancellationToken)
+    {
+        if (paths.Count > 0 && AnsweredAsync is { } answered)
+        {
+            await answered(paths, cancellationToken);
+        }
+    }
 
     [RelayCommand]
     private void Cancel() => Held.Clear();

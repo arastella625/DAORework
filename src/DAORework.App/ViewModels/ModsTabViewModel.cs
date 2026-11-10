@@ -40,6 +40,7 @@ public sealed class ModsTabViewModel
         library.LookFirstAsync = (paths, token) => LookFirst.HoldBackAsync(paths, FoundInGame(), token);
         LookFirst.AddAsync = library.ImportPathsAsync;
         LookFirst.ManageAsync = ManageHeldAsync;
+        LookFirst.AnsweredAsync = NewDownloads.AnsweredAsync;
         Handover.TurnOnAsync = TurnOnAsync;
         Activation.ActiveModsChanged += (_, _) => Library.ShowActive(Activation.ActiveModIds);
         LoadOrder.PropertyChanged += (_, e) =>

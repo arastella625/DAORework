@@ -17,6 +17,7 @@ All notable changes to DAORework are recorded here. The format follows
 
 ### Fixed
 - A download that couldn't be added stays in *New downloads*, so you can try it again (P2.6-64, [#181](https://github.com/arastella625/DAORework/issues/181)).
+- A download that looks like something you already have stays in *New downloads* until you answer (P2.6-71, [#189](https://github.com/arastella625/DAORework/issues/189)). *Cancel* lost it for good, as did an *Add anyway* that didn't work.
 - *Combined files* no longer repeats itself (P2.6-65). Many files inside archives with the same mods and the same risk are one row, and the card counts what the list shows.
 - A preview warns about what this change touches, not every file your mods already share, and *Show details* says which mods go on and off (P2.6-66).
 - Backups stop filling your drive (P2.6-67, [ADR-0045](docs/adr/0045-backups-reuse-the-library.md)). A file DAORework placed that your Library still has isn't copied again, and *Undo* brings it back from the Library. One round of *Find the problem mod* added 7.4 GB on a real library. Backups you already have keep their copies and the space they use.

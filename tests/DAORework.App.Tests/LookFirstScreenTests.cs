@@ -11,6 +11,7 @@ public sealed class LookFirstScreenTests : IDisposable
 {
     private static readonly string _downloads = MockUnixSupport.Path(@"C:\Users\Me\Downloads");
     private static readonly string _hairPack = Path.Combine(_downloads, "Hair Pack.zip");
+    private static readonly string _keptElsewhere = MockUnixSupport.Path(@"C:\Users\Me\Mods\Hair Pack.zip");
 
     private readonly AppTestHost _host = new();
     private readonly ModsTabScenario _scenario;
@@ -140,6 +141,87 @@ public sealed class LookFirstScreenTests : IDisposable
 
         Assert.Empty(viewModel.Library.Mods);
         Assert.True(viewModel.ModsTab.LookFirst.IsShown);
+    }
+
+    [AvaloniaFact]
+    public async Task ANewDownload_HeldBack_StaysOnTheCard_WhenCancelled()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        await FindErfInTheGameAsync(viewModel);
+        var downloads = await OfferAsync(viewModel, _hairPack, ("hair.erf", "ERF"));
+
+        await downloads.AddOneCommand.ExecuteAsync(downloads.Rows.Single());
+
+        Assert.Single(downloads.Rows);
+        viewModel.ModsTab.LookFirst.CancelCommand.Execute(null);
+        await downloads.LookAsync(TestContext.Current.CancellationToken);
+        Assert.Single(downloads.Rows);
+    }
+
+    [AvaloniaFact]
+    public async Task ANewDownload_HeldBack_LeavesTheCard_WhenManaged()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        await FindErfInTheGameAsync(viewModel);
+        var downloads = await OfferAsync(viewModel, _hairPack, ("hair.erf", "ERF"));
+        await downloads.AddOneCommand.ExecuteAsync(downloads.Rows.Single());
+
+        await viewModel.ModsTab.LookFirst.ManageHeldCommand.ExecuteAsync(null);
+
+        Assert.Empty(downloads.Rows);
+        await downloads.LookAsync(TestContext.Current.CancellationToken);
+        Assert.Empty(downloads.Rows);
+    }
+
+    [AvaloniaFact]
+    public async Task ANewDownload_AddedAnyway_LeavesTheCard()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        await _scenario.ImportAsync(viewModel, _keptElsewhere, ("hair.erf", "ERF"));
+        var update = Path.Combine(_downloads, "Hair Pack v2.zip");
+        var downloads = await OfferAsync(viewModel, update, ("hair.erf", "ERF, new"));
+        await downloads.AddOneCommand.ExecuteAsync(downloads.Rows.Single());
+        Assert.Single(downloads.Rows);
+
+        await viewModel.ModsTab.LookFirst.AddAnywayCommand.ExecuteAsync(null);
+
+        Assert.Equal(2, viewModel.Library.Mods.Count);
+        Assert.Empty(downloads.Rows);
+        await downloads.LookAsync(TestContext.Current.CancellationToken);
+        Assert.Empty(downloads.Rows);
+    }
+
+    [AvaloniaFact]
+    public async Task ANewDownload_ThatCantBeAddedAnyway_StaysOnTheCard()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        await _scenario.ImportAsync(viewModel, _keptElsewhere, ("hair.erf", "ERF"));
+        var update = Path.Combine(_downloads, "Hair Pack v2.zip");
+        var downloads = await OfferAsync(viewModel, update, ("hair.erf", "ERF, new"));
+        await downloads.AddOneCommand.ExecuteAsync(downloads.Rows.Single());
+        _host.FileSystem.File.WriteAllText(update, "not a zip");
+
+        await viewModel.ModsTab.LookFirst.AddAnywayCommand.ExecuteAsync(null);
+
+        Assert.Single(viewModel.Library.Mods);
+        Assert.Single(downloads.Rows);
+    }
+
+    /// <summary>Turns <i>New downloads</i> on, then saves a download of <paramref name="files"/> at <paramref name="path"/>, and looks.</summary>
+    private async Task<NewDownloadsViewModel> OfferAsync(MainWindowViewModel viewModel, string path, params (string Name, string Content)[] files)
+    {
+        var downloads = viewModel.ModsTab.NewDownloads;
+        await downloads.Settings.TurnOnCommand.ExecuteAsync(null);
+        _scenario.SaveZip(path, files);
+        await downloads.LookAsync(TestContext.Current.CancellationToken);
+        return downloads;
+    }
+
+    /// <summary>Puts a mod in the game that a download of <c>hair.erf</c> looks like. <i>New downloads</i> offers only what holds the game's data.</summary>
+    private async Task FindErfInTheGameAsync(MainWindowViewModel viewModel)
+    {
+        _host.FileSystem.AddFile(Path.Combine(GamePaths.OverrideDirectory(_scenario.DocumentsDirectory), "Old Hair", "hair.erf"), new MockFileData("ERF"));
+        await viewModel.HandInstalled.ScanCommand.ExecuteAsync(null);
     }
 
     private async Task FindInTheGameAsync(MainWindowViewModel viewModel, string folder)
