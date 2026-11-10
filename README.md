@@ -33,18 +33,26 @@ publisher. A new publisher still builds up reputation with Windows SmartScreen, 
 
 ## What it does
 
-![Home after creating a profile: ready to play, the setup at a glance, and what is worth a look](docs/screenshots/readme/01-next-steps.png)
+![Home: the next step, the last change with Undo, and the setup at a glance](docs/screenshots/readme/01-next-steps.png)
 
 - **Takes over the mods you already installed by hand**, in `override` and `AddIns`, without reinstalling them.
   Official DLC is never touched.
 - **Moves your mods over from Vortex.** *Move from Vortex* takes you through it a step at a time: copy them, purge in
   Vortex, then turn them on in the same order. It has only been run on simulated Vortex records so far, and doesn't
   cover add-ins Vortex placed yet.
+- **Helps when something goes wrong.** *Find the problem mod* turns off half your mods each round; you play, say
+  whether the problem is still there, and in a few rounds one mod is left. Everything goes back at the end. *What
+  changed* shows what's new since your last game with other mods, and takes you back to them.
+- **Keeps one copy of each mod.** Adding a mod looks first: if it looks like something already in your game, you're
+  offered *Manage it* instead of a second copy. *Keep one of each* clears the copies a library builds up, into the
+  Recycle Bin.
 - **Picks up new downloads, if you turn it on.** When you come back from your browser, the mods you downloaded are
   offered on the Mods page. Nothing is added without a click.
 - **Installs mods safely.** Import a `.dazip`, `.zip`, `.7z` or `.rar` (or drop it on the window). Activating shows
-  exactly what will be copied, replaced or removed first, takes a backup, and can be rolled back.
-- **Shows conflicts.** For every file two mods share, whose copy the game uses, and lets you reorder them. Files
+  exactly what will be copied, replaced or removed first, takes a backup, and can be rolled back. Backups reuse the
+  files your Library already has, so they don't fill your drive.
+- **Shows conflicts,** most serious first: files that could break quests before those that only change how things
+  look. For every file two mods share, whose copy the game uses, and lets you reorder them. Files
   inside `.erf` archives are compared too, though there DAORework can't tell which copy the game uses.
 - **Checks every mod.** Programs inside a mod are named and never installed, your own antivirus scans every mod before
   it is kept, and a download that differs from the known official one is pointed out. Mods that run inside the game,
@@ -68,9 +76,9 @@ every write and proves each change still ends fully before or fully after. Both 
 install; GOG and EA App installs still need a real run ([#5](https://github.com/arastella625/DAORework/issues/5)).
 Phase 2.5 (release 0.3.0, the first public one) puts all of it in the window and adds adopting the mods you installed
 by hand, `.7z` and `.rar` import, the load order and its conflicts, and mod safety checks (programs never installed,
-your antivirus scans every mod, downloads compared with the known official ones). Phase 2.6 (releases 0.3.1 to 0.5.0)
-follows what real use shows: several mods at once, the six-tab window, combining hair and head mods, and moving from
-Vortex. 0.5.0 also carries the first parts of three later pieces of work: mods that run inside the game, Steam on
+your antivirus scans every mod, downloads compared with the known official ones). Phase 2.6 (releases 0.3.1 to 0.6.0)
+follows what real use shows: several mods at once, the six-tab window, combining hair and head mods, moving from
+Vortex, and in 0.6.0 finding the mod behind a problem and keeping one copy of each. 0.5.0 also carries the first parts of three later pieces of work: mods that run inside the game, Steam on
 Linux (there is no Linux download yet) and the file-format toolkit.
 
 ## How it is built
@@ -107,7 +115,7 @@ dotnet run --project src/DAORework.App
 
 Create a profile in the header: DAORework finds your install and documents folder, checks them, and **Home** says
 whether the game is ready to play, shows your add-ins, override mods and combined files at a glance, and lists what is
-worth a look. **Mods** is one page for every mod, with a switch for each, the ones found in your game, *Arrange* for
+worth a look. **Mods** is one page for every mod, with a switch for each, search and sort, the ones found in your game, *Arrange* for
 the load order and the files mods share, and *Move from Vortex* and *New downloads* when they apply; **Fixes** installs DXVK, and the 4 GB patch where the copy allows it;
 **Saves** backs up your saves; **History** lists every change, each with *Undo*; and **Settings** holds your theme or
 look, the game folders and Troubleshooting. Every change shows a preview before anything is written, and **Play**
@@ -117,11 +125,13 @@ freely; the CLI keeps its own words (`activate`, `adopt`, `rollback`).
 | | |
 |---|---|
 | ![The Library on the Mods tab](docs/screenshots/readme/02-library.png) | ![The plan shown before activating a mod](docs/screenshots/readme/03-activate-plan.png) |
-| **Mods:** add by button or drop; each mod's antivirus result and program files | **Turn on:** a preview first, nothing written until Apply |
+| **Mods:** one line each, with a switch, and whether it wins or loses the files it shares | **Turn on:** a preview first, what could break quests at the top, nothing written until Apply |
 | ![Arranging the load order and the files mods share](docs/screenshots/readme/04-load-order.png) | ![Managing a mod found in the game](docs/screenshots/readme/05-adopt-plan.png) |
-| **Arrange:** whose copy of a shared file wins, reordered through a preview | **Manage:** a mod you installed by hand, taken over without reinstalling |
+| **Arrange:** whose copy of a shared file wins; drag a mod, or send it to the top or bottom | **Manage:** mods you installed by hand, taken over without reinstalling, with *Swap* for who wins |
+| ![Combined files, most serious first](docs/screenshots/readme/10-combined-files.png) | ![A round of Find the problem mod](docs/screenshots/readme/11-problem-search.png) |
+| **Combined files:** what your mods share, what could break quests first | **Find the problem mod:** half off each round, until one is left |
 | ![The Fixes tab](docs/screenshots/readme/06-fixes.png) | ![Undoing a change in History](docs/screenshots/readme/07-rollback.png) |
-| **Fixes:** DXVK, the 4 GB patch on copies that allow it, and when Steam's Verify integrity undid one | **History:** any change undone, asked once more |
+| **Fixes:** DXVK, the 4 GB patch on copies that allow it, and when Steam's Verify integrity undid one | **History:** every change, each with *Undo to here* |
 | ![Four themes on the Settings tab](docs/screenshots/readme/08-themes.png) | ![A custom look with a picture](docs/screenshots/readme/09-custom-look.png) |
 | **Themes:** four dark themes | **Your looks:** your own accent and background picture |
 
