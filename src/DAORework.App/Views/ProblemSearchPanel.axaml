@@ -12,7 +12,7 @@
       <TextBlock Name="SearchStatus" Classes="Status" Classes.Error="{Binding IsError}" Text="{Binding StatusMessage}" TextWrapping="Wrap"
                  IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       <StackPanel Spacing="10" IsVisible="{Binding IsIdle}">
-        <TextBox Name="ProblemWords" Text="{Binding Problem}" Watermark="What's going wrong? Such as: the game crashes in Denerim" />
+        <TextBox Name="ProblemWords" Text="{Binding Problem}" PlaceholderText="What's going wrong? Such as: the game crashes in Denerim" />
         <CheckBox Name="KeepLooksOn" Content="Keep my looks on, and test gameplay mods only" IsChecked="{Binding KeepLooksOn}" />
         <StackPanel Orientation="Horizontal" Spacing="12">
           <Button Name="StartSearchButton" Content="Start" Command="{Binding StartCommand}" />

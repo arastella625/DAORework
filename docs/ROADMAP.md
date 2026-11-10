@@ -573,6 +573,11 @@ Each stage is worth having alone, and they go in this order, so the wait is expl
 **Done when:** with 140 mods, a press shows a response within 0.1 s, the window's thread is never held for over 0.2 s, and
 a search keystroke takes under 0.05 s, on `RealScaleLibrary` and on the owner's library.
 
+**A clean build** *(added 2026-11-10, from the 0.6.0 audit)*.
+
+- P2.6-73 No build warnings: `ProblemSearchPanel.axaml` used `TextBox.Watermark`, which Avalonia 12 marks obsolete
+  (AVLN5001), and `TreatWarningsAsErrors` doesn't cover XAML warnings. It uses `PlaceholderText` now.
+
 **Keeping the tests honest on Windows** *(added 2026-11-05, from P2.6-02)*.
 
 - P2.6-09 Run the tests on Windows in CI: `ci.yml` runs them on Linux only, which is how P2.6-02's failures reached
