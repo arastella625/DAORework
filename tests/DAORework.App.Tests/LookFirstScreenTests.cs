@@ -159,6 +159,21 @@ public sealed class LookFirstScreenTests : IDisposable
     }
 
     [AvaloniaFact]
+    public async Task AddAll_KeepsOnlyTheOneHeldBack()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        await FindErfInTheGameAsync(viewModel);
+        var downloads = await OfferAsync(viewModel, _hairPack, ("hair.erf", "ERF"));
+        _scenario.SaveZip(Path.Combine(_downloads, "Blue Eyes.zip"), ("eyes.erf", "ERF eyes"));
+        await downloads.LookAsync(TestContext.Current.CancellationToken);
+
+        await downloads.AddAllCommand.ExecuteAsync(null);
+
+        Assert.Equal("Blue Eyes", Assert.Single(viewModel.Library.Mods).Title);
+        Assert.Equal("Hair Pack", Assert.Single(downloads.Rows).Title);
+    }
+
+    [AvaloniaFact]
     public async Task ANewDownload_HeldBack_LeavesTheCard_WhenManaged()
     {
         var (_, viewModel) = await _scenario.OpenAsync();
