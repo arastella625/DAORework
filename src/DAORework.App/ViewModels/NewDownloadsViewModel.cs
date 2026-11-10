@@ -9,8 +9,8 @@ namespace DAORework.App.ViewModels;
 /// <summary>
 /// The <i>New downloads</i> card on the Mods page (ADR-0034 §3 and §5). It looks when the window comes back into focus and
 /// when the Mods page shows, off the calling thread. Looks and clicks take turns, so a look can't undo what a click just
-/// noted. A file is added only on a click, through the same import as <i>Add mods</i>, and is then not offered again,
-/// whatever became of it.
+/// noted. A file is added only on a click, through the same import as <i>Add mods</i>, and is then not offered again.
+/// One that couldn't be added stays to try again (#181), and one held back to ask about stays until the player answers (#189).
 /// </summary>
 public sealed partial class NewDownloadsViewModel : PageViewModel
 {
@@ -71,6 +71,17 @@ public sealed partial class NewDownloadsViewModel : PageViewModel
             else
             {
                 ReportError(error);
+            }
+        },
+        cancellationToken);
+
+    /// <summary>Lets go of the downloads the player answered for after <i>Look before adding</i> held them back (#189).</summary>
+    public Task AnsweredAsync(IReadOnlyList<string> paths, CancellationToken cancellationToken = default) => InTurnAsync(
+        async token =>
+        {
+            foreach (var row in Rows.Where(r => paths.Contains(r.Download.File.Path)).ToList())
+            {
+                await DealtWithAsync(row, token);
             }
         },
         cancellationToken);

@@ -529,6 +529,7 @@ with a diagnosis and a way forward, not leave a player stuck. The owner saw a ra
 - P2.6-68 Coming back to the window doesn't move the page: it scrolled to the control that had focus, and on the owner's PC the click that brought the window back landed on something else. Pages scroll to focus only for Tab and arrow keys.
 - P2.6-69 *Find the problem mod* waits when the mods on aren't the round's, such as after an *Undo* in History, and offers to put the round's mods back.
 - P2.6-70 History leaves out changes that were undone, as rollback already reads them, where an undone round read *Changed no mods*.
+- P2.6-71 A download held back by *Look before adding* stays in *New downloads* until the player answers ([#189](https://github.com/arastella625/DAORework/issues/189)): *Cancel*, or an *Add anyway* that fails, leaves it there to try again, and *Manage it* or an *Add anyway* that works lets it go.
 
 **Feeling quick** *(added 2026-11-06, the owner's wish, from clearing copies on a messy real library)*. Buttons don't
 always highlight, and during a wait it isn't clear whether to wait or press again. Measured on `RealScaleLibrary` (138 mods,

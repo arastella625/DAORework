@@ -73,7 +73,7 @@ public sealed partial class LibraryViewModel : PageViewModel
     }
 
     /// <summary>Adds what the player chose: anything that looks already held is asked about first, and the rest is imported.</summary>
-    /// <returns>The paths that didn't get in and weren't held back to ask about, so they can be tried again.</returns>
+    /// <returns>The paths not in yet: those that failed, to try again, and those held back until the player answers (#189).</returns>
     public async Task<IReadOnlyList<string>> AddPathsAsync(IReadOnlyList<string> paths, CancellationToken cancellationToken = default)
     {
         IReadOnlyList<string> notAdded = paths;
@@ -81,7 +81,8 @@ public sealed partial class LibraryViewModel : PageViewModel
             async token =>
             {
                 var toAdd = LookFirstAsync is { } look ? await look(paths, token) : paths;
-                notAdded = toAdd.Count > 0 ? await ImportPathsAsync(toAdd, token) : [];
+                var failed = toAdd.Count > 0 ? await ImportPathsAsync(toAdd, token) : [];
+                notAdded = [.. paths.Where(p => !toAdd.Contains(p) || failed.Contains(p))];
             },
             cancellationToken);
         return notAdded;
