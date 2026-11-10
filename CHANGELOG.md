@@ -6,6 +6,12 @@ All notable changes to DAORework are recorded here. The format follows
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-10
+
+Help when something goes wrong, and fewer copies of your mods. *Find the problem mod* turns half your mods off each round until one is left, and *What changed* shows what's new since your last game with other mods, with a way back. *Combined files* and previews put what could break quests first. Adding a mod looks first, and *Keep one of each* clears the copies a library builds up. The Mods page is one list of one-line rows with search, sort and drag, a next step worked out from where you are, and first steps for a new player. Backups reuse your Library instead of filling your drive, and a batch carries on past a mod that fails.
+
+Nothing changes in what DAORework will install: mods that run inside the game are still recognised but not installed, and there is still no Linux download.
+
 ### Changed
 - *What changed* (P2.6-57, [ADR-0043](docs/adr/0043-last-known-good.md)). Each *Play* records your mods, so when something breaks you can see what's new since your last game with other mods, and go back to them with a preview and *Undo*.
 - *Find the problem mod* (P2.6-56, [ADR-0042](docs/adr/0042-finding-the-problem-mod.md)). It turns off half your mods, you play and say whether the problem still happens, and it repeats until one is left: about 8 rounds for 137 mods. Every round is a preview with *Undo*, the search survives closing DAORework, and everything goes back at the end.
@@ -14,35 +20,11 @@ All notable changes to DAORework are recorded here. The format follows
 - A batch goes on without what fails (P2.6-53). *Take them over*, *Turn on selected* and adding several downloads carry on when one mod can't, and say which one and why: "Turned on 53 mods. Blue Hair needs a look: ...". If one mod's file stops a change partway, the change is put back and the rest come back as a preview without that mod. *Keep one of each* removes what it can instead of stopping at the first it can't.
 - A preview of mods to manage offers *Leave out* (P2.6-53), as turning on already did.
 - Removed copies go to the Recycle Bin (P2.6-60, [ADR-0039](docs/adr/0039-look-first-and-keep-one-copy.md)), so a mod removed by mistake can be put back. The space comes back when you empty it.
-
-### Fixed
-- A download that couldn't be added stays in *New downloads*, so you can try it again (P2.6-64, [#181](https://github.com/arastella625/DAORework/issues/181)).
-- A download that looks like something you already have stays in *New downloads* until you answer (P2.6-71, [#189](https://github.com/arastella625/DAORework/issues/189)). *Cancel* lost it for good, as did an *Add anyway* that didn't work.
-- *Combined files* no longer repeats itself (P2.6-65). Many files inside archives with the same mods and the same risk are one row, and the card counts what the list shows.
-- A preview warns about what this change touches, not every file your mods already share, and *Show details* says which mods go on and off (P2.6-66).
-- Backups stop filling your drive (P2.6-67, [ADR-0045](docs/adr/0045-backups-reuse-the-library.md)). A file DAORework placed that your Library still has isn't copied again, and *Undo* brings it back from the Library. One round of *Find the problem mod* added 7.4 GB on a real library. Backups you already have keep their copies and the space they use.
-- Coming back to the window no longer moves the page (P2.6-68). It scrolled to whatever had focus before you left, so the click that brought the window back could land on something else. Moving with Tab still scrolls.
-- *Find the problem mod* waits when your mods change under it (P2.6-69). After an *Undo* in History it still asked about "the 31 still on" with all 62 back on. It now says so and offers *Put this round's mods back*.
-- An undone change leaves History (P2.6-70), where it read *Changed no mods*.
-- The window no longer says all is well before it knows (P2.6-61). Until it has read which files your mods share, which can take a minute the first time, the cards say *Checking* instead of *Ready*, and *Combined files* doesn't say none are shared.
-- A second copy of DAORework no longer opens on the same mods (P2.6-62, [ADR-0044](docs/adr/0044-one-window-at-a-time.md)). It says *DAORework is already open* and closes, since two windows could undo each other's changes.
-- *Find the problem mod* is easier to reach (P2.6-63). Home and the Mods tab each have a button for it, as it was only behind the *Combined files* card.
-- An unexpected error no longer shows its raw text (P2.6-53). The window says it didn't work and what to do, and the details stay in the log.
-- An entry holding only a readme or a Mac leftover now counts as part of the mod of its name (P2.6-52), so *Keep one of each* offers to clear it. *Take them over* no longer turns such files into a mod of their own, which is how a list ended up showing mods twice.
-- A preview warns when a file being moved sits beside other files (P2.6-51), since a mod DAORework doesn't look after may use it too.
-- *Take them over* no longer stops when the name for loose files was typed and cleared (P2.6-51), and a right-click on a grip in *Arrange* no longer starts a drag.
-
-### Changed
 - Reading your mods again does less work (P2.6-46). A list of 138 mods changed 9,730 times and now changes once, and *Found in your game* reads about four times faster.
 - Long lists stay quick (P2.6-49). Only the rows on screen are built, and a row stays when its mod hasn't changed, so a search keystroke takes about a tenth of the time it did with 138 mods.
 - The window's footer says what it's working on (P2.6-45), so a wait no longer looks like nothing happening. Hover now shows on every button in every theme, and a button you can't press yet looks it.
-
-### Fixed
-- *Manage* no longer stops on "An item with the same key has already been added" (P2.6-43). It happened when something found in your game was a leftover of a mod already on, and mods shared `chargenmorphcfg.xml`. A mod found in two places is now managed once, with the other copy cleared, and *Swap* works when a leftover is in the same change.
-
-### Changed
 - *Keep one of each* clears every set of copies from one preview (P2.6-42, [ADR-0039](docs/adr/0039-look-first-and-keep-one-copy.md)). It's the next step once your game is taken over, so you don't have to look for it. A mod that's only part of another counts as a copy, so fragments left by moving from Vortex show and go too. Each set starts on the copy that holds everything, and you can pick another or *Keep all of them*. Copies that really aren't the same come first and stay unless you pick one, so nothing is lost by not reading. The preview says how much space comes back, and every swap is one change. A set that's on in another profile stays as it is and says why, and the others go ahead.
-- *Keep this one* on a mod with copies removes the others from your Library (P2.6-40, [ADR-0039](docs/adr/0039-look-first-and-keep-one-copy.md)). The preview says how much space comes back and what exists only in a copy being removed. A copy that's on gives its place to the one you keep. Removing can't be undone, and *Undo* now says so if it needs a mod that has gone: add the same download again and it works.
+- *Keep this one* on a mod with copies removes the others from your Library (P2.6-40, [ADR-0039](docs/adr/0039-look-first-and-keep-one-copy.md)). The preview says how much space comes back and what exists only in a copy being removed. A copy that's on gives its place to the one you keep. Removed copies go to the Recycle Bin. *Undo* says so if it needs a mod that has gone, and adding the same download again makes it work.
 - Adding a mod looks first (P2.6-39, [ADR-0039](docs/adr/0039-look-first-and-keep-one-copy.md)). A download that looks like something in your game offers *Manage it*, so you take over what you have instead of adding a second copy, and one that looks like something in your Library says so. *Add anyway* is always there, since names alone can't prove two mods are the same.
 - A new player sees where they are on the way to a first game with mods: *Find your game*, *Add mods*, *Turn them on* (P2.6-36). It goes once a mod is on.
 - Drag a mod by its grip in *Arrange* to put it anywhere, with one preview (P2.6-35).
@@ -67,6 +49,24 @@ All notable changes to DAORework are recorded here. The format follows
 - *Leave out* takes the mods that stop a change out of it, so the rest can go ahead (P2.6-13). They stay in your Library, off.
 - Vortex's folder markers, Mac leftovers, readmes and other documents no longer count as files mods share (P2.6-13), in a preview, on *Combined files* or on the command line.
 - Those files stay in your Library and no longer reach your game (P2.6-14, [ADR-0036](docs/adr/0036-only-mod-files-reach-the-game.md)). A mod already on loses them at its next change, which the preview says, and *Undo* puts them back. A folder in `override` holding nothing else isn't offered as a mod.
+
+### Fixed
+- A download that couldn't be added stays in *New downloads*, so you can try it again (P2.6-64, [#181](https://github.com/arastella625/DAORework/issues/181)).
+- A download that looks like something you already have stays in *New downloads* until you answer (P2.6-71, [#189](https://github.com/arastella625/DAORework/issues/189)). *Cancel* lost it for good, as did an *Add anyway* that didn't work.
+- *Combined files* no longer repeats itself (P2.6-65). Many files inside archives with the same mods and the same risk are one row, and the card counts what the list shows.
+- A preview warns about what this change touches, not every file your mods already share, and *Show details* says which mods go on and off (P2.6-66).
+- Backups stop filling your drive (P2.6-67, [ADR-0045](docs/adr/0045-backups-reuse-the-library.md)). A file DAORework placed that your Library still has isn't copied again, and *Undo* brings it back from the Library. One round of *Find the problem mod* added 7.4 GB on a real library. Backups you already have keep their copies and the space they use.
+- Coming back to the window no longer moves the page (P2.6-68). It scrolled to whatever had focus before you left, so the click that brought the window back could land on something else. Moving with Tab still scrolls.
+- *Find the problem mod* waits when your mods change under it (P2.6-69). After an *Undo* in History it still asked about "the 31 still on" with all 62 back on. It now says so and offers *Put this round's mods back*.
+- An undone change leaves History (P2.6-70), where it read *Changed no mods*.
+- The window no longer says all is well before it knows (P2.6-61). Until it has read which files your mods share, which can take a minute the first time, the cards say *Checking* instead of *Ready*, and *Combined files* doesn't say none are shared.
+- A second copy of DAORework no longer opens on the same mods (P2.6-62, [ADR-0044](docs/adr/0044-one-window-at-a-time.md)). It says *DAORework is already open* and closes, since two windows could undo each other's changes.
+- *Find the problem mod* is easier to reach (P2.6-63). Home and the Mods tab each have a button for it, as it was only behind the *Combined files* card.
+- An unexpected error no longer shows its raw text (P2.6-53). The window says it didn't work and what to do, and the details stay in the log.
+- An entry holding only a readme or a Mac leftover now counts as part of the mod of its name (P2.6-52), so *Keep one of each* offers to clear it. *Take them over* no longer turns such files into a mod of their own, which is how a list ended up showing mods twice.
+- A preview warns when a file being moved sits beside other files (P2.6-51), since a mod DAORework doesn't look after may use it too.
+- *Take them over* no longer stops when the name for loose files was typed and cleared (P2.6-51), and a right-click on a grip in *Arrange* no longer starts a drag.
+- *Manage* no longer stops on "An item with the same key has already been added" (P2.6-43). It happened when something found in your game was a leftover of a mod already on, and mods shared `chargenmorphcfg.xml`. A mod found in two places is now managed once, with the other copy cleared, and *Swap* works when a leftover is in the same change.
 
 ## [0.5.0] - 2026-11-04
 
@@ -246,7 +246,8 @@ CLI does what it did before, with the fixes listed under *Fixed*.
 - Report JSON uses one consistent camelCase naming (P0-06).
 - The README tree and command list are correct again (P0-14).
 
-[Unreleased]: https://github.com/arastella625/DAORework/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/arastella625/DAORework/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/arastella625/DAORework/releases/tag/v0.6.0
 [0.5.0]: https://github.com/arastella625/DAORework/releases/tag/v0.5.0
 [0.4.0]: https://github.com/arastella625/DAORework/releases/tag/v0.4.0
 [0.3.2]: https://github.com/arastella625/DAORework/releases/tag/v0.3.2

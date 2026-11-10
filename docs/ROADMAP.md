@@ -231,9 +231,9 @@ platform item was carried into Phase 2.*
 
 ## Phase 2.6: After launch
 
-**Status: in progress.** Releases `v0.3.1` to `v0.5.0` came from this work (see [CHANGELOG.md](../CHANGELOG.md)). Open:
+**Status: in progress.** Releases `v0.3.1` to `v0.6.0` came from this work (see [CHANGELOG.md](../CHANGELOG.md)). Open:
 P2.5-23, P2.5-31's add-ins ([#116](https://github.com/arastella625/DAORework/issues/116)), the SonarCloud findings
-(P2.5-37, P2.5-38), P2.6-09, and the two items carried from Phase 2.5's exit gate. Opened on 2026-11-03 for the work that had
+(P2.5-37, P2.5-38), and the two items carried from Phase 2.5's exit gate. Opened on 2026-11-03 for the work that had
 been added to Phase 2.5 after 0.3.0.
 
 **Scheduled on 2026-11-04 (P2.6-11):** the owner accepted ADR-0031, ADR-0033 and ADR-0034 and asked for work towards a
@@ -443,6 +443,9 @@ decision.
   the owner decided on 2026-11-04.
 - P2.6-12 Release 0.5.0: the version, the changelog's section, the audit re-run and this roadmap. The tag is the
   owner's, after the hand checks. Phases 2.6, 2.7 and 2.8 stay open: 0.5.0 carries what is done of each.
+- P2.6-72 Release 0.6.0: the version, the changelog's section, the audit re-run, the README and its pictures, and this
+  roadmap, with ADR-0044 and ADR-0045 accepted by the owner on 2026-11-10. The tag is the owner's, after the hand checks
+  in [the release notes' draft](release/0.6.0-draft.md). 0.6.0 carries nothing new from Phases 2.7 and 2.8.
 
 **A real library** *(added 2026-11-04, from the owner's first run of 0.5.0 on about 70 mods moved over from Vortex: a
 preview of 63 mods was one paragraph of names and hundreds of warnings, with what stopped it last. Screen tests had two
@@ -574,7 +577,7 @@ a search keystroke takes under 0.05 s, on `RealScaleLibrary` and on the owner's 
 
 - P2.6-09 Run the tests on Windows in CI: `ci.yml` runs them on Linux only, which is how P2.6-02's failures reached
   `main` unnoticed. A second job runs `dotnet test` on `windows-latest` for every PR and push to `main`, and
-  `.github/rulesets/main.json` makes it a required check. The Linux job stays as it is.
+  `.github/rulesets/main.json` makes it a required check. The Linux job stays as it is. *Done (#148).*
 
 **Not in this phase:** the same as Phase 2.5's.
 
