@@ -156,3 +156,39 @@ Phase 0's observation about Cli coverage no longer holds: it is now 89.4%, thoug
 **Not covered by these numbers:** tests use test folders, so they don't show a real install, the window on a real
 setup, or the game itself. What has and hasn't been run for real is recorded in the roadmap, task by task: *Move from
 Vortex* on simulated records only, and *New downloads* on test folders only.
+
+---
+
+## 0.6.0 re-run
+
+**Date:** 2026-11-10
+**Commit:** `main` at `6e4826b` with P2.6-71 ([#199](https://github.com/arastella625/DAORework/pull/199)) and the version set to 0.6.0
+**Build:** succeeds with `TreatWarningsAsErrors`. One Avalonia XAML warning, which that setting doesn't cover:
+`TextBox.Watermark` is obsolete in `ProblemSearchPanel.axaml` (AVLN5001).
+**Tests:** 1,789 total, 0 failing, 0 skipped (Core 686, Application 307, Infrastructure 384, Architecture 11, Cli 75,
+App 298, Formats 12, fault injection 16), on Windows
+
+Measured as the 0.5.0 re-run was, on the Release build, with `scripts/check-coverage.ps1` given every assembly.
+
+| Measure | 0.5.0 | 0.6.0 | Gate |
+|---|---|---|---|
+| Line coverage, Core | 97.7% | 97.5% | Core and Application together ≥ 80% (CI); 96.6% |
+| Line coverage, Application | 95.6% | 95.6% | as above |
+| Line coverage, Infrastructure | 92.9% | 93.3% | none |
+| Line coverage, Cli | 89.4% | 89.4% | none |
+| Line coverage, App | 93.4% | 94.9% | none |
+| Line coverage, Formats | 100% | 100% | none |
+| Largest source file | `LoadOrderViewModel.cs`, 240 lines | `ProblemSearchViewModel.cs`, 294 lines | ≤ 300 (CI) |
+| Source files / lines under `src/` | 629 files, 25,303 lines of C# | 737 files, 31,035 lines of C# | |
+| Exceptions to the file-size limit | none | none | |
+| Architecture tests | 11, none skipped | 11, none skipped | must be green |
+
+**Open High/Blocker items:** none in this document. Open work is in [ROADMAP.md](ROADMAP.md) and the issues.
+
+**Worth watching:** three view models are close to the 300-line limit: `ProblemSearchViewModel.cs` (294),
+`LoadOrderViewModel.cs` (283) and `ModAdoptionViewModel.cs` (255). The next behaviour for any of them goes in a new
+class, as the standards already ask, rather than a split made only to get under the limit.
+
+**Not covered by these numbers:** tests use test folders and made-up mods. The owner tried 0.6.0's work twice on their own
+library of about 137 mods, and what that found is fixed (P2.6-61 to P2.6-70). What still
+needs a hand check before the tag is listed in [the release notes' draft](release/0.6.0-draft.md).
