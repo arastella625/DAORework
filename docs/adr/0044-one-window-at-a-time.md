@@ -1,6 +1,6 @@
 # ADR-0044: One window at a time
 
-- **Status:** Proposed
+- **Status:** Accepted (owner, 2026-11-10)
 - **Date:** 2026-11-06
 
 ## Context

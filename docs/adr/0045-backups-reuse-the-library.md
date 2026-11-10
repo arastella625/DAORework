@@ -1,6 +1,6 @@
 # ADR-0045: Backups reuse the Library
 
-- **Status:** Proposed
+- **Status:** Accepted (owner, 2026-11-10)
 - **Date:** 2026-11-06
 
 ## Context
