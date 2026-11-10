@@ -163,8 +163,9 @@ Vortex* on simulated records only, and *New downloads* on test folders only.
 
 **Date:** 2026-11-10
 **Commit:** `main` at `6e4826b` with P2.6-71 ([#199](https://github.com/arastella625/DAORework/pull/199)) and the version set to 0.6.0
-**Build:** succeeds with `TreatWarningsAsErrors`. One Avalonia XAML warning, which that setting doesn't cover:
-`TextBox.Watermark` is obsolete in `ProblemSearchPanel.axaml` (AVLN5001).
+**Build:** succeeds with `TreatWarningsAsErrors`. There was one Avalonia XAML warning, which that setting doesn't
+cover: `TextBox.Watermark` is obsolete in `ProblemSearchPanel.axaml` (AVLN5001). P2.6-73
+([#201](https://github.com/arastella625/DAORework/pull/201)) fixed it before 0.6.0, so the release builds with 0 warnings.
 **Tests:** 1,789 total, 0 failing, 0 skipped (Core 686, Application 307, Infrastructure 384, Architecture 11, Cli 75,
 App 298, Formats 12, fault injection 16), on Windows
 
