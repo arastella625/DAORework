@@ -181,6 +181,8 @@ public sealed class KeepCopyScreenTests : IDisposable
 
         Assert.True(changes.IsError);
         Assert.Contains(DiagnosticCodes.ModUndoNeedsRemovedMod, changes.StatusMessage, StringComparison.Ordinal);
+        Assert.StartsWith("Couldn't undo it: Hair pack copy is no longer in your Library, and this change goes back to it.", changes.StatusMessage, StringComparison.Ordinal);
+        Assert.Matches(@"Add the same download again, or put back hair-pack-copy-\w+ and hair-pack-copy-\w+\.mod\.json if they're in the Recycle Bin", changes.StatusMessage);
         Assert.Equal("DDS hair", _scenario.DeployedContent("hair_pack.dds"));
 
         await viewModel.Library.ImportPathsAsync([_copy], TestContext.Current.CancellationToken);

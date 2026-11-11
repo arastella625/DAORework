@@ -82,6 +82,9 @@ public sealed class HomeScreenTests : IDisposable
         Assert.Contains(_scenario.DocumentsDirectory, step.Detail, StringComparison.Ordinal);
         Assert.Contains(elsewhere, step.Detail, StringComparison.Ordinal);
         Assert.True(viewModel.Home.IsReady); // A warning: the game still starts, it just doesn't see the mods.
+        Assert.Equal("Ready to play, without your mods", viewModel.Home.ReadyTitle); // ...so nothing says all is well with them.
+        Assert.StartsWith("The game can start, but it reads another documents folder", viewModel.Home.ReadyBody, StringComparison.Ordinal);
+        Assert.True(viewModel.Home.Setup!.GameReadsElsewhere);
         ModsTabScenario.Show<NextStepsPanel>(window);
         Screenshots.Save(window, "47-home-documents-not-the-games");
 

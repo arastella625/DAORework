@@ -36,6 +36,12 @@ public sealed partial class SetupSummary : ObservableObject
     [ObservableProperty]
     public partial bool HasModsOn { get; private set; }
 
+    /// <summary>Gets or sets a value indicating whether the last check found the game reading another documents folder (ADR-0046), so the mods here don't reach it.</summary>
+    [ObservableProperty]
+    public partial bool GameReadsElsewhere { get; set; }
+
+    partial void OnGameReadsElsewhereChanged(bool value) => Update();
+
     private void OnLoadOrderChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName is nameof(LoadOrderViewModel.CombinedCount) or nameof(LoadOrderViewModel.OverlapCount) or nameof(LoadOrderViewModel.SharedCount) or nameof(LoadOrderViewModel.SharedCheck))
@@ -90,10 +96,12 @@ public sealed partial class SetupSummary : ObservableObject
     private void Say(bool ready, bool unmanaged, bool noMods, SharedFilesCheck check)
     {
         var checking = check == SharedFilesCheck.Checking && !unmanaged;
-        Title = noMods ? "No mods yet" : checking ? "Checking your mods" : ready && !unmanaged ? "Everything is in place" : "Almost there";
+        var elsewhere = GameReadsElsewhere && !noMods;
+        Title = noMods ? "No mods yet" : checking ? "Checking your mods" : ready && !unmanaged && !elsewhere ? "Everything is in place" : "Almost there";
         Body = (noMods, ready, unmanaged) switch
         {
             (true, _, _) => "Your mods will show here once you've added some.",
+            _ when elsewhere => "Your mods are in a documents folder the game doesn't read. Worth a look says which.",
             (_, _, true) => "Some mods in your game aren't looked after by DAORework yet.",
             (_, true, _) => "Your add-ins, override mods and combined files are all set.",
             _ when checking => "Seeing which files your mods share. This can take a minute.",

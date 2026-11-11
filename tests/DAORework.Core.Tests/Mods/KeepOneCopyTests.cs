@@ -83,9 +83,10 @@ public sealed class KeepOneCopyTests
     [Fact]
     public void RemovedMods_NamesWhatLeft_ButNeverAFix()
     {
-        var removed = RemovedMods.In(["hair-pack-1a2b3c4d", "kept", "fixes/dxvk-2-3-aaaaaaaa"], ["kept"]);
+        var removed = RemovedMods.Ids(["hair-pack-1a2b3c4d", "kept", "fixes/dxvk-2-3-aaaaaaaa"], ["kept"]);
 
-        Assert.Equal(["Hair pack"], removed);
+        Assert.Equal(["hair-pack-1a2b3c4d"], removed);
+        Assert.Equal("Hair pack", ModIds.ReadableName(removed[0]));
     }
 
     private static LibraryEntry Entry(string id, params (string Path, string Sha, long Size)[] files) =>

@@ -53,12 +53,9 @@ public sealed class RollBackModChange
         }
 
         var library = await _library.ListAsync(cancellationToken);
-        if (RemovedMods.In(backup.PreviousRecord.ActiveModIds, library.Select(e => e.Mod.Id)) is { Count: > 0 } removed)
+        if (RemovedMods.Ids(backup.PreviousRecord.ActiveModIds, library.Select(e => e.Mod.Id)) is { Count: > 0 } removed)
         {
-            return Result.Failure<RestoreReport>(new Error(
-                DiagnosticCodes.ModUndoNeedsRemovedMod,
-                $"This can't be undone: it goes back to {string.Join(", ", removed)}, no longer in your Library.",
-                "Add the same download again, or put both its folder and its .mod.json file back from the Recycle Bin, then undo."));
+            return Result.Failure<RestoreReport>(NeedsRemoved(removed));
         }
 
         var restored = await _restore.ExecuteAsync(new RestoreDeploymentRequest(documents, backup.Id), cancellationToken);
@@ -68,6 +65,22 @@ public sealed class RollBackModChange
         }
 
         return restored;
+    }
+
+    /// <summary>
+    /// Names the mods as a person reads them, and says what to look for in the Recycle Bin: each mod's folder and
+    /// <c>.mod.json</c>, both named by its id (ADR-0039). The window puts "Couldn't undo it:" before the message.
+    /// </summary>
+    private static Error NeedsRemoved(IReadOnlyList<string> ids)
+    {
+        var names = string.Join(", ", ids.Select(ModIds.ReadableName));
+        var items = string.Join(", ", ids.Select(id => $"{id} and {id}.mod.json"));
+        return new Error(
+            DiagnosticCodes.ModUndoNeedsRemovedMod,
+            ids.Count == 1
+                ? $"{names} is no longer in your Library, and this change goes back to it."
+                : $"{names} are no longer in your Library, and this change goes back to them.",
+            $"Add the same download again, or put back {items} if they're in the Recycle Bin. Then undo this change again. Nothing was changed.");
     }
 
     /// <summary>
