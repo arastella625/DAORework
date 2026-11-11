@@ -1,4 +1,5 @@
 using System.IO.Abstractions;
+using DAORework.Application.Mods.Adoption;
 using DAORework.Core.Common;
 using DAORework.Core.Diagnostics;
 using DAORework.Core.Mods.Conflicts;
@@ -10,17 +11,20 @@ namespace DAORework.Application.Diagnostics.Rules;
 /// Reports the install folder's own override (P2.5-22), <c>&lt;install&gt;\packages\core\override</c>: older guides put
 /// mods there, and the game loads it as well as the documents folder's. DAORework does not manage or adopt what is
 /// there, so the report says how much there is and which file names the documents folder's override has too, where
-/// the game uses one copy. Report only.
+/// the game uses one copy. The folder is read by <see cref="ReadInstallOverride"/>, so one that can't be read is reported
+/// instead of stopping the check. Report only.
 /// </summary>
 public sealed class InstallOverrideRule : IDiagnosticRule
 {
     private const int NamesShown = 10;
 
     private readonly IFileSystem _fileSystem;
+    private readonly ReadInstallOverride _readInstallOverride;
 
-    public InstallOverrideRule(IFileSystem fileSystem)
+    public InstallOverrideRule(IFileSystem fileSystem, ReadInstallOverride readInstallOverride)
     {
         _fileSystem = fileSystem;
+        _readInstallOverride = readInstallOverride;
     }
 
     public Task<IReadOnlyList<DiagnosticIssue>> EvaluateAsync(RuntimeProfile profile, CancellationToken cancellationToken = default)
@@ -31,8 +35,13 @@ public sealed class InstallOverrideRule : IDiagnosticRule
             return Task.FromResult<IReadOnlyList<DiagnosticIssue>>([]);
         }
 
+        if (!_readInstallOverride.Execute(profile.InstallDirectory).TryGetValue(out var contents, out var error))
+        {
+            return Task.FromResult<IReadOnlyList<DiagnosticIssue>>([new DiagnosticIssue(DiagnosticSeverity.Warning, error.Code, error.Message, error.Recommendation)]);
+        }
+
         var installOverride = GamePaths.OverrideDirectory(profile.InstallDirectory);
-        var files = Files(installOverride);
+        var files = contents.Paths;
         if (files.Count == 0)
         {
             return Task.FromResult<IReadOnlyList<DiagnosticIssue>>([]);
@@ -54,7 +63,7 @@ public sealed class InstallOverrideRule : IDiagnosticRule
         return Task.FromResult<IReadOnlyList<DiagnosticIssue>>(issues);
     }
 
-    private static IEnumerable<DiagnosticIssue> Shared(List<string> installFiles, List<string> documentsFiles)
+    private static IEnumerable<DiagnosticIssue> Shared(IReadOnlyList<string> installFiles, List<string> documentsFiles)
     {
         var inDocuments = documentsFiles.Select(Path.GetFileName).ToHashSet(StringComparer.OrdinalIgnoreCase);
         var shared = installFiles.Select(Path.GetFileName).OfType<string>().Where(inDocuments.Contains).Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase).ToList();
