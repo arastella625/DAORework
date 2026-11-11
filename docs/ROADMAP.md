@@ -12,6 +12,43 @@ repository on 2026-10-31. That history is kept privately; every decision it made
 
 ---
 
+## The road to 1.0
+
+*Decided by the owner on 2026-11-11, after 0.6.0 (P2.9-01). Players see it at
+[daorework.dilly-world.net/roadmap](https://daorework.dilly-world.net/roadmap) ([ADR-0047](adr/0047-a-roadmap-page-for-players.md)),
+which changes in the same PR as this section.*
+
+**1.0 means:** a player of any skill, on any Windows copy of the game, can hand DAORework their whole setup and trust it
+without help. In practice, four promises:
+
+1. **Proven, not only tested.** Real runs on Steam, GOG and EA App copies, and players from outside the project through
+   the whole flow.
+2. **It installs what players use.** Mods that run inside the game (DAO Lib, Luma) and add-ins that compete with each
+   other, including those Vortex placed.
+3. **It explains conflicts from the inside.** Which rows of a game table and which talk-table lines two mods both
+   change, not only that they share a file.
+4. **It keeps its word.** What 0.3.0 onward wrote (profiles, the Library, History) is read by every later version,
+   the command line and diagnostic codes stay stable, and a player can hear about new versions.
+
+The phases below still run in order, but in this order from here, each a release:
+
+| Release | Theme | Tasks |
+|---|---|---|
+| 0.6.x | Fixes from real use | What players report on 0.6.0, and Phase 2.6's leftovers: [#204](https://github.com/arastella625/DAORework/issues/204), [#205](https://github.com/arastella625/DAORework/issues/205), [#107](https://github.com/arastella625/DAORework/issues/107), [#98](https://github.com/arastella625/DAORework/issues/98), P2.5-37 and P2.5-38 |
+| 0.7.0 | Mods that run inside the game, and add-ins | Phase 2.8 (P2.8-04 to P2.8-08), P2.5-23 ([#72](https://github.com/arastella625/DAORework/issues/72)), and P2.5-31's add-ins ([#116](https://github.com/arastella625/DAORework/issues/116)) |
+| 0.8.0 | Conflicts from the inside | P3-01's GFF and TLK readers, P3-08, P3-09, and combining tables whose changes don't overlap once [ADR-0040](adr/0040-combining-more-than-one-file.md) is decided |
+| 0.9.0 | A guide, and the release candidate | Phase 2.9 (P2.9-03 to P2.9-06), and P3-06 if [ADR-0035](adr/0035-opt-in-update-check.md) is accepted |
+| 1.0.0 | Ready for everyone | P2.9-07: Phase 2.9's exit gate |
+
+**After 1.0:** Phase 2.7 (Steam on Linux), unless a Linux player with real Steam and Proton can run P2.7-09 sooner;
+P3-12 (`nxm://` links, once Nexus answers); P3-05 (the music player); P3-02 and P3-03 (browsing the game's data); and
+the remaster track.
+
+**No dates.** A release ships when it's done and checked on a real install. Testers from outside the project are
+asked for during 0.7.0 and 0.8.0 (P2.9-06), so they don't hold up 1.0.
+
+---
+
 ## Phase 0: Foundation hardening (no new features)
 
 **Status: complete.** Closed on 2026-09-29 with tag `v0.0.1` (PRs #1 to #65). The exit gate
@@ -606,7 +643,7 @@ a search keystroke takes under 0.05 s, on `RealScaleLibrary` and on the owner's 
 
 ## Phase 2.8: Mods that run inside the game
 
-**Status: in progress.** P2.8-01 to P2.8-03 are in `v0.5.0`, so these mods are recognised and never half-installed;
+**Status: in progress, for 0.7.0** ([the road to 1.0](#the-road-to-10)). P2.8-01 to P2.8-03 are in `v0.5.0`, so these mods are recognised and never half-installed;
 installing them is P2.8-04 onward. [ADR-0033](adr/0033-mods-that-run-inside-the-game.md) is accepted. Added
 2026-11-03, after comparing DAORework with the tools on Nexus.
 The owner chose the same day to run it before Phase 2.7, so it comes first here; it keeps its number because Phase 2.7's
@@ -647,9 +684,50 @@ these mods on Linux; a replacement `daorigins.exe`, which is never in scope.
 
 ---
 
+## Phase 2.9: Ready for 1.0
+
+**Status: scheduled for 0.9.0** (P2.9-01 and P2.9-02 are done with the road to 1.0). Added 2026-11-11.
+
+**Goal:** what 1.0 promises that no earlier phase covers: a guide for a first game with mods, a window usable by
+keyboard and screen reader, files that every later version reads, and real players on every Windows copy.
+
+**Task IDs:** `P2.9-` (branch `feat/P2.9-03-first-game-guide`).
+
+- P2.9-01 Decide it: the road to 1.0, this phase, and Phase 2.7 moved after 1.0. *Done.*
+- P2.9-02 The roadmap for players: `site/public/roadmap.html`, linked from the website and the Nexus description,
+  in players' words ([ADR-0047](adr/0047-a-roadmap-page-for-players.md)). *Done.*
+- P2.9-03 A guide for a first game with mods, the owner's *cozy guide*: a short walk through finding the game, adding
+  mods, turning them on and pressing Play, that can be skipped and opened again from Settings. It builds on P2.6-36's
+  first steps. An ADR comes first: what it shows, when it comes back, and its words in [VOICE.md](VOICE.md).
+- P2.9-04 Keyboard and screen readers: every action can be reached and done by keyboard with a visible focus, and
+  every control has a name a screen reader says. It starts with an audit of the window, recorded in `docs/testing/`,
+  and ends with a run through Windows Narrator.
+- P2.9-05 Files that last: every file DAORework keeps carries a schema version (the journal, fixes and looks already
+  do), a test reads one of each as 0.3.0 onward wrote it, and an older DAORework given a newer file says so instead of
+  misreading it. An ADR comes first, with what *stable* means for the command line and diagnostic codes.
+- P2.9-06 Testers from outside the project, asked for during 0.7.0 and 0.8.0: a short test script in `docs/testing/`,
+  a request on the Nexus page and the website, and GOG and EA App players first ([#5](https://github.com/arastella625/DAORework/issues/5),
+  [#70](https://github.com/arastella625/DAORework/issues/70)).
+- P2.9-07 Release 1.0.0: the version, the changelog's section, the audit re-run, this roadmap, and the roadmap page.
+
+**Not in this phase:** Linux (Phase 2.7), `nxm://` links, translations, and anything after 1.0.
+
+**Exit gate (1.0):**
+- [ ] The exit gates of Phases 2.6 and 2.8 are met, with nothing carried forward again.
+- [ ] P3-01's GFF and TLK readers, P3-08 and P3-09 are done, and P2.9-03 to P2.9-06. P3-06 too, if ADR-0035 is
+  accepted.
+- [ ] Steam, GOG and EA App copies each have a real run recorded in `docs/testing/`, and at least two players from
+  outside the project complete *Manage*, *Add mods*, *Turn on*, *Undo* and *Find the problem mod* on their own installs.
+- [ ] `scripts/verify-real-install.ps1` reports no FAIL on the owner's PC.
+- [ ] No open issue can lose a player's mods, saves or game files.
+- [ ] Released as `v1.0.0`, with the audit re-run, this roadmap and the roadmap page updated.
+
+---
+
 ## Phase 2.7: Steam on Linux
 
-**Status: in progress.** P2.7-01 to P2.7-06 are in `v0.5.0`, which has no Linux download yet (P2.7-08). Scheduled on
+**Status: paused until after 1.0** (decided 2026-11-11, [the road to 1.0](#the-road-to-10)), unless a Linux player
+with real Steam and Proton can run P2.7-09 sooner. P2.7-01 to P2.7-06 are in `v0.5.0`, which has no Linux download yet (P2.7-08). Scheduled on
 2026-11-04, after Phase 2.8. [ADR-0031](adr/0031-steam-on-linux-through-proton.md) is
 accepted. Added 2026-11-04, after a trial build ran in Ubuntu under WSL.
 Issues are opened when the phase is scheduled.
@@ -701,6 +779,10 @@ Flatpak, AppImage or distribution packages; macOS; malware scanning on Linux; ch
 ## Phase 3: Toolkit (file formats and GUI)
 
 **Goal:** understand the game's data through clean-room readers and give the tooling a GUI.
+
+**Scheduled in part (2026-11-11, [the road to 1.0](#the-road-to-10)):** P3-01's GFF and TLK readers, P3-08 and P3-09
+for 0.8.0, and P3-06 for 0.9.0 if ADR-0035 is accepted. P3-02, P3-03, P3-05 and P3-12 come after 1.0. This phase's exit
+gate is still the real-install round trip.
 
 - P3-01 The `DAORework.Formats` library (BCL only). Readers for ERF v2.0/v2.2, GFF v4.0 and TLK are built from public community specifications, which are cited in `docs/formats/`. DAOTools (MIT) may be ported with attribution; xoreos (GPL-3) supplies specifications and observed behavior only ([ADR-0009](adr/0009-third-party-mods-and-tools.md) tier 3). Each reader gets fuzz tests.
   *ERF done (`docs/formats/erf.md`); GFF and TLK to come. The exit gate's run over a real install is the owner's:

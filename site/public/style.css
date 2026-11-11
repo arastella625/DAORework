@@ -84,3 +84,65 @@ figcaption { color: var(--muted); font-size: 0.95rem; margin-top: 0.4em; }
 .steps li { margin-bottom: 0.8em; }
 
 footer { margin-top: 48px; padding: 24px 0; border-top: 1px solid var(--line); background: var(--surface); }
+
+/* The roadmap page (ADR-0047): four promises, then the road as seals on a gold line. */
+.hero-small { padding: 40px 0 28px; }
+.crumb { margin: 0 0 0.6em; font-size: 0.95rem; }
+.crumb a { text-decoration: none; }
+.crumb a::before { content: "\2190\00a0"; }
+h3 { font-family: "Cinzel", Georgia, serif; color: var(--gold); font-weight: 600; font-size: 1.15rem; margin: 0.2em 0 0.4em; }
+
+.promises { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-top: 1.2em; }
+.promise-card { padding: 16px 20px 12px; }
+.promise-card p { margin: 0 0 0.6em; color: var(--muted); }
+.rune { display: block; font-family: "Cinzel", Georgia, serif; color: var(--accent-light); font-size: 0.95rem; letter-spacing: 0.1em; }
+
+.road { list-style: none; margin: 1em 0 0; padding: 0 0 0 44px; position: relative; }
+.road::before {
+  content: ""; position: absolute; left: 13px; top: 8px; bottom: 8px; width: 2px;
+  background: linear-gradient(var(--gold), var(--line) 30%, var(--line) 75%, var(--gold));
+}
+.stop {
+  position: relative; margin-bottom: 20px; padding: 14px 20px 6px;
+  background: linear-gradient(var(--surface-2), var(--surface)); border: 1px solid var(--line); border-radius: 6px;
+  box-shadow: inset 0 0 0 4px var(--surface), inset 0 0 0 5px rgba(201, 169, 110, 0.18);
+}
+.stop::before {
+  content: ""; position: absolute; left: -41px; top: 18px; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--bg); border: 2px solid var(--line); box-sizing: border-box;
+}
+.stop ul { padding-left: 1.2em; margin: 0.2em 0 0.8em; }
+.stop li { margin-bottom: 0.4em; }
+.stop-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 14px; }
+.version { font-family: "Cinzel", Georgia, serif; font-size: 1.5rem; color: var(--text); }
+.chip {
+  font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.15em 0.7em; border-radius: 999px;
+  border: 1px solid var(--line); color: var(--muted);
+}
+
+.stop.now::before { background: var(--gold); border-color: var(--gold); box-shadow: inset 0 0 0 4px var(--bg); }
+.stop.now .chip { background: var(--gold); border-color: var(--gold); color: var(--bg); font-weight: 600; }
+.stop.next::before { border-color: var(--accent-light); box-shadow: 0 0 0 4px rgba(169, 139, 250, 0.18); }
+.stop.next .chip { border-color: var(--accent-light); color: var(--accent-light); }
+.stop.planned::before { border-style: dashed; }
+.stop.goal { border-color: var(--gold); box-shadow: inset 0 0 0 4px var(--surface), inset 0 0 0 5px rgba(201, 169, 110, 0.45); }
+.stop.goal::before {
+  left: -40px; width: 20px; height: 20px; border-radius: 2px; transform: rotate(45deg);
+  background: var(--accent); border-color: var(--gold); box-shadow: 0 0 0 4px rgba(201, 169, 110, 0.2);
+}
+.stop.goal .version { color: var(--gold); font-size: 1.9rem; }
+.stop.goal .chip { border-color: var(--gold); color: var(--gold); }
+
+.later { padding-left: 1.2em; }
+.later li { margin-bottom: 0.5em; color: var(--muted); }
+.later strong { color: var(--text); font-weight: 600; }
+.help { padding: 12px 20px 0; }
+.help .actions { margin: 1em 0 1.2em; }
+
+@media (max-width: 520px) {
+  .road { padding-left: 32px; }
+  .road::before { left: 9px; }
+  .stop { padding: 12px 14px 4px; }
+  .stop::before { left: -31px; width: 18px; height: 18px; }
+  .stop.goal::before { left: -30px; width: 16px; height: 16px; }
+}
