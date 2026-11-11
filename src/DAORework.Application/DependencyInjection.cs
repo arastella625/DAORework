@@ -15,6 +15,7 @@ using DAORework.Application.Mods.Changes;
 using DAORework.Application.Mods.Downloads;
 using DAORework.Application.Mods.Handover;
 using DAORework.Application.Mods.Library;
+using DAORework.Application.Mods.Programs;
 using DAORework.Application.Preferences;
 using DAORework.Application.Profiles;
 using DAORework.Application.Saves;
@@ -124,6 +125,9 @@ public static class DependencyInjection
         services.AddSingleton<ReadInstallState>();
         services.AddSingleton<PlanFix>();
         services.AddSingleton<ApplyFix>();
+        services.AddSingleton<ReadGameProgramFiles>();
+        services.AddSingleton<PlanGameProgramMod>();
+        services.AddSingleton<ApplyGameProgramMod>();
         services.AddSingleton<GetFixStatus>();
 
         return services;

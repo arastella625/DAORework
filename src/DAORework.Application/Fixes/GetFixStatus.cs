@@ -38,7 +38,9 @@ public sealed class GetFixStatus
         }
 
         var library = await _library.ListAsync(cancellationToken);
-        var applied = record.ActiveModIds.Select(id =>
+
+        // Mods that run inside the game share this record (ADR-0033 §4); a fix command lists only fixes.
+        var applied = record.ActiveModIds.Where(FixIds.IsFixEntry).Select(id =>
         {
             var entry = library.FirstOrDefault(e => e.LibraryId.Equals(id, StringComparison.OrdinalIgnoreCase));
             var changed = record.Files

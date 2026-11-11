@@ -155,6 +155,12 @@ public static class DiagnosticCodes
     public const string ModSafetyThreatFound = "DAO_MOD_SAFETY_THREAT_FOUND";
     public const string ModSafetyDownloadDiffers = "DAO_MOD_SAFETY_DOWNLOAD_DIFFERS";
 
+    // P2.8-04: mods that run inside the game (ADR-0033 §2 and §3).
+    public const string ModSafetyProgramRefused = "DAO_MOD_SAFETY_PROGRAM_REFUSED";
+    public const string ModSafetyProgramNotScanned = "DAO_MOD_SAFETY_PROGRAM_NOT_SCANNED";
+    public const string ModProgramPathTaken = "DAO_MOD_PROGRAM_PATH_TAKEN";
+    public const string ModProgramNotAccepted = "DAO_MOD_PROGRAM_NOT_ACCEPTED";
+
     // ADR-0023: Steam's copy of daorigins.exe is protected by SteamStub, and Steam refuses it once patched.
     public const string SteamExecutableProtected = "DAO_STEAM_EXE_PROTECTED";
     public const string SteamExecutablePatched = "DAO_STEAM_EXE_PATCHED";

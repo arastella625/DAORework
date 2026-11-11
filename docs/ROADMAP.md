@@ -666,7 +666,11 @@ and undo as any other mod, and says yes to the program first. A mod that cannot 
   the record, or that no longer has the recorded hash. *Done (`BinShipProgramsRule`); the GOG and EA copies' own DLLs are
   still to be compared.*
 - P2.8-04 Plan and apply: `PlanGameProgramMod` and `ApplyGameProgramMod` on the fix path's record, journal and backups,
-  with ADR-0033's refusals. A refactor PR comes first if a shared piece is fix-only.
+  with ADR-0033's refusals. A refactor PR comes first if a shared piece is fix-only. *Done: the fix path's plan builder and its
+  install-folder read became shared (`InstallPlanBuilder`, `ReadInstallState`) in a refactor first. `GameProgramLayout`
+  says where each file goes, `GameProgramRules` holds §2's checks, and `ReadGameProgramFiles` checks each library copy's
+  hash and header and scans the programs again. Turning on needs the player's yes (`DAO_MOD_PROGRAM_NOT_ACCEPTED`) and
+  `fixes status` lists only fixes. Nothing calls the use cases yet: the window and `--allow-programs` are P2.8-05.*
 - P2.8-05 Say yes to the program: the tick box in the preview, *Turn on selected* leaving these mods out, and
   `--allow-programs <modId>` on the command line.
 - P2.8-06 What a mod needs: the catalog's `needs` list and its preview warning, with entries for DAO Lib, the controller

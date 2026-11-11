@@ -55,6 +55,7 @@ public static class DependencyInjection
         services.AddSingleton<IDeploymentRecordStore, JsonDeploymentRecordStore>();
         services.AddSingleton<IApplyJournalStore, FileApplyJournalStore>();
         services.AddSingleton<IDeploymentWriter, DocumentsDeploymentWriter>();
+        services.AddSingleton<ILibraryFileReader, LibraryFileReader>();
         services.AddSingleton<IModLibrary, FolderModLibrary>();
         services.AddSingleton<IModRemover, LibraryRemover>();
         services.AddSingleton<IRecycleBin, ShellRecycleBin>();
