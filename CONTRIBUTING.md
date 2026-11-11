@@ -61,23 +61,25 @@ Docs-only changes skip step 1 and 2.
 
 | Level | Label | What it is |
 |---|---|---|
-| Milestone | — | One per roadmap **phase**. Carries the phase exit gate in its description. |
 | User story | `type: user-story` | A user-facing outcome. Groups its tasks as **sub-issues**. |
 | Task | `type: task` | One roadmap task ID, one PR. |
 | Bug | `bug` | A behavior that contradicts the docs or CLI help. |
-| Admin / chore | `admin` or `type: chore` | Process, tooling, decisions. Not attached to a story. |
+| Chore | `type: chore` | Process, tooling, dependencies, decisions. Not attached to a story. |
 
 GitHub issue *types* are an organization feature and are not available on this
 personal repository, so the `type:` labels carry that role.
 
-Every product issue belongs to a milestone. Admin issues may not.
+There are no milestones. The phase is in the task ID (`P2.8-04` is Phase 2.8), and each phase's exit gate is in
+[docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Labels
 
-- `type: user-story`, `type: task`, `type: chore`, `type: docs`, `bug`
-- `area: core`, `area: application`, `area: infrastructure`, `area: cli`, `area: ci`, `area: docs`
-- `admin` for process and project management work
-- `needs-decision` when an issue waits on an SDD open decision; `blocked` when it waits on another issue
+Only these exist; a label not listed here isn't used.
+
+- `type: user-story`, `type: task`, `type: chore`, `bug`, `documentation`, `enhancement`
+- `area: ci` (Dependabot's updates to workflows and packages)
+- `accessibility` for a barrier to people with disabilities
+- `touches-automation`, added by `pr-guard.yml` to a PR that changes CI, scripts or Claude's session settings
 - `good first issue` and `help wanted` for newcomers
 
 Priority and status are **not** labels: they are fields on the project board.
@@ -90,13 +92,13 @@ this repository. Columns are the *Status* field:
 | Status | Meaning |
 |---|---|
 | Backlog | Filed, not yet groomed. Default for new issues. |
-| Ready | Groomed: clear scope, DoD, milestone, labels. Can be picked up now. |
+| Ready | Groomed: clear scope, DoD, labels. Can be picked up now. |
 | In progress | Someone is assigned and a branch exists. |
 | In review | A PR is open. |
 | Done | Merged or closed. |
 
 Extra fields: **Priority** (P0 blocker, P1 high, P2 normal, P3 low) and **Size** (XS to XL).
-Milestones supply the phase, so the board needs no phase field.
+The task ID in an issue's title gives its phase, so the board needs no phase field.
 
 ### Re-creating the board
 
@@ -108,8 +110,8 @@ If the board is ever lost, or a fork needs one:
 3. *Settings* → *Workflows*: enable **Auto-add to project** for this repository
    (filter `is:issue,pr is:open`), **Item closed → Done**, **Pull request merged → Done**,
    and **Item added → Backlog**.
-4. Add a *Table* view grouped by *Milestone* for phase planning, and a *Board*
-   view filtered to `label:admin` for administration.
+4. Add a *Table* view grouped by *Status*, and a *Board* view filtered to `label:"type: chore"` for
+   administration.
 
 ## Releasing
 
@@ -135,8 +137,8 @@ To build the zip locally: `./scripts/publish-release.ps1` (output in `./artifact
 ## Decisions
 
 A design choice not covered by the SDD gets an ADR (`docs/adr/0000-template.md`)
-before the code merges. Open SDD decisions (D-1, D-4) are tracked as `admin` +
-`needs-decision` issues so they show up on the board instead of being forgotten.
+before the code merges. Open SDD decisions are tracked as `type: chore` issues, with the decision named in the
+title, so they show up on the board instead of being forgotten.
 
 ## License and third-party code
 
