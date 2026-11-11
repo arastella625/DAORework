@@ -1,6 +1,6 @@
-using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using DAORework.Application.Mods.Adoption;
+using DAORework.Application.Tests.Fakes;
 using DAORework.Core.Common;
 using DAORework.Core.Diagnostics;
 using DAORework.Core.Mods.Adoption;
@@ -57,12 +57,5 @@ public sealed class ReadInstallOverrideTests
         var result = new ReadInstallOverride(fileSystem).Execute(Install);
 
         Assert.Equal(DiagnosticCodes.InstallOverrideUnreadable, result.Error!.Code);
-    }
-
-    private sealed class DeniedFileSystem : MockFileSystem
-    {
-        public bool Denied { get; set; }
-
-        public override IDirectoryInfoFactory DirectoryInfo => Denied ? throw new UnauthorizedAccessException("denied") : base.DirectoryInfo;
     }
 }
