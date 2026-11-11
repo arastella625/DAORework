@@ -83,6 +83,19 @@ public sealed class DocumentsRedirectionRuleTests
     }
 
     [Fact]
+    public async Task EvaluateAsync_UnsavedProfileLinksToTheFolderFound_DoesNotSayItIsElsewhere()
+    {
+        var link = TestPaths.Root("Linked", "Dragon Age");
+        _fileSystem.AddDirectory(Classic);
+        _fileSystem.AddDirectory(Path.GetDirectoryName(link)!);
+        _fileSystem.Directory.CreateSymbolicLink(link, Classic);
+
+        var issues = await Rule(_redirected).EvaluateAsync(new RuntimeProfile { UserDocumentsDirectory = link });
+
+        Assert.DoesNotContain(issues, i => i.Code == DiagnosticCodes.DocumentsDirectoryElsewhere);
+    }
+
+    [Fact]
     public async Task EvaluateAsync_ConfiguredFolderGoneAndTheSearchFindsOne_PointsAtIt()
     {
         var moved = TestPaths.Root("Games", "BioWare", "Dragon Age");

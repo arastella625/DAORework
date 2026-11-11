@@ -6,7 +6,8 @@ namespace DAORework.Application.Diagnostics.Rules;
 
 /// <summary>
 /// Two things OneDrive's Known Folder Move causes: the configured documents folder is missing while a Dragon Age
-/// folder exists somewhere else, and the folder in use is synced by OneDrive.
+/// folder exists somewhere else, and the folder in use is synced by OneDrive. A link to a folder counts as that folder
+/// (<see cref="SameFolder"/>), so a folder reached two ways isn't reported as somewhere else.
 /// </summary>
 public sealed class DocumentsRedirectionRule : IDiagnosticRule
 {
@@ -31,8 +32,10 @@ public sealed class DocumentsRedirectionRule : IDiagnosticRule
         var detection = (await _detectDocumentsFolders.ExecuteAsync(new DetectDocumentsFoldersRequest(), cancellationToken)).Value;
         var issues = new List<DiagnosticIssue>();
 
-        var elsewhere = detection.Candidates.FirstOrDefault(c => c.Exists && !_sameFolder.AreSame(c.Path, configured));
-        var configuredExists = detection.Candidates.Any(c => c.Exists && _sameFolder.AreSame(c.Path, configured));
+        // One comparison per existing candidate: each follows links on disk (ADR-0046).
+        var existing = detection.Candidates.Where(c => c.Exists).ToLookup(c => _sameFolder.AreSame(c.Path, configured));
+        var elsewhere = existing[false].FirstOrDefault();
+        var configuredExists = existing[true].Any();
         if (elsewhere is not null && !configuredExists)
         {
             issues.Add(new DiagnosticIssue(

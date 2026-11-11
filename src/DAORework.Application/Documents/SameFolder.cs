@@ -5,7 +5,8 @@ namespace DAORework.Application.Documents;
 
 /// <summary>
 /// Whether two paths are one folder: compared without letter case or a trailing separator, after every junction or
-/// symbolic link along each is followed (ADR-0046). The documents rules share it, so they never disagree about it.
+/// symbolic link along each is followed (ADR-0046). The documents rules share it, so they never disagree about it. A
+/// relative path is compared as written: resolving it would depend on the folder DAORework was started from.
 /// </summary>
 public sealed class SameFolder
 {
@@ -37,6 +38,11 @@ public sealed class SameFolder
     /// <summary>The folder a path finally reaches, with every junction or symbolic link along it followed.</summary>
     private string RealPath(string path)
     {
+        if (!_fileSystem.Path.IsPathRooted(path))
+        {
+            return path;
+        }
+
         try
         {
             return Follow(_fileSystem.Path.GetFullPath(path), 0);

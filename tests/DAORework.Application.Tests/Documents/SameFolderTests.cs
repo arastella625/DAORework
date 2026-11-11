@@ -1,3 +1,4 @@
+using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using DAORework.Application.Documents;
 using DAORework.Application.Tests.Fakes;
@@ -49,5 +50,38 @@ public sealed class SameFolderTests
         Assert.True(Same().AreSame(Path.Combine(linked, "Dragon Age"), _folder));
     }
 
+    [Fact]
+    public void AreSame_ARelativePath_IsComparedAsWritten()
+    {
+        var relative = Path.Combine("BioWare", "Dragon Age");
+        _fileSystem.Directory.SetCurrentDirectory(TestPaths.Root());
+        _fileSystem.AddDirectory(_folder);
+
+        Assert.False(Same().AreSame(relative, _folder));
+        Assert.True(Same().AreSame(relative, relative.ToUpperInvariant()));
+    }
+
+    [Fact]
+    public void AreSame_LinksThatCannotBeRead_ComparesAsWritten()
+    {
+        var denied = new DeniedFileSystem();
+        denied.AddDirectory(_folder);
+        var link = TestPaths.Root("Linked");
+        denied.Directory.CreateSymbolicLink(link, _folder);
+        denied.Denied = true;
+
+        var same = new SameFolder(denied, NullLogger<SameFolder>.Instance);
+
+        Assert.False(same.AreSame(link, _folder));
+        Assert.True(same.AreSame(_folder, _folder + Path.DirectorySeparatorChar));
+    }
+
     private SameFolder Same() => new(_fileSystem, NullLogger<SameFolder>.Instance);
+
+    private sealed class DeniedFileSystem : MockFileSystem
+    {
+        public bool Denied { get; set; }
+
+        public override IDirectoryInfoFactory DirectoryInfo => Denied ? throw new UnauthorizedAccessException("denied") : base.DirectoryInfo;
+    }
 }
