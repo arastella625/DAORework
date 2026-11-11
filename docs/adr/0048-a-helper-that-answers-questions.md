@@ -1,7 +1,6 @@
 # ADR-0048: A helper that answers questions
 
-- **Status:** Proposed. It would send a player's question and a summary of their mods off the PC, and the owner pays
-  for each answer, so it waits for the owner's decision. Not scheduled: after 1.0 unless the owner decides otherwise.
+- **Status:** Accepted (owner, 2026-11-11). Scheduled after 1.0 ([the road to 1.0](../ROADMAP.md#the-road-to-10)).
 - **Date:** 2026-11-11
 
 ## Context
