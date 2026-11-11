@@ -20,6 +20,9 @@ public static class DiagnosticCodes
     public const string DocumentsDirectoryElsewhere = "DAO_DOCUMENTS_DIRECTORY_ELSEWHERE";
     public const string DocumentsOneDriveRedirected = "DAO_DOCUMENTS_ONEDRIVE_REDIRECTED";
 
+    // P2.6-75: the profile's documents folder isn't the one the game reads, and the game's exists (ADR-0046). Report only.
+    public const string DocumentsNotTheGames = "DAO_DOCUMENTS_NOT_THE_GAMES";
+
     public const string OverrideDirectoryFound = "DAO_OVERRIDE_DIRECTORY_FOUND";
 
     // P2.5-22: the install folder's own override, which older guides use and the game loads too.
