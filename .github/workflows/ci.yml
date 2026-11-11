@@ -52,6 +52,12 @@ jobs:
         if: env.SONAR_ENABLED == 'true'
         run: dotnet tool install --global dotnet-sonarscanner --version 12.0.0
 
+      # Roslyn's own findings aren't imported (P2.5-37, #60): warnings already fail the build, so the only ones left
+      # are the style suggestions .editorconfig keeps as suggestions on purpose.
+      # Two Sonar rules are wrong for one file each (P2.5-38, #61):
+      # - S1244 in LookColor: RGB to HSL compares max == r and max == g exactly, and max is always exactly one of them.
+      # - S2245 in GrainTexture: the seeded Random draws the background grain, not a secret, and the seed keeps the
+      #   headless screenshots the same between runs.
       - name: Sonar begin
         if: env.SONAR_ENABLED == 'true'
         env:
@@ -62,6 +68,12 @@ jobs:
           /d:sonar.token="$SONAR_TOKEN"
           /d:sonar.host.url="https://sonarcloud.io"
           /d:sonar.cs.opencover.reportsPaths="TestResults/**/coverage.opencover.xml"
+          /d:sonar.cs.roslyn.ignoreIssues=true
+          /d:sonar.issue.ignore.multicriteria=e1,e2
+          /d:sonar.issue.ignore.multicriteria.e1.ruleKey=csharpsquid:S1244
+          /d:sonar.issue.ignore.multicriteria.e1.resourceKey="**/Looks/LookColor.cs"
+          /d:sonar.issue.ignore.multicriteria.e2.ruleKey=csharpsquid:S2245
+          /d:sonar.issue.ignore.multicriteria.e2.resourceKey="**/Themes/GrainTexture.cs"
 
       - name: Build (warnings are errors)
         run: dotnet build DAORework.sln --no-restore --configuration Release

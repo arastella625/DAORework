@@ -428,11 +428,13 @@ decision.
   ([#66](https://github.com/arastella625/DAORework/pull/66)); the cover's screenshot is byte-for-byte the same.*
 - P2.5-37 The collection-expression hints (about 85, mostly `IDE0305` and `IDE0028`, set to *suggestion* in
   `.editorconfig`): either raise them to *warning* and apply them in one refactor PR, or keep them as suggestions and
-  stop SonarCloud reporting them. *The owner chose on 2026-11-04 to keep them as suggestions; what is left is to stop
-  SonarCloud reporting them.*
+  stop SonarCloud reporting them. *The owner chose on 2026-11-04 to keep them as suggestions. Done: the scanner no longer
+  imports Roslyn's findings (`sonar.cs.roslyn.ignoreIssues`), since warnings already fail the build.*
 - P2.5-38 Mark the findings that are wrong, in SonarCloud, with the reason: `LookColor`'s exact comparisons
   (`csharpsquid:S1244`; `max` is always exactly one of r, g and b) and `GrainTexture`'s seeded `Random`
-  (`csharpsquid:S2245`; seeded on purpose so the screenshots stay the same). No code changes.
+  (`csharpsquid:S2245`; seeded on purpose so the screenshots stay the same). No code changes. *Done in `ci.yml`
+  rather than by hand in SonarCloud: the scanner ignores those two rules for those two files, with the reasons
+  beside them, so the decision is reviewed with the code.*
 
 **Found on the owner's PC** *(added 2026-11-03, from `scripts/verify-real-install.ps1` run for P2.5-34)*.
 
