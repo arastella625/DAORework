@@ -21,7 +21,8 @@ New-Item -ItemType Directory -Force -Path (Join-Path $tempDocs 'Settings'), (Joi
 Set-Content (Join-Path $tempDocs 'packages\core\override\My Mods\mine.dds') 'hand placed' -NoNewline
 
 $changeDazip = Join-Path $work 'verify-change.dazip'
-New-TestZip $changeDazip @{ 'Manifest.xml' = '<Manifest Type="AddIn"><AddInsList><AddInItem UID="daorework_verify_change" Name="DAORework Verify Change" /></AddInsList></Manifest>'; 'Contents/addins/daorework_verify_change/verify.txt' = 'change' }
+# A file the game reads: a readme such as verify.txt stays in the Library and never reaches the game (ADR-0036).
+New-TestZip $changeDazip @{ 'Manifest.xml' = '<Manifest Type="AddIn"><AddInsList><AddInItem UID="daorework_verify_change" Name="DAORework Verify Change" /></AddInsList></Manifest>'; 'Contents/addins/daorework_verify_change/verify.dds' = 'change' }
 $overrideZip = Join-Path $work 'DAORework Verify Override.zip'
 New-TestZip $overrideZip @{ 'textures/verify.dds' = 'override' }
 # Only ids read from these imports' own output are ever deleted below.
@@ -39,7 +40,7 @@ $noYes = Dao (@('mods', 'activate') + $testIds + @('-p', $modsProfile))
 Check 'without --yes a script cannot activate' (($noYes -match 'add --yes') -and (Test-Same $start (Get-FolderHashes $tempDocs)))
 
 $on = Dao (@('mods', 'activate') + $testIds + @('-p', $modsProfile, '--yes'))
-$addIn = Join-Path $tempDocs 'AddIns\daorework_verify_change\verify.txt'
+$addIn = Join-Path $tempDocs 'AddIns\daorework_verify_change\verify.dds'
 $override = Join-Path $tempDocs "packages\core\override\DAORework\$($testIds[1])\textures\verify.dds"
 Check 'activate --yes installs both mods' (($on -match 'Done: \d+ step') -and (Test-Path $addIn) -and (Test-Path $override)) (($on -split "\r?\n" | Where-Object { $_ -match '^Done' }) -join '')
 Check 'the add-in is registered in AddIns.xml' ((Get-Content (Join-Path $tempDocs 'Settings\AddIns.xml') -Raw) -match 'daorework_verify_change')
@@ -70,7 +71,7 @@ if (Test-Path $documents) {
     $realFolders = @(Get-ChildItem $documents -Recurse -Directory -Force | ForEach-Object FullName)
     if ((Dao @('mods', 'status', '-p', $realProfile)) -match 'No mods are active through DAORework') {
         $on = Dao (@('mods', 'activate') + $testIds + @('-p', $realProfile, '--yes'))
-        Check 'activate --yes works on your real documents folder' (($on -match 'Done: \d+ step') -and (Test-Path (Join-Path $documents 'AddIns\daorework_verify_change\verify.txt')))
+        Check 'activate --yes works on your real documents folder' (($on -match 'Done: \d+ step') -and (Test-Path (Join-Path $documents 'AddIns\daorework_verify_change\verify.dds')))
         Dao @('mods', 'rollback', '-p', $realProfile, '--yes') | Out-Null
         Check 'rollback leaves your real documents folder byte-for-byte as it began' (Test-Same $realStart (Get-FolderHashes $documents))
 

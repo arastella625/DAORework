@@ -577,6 +577,8 @@ a search keystroke takes under 0.05 s, on `RealScaleLibrary` and on the owner's 
 
 - P2.6-73 No build warnings: `ProblemSearchPanel.axaml` used `TextBox.Watermark`, which Avalonia 12 marks obsolete
   (AVLN5001), and `TreatWarningsAsErrors` doesn't cover XAML warnings. It uses `PlaceholderText` now.
+- P2.6-74 The real-install check passes again: `verify-mod-changes.ps1`'s test add-in held only `verify.txt`, which
+  ADR-0036 keeps out of the game, so two checks failed on every run since P2.6-14. It holds a `.dds` now.
 
 **Keeping the tests honest on Windows** *(added 2026-11-05, from P2.6-02)*.
 
