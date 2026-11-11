@@ -52,6 +52,8 @@ Nothing changes in what DAORework will install: mods that run inside the game ar
 - Those files stay in your Library and no longer reach your game (P2.6-14, [ADR-0036](docs/adr/0036-only-mod-files-reach-the-game.md)). A mod already on loses them at its next change, which the preview says, and *Undo* puts them back. A folder in `override` holding nothing else isn't offered as a mod.
 
 ### Fixed
+- Home no longer says *Ready to play* and *Everything is in place* when your mods are in a documents folder the game doesn't read (P2.6-76). It says *Ready to play, without your mods* and *Almost there*.
+- *Undo* that needs a copy you removed says which mod, and names the two items to put back from the Recycle Bin (P2.6-77). It used to say "Couldn't undo it: This can't be undone".
 - A download that couldn't be added stays in *New downloads*, so you can try it again (P2.6-64, [#181](https://github.com/arastella625/DAORework/issues/181)).
 - A download that looks like something you already have stays in *New downloads* until you answer (P2.6-71, [#189](https://github.com/arastella625/DAORework/issues/189)). *Cancel* lost it for good, as did an *Add anyway* that didn't work.
 - *Combined files* no longer repeats itself (P2.6-65). Many files inside archives with the same mods and the same risk are one row, and the card counts what the list shows.

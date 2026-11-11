@@ -96,21 +96,30 @@ public sealed partial class HomeViewModel : ObservableObject
         ReadyBody = profileName is null
             ? "Create a profile in the header, then point it at your game in Game folders."
             : "Check the game to see whether it is ready to play.";
+        Setup?.GameReadsElsewhere = false;
         NextSteps.Clear();
     }
 
-    /// <summary>Shows a finished check: ready, or how many problems stand in the way; then the suggestions.</summary>
+    /// <summary>
+    /// Shows a finished check: ready, or how many problems stand in the way; then the suggestions. A profile on a folder
+    /// the game doesn't read can still start the game (ADR-0046), but nothing here may say all is well with its mods.
+    /// </summary>
     public Task ShowReportAsync(string profileName, IReadOnlyList<DiagnosticIssue> issues, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(issues);
         var errors = issues.Count(i => i.Severity == DiagnosticSeverity.Error);
+        var elsewhere = issues.Any(i => i.Code == DiagnosticCodes.DocumentsNotTheGames);
         IsReady = errors == 0;
         HasProblems = errors > 0;
         CanCheck = false;
-        ReadyTitle = IsReady ? "Ready to play" : "Not ready yet";
-        ReadyBody = IsReady
-            ? $"{profileName} is set up and the game can start."
-            : $"{Counted.Of(errors, "problem")} to fix before the game can start.";
+        ReadyTitle = !IsReady ? "Not ready yet" : elsewhere ? "Ready to play, without your mods" : "Ready to play";
+        ReadyBody = (IsReady, elsewhere) switch
+        {
+            (false, _) => $"{Counted.Of(errors, "problem")} to fix before the game can start.",
+            (true, true) => "The game can start, but it reads another documents folder, so your mods don't reach it. Worth a look says which.",
+            _ => $"{profileName} is set up and the game can start.",
+        };
+        Setup?.GameReadsElsewhere = elsewhere;
         return NextSteps.ShowAsync(profileName, issues, cancellationToken);
     }
 

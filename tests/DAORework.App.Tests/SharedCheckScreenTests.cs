@@ -28,6 +28,23 @@ public sealed class SharedCheckScreenTests : IDisposable
     public void Dispose() => _host.Dispose();
 
     [AvaloniaFact]
+    public async Task WhenTheGameReadsAnotherFolder_NothingSaysAllIsWell()
+    {
+        var (_, viewModel) = await OpenWithHairPackOnAsync();
+        var setup = viewModel.ModsTab.Setup;
+        Assert.Equal("Everything is in place", setup.Title);
+
+        setup.GameReadsElsewhere = true; // What a check that found DAO_DOCUMENTS_NOT_THE_GAMES sets (ADR-0046).
+
+        Assert.Equal("Almost there", setup.Title);
+        Assert.Equal("Your mods are in a documents folder the game doesn't read. Worth a look says which.", setup.Body);
+
+        setup.GameReadsElsewhere = false;
+
+        Assert.Equal("Everything is in place", setup.Title);
+    }
+
+    [AvaloniaFact]
     public async Task WhileSharedFilesAreBeingRead_NothingSaysAllIsWell()
     {
         var (window, viewModel) = await OpenWithHairPackOnAsync();
