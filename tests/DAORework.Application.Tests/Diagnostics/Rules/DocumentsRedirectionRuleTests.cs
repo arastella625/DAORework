@@ -1,9 +1,11 @@
 using System.IO.Abstractions.TestingHelpers;
 using DAORework.Application.Diagnostics.Rules;
+using DAORework.Application.Documents;
 using DAORework.Application.Tests.Fakes;
 using DAORework.Core.Common;
 using DAORework.Core.Diagnostics;
 using DAORework.Core.Profiles;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace DAORework.Application.Tests.Diagnostics.Rules;
@@ -75,9 +77,22 @@ public sealed class DocumentsRedirectionRuleTests
         var profile = new RuntimeProfile { Name = "Default", UserDocumentsDirectory = moved };
         var profiles = new InMemoryProfileRepository();
         profiles.Profiles[profile.Name] = profile;
-        var rule = new DocumentsRedirectionRule(TestDocumentsDetection.Create(_fileSystem, _redirected, profiles));
+        var rule = new DocumentsRedirectionRule(TestDocumentsDetection.Create(_fileSystem, _redirected, profiles), SameFolder());
 
         Assert.Empty(await rule.EvaluateAsync(profile));
+    }
+
+    [Fact]
+    public async Task EvaluateAsync_UnsavedProfileLinksToTheFolderFound_DoesNotSayItIsElsewhere()
+    {
+        var link = TestPaths.Root("Linked", "Dragon Age");
+        _fileSystem.AddDirectory(Classic);
+        _fileSystem.AddDirectory(Path.GetDirectoryName(link)!);
+        _fileSystem.Directory.CreateSymbolicLink(link, Classic);
+
+        var issues = await Rule(_redirected).EvaluateAsync(new RuntimeProfile { UserDocumentsDirectory = link });
+
+        Assert.DoesNotContain(issues, i => i.Code == DiagnosticCodes.DocumentsDirectoryElsewhere);
     }
 
     [Fact]
@@ -87,7 +102,7 @@ public sealed class DocumentsRedirectionRuleTests
         _fileSystem.AddDirectory(moved);
         var search = new FakeDocumentsFolderSearch();
         search.Found.Add(moved);
-        var rule = new DocumentsRedirectionRule(TestDocumentsDetection.Create(_fileSystem, new FakeKnownFolders(), search: search));
+        var rule = new DocumentsRedirectionRule(TestDocumentsDetection.Create(_fileSystem, new FakeKnownFolders(), search: search), SameFolder());
 
         var issues = await rule.EvaluateAsync(new RuntimeProfile { UserDocumentsDirectory = TestPaths.Root("Old", "BioWare", "Dragon Age") });
 
@@ -96,5 +111,7 @@ public sealed class DocumentsRedirectionRuleTests
         Assert.Contains(moved, elsewhere.Recommendation, StringComparison.Ordinal);
     }
 
-    private DocumentsRedirectionRule Rule(FakeKnownFolders knownFolders) => new(TestDocumentsDetection.Create(_fileSystem, knownFolders));
+    private DocumentsRedirectionRule Rule(FakeKnownFolders knownFolders) => new(TestDocumentsDetection.Create(_fileSystem, knownFolders), SameFolder());
+
+    private SameFolder SameFolder() => new(_fileSystem, NullLogger<SameFolder>.Instance);
 }

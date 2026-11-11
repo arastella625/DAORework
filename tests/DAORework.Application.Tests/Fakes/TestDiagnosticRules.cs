@@ -2,6 +2,8 @@ using System.IO.Abstractions;
 using DAORework.Application.Abstractions;
 using DAORework.Application.Diagnostics;
 using DAORework.Application.Diagnostics.Rules;
+using DAORework.Application.Documents;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace DAORework.Application.Tests.Fakes;
 
@@ -16,7 +18,7 @@ internal static class TestDiagnosticRules
         new GameExecutableRule(fileSystem),
         new LauncherExecutableRule(fileSystem),
         new DocumentsDirectoryRule(fileSystem),
-        new DocumentsRedirectionRule(TestDocumentsDetection.Create(fileSystem, knownFolders)),
+        new DocumentsRedirectionRule(TestDocumentsDetection.Create(fileSystem, knownFolders), new SameFolder(fileSystem, NullLogger<SameFolder>.Instance)),
         new ModFoldersRule(fileSystem),
         new LargeAddressAwareRule(fileSystem),
         new SteamProtectedExecutableRule(fileSystem),

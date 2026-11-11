@@ -71,6 +71,7 @@ public static class DependencyInjection
         services.AddSingleton<ApplyInstallation>();
         services.AddSingleton<ProfileDocumentsFolders>();
         services.AddSingleton<DetectDocumentsFolders>();
+        services.AddSingleton<SameFolder>();
         services.AddSingleton<CreateProfile>();
         services.AddSingleton<GetProfile>();
         services.AddSingleton<ListProfiles>();
