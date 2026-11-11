@@ -121,6 +121,7 @@ public static class DependencyInjection
         // One strategy per managed fix (ADR-0013). Add a fix by adding its IManagedFix here.
         services.AddSingleton<IManagedFix, LargeAddressAwareFix>();
         services.AddSingleton<IManagedFix, DxvkFix>();
+        services.AddSingleton<ReadInstallState>();
         services.AddSingleton<PlanFix>();
         services.AddSingleton<ApplyFix>();
         services.AddSingleton<GetFixStatus>();
