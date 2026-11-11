@@ -1,4 +1,3 @@
-using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using DAORework.Application.Documents;
 using DAORework.Application.Tests.Fakes;
@@ -77,11 +76,4 @@ public sealed class SameFolderTests
     }
 
     private SameFolder Same() => new(_fileSystem, NullLogger<SameFolder>.Instance);
-
-    private sealed class DeniedFileSystem : MockFileSystem
-    {
-        public bool Denied { get; set; }
-
-        public override IDirectoryInfoFactory DirectoryInfo => Denied ? throw new UnauthorizedAccessException("denied") : base.DirectoryInfo;
-    }
 }
