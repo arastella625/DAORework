@@ -8,11 +8,7 @@ namespace DAORework.Core.Mods.Library;
 /// </summary>
 public static class RemovedMods
 {
-    /// <returns>Their names as a person reads them, since the mods themselves are gone.</returns>
-    public static IReadOnlyList<string> In(IReadOnlyList<string> activeModIds, IEnumerable<string> libraryIds) =>
-        [.. Ids(activeModIds, libraryIds).Select(ModIds.ReadableName)];
-
-    /// <returns>Their ids, which are also the names of their folder and <c>.mod.json</c> in the Recycle Bin.</returns>
+    /// <returns>Their ids, which are also the names of their folder and <c>.mod.json</c> in the Recycle Bin. <see cref="ModIds.ReadableName"/> gives each a name a person reads, since the mods themselves are gone.</returns>
     public static IReadOnlyList<string> Ids(IReadOnlyList<string> activeModIds, IEnumerable<string> libraryIds)
     {
         ArgumentNullException.ThrowIfNull(activeModIds);

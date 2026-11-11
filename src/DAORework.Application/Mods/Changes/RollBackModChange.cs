@@ -80,7 +80,7 @@ public sealed class RollBackModChange
             ids.Count == 1
                 ? $"{names} is no longer in your Library, and this change goes back to it."
                 : $"{names} are no longer in your Library, and this change goes back to them.",
-            $"Put back {items} from the Recycle Bin, or add the same download again. Then undo this change again. Nothing was changed.");
+            $"Add the same download again, or put back {items} if they're in the Recycle Bin. Then undo this change again. Nothing was changed.");
     }
 
     /// <summary>
