@@ -35,24 +35,23 @@ Nexus as soon as the website has them (it rebuilds when `main` changes).
 
 Also upload them to the mod's **Images** tab, so they appear in its gallery: the files in
 [site/public/images/nexus](../../../site/public/images/nexus), `00-cover.png` as the main image, then the screenshots
-in order, each with its line from [captions.txt](captions.txt). Remove the 0.3.x pictures from the gallery at the same
-time; they show the old tabs. (Or use your own screenshots from a real install, which show Windows paths, real mod
-names and a real antivirus result.)
+in order, each with its line from [captions.txt](captions.txt). Replace the gallery's pictures at the same time, so it
+shows the window that can be downloaded. (Or use your own screenshots from a real install, which show Windows paths,
+real mod names and a real antivirus result.)
 
-Where the pictures come from:
-- `01` to `08` are the App tests' headless screenshots (`dotnet test tests/DAORework.App.Tests`, with
-  `DAOREWORK_SCREENSHOT_DIR` set to a folder), with made-up mods: `21-next-steps`, `32-mods-one-page`,
-  `28-adopt-selected`, `30-chargenmorph-combined`, `17-load-order`, `19-fixes-undone`, `15-changes-rollback` and
-  `24-look-with-picture`. Taken on Linux, so a mod's antivirus line reads *Not scanned*, which is what DAORework says
-  where the Windows scan is not available.
-- `09` to `11` are the screenshots from the pull requests that added those features, also from the App tests with
-  made-up mods: [Move from Vortex](../../screenshots/p2.5-31/01-card.png),
-  [New downloads](../../screenshots/p3-10/01-new-downloads.png) and
-  [shared files inside archives](../../screenshots/p3-07/01-packed.png).
-- `00-cover.png` is [cover.html](cover.html) at 1920x1080, built from `01-home.png` and `02-mods.png`.
+Where the pictures come from (retaken for 0.6.0, all from the App tests with made-up mods):
+- `01` to `07`, `11` and `12` are copies of the README's pictures (`docs/screenshots/readme/`), mostly the real-scale
+  library: `01-next-steps`, `02-library`, `05-adopt-plan`, `03-activate-plan`, `04-load-order`, `06-fixes`,
+  `07-rollback`, `10-combined-files` and `11-problem-search`. Copy them again when those are retaken.
+- `08-your-look.png` is the README's `09-custom-look.png`, unchanged since 0.4.0.
+- `09` and `10` are the App tests' `38-move-from-vortex` and `39-new-downloads` (`dotnet test
+  tests/DAORework.App.Tests`, with `DAOREWORK_SCREENSHOT_DIR` set to a folder).
+- `00-cover.png` is [cover.html](cover.html) at 1920x1080 (headless Edge: `msedge --headless --window-size=1920,1080
+  --screenshot=<file> <cover.html>`). It is still the one built from the 0.4.0 `01-home.png` and `02-mods.png`, since
+  its Home reads *Ready to play*; rebuilt from today's pictures it would read *Not checked yet*. Rebuild it when a
+  Home picture shows the game ready.
 
-They show the gilded-tome style (P2.5-28), taken from its pull request. If the window's look changes again, retake
-`01` to `08` from the same tests and the cover from `cover.html`.
+They show the gilded-tome style (P2.5-28). If the window's look changes again, retake them as above.
 
 ## On upload day
 
