@@ -1,6 +1,6 @@
 # ADR-0021: A static project website on the owner's domain, served by Cloudflare
 
-- **Status:** Accepted. Its *one page* becomes two with [ADR-0047](0047-a-roadmap-page-for-players.md), if accepted.
+- **Status:** Accepted. Its *one page* becomes two with [ADR-0047](0047-a-roadmap-page-for-players.md).
 - **Date:** 2026-10-31
 
 ## Context

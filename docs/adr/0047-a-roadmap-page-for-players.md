@@ -1,6 +1,6 @@
 # ADR-0047: A roadmap page for players on the website
 
-- **Status:** Proposed
+- **Status:** Accepted (by the owner, 2026-11-11)
 - **Date:** 2026-11-11
 
 ## Context
