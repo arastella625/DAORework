@@ -125,6 +125,9 @@ public sealed partial class MainWindowViewModel : ObservableObject
                 SelectedPage = FixesPage;
                 await Fixes.Change.InstallDxvkCommand.ExecuteAsync(null);
                 break;
+            case NextStepKind.ChooseGameDocumentsFolder:
+                await OpenFromHomeAsync(HomeTarget.GameFolders, null, cancellationToken);
+                break;
             default:
                 SelectedPage = ModsPage;
                 await ModsTab.Handover.RefreshAsync(cancellationToken);

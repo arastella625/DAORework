@@ -60,7 +60,8 @@ publisher. A new publisher still builds up reputation with Windows SmartScreen, 
 - **Installs DXVK** from a release you download, and **the 4 GB patch on copies that allow it** (GOG, EA App).
   Steam's own `daorigins.exe` is protected, and Steam will not start it once patched, so DAORework leaves the Steam
   copy alone and tells you if it was patched before. It notices when Steam's Verify integrity has undone a fix.
-- **Diagnoses your install** and suggests next steps, each with its button.
+- **Diagnoses your install** and suggests next steps, each with its button, including when your mods are in a
+  documents folder the game doesn't read.
 - **Backs up your saves**, and launches the game.
 
 Nothing is downloaded and nothing is sent anywhere: DAORework only works with files already on your computer.

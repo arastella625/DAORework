@@ -67,6 +67,7 @@ public sealed partial class NextStepsViewModel : PageViewModel
                     return;
                 }
 
+                AddDocumentsStep(issues);
                 if (issues.Any(i => i.Code == DiagnosticCodes.LargeAddressAwareDisabled))
                 {
                     Steps.Add(new NextStep(
@@ -89,6 +90,19 @@ public sealed partial class NextStepsViewModel : PageViewModel
                 HasContent = true;
             },
             cancellationToken);
+
+    /// <summary>First, since no mod reaches the game until it's sorted out. Names both folders (ADR-0046).</summary>
+    private void AddDocumentsStep(IReadOnlyList<DiagnosticIssue> issues)
+    {
+        if (issues.FirstOrDefault(i => i.Code == DiagnosticCodes.DocumentsNotTheGames) is { } issue)
+        {
+            Steps.Add(new NextStep(
+                NextStepKind.ChooseGameDocumentsFolder,
+                "Your mods aren't where the game looks",
+                $"{issue.Message} Choose the game's folder in Game folders, or move your saves and mods into it.",
+                "Open Game folders"));
+        }
+    }
 
     private async Task<Error?> AddDxvkStepAsync(RuntimeProfile profile, CancellationToken cancellationToken)
     {
