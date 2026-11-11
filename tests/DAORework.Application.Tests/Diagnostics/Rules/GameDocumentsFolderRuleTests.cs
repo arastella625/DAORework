@@ -1,5 +1,6 @@
 using System.IO.Abstractions.TestingHelpers;
 using DAORework.Application.Diagnostics.Rules;
+using DAORework.Application.Documents;
 using DAORework.Application.Tests.Fakes;
 using DAORework.Core.Common;
 using DAORework.Core.Diagnostics;
@@ -110,12 +111,12 @@ public sealed class GameDocumentsFolderRuleTests
         _fileSystem.AddDirectory(Games);
         _fileSystem.AddDirectory(_elsewhere);
 
-        var rule = new GameDocumentsFolderRule(_fileSystem, _knownFolders, new FakeHostPlatform { IsLinux = true }, NullLogger<GameDocumentsFolderRule>.Instance);
+        var rule = new GameDocumentsFolderRule(_fileSystem, _knownFolders, new FakeHostPlatform { IsLinux = true }, new SameFolder(_fileSystem, NullLogger<SameFolder>.Instance));
 
         Assert.Empty(await rule.EvaluateAsync(Profile(_elsewhere)));
     }
 
     private static RuntimeProfile Profile(string documents) => new() { Name = "Default", UserDocumentsDirectory = documents };
 
-    private GameDocumentsFolderRule Rule() => new(_fileSystem, _knownFolders, new FakeHostPlatform(), NullLogger<GameDocumentsFolderRule>.Instance);
+    private GameDocumentsFolderRule Rule() => new(_fileSystem, _knownFolders, new FakeHostPlatform(), new SameFolder(_fileSystem, NullLogger<SameFolder>.Instance));
 }
