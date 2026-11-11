@@ -1,6 +1,6 @@
 # ADR-0046: The game reads one documents folder, and Home says when a profile uses another
 
-- **Status:** Proposed
+- **Status:** Accepted (owner, 2026-11-10)
 - **Date:** 2026-11-10
 
 ## Context
