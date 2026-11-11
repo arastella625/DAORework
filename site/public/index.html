@@ -21,7 +21,7 @@
         <a class="button" href="#download">Download</a>
         <a class="button ghost" href="#check">Check your download</a>
       </p>
-      <img class="cover" src="/images/app/home.png" alt="Home: ready to play, the add-ins, override mods and combined files at a glance, and what is worth a look" width="960" height="640">
+      <img class="cover" src="/images/app/home.png" alt="Home: the next step, the last change with Undo, and the add-ins, override mods and combined files at a glance" width="960" height="640">
     </div>
   </header>
 
@@ -33,11 +33,13 @@
         <li><strong>Moves your mods over from Vortex.</strong> <em>Move from Vortex</em> takes you through it a step at a time: copy them, purge in Vortex, then turn them on in the same order. It has only been run on simulated Vortex records so far, and doesn't cover add-ins Vortex placed yet.</li>
         <li><strong>Picks up new downloads, if you turn it on.</strong> When you come back from your browser, the mods you downloaded are offered on the Mods page. Nothing is added without a click.</li>
         <li><strong>Adds mods safely.</strong> Add a <code>.dazip</code>, <code>.zip</code>, <code>.7z</code> or <code>.rar</code>. Turning a mod on shows a preview of exactly what will be copied, replaced or removed, and nothing changes until you apply it. A backup is taken first.</li>
-        <li><strong>Shows conflicts.</strong> For every file two mods share, see whose copy the game uses and what that means, and arrange them. Files inside <code>.erf</code> archives are compared too, though there DAORework can't tell which copy the game uses.</li>
+        <li><strong>Finds the mod behind a problem.</strong> <em>Find the problem mod</em> turns off half your mods, you play and say whether the problem is still there, and it repeats until one is left: about 8 rounds for 137 mods. <em>What changed</em> shows what's new since your last game with other mods, with a way back.</li>
+        <li><strong>Keeps one copy of each mod.</strong> Adding a mod looks first and offers to take over what you already have, and <em>Keep one of each</em> clears the copies a library builds up, from one preview. Removed copies go to the Recycle Bin.</li>
+        <li><strong>Shows conflicts, most serious first.</strong> For every file two mods share, see whose copy the game uses and what that means, and arrange them. What could break quests comes before what only changes how things look. Files inside <code>.erf</code> archives are compared too, though there DAORework can't tell which copy the game uses.</li>
         <li><strong>Hair, head and colour mods work together.</strong> When several mods ship the character creator's <code>chargenmorphcfg.xml</code>, DAORework combines them, so every mod's hairs, heads and colours show.</li>
         <li><strong>Checks every mod.</strong> Your own antivirus scans it before it is kept, programs inside a mod are never installed, and a download that differs from the official one is pointed out.</li>
         <li><strong>Turns on DXVK</strong>, and <strong>the 4 GB patch on copies that allow it</strong> (GOG, EA App). Steam's own executable is protected and Steam will not start it once patched, so DAORework leaves the Steam copy alone and tells you if it was patched before. It notices when Steam's Verify integrity has undone a fix.</li>
-        <li><strong>Checks your game</strong> and suggests what is worth a look, and backs up your saves. <em>Home</em> says whether the game is ready to play, and <em>History</em> lists every change, each with <em>Undo to here</em>.</li>
+        <li><strong>Checks your game</strong> and suggests what is worth a look, and backs up your saves. <em>Home</em> says whether the game is ready to play, and what to do next, including when your mods are in a documents folder the game doesn't read. <em>History</em> lists every change, each with <em>Undo to here</em>.</li>
       </ul>
       <p class="note">It never downloads mods or game files, and never sends anything over the internet. Everything stays on your computer.</p>
     </section>
@@ -45,10 +47,12 @@
     <section id="screens">
       <h2>See it</h2>
       <div class="gallery">
-        <figure><img src="/images/app/mods.png" alt="The Mods page with on/off switches" width="960" height="640" loading="lazy"><figcaption>Every mod on one page, each with its switch. The cards on top say whether each kind is ready.</figcaption></figure>
+        <figure><img src="/images/app/mods.png" alt="The Mods page, one line for each mod with its switch" width="960" height="640" loading="lazy"><figcaption>Every mod on one line, with its switch. Search, sort, and turn many on at once.</figcaption></figure>
         <figure><img src="/images/app/preview.png" alt="The preview before turning a mod on" width="960" height="640" loading="lazy"><figcaption>Turning a mod on shows a preview first. Nothing changes until you press Apply.</figcaption></figure>
         <figure><img src="/images/app/arrange.png" alt="Arranging two mods that share a file" width="960" height="640" loading="lazy"><figcaption>Arrange: see whose copy of a shared file the game uses, and what that means.</figcaption></figure>
         <figure><img src="/images/app/manage.png" alt="Managing mods found in the game" width="960" height="640" loading="lazy"><figcaption>Already modded by hand? Manage those mods without reinstalling them.</figcaption></figure>
+        <figure><img src="/images/app/combined-files.png" alt="Combined files, with what could break quests first" width="960" height="640" loading="lazy"><figcaption>Combined files: what could break quests first, then what only changes how things look.</figcaption></figure>
+        <figure><img src="/images/app/problem-search.png" alt="A round of Find the problem mod" width="960" height="640" loading="lazy"><figcaption>Find the problem mod: play, say whether it still happens, and it narrows it down.</figcaption></figure>
         <figure><img src="/images/app/fixes.png" alt="The Fixes tab" width="960" height="640" loading="lazy"><figcaption>DXVK, and the 4 GB patch where the copy allows it, turned on and off safely.</figcaption></figure>
         <figure><img src="/images/app/history.png" alt="Undoing a change in History" width="960" height="640" loading="lazy"><figcaption>Every change is backed up and can be undone, after you confirm.</figcaption></figure>
         <figure><img src="/images/app/themes.png" alt="The theme picker in Settings" width="960" height="640" loading="lazy"><figcaption>Four built-in themes.</figcaption></figure>
@@ -71,13 +75,13 @@
       <h2>Check your download</h2>
       <p>From 0.3.1, <code>DAORework.exe</code> and <code>dao.exe</code> are code-signed: right-click either one, choose <strong>Properties</strong>, then <strong>Digital Signatures</strong> to see the publisher. A new publisher has to build up reputation with Windows, so SmartScreen may still say it protected your PC on the first releases. If it does, choose <strong>More info</strong>, then <strong>Run anyway</strong>, after checking the zip one of these ways:</p>
       <dl class="release">
-        <dt>Latest release</dt><dd>0.5.0</dd>
-        <dt>File</dt><dd><code>DAORework-0.5.0-win-x64.zip</code></dd>
-        <dt>SHA-256</dt><dd><code class="hash">07754cbf2ed4f152cac3ec221bfd4b1f30d28f27ce2e66d14b2d572d2f2979ee</code></dd>
+        <dt>Latest release</dt><dd>0.6.0</dd>
+        <dt>File</dt><dd><code>DAORework-0.6.0-win-x64.zip</code></dd>
+        <dt>SHA-256</dt><dd><code class="hash">8224b8a831ead3f509261c9aaf51b3f8c2447f9c09da494b4a2c697fbe2d5fcd</code></dd>
       </dl>
       <ol class="steps">
-        <li><strong>Checksum:</strong> in PowerShell, run <code>Get-FileHash DAORework-0.5.0-win-x64.zip</code> and compare the hash with the one above and with the release's <code>.sha256</code> file. This page is hosted separately from the downloads, so both have to agree.</li>
-        <li><strong>Build attestation:</strong> with the <a href="https://cli.github.com/">GitHub CLI</a>, run <code>gh attestation verify DAORework-0.5.0-win-x64.zip --repo arastella625/DAORework</code>. It proves the zip was built by the project's own release workflow from its published source, and not changed since.</li>
+        <li><strong>Checksum:</strong> in PowerShell, run <code>Get-FileHash DAORework-0.6.0-win-x64.zip</code> and compare the hash with the one above and with the release's <code>.sha256</code> file. This page is hosted separately from the downloads, so both have to agree.</li>
+        <li><strong>Build attestation:</strong> with the <a href="https://cli.github.com/">GitHub CLI</a>, run <code>gh attestation verify DAORework-0.6.0-win-x64.zip --repo arastella625/DAORework</code>. It proves the zip was built by the project's own release workflow from its published source, and not changed since.</li>
       </ol>
     </section>
 

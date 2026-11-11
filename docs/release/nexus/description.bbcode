@@ -15,10 +15,12 @@
 [*][b]Bring the mods you already have.[/b] Mods you installed by hand in [i]override[/i] and [i]AddIns[/i] show up as [i]Found in your game[/i]. Press [b]Manage[/b] and DAORework looks after them from then on, without reinstalling anything. Official DLC is never touched.
 [*][b]Moving from Vortex?[/b] Mods Vortex placed are listed by name, and [b]Move from Vortex[/b] takes you through it a step at a time: copy them, purge in Vortex, then turn them on in the same order. It doesn't cover add-ins Vortex placed yet, and so far it has only been run on simulated Vortex records, not with Vortex itself, so reports are very welcome.
 [*][b]New downloads, if you want them.[/b] Turn this on and, when you come back from your browser, DAORework offers the mods you downloaded. Nothing is added without a click, a download is never moved or deleted, and nothing goes online.
+[*][b]Find the mod behind a problem.[/b] [b]Find the problem mod[/b] turns off half your mods, you play and say whether the problem is still there, and it repeats until one is left: about 8 rounds for 137 mods. Every round can be undone, and everything goes back at the end. [b]What changed[/b] shows what's new since your last game with other mods, with a way back.
+[*][b]One copy of each mod.[/b] Adding a mod looks first, and a download that looks like something in your game offers [b]Manage it[/b] instead of a second copy. [b]Keep one of each[/b] clears the copies a library builds up, from one preview, and removed copies go to the Recycle Bin.
 [*][b]See what a change does before it happens.[/b] Turning a mod on or off opens a short preview: what it copies, replaces or removes, and any file another mod also changes. Nothing is written until you press [b]Apply[/b].
-[*][b]Undo anything.[/b] A backup is taken before every change. [b]History[/b] lists every change DAORework made to your mods and your game folder, and [b]Undo to here[/b] puts it back exactly as it was.
+[*][b]Undo anything.[/b] A backup is taken before every change, reusing your Library's copies instead of filling your drive. [b]History[/b] lists every change DAORework made to your mods and your game folder, and [b]Undo to here[/b] puts it back exactly as it was.
 [*][b]Hair, head and colour mods work together.[/b] The game reads only one [i]chargenmorphcfg.xml[/i], so normally only one such mod shows in the character creator. DAORework combines them into one file, so every mod's hairs, heads, beards and colours show.
-[*][b]Know what a shared file means.[/b] When two mods ship the same file, DAORework says whose copy the game uses and what that means: one texture wins, a data table's changes are lost (look for a compatibility patch), a script's behaviour is lost. [b]Arrange[/b] picks the winner. Files packed inside .erf archives are compared too, though there DAORework can't tell which copy the game uses, so it says which mods share them.
+[*][b]Know what a shared file means.[/b] When two mods ship the same file, DAORework says whose copy the game uses and what that means: one texture wins, a data table's changes are lost (look for a compatibility patch), a script's behaviour is lost. What could break quests comes first, before what only changes how things look. [b]Arrange[/b] picks the winner. Files packed inside .erf archives are compared too, though there DAORework can't tell which copy the game uses, so it says which mods share them.
 [*][b]Every mod is checked.[/b] Programs inside a mod are named and never installed: mods that run inside the game, such as DAO Lib and Luma, are recognised, but DAORework can't install them yet. Your own antivirus (Microsoft Defender or whichever you use) scans every mod before it is kept, and a mod it flags is refused. A download that differs from the known official one is pointed out.
 [/list]
 
@@ -26,10 +28,10 @@
 
 [size=5][b]A quick tour[/b][/size]
 
-[b]Home: is the game ready to play?[/b] Your add-ins, override mods and combined files at a glance, your last change with Undo, and a few suggestions worth a look.
+[b]Home: is the game ready to play, and what's next?[/b] One next step worked out from where you are, your last change with Undo, and your add-ins, override mods and combined files at a glance.
 [img]https://daorework.dilly-world.net/images/nexus/01-home.png[/img]
 
-[b]Mods: one list, with a switch for each.[/b] Add a .dazip, .zip, .7z or .rar with [i]Add mods[/i] or by dropping it on the window. Filter by add-ins, override mods, on, off, or found in your game.
+[b]Mods: one line for each mod, with its switch.[/b] Add a .dazip, .zip, .7z or .rar with [i]Add mods[/i] or by dropping it on the window. Search, sort, and turn many on at once: a mod that can't go on says why, and the rest go ahead.
 [img]https://daorework.dilly-world.net/images/nexus/02-mods.png[/img]
 
 [b]Found in your game: manage what you installed by hand[/b], one mod or several at once.
@@ -47,8 +49,11 @@
 [b]Arrange and combined files:[/b] which mod wins a shared file, and which files were merged.
 [img]https://daorework.dilly-world.net/images/nexus/05-arrange.png[/img]
 
-[b]Inside archives too:[/b] a file two mods keep inside .erf archives shows on Combined files.
-[img]https://daorework.dilly-world.net/images/nexus/11-inside-archives.png[/img]
+[b]Combined files, most serious first:[/b] what could break quests, then what only changes how things look. Files inside .erf archives are compared too.
+[img]https://daorework.dilly-world.net/images/nexus/11-combined-files.png[/img]
+
+[b]Find the problem mod:[/b] play, say whether it still happens, and it narrows it down.
+[img]https://daorework.dilly-world.net/images/nexus/12-problem-search.png[/img]
 
 [b]Fixes: DXVK, and the 4 GB patch where your copy allows it.[/b] It also notices when Steam's Verify integrity has undone one.
 [img]https://daorework.dilly-world.net/images/nexus/06-fixes.png[/img]
@@ -59,17 +64,17 @@
 [b]Your look:[/b] four dark themes, or your own accent colour and background picture, per profile if you like.
 [img]https://daorework.dilly-world.net/images/nexus/08-your-look.png[/img]
 
-[i]Screenshots come from DAORework's automated window tests, with made-up mods. They were taken where the Windows antivirus scan isn't available, so mods say "Not scanned"; on Windows they show what your antivirus found.[/i]
+[i]Screenshots come from DAORework's automated window tests, with made-up mods.[/i]
 
 [line]
 
 [size=5][b]Everything it does[/b][/size]
 
 [list]
-[*][b]Mods:[/b] add, turn on and off (one or many at once), manage mods found in your game, move from Vortex, pick up new downloads, arrange the load order, combine [i]chargenmorphcfg.xml[/i], open a known mod's page in your browser, and undo any change.
+[*][b]Mods:[/b] add, turn on and off (one or many at once), manage mods found in your game, move from Vortex, pick up new downloads, keep one copy of each, find the mod behind a problem, see what changed since your last game, arrange the load order, combine [i]chargenmorphcfg.xml[/i], open a known mod's page in your browser, and undo any change.
 [*][b]Fixes:[/b] installs and removes DXVK from a release you download, and the 4 GB (large address aware) patch on copies that allow it, such as GOG and EA App. Steam's own [i]daorigins.exe[/i] carries Steam's copy protection and Steam will not start it once patched, so DAORework leaves the Steam copy alone, and tells you how to undo it if it was patched before.
 [*][b]Saves:[/b] [i]Back up now[/i] copies your saves into DAORework's own folder and keeps the newest ones. Your saves folder is only ever read.
-[*][b]Checks:[/b] finds your install (Steam, GOG, EA App or a folder you pick) and your documents folder, including a OneDrive one or one on another drive, and checks the 4 GB patch, DirectX and Visual C++ runtimes, your settings file, your saves, your DLC, known community fixes, mods in the install folder's own override that older guides used, and programs in the game's [i]bin_ship[/i] folder that DAORework didn't place.
+[*][b]Checks:[/b] finds your install (Steam, GOG, EA App or a folder you pick) and your documents folder, including a OneDrive one or one on another drive, and checks the 4 GB patch, DirectX and Visual C++ runtimes, your settings file, your saves, your DLC, known community fixes, mods in the install folder's own override that older guides used, programs in the game's [i]bin_ship[/i] folder that DAORework didn't place, and a profile pointed at a documents folder the game doesn't read.
 [*][b]Play:[/b] the big button starts the game. A Steam copy is started through Steam, with the overlay and playtime.
 [*][b]Command line:[/b] [i]dao.exe[/i] does all of the above for scripts, if you want it.
 [/list]
