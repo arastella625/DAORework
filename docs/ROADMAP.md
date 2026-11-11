@@ -781,8 +781,8 @@ Flatpak, AppImage or distribution packages; macOS; malware scanning on Linux; ch
 **Goal:** understand the game's data through clean-room readers and give the tooling a GUI.
 
 **Scheduled in part (2026-11-11, [the road to 1.0](#the-road-to-10)):** P3-01's GFF and TLK readers, P3-08 and P3-09
-for 0.8.0, and P3-06 for 0.9.0 if ADR-0035 is accepted. P3-02, P3-03, P3-05 and P3-12 come after 1.0. This phase's exit
-gate is still the real-install round trip.
+for 0.8.0, and P3-06 for 0.9.0 if ADR-0035 is accepted. P3-02, P3-03, P3-05 and P3-12 come after 1.0. P3-13 isn't
+scheduled: it waits for the owner's decision on ADR-0048. This phase's exit gate is still the real-install round trip.
 
 - P3-01 The `DAORework.Formats` library (BCL only). Readers for ERF v2.0/v2.2, GFF v4.0 and TLK are built from public community specifications, which are cited in `docs/formats/`. DAOTools (MIT) may be ported with attribution; xoreos (GPL-3) supplies specifications and observed behavior only ([ADR-0009](adr/0009-third-party-mods-and-tools.md) tier 3). Each reader gets fuzz tests.
   *ERF done (`docs/formats/erf.md`); GFF and TLK to come. The exit gate's run over a real install is the owner's:
@@ -835,6 +835,16 @@ work; scheduled here as P3-05 and P3-06 are. None of it goes online except what 
 - P3-12 Asking Nexus about `nxm://` links: the owner asks Nexus how a registered app should handle *Mod Manager
   Download*, for free and premium accounts. A go-ahead needs its own ADR before any code (SDD §12): the opt-in, what is
   sent, registering the app, and sharing the link type with Vortex.
+
+**Asking for help** *(the owner's wish, 2026-11-11: an AI helper paid for from the owner's API credits, and help
+sessions that follow along; [ADR-0048](adr/0048-a-helper-that-answers-questions.md), proposed)*. Not format work, and
+not scheduled.
+
+- P3-13 *Ask for help*: an opt-in, never offered on first run, that sends the player's question and a facts sheet (mods by
+  name, on or off, their order, and the diagnostic codes found; no paths) to a relay the owner runs, which holds the key
+  and a monthly spending limit. The answer is plain text with up to three suggested steps, each one of the window's own
+  actions opening its ordinary preview. Help sessions that follow along come after, as their own task. Needs
+  `/security-review` for the relay and the client.
 
 **Exit gate:** each reader round-trips every file in a real install without exceptions (verified by a local-only test that runs on the developer's machine against their own install; no game files are committed).
 
