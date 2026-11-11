@@ -6,16 +6,14 @@ All notable changes to DAORework are recorded here. The format follows
 
 ## [Unreleased]
 
-### Changed
-- Home says when your mods can't reach the game (P2.6-75, [ADR-0046](docs/adr/0046-the-game-reads-one-documents-folder.md)). The game only reads the documents folder in your Windows Documents, so a profile pointed at a copy somewhere else puts mods where the game never looks. Home names both folders and opens *Game folders*, so you can choose the game's, or move your saves and mods into it. A link from one folder to the other counts as the same folder. Nothing is moved for you.
-
 ## [0.6.0] - 2026-11-10
 
-Help when something goes wrong, and fewer copies of your mods. *Find the problem mod* turns half your mods off each round until one is left, and *What changed* shows what's new since your last game with other mods, with a way back. *Combined files* and previews put what could break quests first. Adding a mod looks first, and *Keep one of each* clears the copies a library builds up. The Mods page is one list of one-line rows with search, sort and drag, a next step worked out from where you are, and first steps for a new player. Backups reuse your Library instead of filling your drive, and a batch carries on past a mod that fails.
+Help when something goes wrong, and fewer copies of your mods. *Find the problem mod* turns half your mods off each round until one is left, and *What changed* shows what's new since your last game with other mods, with a way back. *Combined files* and previews put what could break quests first. Adding a mod looks first, and *Keep one of each* clears the copies a library builds up. The Mods page is one list of one-line rows with search, sort and drag, a next step worked out from where you are, and first steps for a new player. Backups reuse your Library instead of filling your drive, a batch carries on past a mod that fails, and Home says when your mods are in a folder the game doesn't read.
 
 Nothing changes in what DAORework will install: mods that run inside the game are still recognised but not installed, and there is still no Linux download.
 
 ### Changed
+- Home says when your mods can't reach the game (P2.6-75, [ADR-0046](docs/adr/0046-the-game-reads-one-documents-folder.md)). The game only reads the documents folder in your Windows Documents, so a profile pointed at a copy somewhere else puts mods where the game never looks. Home names both folders and opens *Game folders*, so you can choose the game's, or move your saves and mods into it. A link from one folder to the other counts as the same folder. Nothing is moved for you.
 - *What changed* (P2.6-57, [ADR-0043](docs/adr/0043-last-known-good.md)). Each *Play* records your mods, so when something breaks you can see what's new since your last game with other mods, and go back to them with a preview and *Undo*.
 - *Find the problem mod* (P2.6-56, [ADR-0042](docs/adr/0042-finding-the-problem-mod.md)). It turns off half your mods, you play and say whether the problem still happens, and it repeats until one is left: about 8 rounds for 137 mods. Every round is a preview with *Undo*, the search survives closing DAORework, and everything goes back at the end.
 - A mod whose files are all in a bigger one says so and offers to keep that one (P2.6-55, [ADR-0041](docs/adr/0041-mods-inside-mods.md)), such as *ZDF* inside *ZDF Complete*. It looks inside `.erf` files too. Nothing is picked for you, since the smaller mod may be the one you chose.
