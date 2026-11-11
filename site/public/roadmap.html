@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Roadmap: DAORework</title>
+  <meta name="description" content="Where DAORework is going: what each release brings, and what 1.0 will mean.">
+  <meta property="og:title" content="DAORework roadmap">
+  <meta property="og:description" content="Where DAORework is going: what each release brings, and what 1.0 will mean.">
+  <meta property="og:image" content="https://daorework.dilly-world.net/images/nexus/00-cover.png">
+  <link rel="canonical" href="https://daorework.dilly-world.net/roadmap">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <!-- ROADMAP.md's "The road to 1.0" in players' words (ADR-0047). Change both in the same PR. -->
+  <header class="hero hero-small">
+    <div class="wrap">
+      <p class="crumb"><a href="/">DAORework</a></p>
+      <h1>Roadmap</h1>
+      <p class="tagline">Where DAORework is going, and what 1.0 will mean.</p>
+      <p class="promise">No dates: each release ships when it's ready and checked on a real install.</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section id="one-point-oh">
+      <h2>What 1.0 will mean</h2>
+      <p>Anyone, on any Windows copy of Dragon Age: Origins, can hand DAORework their whole setup and trust it without help. That comes down to four promises:</p>
+      <div class="promises">
+        <div class="panel promise-card"><span class="rune" aria-hidden="true">I</span><h3>Tried by real players</h3><p>Run on Steam, GOG and EA App copies, by players from outside the project, all the way through.</p></div>
+        <div class="panel promise-card"><span class="rune" aria-hidden="true">II</span><h3>Installs what you use</h3><p>Mods that run inside the game, such as DAO Lib and Luma, and add-ins that compete with each other.</p></div>
+        <div class="panel promise-card"><span class="rune" aria-hidden="true">III</span><h3>Explains conflicts from the inside</h3><p>Which lines of a game table two mods both change, not only that they share a file.</p></div>
+        <div class="panel promise-card"><span class="rune" aria-hidden="true">IV</span><h3>Keeps its word</h3><p>Your Library, profiles and History carry over to every later version, and you can hear about new ones if you want to.</p></div>
+      </div>
+    </section>
+
+    <section id="road">
+      <h2>The road</h2>
+      <ol class="road">
+        <li class="stop now">
+          <div class="stop-head"><span class="version">0.6.0</span><span class="chip">Out now</span></div>
+          <h3>Help when something goes wrong</h3>
+          <ul>
+            <li><em>Find the problem mod</em> turns half your mods off each round until one is left.</li>
+            <li><em>What changed</em> shows what's new since your last game with other mods, with a way back.</li>
+            <li><em>Keep one of each</em> clears the copies a library builds up, and conflicts say which could break quests.</li>
+          </ul>
+        </li>
+        <li class="stop next">
+          <div class="stop-head"><span class="version">0.6.x</span><span class="chip">Next</span></div>
+          <h3>Fixes from real use</h3>
+          <ul>
+            <li>Whatever you run into with 0.6.0. <a href="https://github.com/arastella625/DAORework/issues">Tell us on GitHub</a>.</li>
+          </ul>
+        </li>
+        <li class="stop next">
+          <div class="stop-head"><span class="version">0.7.0</span><span class="chip">Next</span></div>
+          <h3>Mods that run inside the game, and add-ins</h3>
+          <ul>
+            <li>Install DAO Lib, Luma and mods like them with the same preview and <em>Undo</em> as any other, once you've said yes to the program.</li>
+            <li>See which add-in wins when two ship the same file, and in what order the game loads them.</li>
+            <li><em>Move from Vortex</em> brings over add-ins too.</li>
+          </ul>
+        </li>
+        <li class="stop planned">
+          <div class="stop-head"><span class="version">0.8.0</span><span class="chip">Planned</span></div>
+          <h3>Conflicts from the inside</h3>
+          <ul>
+            <li>When two mods change the same game table, see which lines each one changes.</li>
+            <li>The same for the game's text: dialogue and names two mods both rewrite.</li>
+            <li>Where it's safe, combine two tables whose changes don't overlap, so both mods work.</li>
+          </ul>
+        </li>
+        <li class="stop planned">
+          <div class="stop-head"><span class="version">0.9.0</span><span class="chip">Planned</span></div>
+          <h3>A guide, and the release candidate</h3>
+          <ul>
+            <li>A friendly guide to your first game with mods, from finding the game to pressing Play. Skip it, or open it again any time.</li>
+            <li>Everything works with the keyboard and with screen readers.</li>
+            <li>Your Library and profiles carry over to every later version.</li>
+            <li>If you choose to, hear about new versions. It stays off unless you say yes.</li>
+          </ul>
+        </li>
+        <li class="stop goal">
+          <div class="stop-head"><span class="version">1.0</span><span class="chip">The goal</span></div>
+          <h3>Ready for everyone</h3>
+          <ul>
+            <li>Released once players outside the project have run it on Steam, GOG and EA App copies, and no known bug can lose your mods, saves or game files.</li>
+          </ul>
+        </li>
+      </ol>
+    </section>
+
+    <section id="later">
+      <h2>After 1.0</h2>
+      <ul class="later">
+        <li><strong>Linux</strong>, through Steam's Proton. Sooner if a Linux player can try it on a real setup.</li>
+        <li><strong>Mod Manager Download</strong> buttons on Nexus Mods, if Nexus agrees.</li>
+        <li><strong>A music player</strong> for music you own, quiet while the game runs.</li>
+        <li><strong>A look inside the game's files</strong>, for modders.</li>
+      </ul>
+      <p class="note">Plans can change. This page changes with each release.</p>
+    </section>
+
+    <section id="help">
+      <h2>Help it get there</h2>
+      <div class="panel help">
+        <p>DAORework has been tried on a real Steam copy. <strong>If you play the GOG or EA App copy</strong>, a few lines on how it went does more for 1.0 than anything else.</p>
+        <p class="actions">
+          <a class="button" href="https://github.com/arastella625/DAORework/issues/5">Tell us how it went</a>
+          <a class="button ghost" href="https://github.com/arastella625/DAORework/issues">Report a bug or ask for something</a>
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p><a href="/">DAORework</a> · <a href="https://github.com/arastella625/DAORework">Source and bug reports on GitHub</a> · <a href="/.well-known/security.txt">Report a security problem</a></p>
+      <p class="small">This site has no scripts, no cookies and no trackers. DAORework is a fan project, not affiliated with BioWare or Electronic Arts. Dragon Age is a trademark of Electronic Arts Inc.</p>
+    </div>
+  </footer>
+</body>
+</html>

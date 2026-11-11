@@ -43,7 +43,8 @@ second `Contact: mailto:...` line.
 - **Website pictures:** the page shows `images/app/`, copies of the README's screenshots
   (`docs/screenshots/readme/`). Copy them again when those are retaken.
 - **After each release:** put the zip's SHA-256 (from its `.sha256` file) and the version in the *Check your download*
-  section of `site/public/index.html`, and merge. Add the Nexus page's address to the *Download* section once it
+  section of `site/public/index.html`, move the release's card on `site/public/roadmap.html` to *Out now*
+  ([ADR-0047](../adr/0047-a-roadmap-page-for-players.md)), and merge. Add the Nexus page's address to the *Download* section once it
   exists.
 - **Private vulnerability reports:** `security.txt` points to GitHub's private reporting. Turn it on in the
   repository: **Settings** > **Code security** > **Private vulnerability reporting**.
