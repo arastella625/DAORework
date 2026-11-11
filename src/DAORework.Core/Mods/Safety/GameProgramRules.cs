@@ -36,16 +36,16 @@ public static class GameProgramRules
     }
 
     /// <summary>
-    /// Never over another file (ADR-0033 §2): a file on disk that isn't this mod's, by the record and its hash together,
-    /// blocks the plan. Another mod's or a fix's file says which to turn off first; any other file says it was not placed
-    /// by DAORework. Null when every path is free or already this mod's.
+    /// Never over another file (ADR-0033 §2): a file on disk that isn't this mod's as it placed it, by the record and its
+    /// hash together, blocks the plan. Another mod's or a fix's file says which to turn off first; this mod's own changed
+    /// file says to turn the mod off; any other says it was not placed by DAORework. Null when every path is free or as placed.
     /// </summary>
     public static Error? CheckTargets(string modId, string modName, IReadOnlyList<GameProgramFile> targets, InstallState state, Func<string, string> nameOf)
     {
         ArgumentNullException.ThrowIfNull(targets);
         ArgumentNullException.ThrowIfNull(state);
         ArgumentNullException.ThrowIfNull(nameOf);
-        var taken = targets.Select(t => Taken(modId, t.TargetPath, state, nameOf)).OfType<string>().ToList();
+        var taken = targets.Select(t => Taken(modId, modName, t.TargetPath, state, nameOf)).OfType<string>().ToList();
         return taken.Count == 0
             ? null
             : new Error(
@@ -71,23 +71,30 @@ public static class GameProgramRules
         };
     }
 
-    private static string? Taken(string modId, string path, InstallState state, Func<string, string> nameOf)
+    private static string? Taken(string modId, string modName, string path, InstallState state, Func<string, string> nameOf)
     {
+        if (!state.Hashes.TryGetValue(path, out var current))
+        {
+            return null;
+        }
+
         var recorded = state.Record.Files.FirstOrDefault(f => string.Equals(f.TargetPath, path, StringComparison.OrdinalIgnoreCase));
-        var onDisk = state.Hashes.TryGetValue(path, out var current);
-        if (recorded is not null && !string.Equals(recorded.ModId, modId, StringComparison.OrdinalIgnoreCase) && onDisk && string.Equals(current, recorded.Sha256, StringComparison.OrdinalIgnoreCase))
+        if (recorded is null)
+        {
+            return $"{path} is already in your game folder, and DAORework didn't put it there. It's left alone: move it out yourself, then try again.";
+        }
+
+        if (!string.Equals(recorded.ModId, modId, StringComparison.OrdinalIgnoreCase))
         {
             return FixIds.IsFixEntry(recorded.ModId)
                 ? $"{path} is {FixName(recorded.ModId)}'s, a fix DAORework placed. Turn it off on the Fixes page first."
                 : $"{path} is {nameOf(recorded.ModId)}'s, which is on. Turn it off first: a new version of a mod is a separate mod in your Library.";
         }
 
-        if (onDisk && (recorded is null || !string.Equals(recorded.ModId, modId, StringComparison.OrdinalIgnoreCase)))
-        {
-            return $"{path} is already in your game folder, and DAORework didn't put it there. It's left alone: move it out yourself, then try again.";
-        }
-
-        return null;
+        // This mod's own file, changed since it was placed: an edited .ini, say. It is never replaced without asking.
+        return string.Equals(current, recorded.Sha256, StringComparison.OrdinalIgnoreCase)
+            ? null
+            : $"{path} has changed since {modName} placed it. To put the mod back as it came, turn it off first: the changed file stays where it is.";
     }
 
     // DXVK's d3d9.dll is the one fix file in bin_ship a mod like this can want; the 4 GB patch only changes daorigins.exe.

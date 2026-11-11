@@ -1,4 +1,5 @@
 using System.IO.Abstractions;
+using System.Security.Cryptography;
 using DAORework.Application.Abstractions;
 using DAORework.Application.Common;
 using DAORework.Core.Common;
@@ -32,11 +33,20 @@ public sealed class LibraryFileReader : ILibraryFileReader
         var path = _fileSystem.Path.Combine(_library, modId, file.RelativePath.Replace('/', _fileSystem.Path.DirectorySeparatorChar));
         try
         {
-            var sha256 = await FileHashes.ComputeAsync(_fileSystem, path, cancellationToken);
+            // One read: the first bytes are kept on the way through the hash.
             await using var stream = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using var hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
             var start = new byte[Math.Min(startBytes, stream.Length)];
             await stream.ReadExactlyAsync(start, cancellationToken);
-            return Result.Success(new LibraryFileRead(path, sha256, start));
+            hash.AppendData(start);
+            var buffer = new byte[81920];
+            int read;
+            while ((read = await stream.ReadAsync(buffer, cancellationToken)) > 0)
+            {
+                hash.AppendData(buffer, 0, read);
+            }
+
+            return Result.Success(new LibraryFileRead(path, Convert.ToHexStringLower(hash.GetHashAndReset()), start));
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {

@@ -43,7 +43,7 @@ public sealed class GameProgramModTests
         Assert.Equal(["bin_ship/d3d9.dll", "bin_ship/Luma/upscaler.dll", "bin_ship/Luma/tonemap.hlsl"], planned.Plan.Change.Operations.Select(o => o.TargetPath));
         Assert.All(planned.Plan.Change.Operations, o => Assert.Equal(PlanAction.Copy, o.Action));
         Assert.Equal(["bin_ship/d3d9.dll", "bin_ship/Luma/upscaler.dll"], _scanner.Scanned.Select(s => s.Name));
-        Assert.Contains(planned.Notes, n => n.StartsWith("64-bit", StringComparison.Ordinal) && n.Contains("bin_ship/Luma/upscaler.dll", StringComparison.Ordinal));
+        Assert.Contains(planned.Notes, n => n.StartsWith("64-bit, so the 32-bit game", StringComparison.Ordinal) && n.Contains("bin_ship/Luma/upscaler.dll", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -95,6 +95,21 @@ public sealed class GameProgramModTests
         _files.Files["bin_ship/d3d9.dll"] = Text("someone else's");
 
         Assert.Equal(DiagnosticCodes.ModProgramPathTaken, (await PlanOn(Luma)).Error!.Code);
+        Assert.Empty(_scanner.Scanned);
+    }
+
+    [Fact]
+    public async Task PlanOn_AlreadyOnWithAnEditedFile_SaysToTurnItOffFirst()
+    {
+        Add(Luma, ModKind.GameProgram, ("d3d9.dll", _x86), ("settings.ini", Text("scale=1")));
+        await Apply((await PlanOn(Luma)).Value, accepted: true);
+        _files.Files["bin_ship/d3d9.dll"] = _x86;
+        _files.Files["bin_ship/settings.ini"] = Text("scale=2");
+
+        var error = (await PlanOn(Luma)).Error!;
+
+        Assert.Equal(DiagnosticCodes.ModProgramPathTaken, error.Code);
+        Assert.Contains("bin_ship/settings.ini has changed since luma placed it", error.Message, StringComparison.Ordinal);
     }
 
     [Fact]

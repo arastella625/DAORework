@@ -105,6 +105,26 @@ public sealed class GameProgramRulesTests
         Assert.Contains("is DXVK's, a fix DAORework placed. Turn it off on the Fixes page first", error.Message, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void CheckTargets_ThisModsOwnFileEdited_SaysToTurnTheModOffFirst()
+    {
+        var state = State(new RecordedFile("bin_ship/Luma.ini", "aa", Mod), ("bin_ship/Luma.ini", "edited"));
+
+        var error = GameProgramRules.CheckTargets(Mod, "Luma", [Target("bin_ship/Luma.ini")], state, id => id)!;
+
+        Assert.Contains("has changed since Luma placed it", error.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void CheckTargets_AnotherModsFileEdited_StillNamesThatMod()
+    {
+        var state = State(new RecordedFile("bin_ship/dinput8.dll", "cc", "controller-11223344"), ("bin_ship/dinput8.dll", "edited"));
+
+        var error = GameProgramRules.CheckTargets("dao-lib-55667788", "DAO Lib", [Target("bin_ship/dinput8.dll")], state, _ => "Native Controller Framework")!;
+
+        Assert.Contains("is Native Controller Framework's", error.Message, StringComparison.Ordinal);
+    }
+
     private static GameProgramFile Target(string path) => new(new LibraryModFile(path, 1, "h"), path);
 
     private static GameProgramFileFacts Dll(string path, ushort machine = PortableExecutableMachine.X86) =>

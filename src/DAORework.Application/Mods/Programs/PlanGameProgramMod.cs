@@ -66,7 +66,7 @@ public sealed class PlanGameProgramMod
         var notes = new List<string>();
         if (sixtyFourBit.Count > 0)
         {
-            notes.Add($"64-bit, which the game reaches through a separate program: {string.Join(", ", sixtyFourBit)}.");
+            notes.Add($"64-bit, so the 32-bit game can't load them itself: {string.Join(", ", sixtyFourBit)}.");
         }
 
         var kept = mod.Files.Count - placed;
@@ -85,10 +85,9 @@ public sealed class PlanGameProgramMod
             return Failure(DiagnosticCodes.ModSafetyProgramRefused, $"{mod.Name} isn't a mod that runs inside the game.", "Turn it on from the Mods page as usual.");
         }
 
+        // The game folder first: it is cheap to read, and a path that's taken makes reading and scanning the mod pointless.
         var targets = GameProgramLayout.Targets(mod.Files);
-        if (!(await _files.ExecuteAsync(mod, targets, cancellationToken)).TryGetValue(out var facts, out var error)
-            || !GameProgramRules.CheckFiles(mod.Name, facts).TryGetValue(out var sixtyFourBit, out error)
-            || !(await _state.ExecuteAsync(install, record, [.. targets.Select(t => t.TargetPath)], new HashSet<string>(), cancellationToken)).TryGetValue(out var state, out error))
+        if (!(await _state.ExecuteAsync(install, record, [.. targets.Select(t => t.TargetPath)], new HashSet<string>(), cancellationToken)).TryGetValue(out var state, out var error))
         {
             return Result.Failure<PlannedGameProgramMod>(error);
         }
@@ -96,6 +95,12 @@ public sealed class PlanGameProgramMod
         if (GameProgramRules.CheckTargets(mod.Id, mod.Name, targets, state, nameOf) is { } taken)
         {
             return Result.Failure<PlannedGameProgramMod>(taken);
+        }
+
+        if (!(await _files.ExecuteAsync(mod, targets, cancellationToken)).TryGetValue(out var facts, out error)
+            || !GameProgramRules.CheckFiles(mod.Name, facts).TryGetValue(out var sixtyFourBit, out error))
+        {
+            return Result.Failure<PlannedGameProgramMod>(error);
         }
 
         var builder = new InstallPlanBuilder(state);
