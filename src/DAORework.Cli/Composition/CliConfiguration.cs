@@ -41,7 +41,7 @@ public static class CliConfiguration
             mods.AddCommand<ModsDownloadsCommand>("downloads").WithDescription("List the downloads that look like Dragon Age mods. Only reads");
             mods.AddCommand<ModsLibraryCommand>("library").WithDescription("List the mods in DAORework's library");
             mods.AddCommand<ModsStatusCommand>("status").WithDescription("Show the mods DAORework has activated in the profile's documents folder, and its backups");
-            mods.AddCommand<ModsActivateCommand>("activate").WithDescription("Install library mods into the documents folder: shows the plan, asks, backs up, applies");
+            mods.AddCommand<ModsActivateCommand>("activate").WithDescription("Install library mods into the documents folder: shows the plan, asks, backs up, applies. A mod that runs in the game goes in by itself, with --allow-programs <id>");
             mods.AddCommand<ModsDeactivateCommand>("deactivate").WithDescription("Remove mods DAORework installed: shows the plan, asks, backs up, applies");
             mods.AddCommand<ModsRollbackCommand>("rollback").WithDescription("Undo the most recent mod change (or --backup <id>) from its backup");
             mods.AddCommand<ModsAdoptCommand>("adopt").WithDescription("Take over mods installed by hand: lists them, or with ids shows the plan, asks, backs up, applies");

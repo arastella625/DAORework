@@ -2,6 +2,7 @@ using System.IO.Abstractions.TestingHelpers;
 using Avalonia.Headless.XUnit;
 using DAORework.App.ViewModels;
 using DAORework.App.Views;
+using DAORework.Application.Abstractions;
 using DAORework.Core.Mods.Safety;
 using Xunit;
 
@@ -92,6 +93,26 @@ public sealed class GameProgramScreenTests : IDisposable
         Assert.False(_host.FileSystem.File.Exists(PlacedDll));
         Assert.Empty(programs.ActiveModIds);
         Assert.False(viewModel.Library.Mods.Single().IsActive);
+    }
+
+    [AvaloniaFact]
+    public async Task TurnOff_ACopyOnInTheDocumentsFolderFromBefore_GoesTheUsualWay()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        await ImportDaoLibAsync(viewModel);
+        var token = TestContext.Current.CancellationToken;
+        var mod = viewModel.Library.Mods.Single();
+        var records = _host.Resolve<IDeploymentRecordStore>();
+        var record = (await records.LoadAsync(_scenario.DocumentsDirectory, token)).Value;
+        await records.SaveAsync(_scenario.DocumentsDirectory, record with { ActiveModIds = [mod.Id] }, token);
+        await viewModel.ModsTab.Activation.RefreshActiveAsync(token);
+        Assert.True(mod.IsActive);
+
+        await viewModel.ModsTab.Activation.DeactivateCommand.ExecuteAsync(mod);
+
+        Assert.Equal("Turn off DAO Lib", viewModel.ModsTab.Activation.Preview.Title);
+        Assert.Null(viewModel.ModsTab.Programs.Title);
+        Assert.False(viewModel.ModsTab.Programs.IsError, viewModel.ModsTab.Programs.StatusMessage);
     }
 
     [AvaloniaFact]
