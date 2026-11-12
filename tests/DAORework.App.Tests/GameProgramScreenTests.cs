@@ -72,6 +72,29 @@ public sealed class GameProgramScreenTests : IDisposable
     }
 
     [AvaloniaFact]
+    public async Task TurnOn_ShowsInHistory_AndUndoThereTurnsTheRowOff()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        await ImportDaoLibAsync(viewModel);
+        var programs = viewModel.ModsTab.Programs;
+        await viewModel.ModsTab.Activation.ActivateCommand.ExecuteAsync(viewModel.Library.Mods.Single());
+        programs.IsTrusted = true;
+        await programs.ApplyCommand.ExecuteAsync(null);
+        var history = viewModel.Fixes.Status;
+
+        var change = Assert.Single(history.Backups);
+        Assert.Equal("Turned on DAO Lib", change.Change);
+
+        await history.RollBackToCommand.ExecuteAsync(change);
+        await history.ConfirmRollbackCommand.ExecuteAsync(null);
+
+        Assert.False(history.IsError, history.StatusMessage);
+        Assert.False(_host.FileSystem.File.Exists(PlacedDll));
+        Assert.Empty(programs.ActiveModIds);
+        Assert.False(viewModel.Library.Mods.Single().IsActive);
+    }
+
+    [AvaloniaFact]
     public async Task TurnOnSelected_LeavesItOutAndNamesIt()
     {
         var (_, viewModel) = await _scenario.OpenAsync();

@@ -97,6 +97,11 @@ public sealed class ProgramModChange
         if (!(await _apply.ExecuteAsync(new ApplyGameProgramModRequest(install, planned, accepted), cancellationToken)).TryGetValue(out var outcome, out error))
         {
             _errors.Render(error, "The change did not complete");
+            if (error.Code == DiagnosticCodes.ModProgramNotAccepted)
+            {
+                _renderer.Say($"Run: mods activate {mod.Id} --allow-programs {mod.Id}");
+            }
+
             return ExitCodes.Failure;
         }
 

@@ -40,7 +40,7 @@ public sealed class CliProgramModTests : IDisposable
         Assert.Equal(ExitCodes.Failure, result.ExitCode);
         Assert.Contains("  Add bin_ship/d3d9.dll", result.Output, StringComparison.Ordinal);
         Assert.Contains(GameProgramTrust.Warning, result.Output, StringComparison.Ordinal);
-        Assert.Contains("--allow-programs", result.Output, StringComparison.Ordinal);
+        Assert.Contains($"Run: mods activate {_luma} --allow-programs {_luma}", result.Output, StringComparison.Ordinal);
         Assert.False(_host.FileSystem.File.Exists(_dll));
     }
 

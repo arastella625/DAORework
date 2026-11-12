@@ -52,6 +52,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
         Home.CheckAsync = _ => Diagnostics.RunDiagnosticsCommand.ExecuteAsync(null);
         Home.NavigateAsync = OpenFromHomeAsync;
         ModsTab.NextMove.OpenAsync = (target, token) => OpenFromHomeAsync(target, null, token);
+        ShareTheGameFolderRecord();
     }
 
     /// <summary>Gets or sets the tab shown; a next step switches to the tab its plan is on.</summary>
@@ -162,6 +163,27 @@ public sealed partial class MainWindowViewModel : ObservableObject
                 ShowOnModsPage(target);
                 break;
         }
+    }
+
+    /// <summary>
+    /// Mods that run inside the game share the game folder's record with the fixes (ADR-0033 §4), so History's fix list
+    /// shows a change made on the Mods tab, and the Mods tab shows what an undo there put back.
+    /// </summary>
+    private void ShareTheGameFolderRecord()
+    {
+        var programs = ModsTab.Programs;
+        var afterProgram = programs.AfterChangeAsync;
+        programs.AfterChangeAsync = async token =>
+        {
+            if (afterProgram is not null)
+            {
+                await afterProgram(token);
+            }
+
+            await Fixes.Status.RefreshAsync(token);
+        };
+        Fixes.Status.AfterChangeAsync = programs.RefreshActiveAsync;
+        Fixes.Status.ModName = id => ModsTab.Changes.NameOf(id);
     }
 
     // Home's cards open the Mods page as they say: Arrange for an overlap, the combined files, or every mod.
