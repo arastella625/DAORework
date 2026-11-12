@@ -16,11 +16,19 @@ public static class LibraryEntryNotes
         return entry.Scan.Status == MalwareScanStatus.NoThreatFound ? $"Antivirus: {entry.Scan.Detail}" : $"Not scanned: {entry.Scan.Detail}";
     }
 
-    /// <summary>The program files the mod holds, or null when it holds none.</summary>
+    /// <summary>
+    /// The program files the mod holds, or null when it holds none. Only a mod that runs inside the game puts them in the
+    /// game's folder, after the player says they trust it (ADR-0033 §3); any other mod's stay in the library.
+    /// </summary>
     public static string? Programs(LibraryEntry entry)
     {
         ArgumentNullException.ThrowIfNull(entry);
         var programs = entry.Mod.Files.Where(ProgramFiles.IsProgram).Select(f => f.RelativePath).ToList();
+        if (entry.Mod.Kind == ModKind.GameProgram && programs.Count > 0)
+        {
+            return $"It runs its own program inside the game ({string.Join(", ", programs)}). Turning it on asks first whether you trust it.";
+        }
+
         return programs.Count == 0
             ? null
             : $"It holds {programs.Count} program file(s) ({string.Join(", ", programs)}). They stay in the library and are never installed into the game's folders.";

@@ -672,7 +672,11 @@ and undo as any other mod, and says yes to the program first. A mod that cannot 
   hash and header and scans the programs again. Turning on needs the player's yes (`DAO_MOD_PROGRAM_NOT_ACCEPTED`) and
   `fixes status` lists only fixes. Nothing calls the use cases yet: the window and `--allow-programs` are P2.8-05.*
 - P2.8-05 Say yes to the program: the tick box in the preview, *Turn on selected* leaving these mods out, and
-  `--allow-programs <modId>` on the command line.
+  `--allow-programs <modId>` on the command line. *Done: the switch opens the mod's own preview, whose *Apply* stays off
+  until "I trust this mod and where I got it" is ticked ([screenshot](screenshots/p2.8-05/01-preview.png)); turning off
+  needs no tick. *Turn on selected* leaves these mods out and names them. `mods activate <id> --allow-programs <id>`
+  changes one by itself, and `--yes` doesn't cover it. A row shows as on while the game folder's record says so; ADR-0033
+  §4's rule that only the program files' hashes count is still to come.*
 - P2.8-06 What a mod needs: the catalog's `needs` list and its preview warning, with entries for DAO Lib, the controller
   mod and Luma, and a conflict entry linking DAO Lib's `dinput8.chain.dll` page.
 - P2.8-07 Fault injection: scenarios for turning a `GameProgram` on and off

@@ -29,6 +29,9 @@ public sealed partial class LibraryModRow : ObservableObject
     /// <summary>Gets a value indicating whether the mod is an add-in (a <c>.dazip</c>), rather than an override mod (ADR-0026).</summary>
     public bool IsAddIn { get; private init; }
 
+    /// <summary>Gets a value indicating whether it runs inside the game, so it is turned on by itself (ADR-0033 §3).</summary>
+    public bool RunsInGame { get; private init; }
+
     public string Details { get; }
 
     public IReadOnlyList<string> Notes { get; }
@@ -106,11 +109,6 @@ public sealed partial class LibraryModRow : ObservableObject
             notes.Add(programs);
         }
 
-        if (entry.Mod.Kind == ModKind.GameProgram)
-        {
-            notes.Add("DAORework can't install this kind of mod yet, so turning it on changes nothing.");
-        }
-
         if (entry.Origin.Kind == ModOriginKind.Adopted)
         {
             notes.Add($"Was in {entry.Origin.AdoptedPath} before DAORework managed it.");
@@ -143,6 +141,7 @@ public sealed partial class LibraryModRow : ObservableObject
             warning)
         {
             IsAddIn = entry.Mod.AddInUid is not null,
+            RunsInGame = entry.Mod.Kind == ModKind.GameProgram,
             AddedAt = entry.ImportedAtUtc,
             PageLink = check.IsSuccess ? check.Value.Item?.Source : null,
             Copy = copy,

@@ -128,6 +128,7 @@ public static class DependencyInjection
         services.AddSingleton<ReadGameProgramFiles>();
         services.AddSingleton<PlanGameProgramMod>();
         services.AddSingleton<ApplyGameProgramMod>();
+        services.AddSingleton<GetGameProgramStatus>();
         services.AddSingleton<GetFixStatus>();
 
         return services;

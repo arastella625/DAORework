@@ -17,6 +17,10 @@ public static class CliServices
 
         // Not a renderer: the second half of mods adopt, kept apart so the command stays within five dependencies.
         services.AddSingleton<AdoptionApplier>();
+
+        // Not renderers either: what mods activate and deactivate reach for, grouped to stay within five dependencies.
+        services.AddSingleton<ModChangeSteps>();
+        services.AddSingleton<ProgramModChange>();
         services.AddSingleton<FixRenderer>();
         services.AddSingleton<ProfileRenderer>();
         services.AddSingleton<InstallationRenderer>();

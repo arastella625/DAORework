@@ -25,6 +25,8 @@
                  IsVisible="{Binding KeepEach.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       <TextBlock Name="ActivationStatus" Classes="Status" Classes.Error="{Binding Activation.IsError}" Text="{Binding Activation.StatusMessage}" TextWrapping="Wrap"
                  IsVisible="{Binding Activation.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+      <TextBlock Name="ProgramStatus" Classes="Status" Classes.Error="{Binding Programs.IsError}" Text="{Binding Programs.StatusMessage}" TextWrapping="Wrap"
+                 IsVisible="{Binding Programs.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       <TextBlock Name="LibraryEmpty" Classes="Secondary" TextWrapping="Wrap"
                  Text="No mods yet. A mod you add is kept here and scanned by your antivirus; it reaches your game only when you turn it on."
                  IsVisible="{Binding !Library.Mods.Count}" />

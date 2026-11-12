@@ -65,7 +65,7 @@ public sealed class LibraryRenderer
     private static string Describe(LibraryMod mod) => mod.Kind switch
     {
         ModKind.AddIn => $"add-in {mod.AddInUid}",
-        ModKind.GameProgram => "runs in the game, can't be installed yet",
+        ModKind.GameProgram => "runs in the game",
         _ => "override mod",
     };
 }

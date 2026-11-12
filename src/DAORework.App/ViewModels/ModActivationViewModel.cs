@@ -40,6 +40,12 @@ public sealed partial class ModActivationViewModel : PageViewModel
     /// <summary>Gets or sets what runs after a change was applied, such as reading the backups again.</summary>
     public Func<CancellationToken, Task>? AfterChangeAsync { get; set; }
 
+    /// <summary>Gets or sets where a mod that runs inside the game goes instead: its own preview (ADR-0033 §3).</summary>
+    public Func<ModChangeKind, LibraryModRow, CancellationToken, Task>? ProgramChangeAsync { get; set; }
+
+    /// <summary>Gets or sets whether a mod that runs inside the game is on in the game folder.</summary>
+    public Func<string, bool> ProgramIsOn { get; set; } = _ => false;
+
     /// <summary>Gets the change running now, which the whole window shares (P2.6-22).</summary>
     public ChangeInProgress Change => _apply;
 
@@ -180,9 +186,22 @@ public sealed partial class ModActivationViewModel : PageViewModel
     public Task PlanChangeAsync(ModChangeKind kind, IReadOnlyList<LibraryModRow> mods, CancellationToken cancellationToken = default) =>
         PlanChangeAsync(kind, mods, [], cancellationToken);
 
-    /// <summary>Plans the change as above, and puts back official DLC entries too (ADR-0028 §3).</summary>
-    public Task PlanChangeAsync(ModChangeKind kind, IReadOnlyList<LibraryModRow> mods, IReadOnlyList<AddInsListChange> restoredAddIns, CancellationToken cancellationToken) =>
-        GuardAsync(token => PlanNowAsync(new PlannedChange(kind, mods, restoredAddIns, []), token), cancellationToken);
+    /// <summary>
+    /// Plans the change as above, and puts back official DLC entries too (ADR-0028 §3). A mod that runs inside the game
+    /// gets its own preview when it is the only one picked, and is left out and named otherwise.
+    /// </summary>
+    public Task PlanChangeAsync(ModChangeKind kind, IReadOnlyList<LibraryModRow> mods, IReadOnlyList<AddInsListChange> restoredAddIns, CancellationToken cancellationToken)
+    {
+        var (rest, programs) = ProgramsApart.Split(kind, mods, ProgramIsOn);
+        if (rest.Count == 0 && programs.Count == 1 && ProgramChangeAsync is { } program)
+        {
+            ClearPlan();
+            ReportSuccess(string.Empty);
+            return program(kind, programs[0], cancellationToken);
+        }
+
+        return GuardAsync(token => PlanNowAsync(new PlannedChange(kind, rest, restoredAddIns, ProgramsApart.LeftOut(kind, programs)), token), cancellationToken);
+    }
 
     private async Task PlanNowAsync(PlannedChange change, CancellationToken cancellationToken)
     {
@@ -190,6 +209,11 @@ public sealed partial class ModActivationViewModel : PageViewModel
         ReportSuccess(string.Empty);
         if (change.Mods.Count == 0)
         {
+            if (change.LeftOut.Count > 0)
+            {
+                ReportStatus(LeftOut.Outcome("Nothing was changed.", change.LeftOut));
+            }
+
             return;
         }
 
