@@ -16,8 +16,8 @@ public sealed class PlanProblemsTests
 
         var problem = Assert.Single(PlanProblems.For(plan, Name));
 
-        Assert.Equal("Luma runs inside the game, and DAORework can't install that kind of mod yet.", problem.Title);
-        Assert.Equal("It stays in your Library, off.", problem.WhatToDo);
+        Assert.Equal("Luma runs inside the game, so it's turned on by itself, after you say you trust it.", problem.Title);
+        Assert.Equal("It stays in your Library, off. Use its own switch.", problem.WhatToDo);
         Assert.Equal(["luma"], Assert.Single(plan.Blockers).LeaveOutModIds);
     }
 

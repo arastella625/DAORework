@@ -70,24 +70,6 @@ public sealed class ModActivationScreenTests : IDisposable
     }
 
     [AvaloniaFact]
-    public async Task Activate_AModThatRunsInTheGame_SaysSo_AndCannotBeApplied()
-    {
-        var (window, viewModel) = await _scenario.OpenAsync();
-        await _scenario.ImportAsync(viewModel, Path.Combine(_scenario.DocumentsDirectory, "DAO Lib.zip"), ("bin_ship/dinput8.dll", "dll"), ("readme.txt", "hi"));
-        var activation = viewModel.ModsTab.Activation;
-        var mod = viewModel.Library.Mods[0];
-
-        Assert.Contains("runs in the game", mod.Details, StringComparison.Ordinal);
-        await activation.ActivateCommand.ExecuteAsync(mod);
-
-        Assert.Contains(activation.PlanLines, l => l.Contains("DAO Lib runs inside the game", StringComparison.Ordinal));
-        Assert.False(activation.ApplyCommand.CanExecute(null));
-        Assert.Empty(_scenario.DeployedHair());
-        ModsTabScenario.Show<LibraryPanel>(window);
-        Screenshots.Save(window, "37-game-program-preview");
-    }
-
-    [AvaloniaFact]
     public async Task Activate_ShowsThePlan_ThenApplyInstallsIt_AndDeactivateTakesItOut()
     {
         var (window, viewModel) = await _scenario.OpenAsync();

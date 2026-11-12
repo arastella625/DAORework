@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:DAORework.App.ViewModels"
              xmlns:views="using:DAORework.App.Views"
+             xmlns:safety="using:DAORework.Core.Mods.Safety"
              x:Class="DAORework.App.Views.PreviewSheet"
              x:DataType="vm:ModsTabViewModel">
   <!-- Every preview on the Mods tab (ADR-0038): docked below the list, which shrinks to make room, so its buttons always
@@ -95,6 +96,46 @@
           <Button Name="LeaveOutButton" Classes="accent" Content="{Binding Activation.LeaveOutLabel}" Command="{Binding Activation.LeaveOutCommand}"
                   IsVisible="{Binding Activation.CanLeaveOut}" />
           <Button Name="CancelPlanButton" Content="Cancel" Command="{Binding Activation.CancelPlanCommand}" />
+        </StackPanel>
+      </StackPanel>
+    </Border>
+
+    <!-- A mod that runs inside the game (ADR-0033 §3): its own preview, and Apply stays off until the player ticks the box. -->
+    <Border Name="ProgramPlan" Classes="sheet"
+            IsVisible="{Binding Programs.Title, Converter={x:Static ObjectConverters.IsNotNull}}">
+      <StackPanel Spacing="8">
+        <ScrollViewer MaxHeight="300">
+          <StackPanel Spacing="8">
+            <TextBlock Name="ProgramPlanTitle" FontWeight="SemiBold" Text="{Binding Programs.Title}" TextWrapping="Wrap" />
+            <TextBlock Name="ProgramPlanSummary" Text="{Binding Programs.Summary}" TextWrapping="Wrap" />
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" IsVisible="{Binding Programs.NeedsTrust}">
+              <PathIcon Classes="Warning" Data="{StaticResource IconWarning}" VerticalAlignment="Top" />
+              <TextBlock Grid.Column="1" Name="ProgramWarning" Classes="Warning" Text="{x:Static safety:GameProgramTrust.Warning}" TextWrapping="Wrap" />
+            </Grid>
+            <ItemsControl Name="ProgramPlanNotes" ItemsSource="{Binding Programs.Notes}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                  <TextBlock Classes="Secondary" Margin="0,2" Text="{Binding}" TextWrapping="Wrap" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <CheckBox Name="TrustBox" Content="{x:Static safety:GameProgramTrust.Question}" IsChecked="{Binding Programs.IsTrusted}"
+                      IsVisible="{Binding Programs.NeedsTrust}" />
+            <ToggleButton Name="ProgramDetailsButton" Content="Show details" IsChecked="{Binding Programs.ShowDetails}" />
+            <ItemsControl Name="ProgramPlanLines" ItemsSource="{Binding Programs.Lines}" IsVisible="{Binding Programs.ShowDetails}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                  <TextBlock Classes="Mono" Text="{Binding}" TextWrapping="Wrap" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <TextBlock Classes="Secondary" TextWrapping="Wrap" IsVisible="{Binding Programs.CanApply}"
+                       Text="Nothing changes in your game until you apply it." />
+          </StackPanel>
+        </ScrollViewer>
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <Button Name="ApplyProgramButton" Classes="accent" Content="Apply" Command="{Binding Programs.ApplyCommand}" />
+          <Button Name="CancelProgramButton" Content="Cancel" Command="{Binding Programs.CancelPlanCommand}" />
         </StackPanel>
       </StackPanel>
     </Border>

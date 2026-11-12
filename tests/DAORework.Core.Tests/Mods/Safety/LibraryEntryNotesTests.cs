@@ -31,6 +31,14 @@ public sealed class LibraryEntryNotesTests
     }
 
     [Fact]
+    public void Programs_OfAModThatRunsInTheGame_SaysTheyGoInOnceTrusted()
+    {
+        var program = _entry with { Mod = new LibraryMod("dao-lib-1", "DAO Lib", ModKind.GameProgram, [new LibraryModFile("bin_ship/dinput8.dll", 4, "a") { Kind = ModFileKind.Program }]) };
+
+        Assert.Equal("It runs its own program inside the game (bin_ship/dinput8.dll). Turning it on asks first whether you trust it.", LibraryEntryNotes.Programs(program));
+    }
+
+    [Fact]
     public void Download_EachOutcome_IsWordedOrLeftOut()
     {
         var item = KnownItemsCatalogTests.Item("dog");

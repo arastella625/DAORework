@@ -72,7 +72,7 @@ public sealed class PlanGameProgramMod
         var kept = mod.Files.Count - placed;
         if (kept > 0)
         {
-            notes.Add($"{kept} {(kept == 1 ? "file" : "files")} outside its {GamePaths.BinShipDirectoryName} folder, such as a readme, stay in your Library.");
+            notes.Add($"{kept} {(kept == 1 ? "file" : "files")} outside its {GamePaths.BinShipDirectoryName} folder, such as a readme, {(kept == 1 ? "stays" : "stay")} in your Library.");
         }
 
         return notes;

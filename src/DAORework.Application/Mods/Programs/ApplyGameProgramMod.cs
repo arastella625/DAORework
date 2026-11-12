@@ -2,6 +2,7 @@ using DAORework.Application.Fixes;
 using DAORework.Core.Common;
 using DAORework.Core.Diagnostics;
 using DAORework.Core.Fixes;
+using DAORework.Core.Mods.Safety;
 
 namespace DAORework.Application.Mods.Programs;
 
@@ -27,7 +28,7 @@ public sealed class ApplyGameProgramMod
             return Result.Failure<FixApplyOutcome>(new Error(
                 DiagnosticCodes.ModProgramNotAccepted,
                 $"{planned.ModName} runs its own program inside the game, so it isn't turned on until you say you trust it.",
-                "Tick \"I trust this mod and where I got it\" in its preview, or name it with --allow-programs on the command line."));
+                $"Tick \"{GameProgramTrust.Question}\" in its preview, or name it with --allow-programs on the command line."));
         }
 
         return await _apply.ExecuteAsync(new ApplyFixRequest(request.InstallDirectory, new PlannedFix(planned.ModName, planned.Plan, Prepared: null)), cancellationToken);

@@ -56,7 +56,7 @@ public static class PlanProblems
     private static string Who(IReadOnlyList<string> modIds, Func<string, string> nameOf) =>
         modIds.Select(nameOf).Distinct(StringComparer.OrdinalIgnoreCase).Count() == 1 ? $"{modIds.Count} copies of {nameOf(modIds[0])}" : PlanWords.Names(modIds, nameOf);
 
-    /// <summary>A mod that is off can be left out; one turned on before DAORework knew better has to be turned off.</summary>
+    /// <summary>A mod that is off is turned on by itself (ADR-0033 §3); one turned on before DAORework knew better has to be turned off.</summary>
     private static List<PlanProblem> GamePrograms(List<PlanBlocker> blockers, ModActivationPlan plan, Func<string, string> nameOf)
     {
         var mods = blockers.SelectMany(b => b.ModIds).ToList();
@@ -66,8 +66,8 @@ public static class PlanProblems
         if (off.Count > 0)
         {
             problems.Add(new PlanProblem(
-                $"{PlanWords.Names(off, nameOf)} {(off.Count == 1 ? "runs" : "run")} inside the game, and DAORework can't install that kind of mod yet.",
-                $"{(off.Count == 1 ? "It stays" : "They stay")} in your Library, off.{Instead(blockers)}"));
+                $"{PlanWords.Names(off, nameOf)} {(off.Count == 1 ? "runs inside the game, so it's" : "run inside the game, so each is")} turned on by itself, after you say you trust it.",
+                $"{(off.Count == 1 ? "It stays in your Library, off. Use its own switch." : "They stay in your Library, off. Use each one's own switch.")}{Instead(blockers)}"));
         }
 
         if (on.Count > 0)

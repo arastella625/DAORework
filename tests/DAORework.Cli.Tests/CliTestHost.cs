@@ -29,6 +29,8 @@ internal sealed class CliTestHost : IDisposable
 
     public FakeUriLauncher UriLauncher { get; } = new();
 
+    public FakeMalwareScanner Scanner { get; } = new();
+
     public CommandAppResult Run(params string[] args)
     {
         var services = new ServiceCollection()
@@ -42,7 +44,7 @@ internal sealed class CliTestHost : IDisposable
         services.Replace(ServiceDescriptor.Singleton<IUriLauncher>(UriLauncher));
         services.Replace(ServiceDescriptor.Singleton<IRegistry>(new EmptyRegistry()));
         services.Replace(ServiceDescriptor.Singleton<IHostPlatform>(new WindowsHost()));
-        services.Replace(ServiceDescriptor.Singleton<IMalwareScanner>(new FakeMalwareScanner()));
+        services.Replace(ServiceDescriptor.Singleton<IMalwareScanner>(Scanner));
 
         var tester = new CommandAppTester(new MicrosoftDependencyInjectionRegistrar(services));
         tester.Configure(CliConfiguration.Configure);

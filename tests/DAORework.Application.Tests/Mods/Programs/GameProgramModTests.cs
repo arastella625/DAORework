@@ -142,6 +142,7 @@ public sealed class GameProgramModTests
         Assert.Equal(["Copy bin_ship/d3d9.dll"], _stores.Written);
         Assert.Equal([Luma], _stores.Saved!.ActiveModIds);
         Assert.Empty((await new GetFixStatus(_stores, _stores, _backups, new FakeFixLibrary(), _files).ExecuteAsync(Install)).Value.Applied);
+        Assert.Equal([Luma], (await new GetGameProgramStatus(_stores).ExecuteAsync(Install)).Value);
     }
 
     [Fact]
