@@ -93,6 +93,17 @@ public sealed class CliProgramModTests : IDisposable
         Assert.False(_host.FileSystem.File.Exists(_dll));
     }
 
+    [Fact]
+    public void Deactivate_WithoutAnInstallFolder_GoesTheUsualWay()
+    {
+        _host.Run("init", "NoInstall");
+        _host.Run("profile", "set-path", "NoInstall", "documents", _documents);
+
+        var result = _host.Run("mods", "deactivate", _luma, "-p", "NoInstall", "--yes");
+
+        Assert.DoesNotContain("has no install folder", result.Output, StringComparison.Ordinal);
+    }
+
     /// <summary>A made-up 32-bit DLL header.</summary>
     private static byte[] Dll()
     {

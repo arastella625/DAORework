@@ -50,13 +50,19 @@ public sealed class ProgramModChange
         var verb = request.Kind == ModChangeKind.Activate ? "activate" : "deactivate";
         if (ids.Length > 1)
         {
-            _renderer.Say($"{string.Join(", ", programs.Select(m => m.Name))} {(programs.Count == 1 ? "runs" : "run")} inside the game, so each is changed by itself. Nothing was changed.");
+            _renderer.Say($"{string.Join(", ", programs.Select(m => m.Name))} {(programs.Count == 1 ? "runs inside the game, so it's" : "run inside the game, so each is")} changed by itself. Nothing was changed.");
             _renderer.Say($"Run: mods {verb} {programs[0].Id}{(request.Kind == ModChangeKind.Activate ? $" --allow-programs {programs[0].Id}" : string.Empty)}");
             return ExitCodes.Failure;
         }
 
         if (string.IsNullOrWhiteSpace(request.Install))
         {
+            // Without an install folder none is on there; one on in the documents folder from before is turned off as usual.
+            if (request.Kind == ModChangeKind.Deactivate)
+            {
+                return null;
+            }
+
             var profile = request.Settings.Profile;
             _errors.Render(new Error(DiagnosticCodes.FixInstallNotSet, $"Profile '{profile}' has no install folder.", $"Run: profile set-path {profile} install <folder>"));
             return ExitCodes.Failure;

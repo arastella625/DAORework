@@ -196,6 +196,7 @@ public sealed partial class ModActivationViewModel : PageViewModel
         if (rest.Count == 0 && programs.Count == 1 && ProgramChangeAsync is { } program)
         {
             ClearPlan();
+            ReportSuccess(string.Empty);
             return program(kind, programs[0], cancellationToken);
         }
 
