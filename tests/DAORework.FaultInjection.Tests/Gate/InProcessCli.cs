@@ -1,4 +1,5 @@
 using DAORework.Application;
+using DAORework.Application.Abstractions;
 using DAORework.Application.Documents;
 using DAORework.Cli.Composition;
 using DAORework.FaultInjection.Tests.Host;
@@ -20,6 +21,7 @@ internal static class InProcessCli
             .AddInfrastructure(options => options.AppDataDirectory = appData)
             .AddCliRendering();
         services.Replace(ServiceDescriptor.Singleton<IDocumentsFolderSearch, NoDocumentsFolderSearch>());
+        services.Replace(ServiceDescriptor.Singleton<IMalwareScanner, CleanScan>());
         var tester = new CommandAppTester(new MicrosoftDependencyInjectionRegistrar(services));
         tester.Configure(CliConfiguration.Configure);
         var result = tester.Run([.. arguments]);

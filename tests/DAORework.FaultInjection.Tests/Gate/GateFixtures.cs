@@ -8,7 +8,8 @@ namespace DAORework.FaultInjection.Tests.Gate;
 /// <summary>
 /// The starting point of every run: a documents folder with the user's own AddIns.xml entry and override file, and
 /// mods installed by hand for adoption (an add-in, two override folders sharing a file name, loose override files); an
-/// install folder holding a made-up 32-bit exe, three made-up mods imported into the library, and a profile. Nothing
+/// install folder holding a made-up 32-bit exe, made-up mods imported into the library (one of them runs inside the
+/// game, shaped like DAO Lib), and a profile. Nothing
 /// of the game's is used, and the same bytes are written every time, so every run starts from the same state.
 /// </summary>
 internal static partial class GateFixtures
@@ -38,6 +39,11 @@ internal static partial class GateFixtures
             ("over1.dds", Content(21, 40_000)),
             ("over2.dds", Content(22, 20_000)),
             ("over3.dds", Content(23, 1_000))));
+        Write(Path.Combine(folders.Downloads, "Gate Program.zip"), Zip(
+            ("bin_ship/dinput8.dll", Dll(30, 70_000)),
+            ("bin_ship/gate/plugin.dll", Dll(31, 30_000)),
+            ("bin_ship/gate.ini", Encoding.UTF8.GetBytes("[gate]\r\nscale=1\r\n")),
+            ("readme.txt", Encoding.UTF8.GetBytes("stays in the library"))));
         foreach (var version in new[] { "2.2", "2.3" })
         {
             Write(Path.Combine(folders.Downloads, $"dxvk-{version}.zip"), Zip(
@@ -54,6 +60,7 @@ internal static partial class GateFixtures
             ["{override}"] = Import(folders, "Gate Textures.zip"),
             ["{override-hd}"] = Import(folders, "Gate Textures HD.zip"),
             ["{taken-over}"] = Import(folders, "Gate Taken Over.zip"),
+            ["{program}"] = Import(folders, "Gate Program.zip"),
             ["{dxvk-2.2}"] = Path.Combine(folders.Downloads, "dxvk-2.2.zip"),
             ["{dxvk-2.3}"] = Path.Combine(folders.Downloads, "dxvk-2.3.zip"),
         };
@@ -136,6 +143,19 @@ internal static partial class GateFixtures
         "PE\0\0"u8.CopyTo(bytes.AsSpan(0x80));
         BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(0x84), machine);
         return [.. bytes, .. Encoding.ASCII.GetBytes($"\0DXVK: \0v{version}\0")];
+    }
+
+    /// <summary>A made-up 32-bit DLL: a PE header with the DLL flag, then filler. Nothing of any real mod's.</summary>
+    private static byte[] Dll(int seed, int length)
+    {
+        var bytes = Content(seed, length);
+        bytes[0] = (byte)'M';
+        bytes[1] = (byte)'Z';
+        BinaryPrimitives.WriteInt32LittleEndian(bytes.AsSpan(0x3C), 0x80);
+        "PE\0\0"u8.CopyTo(bytes.AsSpan(0x80));
+        BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(0x84), 0x014C);
+        BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(0x84 + 18), 0x2102);
+        return bytes;
     }
 
     /// <summary>A made-up 32-bit PE32 image the 4 GB patch accepts: headers, then filler; nothing of the game's.</summary>

@@ -684,7 +684,10 @@ and undo as any other mod, and says yes to the program first. A mod that cannot 
   The two conflict, with DAO Lib's way through linked. Luma has no entry: its author hid its page on 2026-11-08 as
   unsupported, and its repository states no license (`catalog/README.md` keeps its fingerprint for when it returns).*
 - P2.8-07 Fault injection: scenarios for turning a `GameProgram` on and off
-  ([ADR-0014](adr/0014-fault-injection-exit-gate.md)).
+  ([ADR-0014](adr/0014-fault-injection-exit-gate.md)). *Done: `mods activate --allow-programs` and `mods deactivate`
+  of a made-up mod shaped like DAO Lib (two DLLs and an `.ini` into `bin_ship`, a readme left in the Library), killed
+  before every write and settled with `fixes recover`, `status` and `rollback`. The gate's antivirus is a stand-in that
+  answers clean, since these mods are only placed after a clean scan and Linux CI has no AMSI.*
 - P2.8-08 Say so: the README, the website, the Nexus description, the plan warning, `docs/VOICE.md` and ADR-0018 stop
   promising that programs are never installed, in the same release as P2.8-05.
 
