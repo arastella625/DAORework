@@ -57,7 +57,9 @@ public sealed class LibraryRenderer
         {
             var imported = entry.ImportedAtUtc.ToLocalTime().ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
             var programs = entry.Mod.Files.Count(ProgramFiles.IsProgram);
-            var flag = programs == 0 ? string.Empty : $", {programs} program file(s) never installed";
+
+            // A mod that runs inside the game does install its programs, after the player's yes (ADR-0033 §3).
+            var flag = programs == 0 || entry.Mod.Kind == ModKind.GameProgram ? string.Empty : $", {programs} program file(s) never installed";
             _console.WriteLine($"{entry.Mod.Id}  {entry.Mod.Name}  ({Describe(entry.Mod)}, {entry.Mod.Files.Count} file(s), {new ByteSize(entry.SizeBytes)}{flag}, imported {imported} from {entry.SourceName})");
         }
     }

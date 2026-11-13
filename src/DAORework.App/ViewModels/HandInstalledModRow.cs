@@ -71,7 +71,7 @@ public sealed partial class HandInstalledModRow : ObservableObject
         if (candidate.Programs.Count > 0)
         {
             var names = string.Join(", ", candidate.Programs.Select(p => p.Path[(p.Path.LastIndexOf('/') + 1)..]));
-            notes.Add($"Holds {Counted.Of(candidate.Programs.Count, "program file")} ({names}): managing it leaves them where they are, and DAORework never installs programs.");
+            notes.Add($"Holds {Counted.Of(candidate.Programs.Count, "program file")} ({names}): managing it leaves them where they are.");
         }
 
         notes.AddRange(VortexNotes.For(candidate, "managing"));

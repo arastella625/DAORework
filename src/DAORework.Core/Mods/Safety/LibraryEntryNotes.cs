@@ -31,7 +31,7 @@ public static class LibraryEntryNotes
 
         return programs.Count == 0
             ? null
-            : $"It holds {programs.Count} program file(s) ({string.Join(", ", programs)}). They stay in the library and are never installed into the game's folders.";
+            : $"It holds {programs.Count} program file(s) ({string.Join(", ", programs)}). They stay in the library: a mod like this never installs them.";
     }
 
     /// <summary>A known download, or a known mod imported from a folder; null otherwise.</summary>

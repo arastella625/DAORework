@@ -54,9 +54,10 @@ publisher. A new publisher still builds up reputation with Windows SmartScreen, 
 - **Shows conflicts,** most serious first: files that could break quests before those that only change how things
   look. For every file two mods share, whose copy the game uses, and lets you reorder them. Files
   inside `.erf` archives are compared too, though there DAORework can't tell which copy the game uses.
-- **Checks every mod.** Programs inside a mod are named and never installed, your own antivirus scans every mod before
-  it is kept, and a download that differs from the known official one is pointed out. Mods that run inside the game,
-  such as DAO Lib and Luma, are recognised, but DAORework can't install them yet.
+- **Checks every mod.** Your own antivirus scans every mod before it is kept, and a download that differs from the known
+  official one is pointed out. Programs inside an ordinary mod are named and left out. A mod that runs inside the game,
+  such as DAO Lib, goes into your game folder only after you say you trust it, and is scanned again first. Its preview
+  warns when something it needs is missing, such as the 4 GB patch.
 - **Installs DXVK** from a release you download, and **the 4 GB patch on copies that allow it** (GOG, EA App).
   Steam's own `daorigins.exe` is protected, and Steam will not start it once patched, so DAORework leaves the Steam
   copy alone and tells you if it was patched before. It notices when Steam's Verify integrity has undone a fix.
@@ -76,7 +77,7 @@ fixes, with a test suite that kills DAORework at
 every write and proves each change still ends fully before or fully after. Both are verified on a real Steam
 install; GOG and EA App installs still need a real run ([#5](https://github.com/arastella625/DAORework/issues/5)).
 Phase 2.5 (release 0.3.0, the first public one) puts all of it in the window and adds adopting the mods you installed
-by hand, `.7z` and `.rar` import, the load order and its conflicts, and mod safety checks (programs never installed,
+by hand, `.7z` and `.rar` import, the load order and its conflicts, and mod safety checks (programs in a mod left out,
 your antivirus scans every mod, downloads compared with the known official ones). Phase 2.6 (releases 0.3.1 to 0.6.0)
 follows what real use shows: several mods at once, the six-tab window, combining hair and head mods, moving from
 Vortex, and in 0.6.0 finding the mod behind a problem and keeping one copy of each. 0.5.0 also carries the first parts of three later pieces of work: mods that run inside the game, Steam on
@@ -199,7 +200,8 @@ dotnet run --project src/DAORework.Cli -- mods inventory Default --hash
 
 `mods import <path>` adds a downloaded mod (`.dazip`, `.zip`, `.7z`, `.rar` or extracted folder) to DAORework's own library
 without installing it, after your antivirus has scanned it (a mod it reports is refused), and `mods library` lists
-the library. Programs inside a mod are named and never installed. A download of a mod the catalog knows is compared
+the library. Programs inside a mod are named and left out, except in a mod that runs inside the game, which
+`mods activate <id> --allow-programs <id>` puts in your game folder (`--yes` doesn't cover it). A download of a mod the catalog knows is compared
 with the official downloads it records, and a copy that differs from all of them is pointed back to the mod's page.
 From there, with `-p <profile>` choosing the
 documents folder:
