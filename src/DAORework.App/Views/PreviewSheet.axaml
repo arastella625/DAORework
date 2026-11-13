@@ -108,6 +108,16 @@
           <StackPanel Spacing="8">
             <TextBlock Name="ProgramPlanTitle" FontWeight="SemiBold" Text="{Binding Programs.Title}" TextWrapping="Wrap" />
             <TextBlock Name="ProgramPlanSummary" Text="{Binding Programs.Summary}" TextWrapping="Wrap" />
+            <ItemsControl Name="ProgramNeeds" ItemsSource="{Binding Programs.Needs}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                  <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" Margin="0,2">
+                    <PathIcon Classes="Warning" Data="{StaticResource IconWarning}" VerticalAlignment="Top" />
+                    <TextBlock Grid.Column="1" Classes="Warning" Text="{Binding}" TextWrapping="Wrap" />
+                  </Grid>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" IsVisible="{Binding Programs.NeedsTrust}">
               <PathIcon Classes="Warning" Data="{StaticResource IconWarning}" VerticalAlignment="Top" />
               <TextBlock Grid.Column="1" Name="ProgramWarning" Classes="Warning" Text="{x:Static safety:GameProgramTrust.Warning}" TextWrapping="Wrap" />

@@ -23,6 +23,31 @@
       "whenMissing": "DXVK runs the game's Direct3D 9 on Vulkan, which avoids the engine's memory-related crashes and stutter on current Windows. Copy x32\\d3d9.dll from a release into the game's bin_ship folder (2.x and later need a Vulkan 1.3 GPU; 1.10.3 works on older ones)."
     },
     {
+      "id": "dao-lib",
+      "name": "DAO Lib",
+      "kind": "Mod",
+      "source": "https://www.nexusmods.com/dragonage/mods/7052",
+      "license": "GPL-3.0 (https://github.com/Whocares66-Dev/DAOLib)",
+      "fingerprints": [
+        { "kind": "GameFile", "value": "bin_ship/daolib/addresses/daoaddresses-code.index" },
+        { "kind": "DownloadSha256", "value": "a1d5083afe99d3d39b6819f843ad9e872897980491ae6f69a7fa9048dbc1f0c1", "version": "0.11.0" }
+      ]
+    },
+    {
+      "id": "native-controller-framework",
+      "name": "Native Controller Framework",
+      "kind": "Mod",
+      "source": "https://www.nexusmods.com/dragonage/mods/7051",
+      "license": "The author's permissions on the Nexus Mods page",
+      "fingerprints": [
+        { "kind": "GameFile", "value": "bin_ship/DAControllerFramework.ini" },
+        { "kind": "DownloadSha256", "value": "a34ea1f42931d0c73309aaafc7a8941d2c23a20b785186768003437fd745c58c", "version": "2.2.1b" }
+      ],
+      "needs": [
+        { "item": "large-address-aware", "source": "https://www.nexusmods.com/dragonage/mods/7051" }
+      ]
+    },
+    {
       "id": "qwinn-fixpack",
       "name": "Qwinn's Ultimate DAO Fixpack",
       "kind": "Fix",
@@ -163,5 +188,13 @@
       ]
     }
   ],
-  "conflicts": []
+  "conflicts": [
+    {
+      "first": "dao-lib",
+      "second": "native-controller-framework",
+      "severity": "Info",
+      "reason": "Both are bin_ship/dinput8.dll, and the game loads only one. DAO Lib's guide gives a way through: keep DAO Lib's dinput8.dll and put the other mod's beside it renamed dinput8.chain.dll, one such mod at a time.",
+      "source": "https://whocares66-dev.github.io/DAOLib/compatibility.html"
+    }
+  ]
 }
