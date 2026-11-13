@@ -3,6 +3,7 @@ using Avalonia.Headless.XUnit;
 using DAORework.App.ViewModels;
 using DAORework.App.Views;
 using DAORework.Application.Abstractions;
+using DAORework.Core.Common;
 using DAORework.Core.Mods.Safety;
 using Xunit;
 
@@ -51,6 +52,28 @@ public sealed class GameProgramScreenTests : IDisposable
         Assert.False(programs.IsError, programs.StatusMessage);
         Assert.True(_host.FileSystem.File.Exists(PlacedDll));
         Assert.True(viewModel.Library.Mods.Single().IsActive);
+    }
+
+    [AvaloniaFact]
+    public async Task TurnOn_AModThatNeedsThe4GbPatch_WarnsInThePreview()
+    {
+        var (window, viewModel) = await _scenario.OpenAsync();
+        _host.FileSystem.AddFile(GamePaths.GameExecutable(AppTestHost.InstallDirectory), new MockFileData(FixFixtures.Executable()));
+        await _scenario.ImportAsync(
+            viewModel,
+            MockUnixSupport.Path(@"C:\Users\Me\Downloads\Native Controller Framework.zip"),
+            ("bin_ship/dinput8.dll", Dll()),
+            ("bin_ship/DAControllerFramework.ini", "[pad]"));
+        var programs = viewModel.ModsTab.Programs;
+
+        await viewModel.ModsTab.Activation.ActivateCommand.ExecuteAsync(viewModel.Library.Mods.Single());
+
+        Assert.False(programs.IsError, programs.StatusMessage);
+        var need = Assert.Single(programs.Needs);
+        Assert.StartsWith("Native Controller Framework needs the 4 GB patch, its author says.", need, StringComparison.Ordinal);
+        Assert.True(programs.NeedsTrust);
+        ModsTabScenario.Show<LibraryPanel>(window);
+        Screenshots.Save(window, "38-game-program-needs");
     }
 
     [AvaloniaFact]

@@ -678,7 +678,11 @@ and undo as any other mod, and says yes to the program first. A mod that cannot 
   changes one by itself, and `--yes` doesn't cover it. A row shows as on while the game folder's record says so; ADR-0033
   §4's rule that only the program files' hashes count is still to come.*
 - P2.8-06 What a mod needs: the catalog's `needs` list and its preview warning, with entries for DAO Lib, the controller
-  mod and Luma, and a conflict entry linking DAO Lib's `dinput8.chain.dll` page.
+  mod and Luma, and a conflict entry linking DAO Lib's `dinput8.chain.dll` page. *Done for DAO Lib and the controller
+  mod, read from their 0.11.0 and 2.2.1b downloads: the controller mod needs the 4 GB patch, and turning it on warns
+  when it is missing, or says the patch can't go on Steam's protected copy ([screenshot](screenshots/p2.8-06/01-needs.png)).
+  The two conflict, with DAO Lib's way through linked. Luma has no entry: its author hid its page on 2026-11-08 as
+  unsupported, and its repository states no license (`catalog/README.md` keeps its fingerprint for when it returns).*
 - P2.8-07 Fault injection: scenarios for turning a `GameProgram` on and off
   ([ADR-0014](adr/0014-fault-injection-exit-gate.md)).
 - P2.8-08 Say so: the README, the website, the Nexus description, the plan warning, `docs/VOICE.md` and ADR-0018 stop

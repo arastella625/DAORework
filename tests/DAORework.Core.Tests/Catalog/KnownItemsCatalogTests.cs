@@ -39,12 +39,32 @@ public sealed class KnownItemsCatalogTests
         { Conflict("a", "b") with { Source = "ftp://example.org" }, "https link" },
     };
 
+    public static TheoryData<KnownNeed, string> BrokenNeeds => new()
+    {
+        { new KnownNeed("missing", "https://example.org/a"), "which is not a catalog entry" },
+        { new KnownNeed("A", "https://example.org/a"), "cannot need itself" },
+        { new KnownNeed("b", "http://example.org/a"), "must be an https link" },
+    };
+
     [Fact]
     public void Validate_AWellFormedCatalog_Succeeds()
     {
         var catalog = CatalogOf([Item("fixpack"), Item("dialog-patch")], [Conflict("fixpack", "dialog-patch")]);
 
         Assert.Equal(catalog, KnownItemsCatalog.Validate(catalog).Value);
+    }
+
+    [Theory]
+    [MemberData(nameof(BrokenNeeds))]
+    public void Validate_ABrokenNeed_IsRejected(KnownNeed need, string expected)
+    {
+        AssertInvalid(KnownItemsCatalog.Validate(CatalogOf([Item("a") with { Needs = [need] }, Item("b")], [])), expected);
+    }
+
+    [Fact]
+    public void Validate_ANeedOfAnotherEntry_IsValid()
+    {
+        Assert.True(KnownItemsCatalog.Validate(CatalogOf([Item("a") with { Needs = [new KnownNeed("b", "https://example.org/a")] }, Item("b")], [])).IsSuccess);
     }
 
     [Fact]

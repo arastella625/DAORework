@@ -129,6 +129,8 @@ public static class DependencyInjection
         services.AddSingleton<PlanGameProgramMod>();
         services.AddSingleton<ApplyGameProgramMod>();
         services.AddSingleton<GetGameProgramStatus>();
+        services.AddSingleton<FindMissingNeeds>();
+        services.AddSingleton<GameProgramSteps>();
         services.AddSingleton<GetFixStatus>();
 
         return services;

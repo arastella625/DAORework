@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DAORework.Application.Mods.Programs;
 using DAORework.Application.Profiles;
+using DAORework.Core.Catalog;
 using DAORework.Core.Fixes;
 using DAORework.Core.Mods.Planning;
 using DAORework.Core.Mods.Safety;
@@ -18,17 +19,15 @@ namespace DAORework.App.ViewModels;
 public sealed partial class GameProgramChangeViewModel : PageViewModel
 {
     private readonly GetProfile _getProfile;
-    private readonly PlanGameProgramMod _plan;
-    private readonly ApplyGameProgramMod _apply;
+    private readonly GameProgramSteps _steps;
     private readonly GetGameProgramStatus _status;
     private (string Install, PlannedGameProgramMod Planned)? _pending;
 
-    public GameProgramChangeViewModel(GetProfile getProfile, PlanGameProgramMod plan, ApplyGameProgramMod apply, GetGameProgramStatus status, ILogger<GameProgramChangeViewModel> logger)
+    public GameProgramChangeViewModel(GetProfile getProfile, GameProgramSteps steps, GetGameProgramStatus status, ILogger<GameProgramChangeViewModel> logger)
         : base(logger)
     {
         _getProfile = getProfile;
-        _plan = plan;
-        _apply = apply;
+        _steps = steps;
         _status = status;
     }
 
@@ -43,6 +42,9 @@ public sealed partial class GameProgramChangeViewModel : PageViewModel
 
     /// <summary>Gets what the plan notes, such as 64-bit DLLs or a file left in place.</summary>
     public ObservableCollection<string> Notes { get; } = [];
+
+    /// <summary>Gets what the mod needs that isn't in the game (ADR-0033 §5), shown with the other warning.</summary>
+    public ObservableCollection<string> Needs { get; } = [];
 
     /// <summary>Gets every file the plan touches, shown on <i>Show details</i>.</summary>
     public ObservableCollection<string> Lines { get; } = [];
@@ -93,13 +95,18 @@ public sealed partial class GameProgramChangeViewModel : PageViewModel
                 ReportSuccess(string.Empty);
                 var change = kind == ModChangeKind.Activate ? FixChangeKind.Apply : FixChangeKind.Remove;
                 if (!(await ProfileInstall.ForAsync(_getProfile, ProfileName, token)).TryGetValue(out var install, out var error)
-                    || !(await _plan.ExecuteAsync(new PlanGameProgramModRequest(install, mod.Id, change), token)).TryGetValue(out var planned, out error))
+                    || !(await _steps.Plan.ExecuteAsync(new PlanGameProgramModRequest(install, mod.Id, change), token)).TryGetValue(out var planned, out error))
                 {
                     ReportError(error);
                     return;
                 }
 
                 Show(planned, mod.Title);
+                if (change == FixChangeKind.Apply)
+                {
+                    await ShowNeedsAsync(mod, token);
+                }
+
                 _pending = (install, planned);
                 CanApply = !planned.Plan.Change.IsBlocked;
             },
@@ -119,7 +126,7 @@ public sealed partial class GameProgramChangeViewModel : PageViewModel
 
                 var trusted = IsTrusted;
                 ClearPlan();
-                var result = await _apply.ExecuteAsync(new ApplyGameProgramModRequest(pending.Install, pending.Planned, trusted), token);
+                var result = await _steps.Apply.ExecuteAsync(new ApplyGameProgramModRequest(pending.Install, pending.Planned, trusted), token);
                 await ReadActiveAsync(token);
                 if (AfterChangeAsync is not null)
                 {
@@ -166,6 +173,21 @@ public sealed partial class GameProgramChangeViewModel : PageViewModel
         }
     }
 
+    /// <summary>Only a warning, never a stop: a player who sorted the need out some other way can still go ahead.</summary>
+    private async Task ShowNeedsAsync(LibraryModRow mod, CancellationToken cancellationToken)
+    {
+        if (!(await _steps.Needs.ExecuteAsync(ProfileName!, mod.Id, cancellationToken)).TryGetValue(out var needs, out var error))
+        {
+            Needs.Add(NeedsCheck.NotChecked(mod.Title, error.Message));
+            return;
+        }
+
+        foreach (var need in needs)
+        {
+            Needs.Add(need);
+        }
+    }
+
     /// <summary>A profile without an install folder has none of these on; the first <i>Turn on</i> explains.</summary>
     private async Task ReadActiveAsync(CancellationToken cancellationToken)
     {
@@ -195,6 +217,7 @@ public sealed partial class GameProgramChangeViewModel : PageViewModel
         IsTrusted = false;
         CanApply = false;
         Notes.Clear();
+        Needs.Clear();
         Lines.Clear();
     }
 }

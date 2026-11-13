@@ -3,6 +3,7 @@ using DAORework.Application.Fixes;
 using DAORework.Application.Mods.Programs;
 using DAORework.Cli.Composition;
 using DAORework.Cli.Rendering;
+using DAORework.Core.Catalog;
 using DAORework.Core.Common;
 using DAORework.Core.Diagnostics;
 using DAORework.Core.Fixes;
@@ -21,16 +22,14 @@ namespace DAORework.Cli.Commands.Mods;
 public sealed class ProgramModChange
 {
     private readonly IModLibrary _library;
-    private readonly PlanGameProgramMod _plan;
-    private readonly ApplyGameProgramMod _apply;
+    private readonly GameProgramSteps _steps;
     private readonly FixRenderer _renderer;
     private readonly ErrorRenderer _errors;
 
-    public ProgramModChange(IModLibrary library, PlanGameProgramMod plan, ApplyGameProgramMod apply, FixRenderer renderer, ErrorRenderer errors)
+    public ProgramModChange(IModLibrary library, GameProgramSteps steps, FixRenderer renderer, ErrorRenderer errors)
     {
         _library = library;
-        _plan = plan;
-        _apply = apply;
+        _steps = steps;
         _renderer = renderer;
         _errors = errors;
     }
@@ -75,7 +74,7 @@ public sealed class ProgramModChange
     {
         var install = request.Install!;
         var kind = request.Kind == ModChangeKind.Activate ? FixChangeKind.Apply : FixChangeKind.Remove;
-        if (!(await _plan.ExecuteAsync(new PlanGameProgramModRequest(install, mod.Id, kind), cancellationToken)).TryGetValue(out var planned, out var error))
+        if (!(await _steps.Plan.ExecuteAsync(new PlanGameProgramModRequest(install, mod.Id, kind), cancellationToken)).TryGetValue(out var planned, out var error))
         {
             // Not on in the install folder: it may be on in the documents folder, added before DAORework knew what it is.
             if (kind == FixChangeKind.Remove && error.Code == DiagnosticCodes.ModNotActive)
@@ -88,13 +87,18 @@ public sealed class ProgramModChange
         }
 
         Show(planned);
+        if (kind == FixChangeKind.Apply)
+        {
+            await ShowNeedsAsync(request.Settings.Profile, mod, cancellationToken);
+        }
+
         var accepted = request.Allowed.Contains(mod.Id, StringComparer.OrdinalIgnoreCase);
         if (StopBeforeApplying(planned, request.Settings, accepted) is { } exitCode)
         {
             return exitCode;
         }
 
-        if (!(await _apply.ExecuteAsync(new ApplyGameProgramModRequest(install, planned, accepted), cancellationToken)).TryGetValue(out var outcome, out error))
+        if (!(await _steps.Apply.ExecuteAsync(new ApplyGameProgramModRequest(install, planned, accepted), cancellationToken)).TryGetValue(out var outcome, out error))
         {
             _errors.Render(error, "The change did not complete");
             if (error.Code == DiagnosticCodes.ModProgramNotAccepted)
@@ -129,6 +133,21 @@ public sealed class ProgramModChange
 
         var asks = accepted || planned.Plan.Kind == FixChangeKind.Remove;
         return !asks || change.IsEmpty || _renderer.Confirm(settings.Yes, "Apply this change?") ? null : ExitCodes.Failure;
+    }
+
+    /// <summary>What the mod needs that isn't in the game (ADR-0033 §5): a warning, never a stop.</summary>
+    private async Task ShowNeedsAsync(string profile, LibraryMod mod, CancellationToken cancellationToken)
+    {
+        if (!(await _steps.Needs.ExecuteAsync(profile, mod.Id, cancellationToken)).TryGetValue(out var needs, out var error))
+        {
+            _renderer.Say($"Note: {NeedsCheck.NotChecked(mod.Name, error.Message)}");
+            return;
+        }
+
+        foreach (var need in needs)
+        {
+            _renderer.Say($"Warning: {need}");
+        }
     }
 
     private void Show(PlannedGameProgramMod planned)
