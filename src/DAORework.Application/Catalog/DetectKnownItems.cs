@@ -28,10 +28,12 @@ public sealed class DetectKnownItems
     public async Task<Result<KnownItemsScan>> ExecuteAsync(DetectKnownItemsRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
-        if (!_catalogSource.Load().TryGetValue(out var catalog, out var error))
+        if (!_catalogSource.Load().TryGetValue(out var all, out var error))
         {
             return Result.Failure<KnownItemsScan>(error);
         }
+
+        var catalog = request.Only is { } only ? all with { Items = [.. all.Items.Where(i => only.Contains(i.Id))] } : all;
 
         var found = new List<DetectedKnownItem>();
         var unresolved = new Dictionary<string, Error>(StringComparer.OrdinalIgnoreCase);

@@ -54,7 +54,8 @@ public sealed class FindMissingNeeds
         var profile = string.IsNullOrWhiteSpace(found.GameExecutablePath) && !string.IsNullOrWhiteSpace(found.InstallDirectory)
             ? found with { GameExecutablePath = GamePaths.GameExecutable(found.InstallDirectory) }
             : found;
-        if (!(await _detect.ExecuteAsync(new DetectKnownItemsRequest(profile), cancellationToken)).TryGetValue(out var scan, out error))
+        var needed = item.Needs!.Select(n => n.Item).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        if (!(await _detect.ExecuteAsync(new DetectKnownItemsRequest(profile, needed), cancellationToken)).TryGetValue(out var scan, out error))
         {
             return Result.Failure<IReadOnlyList<string>>(error);
         }

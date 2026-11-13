@@ -21,17 +21,18 @@ public static class NeedsCheck
         ArgumentNullException.ThrowIfNull(missing);
         return [.. (item.Needs ?? [])
             .Where(need => missing.Contains(need.Item))
-            .Select(need => Warning(modName, need.Item, catalog.Items.FirstOrDefault(i => i.Id.Equals(need.Item, StringComparison.OrdinalIgnoreCase))?.Name ?? need.Item, steamProtected))];
+            .Select(need => Warning(modName, need.Item, catalog.Items.FirstOrDefault(i => i.Id.Equals(need.Item, StringComparison.OrdinalIgnoreCase)), steamProtected))];
     }
 
     /// <summary>Said instead when the game couldn't be checked: the preview still goes ahead, since a need is only a warning.</summary>
     public static string NotChecked(string modName, string reason) => $"Couldn't check what {modName} needs: {reason}";
 
-    private static string Warning(string modName, string id, string name, bool steamProtected)
+    private static string Warning(string modName, string id, KnownItem? needed, bool steamProtected)
     {
         if (!id.Equals(FixIds.LargeAddressAware, StringComparison.OrdinalIgnoreCase))
         {
-            return $"{modName} needs {name}, its author says, and it isn't in your game. Turn it on first.";
+            var then = needed?.Kind == KnownItemKind.Fix ? "Apply it first on the Fixes tab." : "Turn it on first.";
+            return $"{modName} needs {needed?.Name ?? id}, its author says, and it isn't in your game. {then}";
         }
 
         return steamProtected

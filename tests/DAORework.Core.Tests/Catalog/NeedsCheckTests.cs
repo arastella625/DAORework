@@ -9,12 +9,21 @@ public sealed class NeedsCheckTests
 {
     private static readonly KnownItem _lib = KnownItemsCatalogTests.Item("lib") with { Name = "DAO Lib" };
     private static readonly KnownItem _laa = KnownItemsCatalogTests.Item(FixIds.LargeAddressAware) with { Name = "4 GB patch" };
+    private static readonly KnownItem _dxvk = KnownItemsCatalogTests.Item(FixIds.Dxvk) with { Name = "DXVK", Kind = KnownItemKind.Fix };
     private static readonly KnownItem _mod = KnownItemsCatalogTests.Item("plugin") with
     {
-        Needs = [new KnownNeed("lib", "https://example.org/plugin"), new KnownNeed(FixIds.LargeAddressAware, "https://example.org/plugin")],
+        Needs = [new KnownNeed("lib", "https://example.org/plugin"), new KnownNeed(FixIds.LargeAddressAware, "https://example.org/plugin"), new KnownNeed(FixIds.Dxvk, "https://example.org/plugin")],
     };
 
-    private static readonly KnownItemsCatalog _catalog = KnownItemsCatalogTests.CatalogOf([_lib, _laa, _mod], []);
+    private static readonly KnownItemsCatalog _catalog = KnownItemsCatalogTests.CatalogOf([_lib, _laa, _dxvk, _mod], []);
+
+    [Fact]
+    public void Warnings_AMissingFix_SaysToApplyItOnTheFixesTab()
+    {
+        var warning = Assert.Single(NeedsCheck.Warnings(_catalog, _mod, "Plugin", new HashSet<string> { FixIds.Dxvk }, steamProtected: false));
+
+        Assert.Equal("Plugin needs DXVK, its author says, and it isn't in your game. Apply it first on the Fixes tab.", warning);
+    }
 
     [Fact]
     public void Warnings_NothingMissing_SaysNothing()

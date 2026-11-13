@@ -192,7 +192,7 @@
     {
       "first": "dao-lib",
       "second": "native-controller-framework",
-      "severity": "Warning",
+      "severity": "Info",
       "reason": "Both are bin_ship/dinput8.dll, and the game loads only one. DAO Lib's guide gives a way through: keep DAO Lib's dinput8.dll and put the other mod's beside it renamed dinput8.chain.dll, one such mod at a time.",
       "source": "https://whocares66-dev.github.io/DAOLib/compatibility.html"
     }
