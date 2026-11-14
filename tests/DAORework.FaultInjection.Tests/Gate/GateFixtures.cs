@@ -66,6 +66,10 @@ internal static partial class GateFixtures
         };
     }
 
+    /// <summary>The player's own change to the program mod's .ini once it is on: different bytes, the same every time.</summary>
+    public static void EditProgramIni(GateFolders folders) =>
+        Write(Path.Combine(folders.Install, "bin_ship", "gate.ini"), Encoding.UTF8.GetBytes("[gate]\r\nscale=2\r\n"));
+
     public static string[] Resolve(IEnumerable<string> arguments, IReadOnlyDictionary<string, string> ids) =>
         [.. arguments.Select(a => ids.TryGetValue(a, out var id) ? id : a)];
 
