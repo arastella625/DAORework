@@ -39,7 +39,7 @@ public static class ModActivationPlanWarnings
         {
             var names = string.Join(", ", mod.Select(f => f.FileName));
             var dxvk = mod.Any(f => f.FileName.Equals("d3d9.dll", StringComparison.OrdinalIgnoreCase)) ? " For DXVK, use: fixes apply dxvk <release>." : string.Empty;
-            warnings.Add($"{nameOf(mod.Key)} holds {Files(mod.Count())} that {(mod.Count() == 1 ? "is a program" : "are programs")} ({names}); programs are never installed into the game's folders.{dxvk}");
+            warnings.Add($"{nameOf(mod.Key)} holds {Files(mod.Count())} that {(mod.Count() == 1 ? "is a program" : "are programs")} ({names}); a mod like this never installs its programs.{dxvk}");
         }
 
         if (plan.MissingRecordedFiles.Count > 0)

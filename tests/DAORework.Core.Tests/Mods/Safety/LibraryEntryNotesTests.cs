@@ -26,7 +26,7 @@ public sealed class LibraryEntryNotesTests
         var withKinds = _entry with { Mod = _entry.Mod with { Files = [.. _entry.Mod.Files.Select(f => f with { Kind = f.RelativePath.EndsWith(".exe", StringComparison.Ordinal) ? ModFileKind.Program : ModFileKind.Data })] } };
         var dataOnly = _entry with { Mod = Mods.Override("hair", "hair.dds") };
 
-        Assert.Equal("It holds 1 program file(s) (setup.exe). They stay in the library and are never installed into the game's folders.", LibraryEntryNotes.Programs(withKinds));
+        Assert.Equal("It holds 1 program file(s) (setup.exe). They stay in the library: a mod like this never installs them.", LibraryEntryNotes.Programs(withKinds));
         Assert.Null(LibraryEntryNotes.Programs(dataOnly));
     }
 

@@ -1,6 +1,6 @@
 # ADR-0018: Mod safety: programs flagged, an antivirus scan at import, known downloads and signed releases
 
-- **Status:** Accepted
+- **Status:** Accepted. §1 is amended by [ADR-0033](0033-mods-that-run-inside-the-game.md) for `bin_ship` only.
 - **Date:** 2026-10-29
 
 ## Context
@@ -103,7 +103,9 @@ protections below, and how each one acts, on 2026-10-29.
 
 ## Consequences
 - A player sees, before anything is installed, whether a mod holds programs, whether their antivirus objected, and
-  whether it is the download the catalog knows. Programs never reach the game's folders through DAORework.
+  whether it is the download the catalog knows. Programs never reach the game's folders through DAORework, except
+  the DLLs of a mod that runs inside the game, which go into `bin_ship` behind their own checks and the player's yes
+  ([ADR-0033](0033-mods-that-run-inside-the-game.md)).
 - Imports take longer: every file is read once more for the scan. Texture packs over 256 MB per file are not scanned
   by DAORework.
 - The AMSI adapter only runs on Windows; CI runs on Linux, so its tests use a fake scanner, and the owner's

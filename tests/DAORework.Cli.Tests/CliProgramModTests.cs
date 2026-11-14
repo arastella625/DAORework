@@ -61,6 +61,15 @@ public sealed class CliProgramModTests : IDisposable
     }
 
     [Fact]
+    public void Library_NeverSaysItsProgramsAreNeverInstalled()
+    {
+        var line = _host.Run("mods", "library").Output.Split('\n').Single(l => l.StartsWith(_luma, StringComparison.Ordinal));
+
+        Assert.Contains("runs in the game", line, StringComparison.Ordinal);
+        Assert.DoesNotContain("never installed", line, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void Activate_DryRun_ShowsThePlanWithoutAskingForTheYes()
     {
         var result = _host.Run("mods", "activate", _luma, "-p", "Luma", "--dry-run");

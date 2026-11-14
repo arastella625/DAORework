@@ -689,7 +689,10 @@ and undo as any other mod, and says yes to the program first. A mod that cannot 
   before every write and settled with `fixes recover`, `status` and `rollback`. The gate's antivirus is a stand-in that
   answers clean, since these mods are only placed after a clean scan and Linux CI has no AMSI.*
 - P2.8-08 Say so: the README, the website, the Nexus description, the plan warning, `docs/VOICE.md` and ADR-0018 stop
-  promising that programs are never installed, in the same release as P2.8-05.
+  promising that programs are never installed, in the same release as P2.8-05. *The app's own words, the README,
+  ADR-0018, `docs/VOICE.md` (*Runs in the game*), the SDD and `HOW_IT_IS_BUILT.md` are done. The website and the Nexus
+  description go live as soon as `main` changes, so they change in a PR merged when 0.7.0 is published, as 0.6.0's
+  were (#209).*
 
 **Not in this phase:** mods that ship game data as well as programs; renaming a DLL; taking over a DLL placed by hand;
 these mods on Linux; a replacement `daorigins.exe`, which is never in scope.

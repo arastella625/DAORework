@@ -23,6 +23,6 @@ public sealed record AdoptionCandidate(string Id, AdoptionCandidateKind Kind, st
 
     public long SizeBytes => Files.Sum(f => f.SizeBytes);
 
-    /// <summary>Gets its program files (ADR-0018), which an adoption never moves and DAORework never installs.</summary>
+    /// <summary>Gets its program files (ADR-0018), which an adoption never moves.</summary>
     public IReadOnlyList<HandInstalledFile> Programs => Files.Where(f => ProgramFiles.IsProgram(f.Path)).ToList();
 }
