@@ -24,6 +24,7 @@ public sealed class ExitGateTests
         GateScenario.RemoveDxvk,
         GateScenario.TurnOnGameProgram,
         GateScenario.TurnOffGameProgram,
+        GateScenario.TurnOffEditedGameProgram,
         GateScenario.AdoptAddInInPlace,
         GateScenario.AdoptOverrideFolder,
         GateScenario.AdoptLooseFiles,

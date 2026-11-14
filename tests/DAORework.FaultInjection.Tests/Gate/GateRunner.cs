@@ -44,6 +44,8 @@ internal static class GateRunner
             GateFixtures.Cli(folders, GateFixtures.Resolve(setup, ids));
         }
 
+        var setUp = FolderState.Take(folders);
+        scenario.Edit?.Invoke(folders);
         var before = FolderState.Take(folders);
         var run = await ChildCli.RunAsync(folders.AppData, ChildCli.NeverKill, GateFixtures.Resolve(scenario.Command, ids));
         if (run.ExitCode != 0 || run.Writes <= 0)
@@ -51,7 +53,15 @@ internal static class GateRunner
             throw new InvalidOperationException($"{scenario.Name} did not run cleanly without a kill: {run.Output}");
         }
 
-        return new GateReference(run.Writes, previous, before, FolderState.Take(folders));
+        // DAORework never replaces or deletes a file changed since it placed it, so an edit by hand must survive the change.
+        var after = FolderState.Take(folders);
+        var edited = before.Except(setUp).ToList();
+        if (!edited.All(after.Contains))
+        {
+            throw new InvalidOperationException($"{scenario.Name} did not leave the files edited by hand in place: {FolderState.Diff(edited, after)}");
+        }
+
+        return new GateReference(run.Writes, previous, before, after, edited);
     }
 
     private static async Task<(string? Failure, bool Journal)> KillAndSettleAsync(GateScenario scenario, GateReference reference, int write, bool finish)
@@ -63,6 +73,7 @@ internal static class GateRunner
             GateFixtures.Cli(folders, GateFixtures.Resolve(setup, ids));
         }
 
+        scenario.Edit?.Invoke(folders);
         var run = await ChildCli.RunAsync(folders.AppData, write, GateFixtures.Resolve(scenario.Command, ids));
         var label = $"{scenario.Name}, {run.KilledBefore}, {(finish ? "finish" : "roll back")}";
         if (!run.Killed)
@@ -99,7 +110,10 @@ internal static class GateRunner
         return settled;
     }
 
-    /// <summary>The record reads, and a rollback goes back one real change: to the before-state from the after-state, else to the one before.</summary>
+    /// <summary>
+    /// The record reads, and a rollback goes back one real change: to the before-state from the after-state, else to the
+    /// one before, keeping any file edited by hand since.
+    /// </summary>
     private static string? CheckAfterwards(GateFolders folders, GateScenario scenario, GateReference reference, IReadOnlyList<string> settled)
     {
         var status = InProcessCli.Run(folders.AppData, scenario.Status);
@@ -109,7 +123,7 @@ internal static class GateRunner
         }
 
         InProcessCli.Run(folders.AppData, scenario.Rollback);
-        var expected = ReferenceEquals(settled, reference.After) ? reference.Before : reference.Previous;
+        var expected = ReferenceEquals(settled, reference.After) ? reference.Before : reference.RolledBackFromBefore;
         var state = FolderState.Take(folders);
         return state.SequenceEqual(expected) ? null : $"rollback did not undo the last change that happened: {FolderState.Diff(expected, state)}";
     }
