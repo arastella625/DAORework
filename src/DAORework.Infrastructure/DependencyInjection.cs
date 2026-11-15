@@ -62,6 +62,7 @@ public static class DependencyInjection
         services.AddSingleton<IWindowLock, DataFolderWindowLock>();
         services.AddSingleton<IDocumentsScanner, DocumentsScanner>();
         services.AddSingleton<IHandInstalledModsReader, HandInstalledModsReader>();
+        services.AddSingleton<IDocumentsAddInsReader, DocumentsAddInsReader>();
         services.AddSingleton<IVortexHandoverStore, JsonVortexHandoverStore>();
         services.AddSingleton<IProblemSearchStore, JsonProblemSearchStore>();
         services.AddSingleton<IPlayHistoryStore, JsonPlayHistoryStore>();

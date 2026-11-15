@@ -27,6 +27,8 @@ public static class CliServices
         services.AddSingleton<DocumentsFolderRenderer>();
         services.AddSingleton<DiagnosticReportRenderer>();
         services.AddSingleton<ModInspectionRenderer>();
+        services.AddSingleton<AddInsRenderer>();
+        services.AddSingleton<InspectSteps>();
         services.AddSingleton<ModInventoryRenderer>();
         services.AddSingleton<SaveBackupRenderer>();
         return services;
