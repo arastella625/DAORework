@@ -29,6 +29,7 @@ public sealed class ModsTabViewModel
         ProblemSearch = actions.Troubleshooting.ProblemSearch;
         Programs = actions.Programs;
         LastGame = actions.Troubleshooting.LastGame;
+        AddIns = actions.Troubleshooting.AddIns;
         HandInstalled = handInstalled;
         Library = library;
         Activation = deployed.Activation;
@@ -53,6 +54,13 @@ public sealed class ModsTabViewModel
         };
         Working = WorkingOn();
         Filter = new ModListFilter(library.Mods, handInstalled.Candidates);
+        AddIns.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(AddInPriorityViewModel.Marks))
+            {
+                Filter.AddInMarks = AddIns.Marks;
+            }
+        };
         Selection = new LibrarySelectionViewModel(library.Mods, Filter.VisibleMods, Activation);
         Setup = new SetupSummary(this);
         NextMove = new NextMoveCard(this);
@@ -63,6 +71,7 @@ public sealed class ModsTabViewModel
         Changes.AfterChangeAsync = RefreshAfterChangeAsync;
         LoadOrder.AfterChangeAsync = RefreshAfterChangeAsync;
         handInstalled.Adoption.AfterChangeAsync = RefreshAfterChangeAsync;
+        handInstalled.AfterScanAsync = AddIns.RefreshAsync;
         WireKeepPreviews();
         WirePrograms();
         handInstalled.Adoption.AfterPlanAsync = library.LoadAsync;
@@ -90,6 +99,9 @@ public sealed class ModsTabViewModel
 
     /// <summary>Gets what changed since the last game with other mods (ADR-0043).</summary>
     public LastGameViewModel LastGame { get; }
+
+    /// <summary>Gets each add-in's Priority and the files it shares with other add-ins (P2.5-23).</summary>
+    public AddInPriorityViewModel AddIns { get; }
 
     /// <summary>Gets <i>Find the problem mod</i> (ADR-0042).</summary>
     public ProblemSearchViewModel ProblemSearch { get; }
@@ -147,6 +159,7 @@ public sealed class ModsTabViewModel
         await Changes.LoadAsync(profileName, cancellationToken);
         await LoadOrder.LoadAsync(profileName, cancellationToken);
         await HandInstalled.RefreshAsync(cancellationToken);
+        await AddIns.LoadAsync(profileName, cancellationToken);
         await Handover.LoadAsync(profileName, cancellationToken);
         await NewDownloads.LoadAsync(cancellationToken);
         await ProblemSearch.LoadAsync(profileName, cancellationToken);
@@ -213,6 +226,7 @@ public sealed class ModsTabViewModel
         line.Watch(Library, "Reading your mods");
         line.Watch(HandInstalled, "Looking at what's in your game");
         line.Watch(LoadOrder, "Working out which mods win");
+        line.Watch(AddIns, "Comparing your add-ins");
         line.Watch(Activation, "Working out the preview");
         line.Watch(Programs, "Checking the mod and working out the preview");
         line.Watch(HandInstalled.Adoption, "Copying to your Library and working out the preview");
@@ -251,6 +265,7 @@ public sealed class ModsTabViewModel
         await Changes.RefreshAsync(cancellationToken);
         await LoadOrder.RefreshAsync(cancellationToken);
         await HandInstalled.RefreshAsync(cancellationToken);
+        await AddIns.RefreshAsync(cancellationToken);
         await Handover.RefreshAsync(cancellationToken);
         await LastGame.RefreshAsync(cancellationToken);
         ProblemSearch.Recheck();

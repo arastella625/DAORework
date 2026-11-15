@@ -62,12 +62,22 @@
                       <TextBlock Name="ConflictMark" Classes="Secondary" FontStyle="Italic" VerticalAlignment="Center" Text="{Binding ConflictMark}"
                                  ToolTip.Tip="This mod shares files with another. Arrange shows which and decides who wins."
                                  IsVisible="{Binding ConflictMark, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                      <TextBlock Name="PriorityMark" Classes="Secondary" FontStyle="Italic" VerticalAlignment="Center" Text="{Binding PriorityMark.Text}"
+                                 ToolTip.Tip="When two add-ins have a file of the same name, the game uses the copy from the one with the lower Priority. Its details say which files."
+                                 IsVisible="{Binding PriorityMark, Converter={x:Static ObjectConverters.IsNotNull}}" />
                     </StackPanel>
                   </ToggleButton>
 <StackPanel Spacing="3" Margin="8,0,0,6" IsVisible="{Binding IsExpanded}">
                       <TextBlock Classes="Mono Secondary" Text="{Binding Details}" TextWrapping="Wrap" />
                       <TextBlock Classes="Secondary" TextWrapping="Wrap" IsVisible="{Binding IsInGame}"
                                  Text="Already in your game. Turning it on takes that copy over, so there's no second one." />
+                      <ItemsControl Name="AddInShares" ItemsSource="{Binding PriorityMark.Sentences}">
+                        <ItemsControl.ItemTemplate>
+                          <DataTemplate x:DataType="x:String">
+                            <TextBlock Text="{Binding}" TextWrapping="Wrap" />
+                          </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                      </ItemsControl>
                       <ItemsControl ItemsSource="{Binding Notes}">
                         <ItemsControl.ItemTemplate>
                           <DataTemplate x:DataType="x:String">
