@@ -6,7 +6,7 @@ namespace DAORework.Core.Mods.AddIns;
 /// </summary>
 /// <param name="Listed">Every add-in <c>AddIns.xml</c> enables.</param>
 /// <param name="Contents">The ones with a folder in the documents folder's <c>AddIns</c>, and their file names.</param>
-/// <param name="Unreadable">Archives that couldn't be read, documents-relative, so their names aren't compared.</param>
+/// <param name="Unreadable">Archives and add-in folders that couldn't be read, documents-relative, so their names aren't compared.</param>
 public sealed record DocumentsAddIns(IReadOnlyList<ListedAddIn> Listed, IReadOnlyList<AddInContents> Contents, IReadOnlyList<string> Unreadable)
 {
     public static DocumentsAddIns Empty { get; } = new([], [], []);

@@ -7,7 +7,7 @@ namespace DAORework.Application.Diagnostics.Rules;
 
 /// <summary>
 /// Reports each file two or more add-ins give the game (P2.5-23), and whose copy it uses: the add-in with the lower
-/// Priority, or on equal priorities the one listed first in <c>AddIns.xml</c>. An archive that can't be read is
+/// Priority, or on equal priorities the one listed first in <c>AddIns.xml</c>. An archive or folder that can't be read is
 /// reported instead of stopping the check. Report only: DAORework changes no priority.
 /// </summary>
 public sealed class AddInClashRule : IDiagnosticRule
@@ -49,12 +49,12 @@ public sealed class AddInClashRule : IDiagnosticRule
             issues.Add(new DiagnosticIssue(
                 DiagnosticSeverity.Warning,
                 DiagnosticCodes.AddInsArchiveUnreadable,
-                $"{Archives(report.Unreadable.Count)} in AddIns couldn't be read, so what's inside isn't compared with other add-ins: {string.Join(", ", report.Unreadable.Take(3))}{(report.Unreadable.Count > 3 ? ", …" : string.Empty)}.",
+                $"Couldn't read {string.Join(", ", report.Unreadable.Take(3))}{More(report.Unreadable.Count - 3)}, so what's inside isn't compared with other add-ins.",
                 "The add-in may be damaged. Download it again and reinstall it."));
         }
 
         return issues;
     }
 
-    private static string Archives(int count) => count == 1 ? "1 archive" : $"{count} archives";
+    private static string More(int count) => count switch { <= 0 => string.Empty, 1 => " and 1 more", _ => $" and {count} more" };
 }

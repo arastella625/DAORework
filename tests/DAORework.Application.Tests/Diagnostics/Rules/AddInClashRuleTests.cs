@@ -50,7 +50,7 @@ public sealed class AddInClashRuleTests
 
         Assert.Equal(11, issues.Count(i => i.Code == DiagnosticCodes.AddInsShareFile));
         Assert.Contains(issues, i => i.Message == "2 more files are in more than one add-in.");
-        Assert.Contains(issues, i => i.Code == DiagnosticCodes.AddInsArchiveUnreadable && i.Message.Contains("1 archive in AddIns couldn't be read", StringComparison.Ordinal));
+        Assert.Contains(issues, i => i.Code == DiagnosticCodes.AddInsArchiveUnreadable && i.Message == "Couldn't read AddIns/b/core/data/broken.erf, so what's inside isn't compared with other add-ins.");
     }
 
     [Fact]
@@ -61,6 +61,14 @@ public sealed class AddInClashRuleTests
 
         Assert.Equal(DiagnosticCodes.AddInsListUnreadable, Assert.Single(await rule.EvaluateAsync(_profile)).Code);
         Assert.Empty(await rule.EvaluateAsync(new RuntimeProfile()));
+    }
+
+    [Fact]
+    public async Task FindAddInClashes_NoDocumentsFolderKnown_IsNoAddIns()
+    {
+        var report = (await new FindAddInClashes(new StubReader(Result.Failure<DocumentsAddIns>(new Error("x", "not read")))).ExecuteAsync(string.Empty)).Value;
+
+        Assert.Empty(report.LoadOrder);
     }
 
     private static AddInClashRule Rule(IDocumentsAddInsReader reader) => new(new FindAddInClashes(reader));

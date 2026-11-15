@@ -11,7 +11,8 @@ namespace DAORework.Infrastructure.Mods;
 /// Reads the add-ins the game loads from a documents folder (P2.5-23). For each one <c>AddIns.xml</c> enables whose
 /// folder is in <c>AddIns</c>, it lists the names under <c>core</c> and <c>module</c>: a loose file by its own name, an
 /// <c>.erf</c> or <c>.rim</c> by the names in its table of contents. <c>data_tools</c> folders hold the toolset's files,
-/// which the game never loads, so they're left out. An archive that can't be read is noted, not a stop. Never writes.
+/// which the game never loads, so they're left out. An archive or add-in folder that can't be read is noted, not a
+/// stop. Never writes.
 /// </summary>
 public sealed class DocumentsAddInsReader : IDocumentsAddInsReader
 {
@@ -40,11 +41,12 @@ public sealed class DocumentsAddInsReader : IDocumentsAddInsReader
             }
 
             var documents = _fileSystem.Path.GetFullPath(documentsDirectory);
+            var folders = AddInFolders(documents);
             var unreadable = new List<string>();
             var contents = listed
-                .Select(addIn => (AddIn: addIn, Folder: Folder(documents, addIn.Uid)))
-                .Where(a => a.Folder is not null)
-                .Select(a => new AddInContents(a.AddIn, Names(documents, a.Folder!, "core", unreadable), Names(documents, a.Folder!, "module", unreadable)))
+                .Where(addIn => folders.ContainsKey(addIn.Uid))
+                .Select(addIn => Contents(documents, addIn, folders[addIn.Uid], unreadable))
+                .OfType<AddInContents>()
                 .ToList();
             return Result.Success(new DocumentsAddIns(listed, contents, unreadable));
         }
@@ -57,17 +59,28 @@ public sealed class DocumentsAddInsReader : IDocumentsAddInsReader
         }
     }
 
-    /// <returns>The add-in's folder in <c>AddIns</c>, matched without case, or null when it isn't there or its UID isn't a plain name.</returns>
-    private string? Folder(string documents, string uid)
+    /// <returns>Each folder in <c>AddIns</c> by its name, matched without case, as the game matches a UID.</returns>
+    private Dictionary<string, string> AddInFolders(string documents)
     {
         var addIns = GamePaths.AddInsDirectory(documents);
-        if (uid.IndexOfAny(_fileSystem.Path.GetInvalidFileNameChars()) >= 0 || uid is "." or ".." || !_fileSystem.Directory.Exists(addIns))
+        return _fileSystem.Directory.Exists(addIns)
+            ? _fileSystem.Directory.EnumerateDirectories(addIns).DistinctBy(_fileSystem.Path.GetFileName, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(d => _fileSystem.Path.GetFileName(d), StringComparer.OrdinalIgnoreCase)
+            : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+    }
+
+    /// <returns>The add-in's names, or null when its folder can't be read, which is noted so the other add-ins are still compared.</returns>
+    private AddInContents? Contents(string documents, ListedAddIn addIn, string folder, List<string> unreadable)
+    {
+        try
         {
+            return new AddInContents(addIn, Names(documents, folder, "core", unreadable), Names(documents, folder, "module", unreadable));
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            unreadable.Add(_fileSystem.Path.GetRelativePath(documents, folder).Replace('\\', '/'));
             return null;
         }
-
-        return _fileSystem.Directory.EnumerateDirectories(addIns)
-            .FirstOrDefault(d => string.Equals(_fileSystem.Path.GetFileName(d), uid, StringComparison.OrdinalIgnoreCase));
     }
 
     private List<string> Names(string documents, string addInFolder, string part, List<string> unreadable)

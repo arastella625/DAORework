@@ -32,6 +32,21 @@ public sealed class AddInClashesTests
     }
 
     [Fact]
+    public void Find_ACampaignOfItsOwn_KeepsItsModuleFilesToItself()
+    {
+        // Awakening-like: no ExtendedModuleUID. Its module files meet neither core files nor another campaign's.
+        var campaign = Contents(AddIn("campaign", 100, 0, module: string.Empty), module: ["den.are"]);
+        var otherCampaign = Contents(AddIn("other", 100, 1, module: string.Empty), module: ["den.are"]);
+        var overrideMod = Contents(AddIn("mod", 50, 2), core: ["den.are"]);
+        var addsToCampaign = Contents(AddIn("adds", 50, 3, module: "campaign"), module: ["den.are"]);
+
+        var clash = Assert.Single(AddInClashes.Find([campaign, otherCampaign, overrideMod, addsToCampaign]));
+
+        Assert.Equal("adds", clash.Winner.Uid);
+        Assert.Equal(["campaign"], clash.Others.Select(o => o.Uid));
+    }
+
+    [Fact]
     public void Find_LeavesOutArchiveManifests_NamesOnlyBioWareShares_AndOneAddInsOwnRepeats()
     {
         var official = Contents(AddIn("dlc1", 500, 0, official: true), core: ["shared.gda"]);

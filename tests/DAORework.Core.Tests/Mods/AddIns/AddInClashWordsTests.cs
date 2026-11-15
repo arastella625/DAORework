@@ -28,6 +28,14 @@ public sealed class AddInClashWordsTests
     }
 
     [Fact]
+    public void Sentence_OnlySomeTie_SaysTheLowestAndThatItComesFirst()
+    {
+        var sentence = AddInClashWords.Sentence(new AddInClash("b.bin", _dog, [_fixpack, _dyes]));
+
+        Assert.EndsWith("because its Priority is the lowest (100), and it comes first in AddIns.xml.", sentence, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void Sentence_ThreeAddIns_ListsThemAndSaysTheLowest()
     {
         var low = _dog with { Priority = 1 };

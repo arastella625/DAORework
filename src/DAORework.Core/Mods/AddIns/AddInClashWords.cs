@@ -12,8 +12,10 @@ public static class AddInClashWords
         ArgumentNullException.ThrowIfNull(clash);
         var names = clash.Others.Select(o => o.Title).Prepend(clash.Winner.Title).ToList();
         var who = names.Count == 2 ? $"both {names[0]} and {names[1]}" : $"{string.Join(", ", names[..^1])} and {names[^1]}";
-        var why = clash.WonOnPosition
+        var why = clash.Others.All(o => o.Priority == clash.Winner.Priority)
             ? $"they have the same Priority ({clash.Winner.Priority}) and it comes first in AddIns.xml"
+            : clash.WonOnPosition
+            ? $"its Priority is the lowest ({clash.Winner.Priority}), and it comes first in AddIns.xml"
             : clash.Others.Count == 1
                 ? $"its Priority is lower ({clash.Winner.Priority}, against {clash.Others[0].Priority})"
                 : $"its Priority is the lowest ({clash.Winner.Priority})";

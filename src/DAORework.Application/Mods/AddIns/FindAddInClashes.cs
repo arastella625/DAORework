@@ -17,9 +17,14 @@ public sealed class FindAddInClashes
         _reader = reader;
     }
 
-    public async Task<Result<AddInsReport>> ExecuteAsync(string documentsDirectory, CancellationToken cancellationToken = default)
+    /// <returns>The report. No documents folder known (empty) is no add-ins.</returns>
+    public async Task<Result<AddInsReport>> ExecuteAsync(string? documentsDirectory, CancellationToken cancellationToken = default)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(documentsDirectory);
+        if (string.IsNullOrWhiteSpace(documentsDirectory))
+        {
+            return Result.Success(new AddInsReport([], [], []));
+        }
+
         if (!(await _reader.ReadAsync(documentsDirectory, cancellationToken)).TryGetValue(out var addIns, out var error))
         {
             return Result.Failure<AddInsReport>(error);

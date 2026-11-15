@@ -8,7 +8,9 @@ namespace DAORework.Core.Mods.AddIns;
 
 /// <summary>
 /// Reads the add-ins the game loads from the text of <c>Settings\AddIns.xml</c> (P2.5-23): each <c>AddInItem</c> with
-/// <c>Enabled="1"</c> and a number for <c>Priority</c>. An entry missing either is skipped, as the game skips it. Pure.
+/// <c>Enabled="1"</c> and a number for <c>Priority</c>. An entry missing either is skipped, as the game skips it. The game
+/// also skipped an entry that had both but little else (#72), and which other field it needs isn't known, so such a
+/// hand-written entry is still listed. Pure.
 /// </summary>
 public static class AddInsList
 {

@@ -5,7 +5,7 @@ namespace DAORework.Core.Mods.AddIns;
 /// <summary>
 /// Finds the file names two or more add-ins give the game (P2.5-23), and whose copy it uses (<see cref="AddInRanking"/>).
 /// A <c>core</c> file is compared with every other add-in's; a <c>module</c> file only with add-ins that add to the same
-/// campaign, since the game never loads two campaigns at once. Names are compared without case, and each archive's own
+/// campaign, since the game never loads two campaigns at once. An add-in that adds to no campaign is one, as Awakening is. Names are compared without case, and each archive's own
 /// <c>manifest.xml</c> is left out. A name only BioWare's own add-ins share is theirs to settle, so it isn't reported.
 /// Files that could break quests come first. Pure.
 /// </summary>
@@ -17,8 +17,8 @@ public static class AddInClashes
     public static IReadOnlyList<AddInClash> Find(IReadOnlyList<AddInContents> addIns)
     {
         ArgumentNullException.ThrowIfNull(addIns);
-        var core = addIns.SelectMany(a => a.CoreNames.Select(name => (Scope: string.Empty, Name: name, a.AddIn)));
-        var module = addIns.SelectMany(a => a.ModuleNames.Select(name => (Scope: a.AddIn.ExtendedModule, Name: name, a.AddIn)));
+        var core = addIns.SelectMany(a => a.CoreNames.Select(name => (Scope: "core", Name: name, a.AddIn)));
+        var module = addIns.SelectMany(a => a.ModuleNames.Select(name => (Scope: "module:" + Campaign(a.AddIn), Name: name, a.AddIn)));
         return [.. core.Concat(module)
             .Where(f => !_ignored.Contains(f.Name))
             .GroupBy(f => (Scope: f.Scope.ToUpperInvariant(), Name: f.Name.ToUpperInvariant()))
@@ -29,6 +29,9 @@ public static class AddInClashes
             .OrderBy(c => SharedFileRank.Of(c.FileName))
             .ThenBy(c => c.FileName, _names)];
     }
+
+    /// <summary>The campaign an add-in's module files belong to: the one it adds to, or, with none, its own (as Awakening is).</summary>
+    private static string Campaign(ListedAddIn addIn) => string.IsNullOrWhiteSpace(addIn.ExtendedModule) ? addIn.Uid : addIn.ExtendedModule;
 
     private static AddInClash Clash(string fileName, List<ListedAddIn> addIns)
     {
