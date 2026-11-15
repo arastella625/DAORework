@@ -68,6 +68,23 @@ public sealed class AddInPriorityScreenTests : IDisposable
         Assert.Equal("Priority 100", Row(viewModel, "Extra Dog Slot v1.41").PriorityMark?.Text);
     }
 
+    [AvaloniaFact]
+    public async Task ModsTab_ABrokenAddInsList_SaysSoUnderTheChips_AndTagsNothing()
+    {
+        var scenario = new ModsTabScenario(_host);
+        _host.SeedRealisticInstall();
+        _host.FileSystem.AddFile(GamePaths.AddInsListFile(scenario.DocumentsDirectory), new MockFileData("<AddInsList><AddInItem"));
+        _host.FileSystem.AddFile(Path.Combine(GamePaths.AddInsDirectory(scenario.DocumentsDirectory), "Extra_Dog_Slot", "core", "dog.gda"), new MockFileData(new byte[64]));
+
+        var (window, viewModel) = await scenario.OpenAsync(seedInstall: false);
+
+        Assert.True(viewModel.ModsTab.AddIns.IsError);
+        Assert.Empty(viewModel.ModsTab.AddIns.Marks);
+        Assert.False(viewModel.ModsTab.Filter.HasSharingAddIns);
+        Assert.All(viewModel.HandInstalled.Candidates, c => Assert.Null(c.PriorityMark));
+        Assert.Contains(window.GetVisualDescendants().OfType<TextBlock>(), t => t.Name == "AddInsStatus" && t.IsEffectivelyVisible);
+    }
+
     [Fact]
     public void Filter_ALibraryAddIn_GetsItsMarkByUid_AndKeepsItWhenTheListIsReadAgain()
     {

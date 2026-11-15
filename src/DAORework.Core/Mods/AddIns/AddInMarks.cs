@@ -11,9 +11,12 @@ public static class AddInMarks
     {
         ArgumentNullException.ThrowIfNull(report);
         var marks = new Dictionary<string, AddInMark>(StringComparer.OrdinalIgnoreCase);
+        var clashesOf = report.Clashes
+            .SelectMany(c => c.Others.Prepend(c.Winner).Select(a => (a.Uid, Clash: c)))
+            .ToLookup(x => x.Uid, x => x.Clash, StringComparer.OrdinalIgnoreCase);
         foreach (var addIn in report.LoadOrder.Where(a => !marks.ContainsKey(a.Uid)))
         {
-            var shared = report.Clashes.Where(c => Same(c.Winner, addIn) || c.Others.Any(o => Same(o, addIn))).ToList();
+            var shared = clashesOf[addIn.Uid].ToList();
             var wins = shared.Any(c => Same(c.Winner, addIn));
             var sentences = shared.Take(SentencesShown).Select(AddInClashWords.Sentence).ToList();
             if (shared.Count > SentencesShown)

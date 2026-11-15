@@ -51,12 +51,19 @@ public sealed partial class AddInPriorityViewModel : PageViewModel
                 if (!(await _getProfile.ExecuteAsync(new GetProfileRequest(profileName), token)).TryGetValue(out var profile, out var error)
                     || !(await _findAddInClashes.ExecuteAsync(profile.UserDocumentsDirectory, token)).TryGetValue(out var report, out error))
                 {
-                    Marks = _none;
-                    ReportError(error);
+                    if (profileName == _profileName)
+                    {
+                        Marks = _none;
+                        ReportError(error);
+                    }
+
                     return;
                 }
 
-                Marks = AddInMarks.For(report);
+                if (profileName == _profileName)
+                {
+                    Marks = AddInMarks.For(report); // A read for a profile left meanwhile is dropped, not shown on the new one's rows.
+                }
             },
             cancellationToken);
 }

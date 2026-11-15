@@ -158,8 +158,8 @@ public sealed class ModsTabViewModel
         await Library.LoadAsync(cancellationToken);
         await Changes.LoadAsync(profileName, cancellationToken);
         await LoadOrder.LoadAsync(profileName, cancellationToken);
+        await AddIns.LoadAsync(profileName, cancellationToken); // First, so the found rows never show the last profile's marks.
         await HandInstalled.RefreshAsync(cancellationToken);
-        await AddIns.LoadAsync(profileName, cancellationToken);
         await Handover.LoadAsync(profileName, cancellationToken);
         await NewDownloads.LoadAsync(cancellationToken);
         await ProblemSearch.LoadAsync(profileName, cancellationToken);
