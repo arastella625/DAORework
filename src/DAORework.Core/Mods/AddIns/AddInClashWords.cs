@@ -5,7 +5,8 @@ namespace DAORework.Core.Mods.AddIns;
 /// <summary>What a player is told about a file add-ins share (P2.5-23): who has it, whose copy the game uses and why. Pure.</summary>
 public static class AddInClashWords
 {
-    public const string Advice = "To use the other copy, look for a compatibility patch from the mods' authors, or turn off the add-in you need less. DAORework doesn't change priorities.";
+    /// <summary>What to do about it. A file that needs a compatibility patch says so in its own sentence (<see cref="SharedFileMeaning"/>).</summary>
+    public const string Advice = "To use the other copy, turn off the add-in you need less. DAORework doesn't change priorities.";
 
     public static string Sentence(AddInClash clash)
     {
