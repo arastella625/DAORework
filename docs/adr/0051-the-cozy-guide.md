@@ -1,6 +1,6 @@
 # ADR-0051: The cozy guide
 
-- **Status:** Proposed
+- **Status:** Accepted (by the owner, 2026-11-15)
 - **Date:** 2026-11-15
 
 ## Context

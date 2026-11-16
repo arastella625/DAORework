@@ -1,6 +1,6 @@
 # ADR-0050: A calmer window
 
-- **Status:** Proposed
+- **Status:** Accepted (by the owner, 2026-11-15)
 - **Date:** 2026-11-15
 - **Amends:** [ADR-0026](0026-workflow-first-layout.md) §1 (Home and Mods) and [ADR-0038](0038-rows-a-sheet-and-drag.md)
   (what a row shows and where its details go)
