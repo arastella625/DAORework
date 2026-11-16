@@ -46,9 +46,11 @@ public sealed class RealScalePreviewTests : IDisposable
 
         var activation = viewModel.ModsTab.Activation;
         var preview = activation.Preview;
-        Assert.Equal("Turn on 62 mods", preview.Title);
-        Assert.StartsWith("Can't go ahead yet: 3 problems", preview.Summary, StringComparison.Ordinal);
-        Assert.Contains(preview.Problems, p => p.Title.StartsWith(RealScaleLibrary.BlockedProgram, StringComparison.Ordinal));
+        Assert.Equal("Turn on 61 mods", preview.Title);
+        Assert.StartsWith("Can't go ahead yet: 2 problems", preview.Summary, StringComparison.Ordinal);
+
+        // A mod that runs inside the game is turned on by itself (ADR-0033 §3), so it's left out from the start and named.
+        Assert.StartsWith($"Left out: {RealScaleLibrary.BlockedProgram}. It runs its own program inside the game", preview.Notes[0], StringComparison.Ordinal);
         Assert.Contains(preview.Problems, p => p.Title.StartsWith(RealScaleLibrary.BlockedRegistered, StringComparison.Ordinal));
         Assert.Contains(preview.Problems, p => p.Title.Contains(RealScaleLibrary.BlockedInTheWay, StringComparison.Ordinal));
         Assert.All(preview.Problems, p => Assert.NotEmpty(p.WhatToDo));
@@ -89,7 +91,7 @@ public sealed class RealScalePreviewTests : IDisposable
         var (window, viewModel) = await _scenario.OpenAsync();
         await RealScaleScenario.TurnOnEverythingAsync(viewModel);
         var activation = viewModel.ModsTab.Activation;
-        Assert.Equal("Leave out 3 mods", activation.LeaveOutLabel);
+        Assert.Equal("Leave out 2 mods", activation.LeaveOutLabel);
 
         await activation.LeaveOutCommand.ExecuteAsync(null);
 

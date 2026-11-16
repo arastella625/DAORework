@@ -47,6 +47,9 @@ public static class KnownDownloads
         {
             FingerprintKind.AddInUid => f.Value.Equals(mod.AddInUid, StringComparison.OrdinalIgnoreCase),
             FingerprintKind.OverrideFile => names.Contains(f.Value),
+
+            // A mod that runs inside the game, by a file whose name is its own (ADR-0033 §5). A marker needs the file's bytes.
+            FingerprintKind.GameFile => mod.Kind == ModKind.GameProgram && f.Marker is null && names.Contains(f.Value[(f.Value.LastIndexOf('/') + 1)..]),
             _ => false,
         });
     }

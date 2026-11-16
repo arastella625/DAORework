@@ -98,6 +98,14 @@ public sealed class DetectKnownItemsTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_OnlySomeEntries_ChecksAndReportsOnlyThose()
+    {
+        var scan = (await UseCase(_fileSystem, [Dxvk, Fixpack]).ExecuteAsync(new DetectKnownItemsRequest(Profile, new HashSet<string> { Fixpack.Id }))).Value;
+
+        Assert.Equal([Fixpack], scan.Missing);
+    }
+
+    [Fact]
     public async Task ExecuteAsync_CatalogFailsToLoad_ReturnsTheFailure()
     {
         var broken = Result.Failure<KnownItemsCatalog>(new Error(DiagnosticCodes.CatalogInvalid, "broken"));

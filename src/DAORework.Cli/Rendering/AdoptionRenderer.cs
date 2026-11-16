@@ -46,7 +46,7 @@ public sealed class AdoptionRenderer
 
     /// <summary>The note for a candidate's program files (ADR-0018).</summary>
     private static string ProgramNote(int count, IEnumerable<string> names) =>
-        $"Holds {count} program file(s) ({string.Join(", ", names)}): adopting leaves them where they are, and DAORework never installs programs.";
+        $"Holds {count} program file(s) ({string.Join(", ", names)}): adopting leaves them where they are.";
 
     private static string Kind(AdoptionCandidateKind kind) => kind switch
     {

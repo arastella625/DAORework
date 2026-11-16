@@ -17,7 +17,7 @@ public enum ModSort
     OnFirst,
 }
 
-/// <summary>Which mods the Mods tab's list shows: all, those on, those off, or those found in the game.</summary>
+/// <summary>Which mods the Mods tab's list shows: all, those on, those off, those found in the game, or add-ins that share a file.</summary>
 public enum ModShowFilter
 {
     All,
@@ -25,4 +25,5 @@ public enum ModShowFilter
     Off,
     Found,
     GameFolder,
+    SharingAddIns,
 }

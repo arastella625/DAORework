@@ -35,6 +35,11 @@ public static class DiagnosticCodes
     public const string AddInsDirectoryFound = "DAO_ADDINS_DIRECTORY_FOUND";
     public const string AddInsDirectoryNotFound = "DAO_ADDINS_DIRECTORY_NOT_FOUND";
 
+    // P2.5-23: add-ins against each other. The game uses the copy from the add-in with the lower Priority.
+    public const string AddInsShareFile = "DAO_ADDINS_SHARE_FILE";
+    public const string AddInsListUnreadable = "DAO_ADDINS_LIST_UNREADABLE";
+    public const string AddInsArchiveUnreadable = "DAO_ADDINS_ARCHIVE_UNREADABLE";
+
     public const string ProfileValid = "DAO_PROFILE_VALID";
 
     // P1-03: the extended rule set. Every code below is report-only; none blocks a launch.
@@ -154,6 +159,12 @@ public static class DiagnosticCodes
     // P2.5-12: mod safety (ADR-0018).
     public const string ModSafetyThreatFound = "DAO_MOD_SAFETY_THREAT_FOUND";
     public const string ModSafetyDownloadDiffers = "DAO_MOD_SAFETY_DOWNLOAD_DIFFERS";
+
+    // P2.8-04: mods that run inside the game (ADR-0033 §2 and §3).
+    public const string ModSafetyProgramRefused = "DAO_MOD_SAFETY_PROGRAM_REFUSED";
+    public const string ModSafetyProgramNotScanned = "DAO_MOD_SAFETY_PROGRAM_NOT_SCANNED";
+    public const string ModProgramPathTaken = "DAO_MOD_PROGRAM_PATH_TAKEN";
+    public const string ModProgramNotAccepted = "DAO_MOD_PROGRAM_NOT_ACCEPTED";
 
     // ADR-0023: Steam's copy of daorigins.exe is protected by SteamStub, and Steam refuses it once patched.
     public const string SteamExecutableProtected = "DAO_STEAM_EXE_PROTECTED";

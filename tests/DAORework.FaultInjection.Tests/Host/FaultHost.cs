@@ -1,5 +1,6 @@
 using System.IO.Abstractions;
 using DAORework.Application;
+using DAORework.Application.Abstractions;
 using DAORework.Application.Documents;
 using DAORework.Cli.Composition;
 using DAORework.Infrastructure;
@@ -25,6 +26,7 @@ internal static class FaultHost
             .AddCliRendering();
         services.Replace(ServiceDescriptor.Singleton<IFileSystem>(fileSystem));
         services.Replace(ServiceDescriptor.Singleton<IDocumentsFolderSearch, NoDocumentsFolderSearch>());
+        services.Replace(ServiceDescriptor.Singleton<IMalwareScanner, CleanScan>());
 
         var app = new CommandApp(new MicrosoftDependencyInjectionRegistrar(services));
         app.Configure(config =>

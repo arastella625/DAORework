@@ -55,12 +55,14 @@ public static class DependencyInjection
         services.AddSingleton<IDeploymentRecordStore, JsonDeploymentRecordStore>();
         services.AddSingleton<IApplyJournalStore, FileApplyJournalStore>();
         services.AddSingleton<IDeploymentWriter, DocumentsDeploymentWriter>();
+        services.AddSingleton<ILibraryFileReader, LibraryFileReader>();
         services.AddSingleton<IModLibrary, FolderModLibrary>();
         services.AddSingleton<IModRemover, LibraryRemover>();
         services.AddSingleton<IRecycleBin, ShellRecycleBin>();
         services.AddSingleton<IWindowLock, DataFolderWindowLock>();
         services.AddSingleton<IDocumentsScanner, DocumentsScanner>();
         services.AddSingleton<IHandInstalledModsReader, HandInstalledModsReader>();
+        services.AddSingleton<IDocumentsAddInsReader, DocumentsAddInsReader>();
         services.AddSingleton<IVortexHandoverStore, JsonVortexHandoverStore>();
         services.AddSingleton<IProblemSearchStore, JsonProblemSearchStore>();
         services.AddSingleton<IPlayHistoryStore, JsonPlayHistoryStore>();

@@ -4,8 +4,12 @@ using DAORework.Core.Mods.Planning;
 
 namespace DAORework.Core.Fixes;
 
-/// <summary>Collects a fix plan's operations and its next record, one target file at a time (<see cref="FixPlanner"/>).</summary>
-internal sealed class FixPlanBuilder
+/// <summary>
+/// Collects a plan for the install folder and its next record, one target file at a time, under ADR-0012's ownership
+/// rule: for a fix (<see cref="FixPlanner"/>), and for a mod that runs inside the game (ADR-0033 §4), which shares the
+/// fix path's record, journal and backups. An entry is named by its library id and places library files.
+/// </summary>
+public sealed class InstallPlanBuilder
 {
     private readonly InstallState _state;
     private readonly List<PlanOperation> _operations = [];
@@ -16,24 +20,25 @@ internal sealed class FixPlanBuilder
     private readonly List<PlanBlocker> _blockers = [];
     private int _unchanged;
 
-    public FixPlanBuilder(InstallState state)
+    public InstallPlanBuilder(InstallState state)
     {
         ArgumentNullException.ThrowIfNull(state);
         _state = state;
     }
 
-    public void Apply(FixEntry entry, FixFile file)
+    /// <summary>Places <paramref name="file"/> from the entry <paramref name="libraryId"/> at <paramref name="path"/>, relative to the install folder.</summary>
+    public void Apply(string libraryId, string path, LibraryModFile file)
     {
-        var path = file.TargetPath;
+        ArgumentNullException.ThrowIfNull(file);
         _touched.Add(path);
         var current = Current(path);
         var recorded = OwnedAsRecorded(path, current);
-        if (Same(current, file.Applied.Sha256))
+        if (Same(current, file.Sha256))
         {
             _unchanged++;
             if (recorded is not null)
             {
-                _recorded.Add(recorded with { ModId = entry.LibraryId });
+                _recorded.Add(recorded with { ModId = libraryId });
             }
 
             return;
@@ -45,13 +50,16 @@ internal sealed class FixPlanBuilder
             return;
         }
 
-        var source = new DeployedFile(entry.LibraryId, file.Applied, path, IsOverride: false);
-        _operations.Add(new PlanOperation(current is null ? PlanAction.Copy : PlanAction.Replace, path, entry.LibraryId, source, current));
-        _recorded.Add(new RecordedFile(path, file.Applied.Sha256, entry.LibraryId) { BeforeSha256 = recorded is null ? current : recorded.BeforeSha256 });
+        var source = new DeployedFile(libraryId, file, path, IsOverride: false);
+        _operations.Add(new PlanOperation(current is null ? PlanAction.Copy : PlanAction.Replace, path, libraryId, source, current));
+        _recorded.Add(new RecordedFile(path, file.Sha256, libraryId) { BeforeSha256 = recorded is null ? current : recorded.BeforeSha256 });
     }
 
-    public void Remove(RecordedFile recorded, IReadOnlyList<FixEntry> library)
+    /// <summary>Takes away a recorded file, putting back the one it replaced from <paramref name="findOriginal"/> (by hash and path).</summary>
+    public void Remove(RecordedFile recorded, Func<string, string, DeployedFile?> findOriginal)
     {
+        ArgumentNullException.ThrowIfNull(recorded);
+        ArgumentNullException.ThrowIfNull(findOriginal);
         var path = recorded.TargetPath;
         _touched.Add(path);
         var current = Current(path);
@@ -66,7 +74,7 @@ internal sealed class FixPlanBuilder
             return;
         }
 
-        var original = Find(library, recorded.BeforeSha256, path);
+        var original = findOriginal(recorded.BeforeSha256, path);
         if (original is null)
         {
             _blockers.Add(new PlanBlocker(PlanBlockerKind.FixOriginalMissing, path, $"The file {path} replaced is no longer in DAORework's library, so it cannot be put back. Use fixes rollback instead."));
@@ -96,13 +104,6 @@ internal sealed class FixPlanBuilder
     }
 
     private static bool Same(string? a, string? b) => a is not null && b is not null && string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
-
-    private static DeployedFile? Find(IReadOnlyList<FixEntry> library, string sha256, string targetPath) =>
-        library
-            .SelectMany(e => e.Files.Select(f => f.Applied).Concat(e.Kept).Select(file => (Entry: e, File: file)))
-            .Where(c => Same(c.File.Sha256, sha256))
-            .Select(c => new DeployedFile(c.Entry.LibraryId, c.File, targetPath, IsOverride: false))
-            .FirstOrDefault();
 
     private string? Current(string path) => _state.Hashes.TryGetValue(path, out var sha) ? sha : null;
 

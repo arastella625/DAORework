@@ -4,8 +4,9 @@ using Xunit;
 namespace DAORework.FaultInjection.Tests;
 
 /// <summary>
-/// The Phase 2 exit gate (ROADMAP, ADR-0014), and the Phase 2.5 adoption scenarios (ADR-0015): every mod and fix
-/// change, killed before each of its writes, recovers to exactly the before-state or the after-state and never a mix.
+/// The Phase 2 exit gate (ROADMAP, ADR-0014), the Phase 2.5 adoption scenarios (ADR-0015) and mods that run inside the
+/// game (ADR-0033, P2.8-07): every mod and fix change, killed before each of its writes, recovers to exactly the
+/// before-state or the after-state and never a mix.
 /// The tests share one collection, so one scenario at a time uses every processor.
 /// </summary>
 public sealed class ExitGateTests
@@ -21,6 +22,8 @@ public sealed class ExitGateTests
         GateScenario.ApplyDxvk,
         GateScenario.UpgradeDxvk,
         GateScenario.RemoveDxvk,
+        GateScenario.TurnOnGameProgram,
+        GateScenario.TurnOffGameProgram,
         GateScenario.AdoptAddInInPlace,
         GateScenario.AdoptOverrideFolder,
         GateScenario.AdoptLooseFiles,

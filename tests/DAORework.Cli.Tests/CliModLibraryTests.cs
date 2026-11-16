@@ -56,7 +56,7 @@ public sealed class CliModLibraryTests : IDisposable
         var import = _host.Run("mods", "import", path);
         var library = _host.Run("mods", "library");
 
-        Assert.Contains("It holds 1 program file(s) (tools/setup.exe). They stay in the library and are never installed into the game's folders.", import.Output, StringComparison.Ordinal);
+        Assert.Contains("It holds 1 program file(s) (tools/setup.exe). They stay in the library: a mod like this never installs them.", import.Output, StringComparison.Ordinal);
         Assert.Contains("2 file(s), 6 B, 1 program file(s) never installed", library.Output, StringComparison.Ordinal);
     }
 

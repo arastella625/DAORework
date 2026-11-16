@@ -36,13 +36,17 @@ The phases below still run in order, but in this order from here, each a release
 |---|---|---|
 | 0.6.x | Fixes from real use | What players report on 0.6.0, and Phase 2.6's leftovers: [#204](https://github.com/arastella625/DAORework/issues/204), [#205](https://github.com/arastella625/DAORework/issues/205), [#107](https://github.com/arastella625/DAORework/issues/107), [#98](https://github.com/arastella625/DAORework/issues/98), P2.5-37 and P2.5-38 |
 | 0.7.0 | Mods that run inside the game, and add-ins | Phase 2.8 (P2.8-04 to P2.8-08), P2.5-23 ([#72](https://github.com/arastella625/DAORework/issues/72)), and P2.5-31's add-ins ([#116](https://github.com/arastella625/DAORework/issues/116)) |
-| 0.8.0 | Conflicts from the inside | P3-01's GFF and TLK readers, P3-08, P3-09, and combining tables whose changes don't overlap once [ADR-0040](adr/0040-combining-more-than-one-file.md) is decided |
-| 0.9.0 | A guide, and the release candidate | Phase 2.9 (P2.9-03 to P2.9-06), and P3-06 if [ADR-0035](adr/0035-opt-in-update-check.md) is accepted |
+| 0.8.0 | Makes sense | Phase 2.10 (P2.10-02 to P2.10-07), with P2.9-03 (the cozy guide) and P2.9-06 (testers from outside the project) moved in |
+| 0.9.0 | Conflicts from the inside, and the release candidate | P3-01's GFF and TLK readers, P3-08, P3-09, and combining tables whose changes don't overlap once [ADR-0040](adr/0040-combining-more-than-one-file.md) is decided; P2.9-04 and P2.9-05; and P3-06 if [ADR-0035](adr/0035-opt-in-update-check.md) is accepted |
 | 1.0.0 | Ready for everyone | P2.9-07: Phase 2.9's exit gate |
 
 **After 1.0:** Phase 2.7 (Steam on Linux), unless a Linux player with real Steam and Proton can run P2.7-09 sooner;
 P3-12 (`nxm://` links, once Nexus answers); P3-05 (the music player); P3-02 and P3-03 (browsing the game's data); P3-13
 (*Ask for help*, [ADR-0048](adr/0048-a-helper-that-answers-questions.md)); and the remaster track.
+
+**Changed on 2026-11-15 (P2.10-01):** the owner found the window hard to follow for the players it is for, so 0.8.0
+became *Makes sense*: a calmer window that shows what a player got, with pictures, and the guide. Conflicts from the
+inside moved to 0.9.0 with the release candidate.
 
 **No dates.** A release ships when it's done and checked on a real install. Testers from outside the project are
 asked for during 0.7.0 and 0.8.0 (P2.9-06), so they don't hold up 1.0.
@@ -338,7 +342,12 @@ read the game's file formats wait for P3-01 (P3-07 to P3-09).
   ([screenshot](screenshots/p2.5-22/01-game-folder.png)).*
 - P2.5-23 Add-ins against each other: show the active add-ins with their `Priority` from `AddIns.xml`, and warn when
   two add-ins ship a file with the same name. How the game ranks add-ins is checked on the owner's install first;
-  DAORework changes no priority until it is.
+  DAORework changes no priority until it is. *Checked on 2026-11-15 ([#72](https://github.com/arastella625/DAORework/issues/72)):
+  the lower Priority wins a shared file, and on a tie the entry listed first in `AddIns.xml`. Done: `AddInClashRule` in
+  the diagnostics, comparing loose files and the names inside archives; `mods inspect` listing the add-ins in the
+  game's order with their Priority; and on Mods, each add-in's row tagged with its Priority and whether it wins or
+  loses a shared file, the files named below it, and an *Add-ins sharing files* chip
+  ([screenshot](screenshots/p2.5-23/01-addin-priority.png)).*
 
 **A workflow-first window** *(added 2026-11-01, from the owner's review of a clickable mock: six tabs instead of 11
 places, plain words, mods told apart by how the game loads them, and a richer on-theme look;
@@ -428,11 +437,13 @@ decision.
   ([#66](https://github.com/arastella625/DAORework/pull/66)); the cover's screenshot is byte-for-byte the same.*
 - P2.5-37 The collection-expression hints (about 85, mostly `IDE0305` and `IDE0028`, set to *suggestion* in
   `.editorconfig`): either raise them to *warning* and apply them in one refactor PR, or keep them as suggestions and
-  stop SonarCloud reporting them. *The owner chose on 2026-11-04 to keep them as suggestions; what is left is to stop
-  SonarCloud reporting them.*
+  stop SonarCloud reporting them. *The owner chose on 2026-11-04 to keep them as suggestions. Done: the scanner no longer
+  imports Roslyn's findings (`sonar.cs.roslyn.ignoreIssues`), since warnings already fail the build.*
 - P2.5-38 Mark the findings that are wrong, in SonarCloud, with the reason: `LookColor`'s exact comparisons
   (`csharpsquid:S1244`; `max` is always exactly one of r, g and b) and `GrainTexture`'s seeded `Random`
-  (`csharpsquid:S2245`; seeded on purpose so the screenshots stay the same). No code changes.
+  (`csharpsquid:S2245`; seeded on purpose so the screenshots stay the same). No code changes. *Done in `ci.yml`
+  rather than by hand in SonarCloud: the scanner ignores those two rules for those two files, with the reasons
+  beside them, so the decision is reviewed with the code.*
 
 **Found on the owner's PC** *(added 2026-11-03, from `scripts/verify-real-install.ps1` run for P2.5-34)*.
 
@@ -573,6 +584,8 @@ with a diagnosis and a way forward, not leave a player stuck. The owner saw a ra
 - P2.6-75 Mods that never reach the game: the game reads only the documents folder in Windows' Documents, and on 2026-11-10 the owner's profile named a copy on `D:` while the game read and remade the one on `C:`. When a profile names another folder and the game's exists, Home says so first, naming both, and opens *Game folders*. A junction or link counts as the folder it points at, and nothing is moved ([ADR-0046](adr/0046-the-game-reads-one-documents-folder.md)). *Done ([Home](screenshots/p2.6-75/01-home.png)).*
 - P2.6-76 Nothing on Home says all is well while the game reads another folder: with ADR-0046's warning, the readiness card read *Ready to play* and the strip *Everything is in place*. They now say *Ready to play, without your mods* and *Almost there*, found on scratch data on 2026-11-10.
 - P2.6-77 *Undo* that needs a removed copy reads plainly: it said "Couldn't undo it: This can't be undone" and asked for a `.mod.json` by no name. It now names the mod, and the two items to put back from the Recycle Bin by the names they have there.
+- P2.6-78 One answer to "is this the same folder?" ([#205](https://github.com/arastella625/DAORework/issues/205)): `SameFolder` follows junctions and symbolic links for both documents rules, which had their own comparisons. The OneDrive rule no longer says a folder is *somewhere else* when the profile reaches it through a link, which it could for a profile not yet saved. A relative path is compared as written.
+- P2.6-79 An install folder's override that can't be read is reported, not a stop ([#107](https://github.com/arastella625/DAORework/issues/107)): `InstallOverrideRule` read the folder itself, so a folder without permission threw out of the whole game check. It now reads through `ReadInstallOverride`, as the Mods page does, and says `DAO_INSTALL_OVERRIDE_UNREADABLE`.
 
 **Feeling quick** *(added 2026-11-06, the owner's wish, from clearing copies on a messy real library)*. Buttons don't
 always highlight, and during a wait it isn't clear whether to wait or press again. Measured on `RealScaleLibrary` (138 mods,
@@ -662,15 +675,33 @@ and undo as any other mod, and says yes to the program first. A mod that cannot 
   the record, or that no longer has the recorded hash. *Done (`BinShipProgramsRule`); the GOG and EA copies' own DLLs are
   still to be compared.*
 - P2.8-04 Plan and apply: `PlanGameProgramMod` and `ApplyGameProgramMod` on the fix path's record, journal and backups,
-  with ADR-0033's refusals. A refactor PR comes first if a shared piece is fix-only.
+  with ADR-0033's refusals. A refactor PR comes first if a shared piece is fix-only. *Done: the fix path's plan builder and its
+  install-folder read became shared (`InstallPlanBuilder`, `ReadInstallState`) in a refactor first. `GameProgramLayout`
+  says where each file goes, `GameProgramRules` holds §2's checks, and `ReadGameProgramFiles` checks each library copy's
+  hash and header and scans the programs again. Turning on needs the player's yes (`DAO_MOD_PROGRAM_NOT_ACCEPTED`) and
+  `fixes status` lists only fixes. Nothing calls the use cases yet: the window and `--allow-programs` are P2.8-05.*
 - P2.8-05 Say yes to the program: the tick box in the preview, *Turn on selected* leaving these mods out, and
-  `--allow-programs <modId>` on the command line.
+  `--allow-programs <modId>` on the command line. *Done: the switch opens the mod's own preview, whose *Apply* stays off
+  until "I trust this mod and where I got it" is ticked ([screenshot](screenshots/p2.8-05/01-preview.png)); turning off
+  needs no tick. *Turn on selected* leaves these mods out and names them. `mods activate <id> --allow-programs <id>`
+  changes one by itself, and `--yes` doesn't cover it. A row shows as on while the game folder's record says so; ADR-0033
+  §4's rule that only the program files' hashes count is still to come.*
 - P2.8-06 What a mod needs: the catalog's `needs` list and its preview warning, with entries for DAO Lib, the controller
-  mod and Luma, and a conflict entry linking DAO Lib's `dinput8.chain.dll` page.
+  mod and Luma, and a conflict entry linking DAO Lib's `dinput8.chain.dll` page. *Done for DAO Lib and the controller
+  mod, read from their 0.11.0 and 2.2.1b downloads: the controller mod needs the 4 GB patch, and turning it on warns
+  when it is missing, or says the patch can't go on Steam's protected copy ([screenshot](screenshots/p2.8-06/01-needs.png)).
+  The two conflict, with DAO Lib's way through linked. Luma has no entry: its author hid its page on 2026-11-08 as
+  unsupported, and its repository states no license (`catalog/README.md` keeps its fingerprint for when it returns).*
 - P2.8-07 Fault injection: scenarios for turning a `GameProgram` on and off
-  ([ADR-0014](adr/0014-fault-injection-exit-gate.md)).
+  ([ADR-0014](adr/0014-fault-injection-exit-gate.md)). *Done: `mods activate --allow-programs` and `mods deactivate`
+  of a made-up mod shaped like DAO Lib (two DLLs and an `.ini` into `bin_ship`, a readme left in the Library), killed
+  before every write and settled with `fixes recover`, `status` and `rollback`. The gate's antivirus is a stand-in that
+  answers clean, since these mods are only placed after a clean scan and Linux CI has no AMSI.*
 - P2.8-08 Say so: the README, the website, the Nexus description, the plan warning, `docs/VOICE.md` and ADR-0018 stop
-  promising that programs are never installed, in the same release as P2.8-05.
+  promising that programs are never installed, in the same release as P2.8-05. *The app's own words, the README,
+  ADR-0018, `docs/VOICE.md` (*Runs in the game*), the SDD and `HOW_IT_IS_BUILT.md` are done. The website and the Nexus
+  description go live as soon as `main` changes, so they change in a PR merged when 0.7.0 is published, as 0.6.0's
+  were (#209).*
 
 **Not in this phase:** mods that ship game data as well as programs; renaming a DLL; taking over a DLL placed by hand;
 these mods on Linux; a replacement `daorigins.exe`, which is never in scope.
@@ -684,9 +715,75 @@ these mods on Linux; a replacement `daorigins.exe`, which is never in scope.
 
 ---
 
+## Phase 2.10: Makes sense
+
+**Status: scheduled for 0.8.0** ([the road to 1.0](#the-road-to-10)), after 0.7.0 is published. Added 2026-11-15.
+It runs before Phase 2.9's remaining tasks and keeps its number, as Phase 2.8 did.
+
+**Why:** on 2026-11-15 the owner said the window "isn't much for people yet", and that turning on character-creation
+mods feels like nothing happens. The README's own screenshots show why: the window explains how DAORework works
+(*Override mods*, *Add-ins*, *Priority 109 · loses*) more than what the player gets; Home says *Not checked yet*,
+*Almost there* and *Ready* at once; most rows on Mods say *loses* with nothing to do about it; combining
+`chargenmorphcfg.xml` works but only shows in the game; and the list called *Combined files* lists overlaps.
+
+**Goal:** a player who has never modded can tell in one look whether the game is ready and what to do next, sees what
+each mod gave them, with its own pictures, and finds the details only when they ask.
+
+**The owner's choices (2026-11-15):** pictures come only from the mod's own download or from the player, so nothing is
+fetched or shipped; the page is for mods the player already has, not a shop for new ones; and this release comes
+before conflicts from the inside.
+
+**Task IDs:** `P2.10-` (branch `feat/P2.10-02-one-headline`).
+
+- P2.10-01 Decide it: this phase, the road to 1.0 changed, the roadmap page,
+  [ADR-0049](adr/0049-pictures-and-words-a-mod-brings.md), [ADR-0050](adr/0050-a-calmer-window.md),
+  [ADR-0051](adr/0051-the-cozy-guide.md) and their words in [VOICE.md](VOICE.md).
+- P2.10-02 One headline and one next step on Home (ADR-0050 §1): one Core rule beside `NextMoves` decides both, from the
+  readiness facts and the last check; the Ready card, *Almost there* and the next-step card become one card; the game is
+  checked when the window opens and after each change. *Last change · Undo* stays.
+- P2.10-03 What you got (ADR-0050 §4): `ChargenMorphCounts` beside `ChargenMorphCombiner` counts what each mod's
+  `chargenmorphcfg.xml` adds to character creation (hairstyles, faces, beards, colours, tattoos, skins), against the
+  game's own copy on the player's PC where it can be read, else against what every copy shares. It shows on the row,
+  in the message after turning mods on, and under *Where mods overlap*. Where nothing can be counted it says *Adds to
+  character creation*, with no number.
+- P2.10-04 Pictures and words from the download (ADR-0049): the Library keeps a `.dazip`'s outer readme and pictures,
+  shows the pictures a mod came with (never `.dds` or `.tga` textures), reads a description and author from an add-in's
+  `Manifest.xml` or a readme's first paragraph, and makes small thumbnails safely. `mod.json` goes to schema 4, with a
+  test that reads schema 3. Mods already in the Library are filled in from what they kept, and *Add a picture* covers
+  the rest.
+- P2.10-05 *About this mod* (ADR-0050 §3): a page for each mod with its pictures, description, author, what it adds, its
+  switch, its warnings and *Open the mod's page*; kind, files, *wins/loses* and Priority go under *Details*. A mod with
+  no picture shows a crest drawn in the theme's colours.
+- P2.10-06 A calmer Mods list (ADR-0050 §2 and §5): rows show a thumbnail, the name, what the mod adds and the switch;
+  kind, *wins/loses* and Priority move under *Details* on *About this mod*, and only *Could break quests* stays on it. A
+  *List | Cards* switch shows the same mods as picture cards. The message after turning several mods on is one line and
+  *Details*. *Combined files* becomes *Where mods overlap*, with *Could break quests* first and *Only looks* folded.
+- P2.10-07 Release pictures: the README, website and Nexus pictures retaken, as P2.5-28 did.
+
+P2.9-03 (the cozy guide, [ADR-0051](adr/0051-the-cozy-guide.md)) and P2.9-06 (testers from outside the project) run in
+this release too.
+
+**Not in this phase:** fetching anything from Nexus Mods or any other site (still no network access, SDD §12);
+pictures in the repository or the release that come from a mod; showing mods the player doesn't have; drawing a mod's
+textures or models; conflicts from the inside (0.9.0).
+
+**Exit gate:**
+- [ ] P2.10-01 to P2.10-07, P2.9-03 and P2.9-06's two runs are done.
+- [ ] Every changed screen has a headless screenshot at real scale (70 mods), and the owner has looked at each one in
+  the real window.
+- [ ] Checked read-only against scratch copies of the owner's real downloads: the pictures shown are the mods'
+  previews, not their textures, and the counts for the owner's hair and face mods match what the character creator
+  shows.
+- [ ] A player from outside the project, with no help, says whether the game is ready, turns on a hair mod and says
+  what it added.
+- [ ] Released as `v0.8.0`, with the roadmap page's card moved to *Out now*.
+
+---
+
 ## Phase 2.9: Ready for 1.0
 
-**Status: scheduled for 0.9.0** (P2.9-01 and P2.9-02 are done with the road to 1.0). Added 2026-11-11.
+**Status: scheduled for 0.9.0** (P2.9-01 and P2.9-02 are done with the road to 1.0), except P2.9-03 and P2.9-06,
+which run in 0.8.0 with Phase 2.10. Added 2026-11-11.
 
 **Goal:** what 1.0 promises that no earlier phase covers: a guide for a first game with mods, a window usable by
 keyboard and screen reader, files that every later version reads, and real players on every Windows copy.
@@ -699,6 +796,7 @@ keyboard and screen reader, files that every later version reads, and real playe
 - P2.9-03 A guide for a first game with mods, the owner's *cozy guide*: a short walk through finding the game, adding
   mods, turning them on and pressing Play, that can be skipped and opened again from Settings. It builds on P2.6-36's
   first steps. An ADR comes first: what it shows, when it comes back, and its words in [VOICE.md](VOICE.md).
+  *In 0.8.0 with Phase 2.10; its ADR is [ADR-0051](adr/0051-the-cozy-guide.md).*
 - P2.9-04 Keyboard and screen readers: every action can be reached and done by keyboard with a visible focus, and
   every control has a name a screen reader says. It starts with an audit of the window, recorded in `docs/testing/`,
   and ends with a run through Windows Narrator.
@@ -707,7 +805,8 @@ keyboard and screen reader, files that every later version reads, and real playe
   misreading it. An ADR comes first, with what *stable* means for the command line and diagnostic codes.
 - P2.9-06 Testers from outside the project, asked for during 0.7.0 and 0.8.0: a short test script in `docs/testing/`,
   a request on the Nexus page and the website, and GOG and EA App players first ([#5](https://github.com/arastella625/DAORework/issues/5),
-  [#70](https://github.com/arastella625/DAORework/issues/70)).
+  [#70](https://github.com/arastella625/DAORework/issues/70)). *In 0.8.0 with Phase 2.10: a first run before P2.10-02
+  shows where players get stuck today, and a second after P2.10-06 shows what changed.*
 - P2.9-07 Release 1.0.0: the version, the changelog's section, the audit re-run, this roadmap, and the roadmap page.
 
 **Not in this phase:** Linux (Phase 2.7), `nxm://` links, translations, and anything after 1.0.
@@ -781,8 +880,8 @@ Flatpak, AppImage or distribution packages; macOS; malware scanning on Linux; ch
 **Goal:** understand the game's data through clean-room readers and give the tooling a GUI.
 
 **Scheduled in part (2026-11-11, [the road to 1.0](#the-road-to-10)):** P3-01's GFF and TLK readers, P3-08 and P3-09
-for 0.8.0, and P3-06 for 0.9.0 if ADR-0035 is accepted. P3-02, P3-03, P3-05, P3-12 and P3-13 come after 1.0. This
-phase's exit gate is still the real-install round trip.
+for 0.9.0 (moved from 0.8.0 on 2026-11-15), and P3-06 for 0.9.0 if ADR-0035 is accepted. P3-02, P3-03, P3-05, P3-12
+and P3-13 come after 1.0. This phase's exit gate is still the real-install round trip.
 
 - P3-01 The `DAORework.Formats` library (BCL only). Readers for ERF v2.0/v2.2, GFF v4.0 and TLK are built from public community specifications, which are cited in `docs/formats/`. DAOTools (MIT) may be ported with attribution; xoreos (GPL-3) supplies specifications and observed behavior only ([ADR-0009](adr/0009-third-party-mods-and-tools.md) tier 3). Each reader gets fuzz tests.
   *ERF done (`docs/formats/erf.md`); GFF and TLK to come. The exit gate's run over a real install is the owner's:

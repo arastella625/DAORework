@@ -22,7 +22,12 @@ public sealed class KnownDownloadsTests
         Fingerprints = [new(FingerprintKind.OverrideFile, "patch.dlg"), new(FingerprintKind.DownloadSha256, Known.Replace('6', '7'), Version: "2")],
     };
 
-    private static readonly KnownItemsCatalog _catalog = KnownItemsCatalogTests.CatalogOf([_fixpack, _patch, KnownItemsCatalogTests.Item("plain")], []);
+    private static readonly KnownItem _pad = KnownItemsCatalogTests.Item("pad") with
+    {
+        Fingerprints = [new(FingerprintKind.GameFile, "bin_ship/Pad.ini"), new(FingerprintKind.DownloadSha256, Known.Replace('6', '8'), Version: "2.2")],
+    };
+
+    private static readonly KnownItemsCatalog _catalog = KnownItemsCatalogTests.CatalogOf([_fixpack, _patch, _pad, KnownItemsCatalogTests.Item("plain")], []);
 
     [Fact]
     public void Check_TheKnownDownload_MatchesWithItsVersion()
@@ -46,6 +51,20 @@ public sealed class KnownDownloadsTests
         var check = KnownDownloads.Check(_catalog, Entry(Mods.Override("patch", "override/dialog/patch.dlg"), "patch.7z", Other));
 
         Assert.Equal(new DownloadCheck(DownloadCheckKind.Differs, _patch), check);
+    }
+
+    [Fact]
+    public void Check_AModThatRunsInTheGame_ByAGameFilesName_FromAnotherDownload_Differs()
+    {
+        var mod = new LibraryMod("pad-1", "Pad", ModKind.GameProgram, [new LibraryModFile("bin_ship/dinput8.dll", 1, "a"), new LibraryModFile("bin_ship/pad.ini", 1, "b")]);
+
+        Assert.Equal(new DownloadCheck(DownloadCheckKind.Differs, _pad), KnownDownloads.Check(_catalog, Entry(mod, "pad.zip", Other)));
+    }
+
+    [Fact]
+    public void Check_AnOverrideModWithAGameFilesName_IsUnknown()
+    {
+        Assert.Equal(DownloadCheck.Unknown, KnownDownloads.Check(_catalog, Entry(Mods.Override("pad", "Pad.ini"), "pad.zip", Other)));
     }
 
     [Fact]

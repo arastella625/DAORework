@@ -39,12 +39,40 @@ public sealed class KnownItemsCatalogTests
         { Conflict("a", "b") with { Source = "ftp://example.org" }, "https link" },
     };
 
+    public static TheoryData<KnownNeed, string> BrokenNeeds => new()
+    {
+        { new KnownNeed("missing", "https://example.org/a"), "which is not a catalog entry" },
+        { new KnownNeed("A", "https://example.org/a"), "cannot need itself" },
+        { new KnownNeed("b", "http://example.org/a"), "must be an https link" },
+    };
+
     [Fact]
     public void Validate_AWellFormedCatalog_Succeeds()
     {
         var catalog = CatalogOf([Item("fixpack"), Item("dialog-patch")], [Conflict("fixpack", "dialog-patch")]);
 
         Assert.Equal(catalog, KnownItemsCatalog.Validate(catalog).Value);
+    }
+
+    [Theory]
+    [MemberData(nameof(BrokenNeeds))]
+    public void Validate_ABrokenNeed_IsRejected(KnownNeed need, string expected)
+    {
+        AssertInvalid(KnownItemsCatalog.Validate(CatalogOf([Needing(need), Item("b")], [])), expected);
+    }
+
+    [Fact]
+    public void Validate_ANeedOfAnotherEntry_IsValid()
+    {
+        Assert.True(KnownItemsCatalog.Validate(CatalogOf([Needing(new KnownNeed("b", "https://example.org/a")), Item("b")], [])).IsSuccess);
+    }
+
+    [Fact]
+    public void Validate_NeedsWithoutADownloadHash_AreRejected()
+    {
+        var item = Item("a") with { Needs = [new KnownNeed("b", "https://example.org/a")] };
+
+        AssertInvalid(KnownItemsCatalog.Validate(CatalogOf([item, Item("b")], [])), "no download hash");
     }
 
     [Fact]
@@ -123,6 +151,8 @@ public sealed class KnownItemsCatalogTests
     private static KnownItemFingerprint Download(string sha, string? version) => new(FingerprintKind.DownloadSha256, sha, Version: version);
 
     private static KnownItemFingerprint Uid(string id) => new(FingerprintKind.AddInUid, $"{id}_uid");
+
+    private static KnownItem Needing(KnownNeed need) => Item("a") with { Fingerprints = [Uid("a"), Download(Sha, "1.0")], Needs = [need] };
 
     private static void AssertInvalid(Result<KnownItemsCatalog> result, string expected)
     {

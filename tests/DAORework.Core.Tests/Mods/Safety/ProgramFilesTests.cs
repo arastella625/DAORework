@@ -67,7 +67,7 @@ public sealed class ProgramFilesTests
         var lines = ModActivationPlanText.Render(plan);
         var warning = Assert.Single(lines, l => l.Contains("program", StringComparison.Ordinal));
         Assert.Equal(
-            "  ! reshade-pack holds 2 files that are programs (d3d9.dll, setup.exe); programs are never installed into the game's folders. For DXVK, use: fixes apply dxvk <release>.",
+            "  ! reshade-pack holds 2 files that are programs (d3d9.dll, setup.exe); a mod like this never installs its programs. For DXVK, use: fixes apply dxvk <release>.",
             warning);
     }
 

@@ -3,7 +3,7 @@ using Spectre.Console.Cli;
 
 namespace DAORework.Cli.Commands.Mods;
 
-public sealed class ModChangeSettings : ModsProfileSettings
+public class ModChangeSettings : ModsProfileSettings
 {
     [CommandArgument(0, "<MOD_ID>")]
     [Description("One or more library ids, as mods library shows them.")]

@@ -10,15 +10,17 @@ namespace DAORework.Cli.Commands.Mods;
 public sealed class ModsInspectCommand : AsyncCommand<ProfileNameSettings>
 {
     private readonly GetProfile _getProfile;
-    private readonly InspectModFolders _inspectModFolders;
+    private readonly InspectSteps _steps;
     private readonly ModInspectionRenderer _renderer;
+    private readonly AddInsRenderer _addIns;
     private readonly ErrorRenderer _errors;
 
-    public ModsInspectCommand(GetProfile getProfile, InspectModFolders inspectModFolders, ModInspectionRenderer renderer, ErrorRenderer errors)
+    public ModsInspectCommand(GetProfile getProfile, InspectSteps steps, ModInspectionRenderer renderer, AddInsRenderer addIns, ErrorRenderer errors)
     {
         _getProfile = getProfile;
-        _inspectModFolders = inspectModFolders;
+        _steps = steps;
         _renderer = renderer;
+        _addIns = addIns;
         _errors = errors;
     }
 
@@ -30,13 +32,24 @@ public sealed class ModsInspectCommand : AsyncCommand<ProfileNameSettings>
             return ExitCodes.Failure;
         }
 
-        if (!(await _inspectModFolders.ExecuteAsync(new InspectModFoldersRequest(profile), cancellationToken)).TryGetValue(out var report, out var inspectionError))
+        if (!(await _steps.Folders.ExecuteAsync(new InspectModFoldersRequest(profile), cancellationToken)).TryGetValue(out var report, out var inspectionError))
         {
             _errors.Render(inspectionError, "Inspection failed");
             return ExitCodes.Failure;
         }
 
         _renderer.Render(report);
+
+        // The add-ins are part of the summary: when they can't be read it is said there, and the folders above still stand.
+        if ((await _steps.AddIns.ExecuteAsync(report.UserDocumentsDirectory, cancellationToken)).TryGetValue(out var addIns, out var addInsError))
+        {
+            _addIns.Render(addIns);
+        }
+        else
+        {
+            _addIns.RenderProblem(addInsError);
+        }
+
         return ExitCodes.Success;
     }
 }

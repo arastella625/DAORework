@@ -44,6 +44,9 @@ public static class AppServices
         services.AddTransient<ProblemSearchViewModel>();
         services.AddTransient<LastGameViewModel>();
         services.AddTransient<TroubleshootingViewModel>();
+        services.AddTransient<AddInPriorityViewModel>();
+        services.AddTransient<KeepActionsViewModel>();
+        services.AddTransient<GameProgramChangeViewModel>();
         services.AddTransient<LibraryActionsViewModel>();
         services.AddTransient<ModsTabViewModel>();
         services.AddTransient<SavesPageViewModel>();

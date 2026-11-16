@@ -112,7 +112,7 @@ public sealed class DxvkFixTests
     {
         var withoutDxvk = new FakeKnownItemsCatalogSource([TestDxvk.CatalogItem with { Id = "other" }]);
 
-        var result = await new PlanFix(_stores, _stores, _library, _files, [new DxvkFix(_files, _sources, withoutDxvk)]).ExecuteAsync(new PlanFixRequest(Install, "dxvk", FixChangeKind.Apply, Release));
+        var result = await new PlanFix(_stores, _stores, _library, new ReadInstallState(_files), [new DxvkFix(_files, _sources, withoutDxvk)]).ExecuteAsync(new PlanFixRequest(Install, "dxvk", FixChangeKind.Apply, Release));
 
         Assert.Equal(DiagnosticCodes.CatalogInvalid, result.Error!.Code);
     }
@@ -122,13 +122,13 @@ public sealed class DxvkFixTests
     {
         var broken = new FakeKnownItemsCatalogSource(Result.Failure<KnownItemsCatalog>(new Error(DiagnosticCodes.CatalogInvalid, "broken")));
 
-        var result = await new PlanFix(_stores, _stores, _library, _files, [new DxvkFix(_files, _sources, broken)]).ExecuteAsync(new PlanFixRequest(Install, "dxvk", FixChangeKind.Apply, Release));
+        var result = await new PlanFix(_stores, _stores, _library, new ReadInstallState(_files), [new DxvkFix(_files, _sources, broken)]).ExecuteAsync(new PlanFixRequest(Install, "dxvk", FixChangeKind.Apply, Release));
 
         Assert.Equal("broken", result.Error!.Message);
     }
 
     private Task<Result<PlannedFix>> Plan(FixChangeKind kind, string? source = null) =>
-        new PlanFix(_stores, _stores, _library, _files, [new DxvkFix(_files, _sources, _catalog)]).ExecuteAsync(new PlanFixRequest(Install, "dxvk", kind, source));
+        new PlanFix(_stores, _stores, _library, new ReadInstallState(_files), [new DxvkFix(_files, _sources, _catalog)]).ExecuteAsync(new PlanFixRequest(Install, "dxvk", kind, source));
 
     private ApplyFix ApplyFix() =>
         new(_library, new ApplyModPlan(new BackUpDeployment(_backups), _stores, new JournaledApplyRunner(_stores, _stores, _stores)), _stores);

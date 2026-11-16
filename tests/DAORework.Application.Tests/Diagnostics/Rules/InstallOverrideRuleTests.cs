@@ -1,5 +1,6 @@
 using System.IO.Abstractions.TestingHelpers;
 using DAORework.Application.Diagnostics.Rules;
+using DAORework.Application.Mods.Adoption;
 using DAORework.Application.Tests.Fakes;
 using DAORework.Core.Common;
 using DAORework.Core.Diagnostics;
@@ -23,7 +24,7 @@ public sealed class InstallOverrideRuleTests
     {
         _fileSystem.AddDirectory(_install);
 
-        Assert.Empty(await new InstallOverrideRule(_fileSystem).EvaluateAsync(Profile));
+        Assert.Empty(await Rule(_fileSystem).EvaluateAsync(Profile));
     }
 
     [Fact]
@@ -32,7 +33,7 @@ public sealed class InstallOverrideRuleTests
         _fileSystem.AddFile(Path.Combine(GamePaths.OverrideDirectory(_install), "Old Hair", "hair.dds"), new MockFileData("x"));
         _fileSystem.AddFile(Path.Combine(GamePaths.OverrideDirectory(_install), "fix.ncs"), new MockFileData("x"));
 
-        var issue = Assert.Single(await new InstallOverrideRule(_fileSystem).EvaluateAsync(Profile));
+        var issue = Assert.Single(await Rule(_fileSystem).EvaluateAsync(Profile));
 
         Assert.Equal(DiagnosticCodes.InstallOverrideFiles, issue.Code);
         Assert.Equal(DiagnosticSeverity.Info, issue.Severity);
@@ -46,7 +47,7 @@ public sealed class InstallOverrideRuleTests
         _fileSystem.AddFile(Path.Combine(GamePaths.OverrideDirectory(_install), "ABI_base.gda"), new MockFileData("old"));
         _fileSystem.AddFile(Path.Combine(GamePaths.OverrideDirectory(_documents), "DAORework", "rebalance-1", "abi_base.gda"), new MockFileData("new"));
 
-        var issues = await new InstallOverrideRule(_fileSystem).EvaluateAsync(Profile);
+        var issues = await Rule(_fileSystem).EvaluateAsync(Profile);
 
         var shared = Assert.Single(issues, i => i.Code == DiagnosticCodes.InstallOverrideShared);
         Assert.Equal(DiagnosticSeverity.Warning, shared.Severity);
@@ -62,9 +63,24 @@ public sealed class InstallOverrideRuleTests
             _fileSystem.AddFile(Path.Combine(GamePaths.OverrideDirectory(_documents), $"tex_{i:00}.dds"), new MockFileData("b"));
         }
 
-        var shared = (await new InstallOverrideRule(_fileSystem).EvaluateAsync(Profile)).Where(i => i.Code == DiagnosticCodes.InstallOverrideShared).ToList();
+        var shared = (await Rule(_fileSystem).EvaluateAsync(Profile)).Where(i => i.Code == DiagnosticCodes.InstallOverrideShared).ToList();
 
         Assert.Equal(11, shared.Count);
         Assert.Equal("2 more file name(s) are in both overrides.", shared[^1].Message);
     }
+
+    [Fact]
+    public async Task EvaluateAsync_InstallOverrideCannotBeRead_SaysSoInsteadOfStopping()
+    {
+        var fileSystem = new DeniedFileSystem();
+        fileSystem.AddDirectory(GamePaths.OverrideDirectory(_install));
+        fileSystem.Denied = true;
+
+        var issue = Assert.Single(await Rule(fileSystem).EvaluateAsync(Profile));
+
+        Assert.Equal(DiagnosticCodes.InstallOverrideUnreadable, issue.Code);
+        Assert.Equal(DiagnosticSeverity.Warning, issue.Severity);
+    }
+
+    private static InstallOverrideRule Rule(MockFileSystem fileSystem) => new(fileSystem, new ReadInstallOverride(fileSystem));
 }

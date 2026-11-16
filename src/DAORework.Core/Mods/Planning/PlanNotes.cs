@@ -67,7 +67,7 @@ public static class PlanNotes
         if (conflicts.ProgramFiles.Count > 0)
         {
             var mods = conflicts.ProgramFiles.Select(f => f.ModId).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-            notes.Add($"{PlanWords.Names(mods, nameOf)} {Verb(mods.Count, "holds", "hold")} programs, which are never installed into the game's folders.");
+            notes.Add($"{PlanWords.Names(mods, nameOf)} {Verb(mods.Count, "holds", "hold")} programs, which a mod like this never installs.");
         }
 
         if (plan.MissingRecordedFiles.Count > 0)

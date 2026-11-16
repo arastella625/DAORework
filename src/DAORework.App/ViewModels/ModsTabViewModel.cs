@@ -27,7 +27,9 @@ public sealed class ModsTabViewModel
         library.FindInside = KeepCopy.FindInside;
         KeepEach = actions.KeepEach;
         ProblemSearch = actions.Troubleshooting.ProblemSearch;
+        Programs = actions.Programs;
         LastGame = actions.Troubleshooting.LastGame;
+        AddIns = actions.Troubleshooting.AddIns;
         HandInstalled = handInstalled;
         Library = library;
         Activation = deployed.Activation;
@@ -42,7 +44,7 @@ public sealed class ModsTabViewModel
         LookFirst.ManageAsync = ManageHeldAsync;
         LookFirst.AnsweredAsync = NewDownloads.AnsweredAsync;
         Handover.TurnOnAsync = TurnOnAsync;
-        Activation.ActiveModsChanged += (_, _) => Library.ShowActive(Activation.ActiveModIds);
+        Activation.ActiveModsChanged += (_, _) => ShowActive();
         LoadOrder.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName == nameof(LoadOrderViewModel.ConflictMarks))
@@ -52,6 +54,13 @@ public sealed class ModsTabViewModel
         };
         Working = WorkingOn();
         Filter = new ModListFilter(library.Mods, handInstalled.Candidates);
+        AddIns.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(AddInPriorityViewModel.Marks))
+            {
+                Filter.AddInMarks = AddIns.Marks;
+            }
+        };
         Selection = new LibrarySelectionViewModel(library.Mods, Filter.VisibleMods, Activation);
         Setup = new SetupSummary(this);
         NextMove = new NextMoveCard(this);
@@ -62,7 +71,9 @@ public sealed class ModsTabViewModel
         Changes.AfterChangeAsync = RefreshAfterChangeAsync;
         LoadOrder.AfterChangeAsync = RefreshAfterChangeAsync;
         handInstalled.Adoption.AfterChangeAsync = RefreshAfterChangeAsync;
+        handInstalled.AfterScanAsync = AddIns.RefreshAsync;
         WireKeepPreviews();
+        WirePrograms();
         handInstalled.Adoption.AfterPlanAsync = library.LoadAsync;
 
         // Plans and Changes name mods by their Library names, not their ids (P2.5-18, P2.5-19).
@@ -77,6 +88,9 @@ public sealed class ModsTabViewModel
     /// <summary>Gets what the window is working on, for its footer (P2.6-45).</summary>
     public WorkingLine Working { get; }
 
+    /// <summary>Gets turning a mod that runs inside the game on or off, by itself (ADR-0033 §3).</summary>
+    public GameProgramChangeViewModel Programs { get; }
+
     /// <summary>Gets <i>Keep this one</i> (ADR-0039).</summary>
     public KeepCopyViewModel KeepCopy { get; }
 
@@ -85,6 +99,9 @@ public sealed class ModsTabViewModel
 
     /// <summary>Gets what changed since the last game with other mods (ADR-0043).</summary>
     public LastGameViewModel LastGame { get; }
+
+    /// <summary>Gets each add-in's Priority and the files it shares with other add-ins (P2.5-23).</summary>
+    public AddInPriorityViewModel AddIns { get; }
 
     /// <summary>Gets <i>Find the problem mod</i> (ADR-0042).</summary>
     public ProblemSearchViewModel ProblemSearch { get; }
@@ -137,9 +154,11 @@ public sealed class ModsTabViewModel
         LookFirst.CancelCommand.Execute(null);
         HandInstalled.Load(profileName);
         await Activation.LoadAsync(profileName, cancellationToken); // First, so a listed mod's state is known as it is read.
+        await Programs.LoadAsync(profileName, cancellationToken);
         await Library.LoadAsync(cancellationToken);
         await Changes.LoadAsync(profileName, cancellationToken);
         await LoadOrder.LoadAsync(profileName, cancellationToken);
+        await AddIns.LoadAsync(profileName, cancellationToken); // First, so the found rows never show the last profile's marks.
         await HandInstalled.RefreshAsync(cancellationToken);
         await Handover.LoadAsync(profileName, cancellationToken);
         await NewDownloads.LoadAsync(cancellationToken);
@@ -173,6 +192,27 @@ public sealed class ModsTabViewModel
         };
     }
 
+    /// <summary>
+    /// A mod that runs inside the game has its own preview (ADR-0033 §3), and is on when the game folder's record says so.
+    /// Only one preview is open at a time, so <i>Apply</i> is never pressed on the one the player isn't reading.
+    /// </summary>
+    private void WirePrograms()
+    {
+        Activation.ProgramChangeAsync = Programs.PlanAsync;
+        Activation.ProgramIsOn = id => Programs.ActiveModIds.Contains(id, StringComparer.OrdinalIgnoreCase);
+        Programs.ActiveModsChanged += (_, _) => ShowActive();
+        Programs.AfterChangeAsync = RefreshAfterChangeAsync;
+        Activation.Preview.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(PlanPreview.Title) && Activation.Preview.Title is not null)
+            {
+                Programs.CancelPlanCommand.Execute(null);
+            }
+        };
+    }
+
+    private void ShowActive() => Library.ShowActive([.. Activation.ActiveModIds, .. Programs.ActiveModIds]);
+
     private Task TurnOnAsync(IReadOnlyList<string> modIds, IReadOnlyList<AddInsListChange> restoredAddIns, CancellationToken cancellationToken)
     {
         Filter.ShowOnlyCommand.Execute(ModShowFilter.All); // The preview shows with your mods, which a chip may be hiding.
@@ -186,7 +226,9 @@ public sealed class ModsTabViewModel
         line.Watch(Library, "Reading your mods");
         line.Watch(HandInstalled, "Looking at what's in your game");
         line.Watch(LoadOrder, "Working out which mods win");
+        line.Watch(AddIns, "Comparing your add-ins");
         line.Watch(Activation, "Working out the preview");
+        line.Watch(Programs, "Checking the mod and working out the preview");
         line.Watch(HandInstalled.Adoption, "Copying to your Library and working out the preview");
         line.Watch(LookFirst, "Looking at what you added");
         line.Watch(Handover, "Working on your mods from Vortex");
@@ -218,10 +260,12 @@ public sealed class ModsTabViewModel
     private async Task RefreshAfterChangeAsync(CancellationToken cancellationToken)
     {
         await Activation.RefreshActiveAsync(cancellationToken); // First, since what is on decides which mods are parts of others.
+        await Programs.RefreshActiveAsync(cancellationToken);
         await Library.LoadAsync(cancellationToken);
         await Changes.RefreshAsync(cancellationToken);
         await LoadOrder.RefreshAsync(cancellationToken);
         await HandInstalled.RefreshAsync(cancellationToken);
+        await AddIns.RefreshAsync(cancellationToken);
         await Handover.RefreshAsync(cancellationToken);
         await LastGame.RefreshAsync(cancellationToken);
         ProblemSearch.Recheck();

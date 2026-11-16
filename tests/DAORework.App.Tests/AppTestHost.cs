@@ -37,7 +37,7 @@ internal sealed class AppTestHost : IDisposable
         services.Replace(ServiceDescriptor.Singleton<IPathPicker>(Picker));
         services.Replace(ServiceDescriptor.Singleton<IRegistry>(new EmptyRegistry()));
         services.Replace(ServiceDescriptor.Singleton<IHostPlatform>(new WindowsHost()));
-        services.Replace(ServiceDescriptor.Singleton<IMalwareScanner>(new FakeMalwareScanner()));
+        services.Replace(ServiceDescriptor.Singleton<IMalwareScanner>(Scanner));
         services.Replace(ServiceDescriptor.Singleton<IRecycleBin>(RecycleBin));
         _services = services.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true });
     }
@@ -58,6 +58,8 @@ internal sealed class AppTestHost : IDisposable
     public FakeUriLauncher UriLauncher { get; } = new();
 
     public FakePathPicker Picker { get; } = new();
+
+    public FakeMalwareScanner Scanner { get; } = new();
 
     public string ProfilesDirectory => Path.Combine(_appData, "profiles");
 

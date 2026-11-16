@@ -15,15 +15,15 @@ public sealed class PlanFix
     private readonly IDeploymentRecordStore _records;
     private readonly IApplyJournalStore _journals;
     private readonly IFixLibrary _library;
-    private readonly IInstallFiles _files;
+    private readonly ReadInstallState _state;
     private readonly IReadOnlyList<IManagedFix> _fixes;
 
-    public PlanFix(IDeploymentRecordStore records, IApplyJournalStore journals, IFixLibrary library, IInstallFiles files, IEnumerable<IManagedFix> fixes)
+    public PlanFix(IDeploymentRecordStore records, IApplyJournalStore journals, IFixLibrary library, ReadInstallState state, IEnumerable<IManagedFix> fixes)
     {
         _records = records;
         _journals = journals;
         _library = library;
-        _files = files;
+        _state = state;
         _fixes = fixes.ToList();
     }
 
@@ -57,9 +57,6 @@ public sealed class PlanFix
     private static Result<PlannedFix> Failure(string code, string message, string? recommendation = null) =>
         Result.Failure<PlannedFix>(new Error(code, message, recommendation));
 
-    private static PlanBlocker Blocker(Error error) =>
-        new(error.Code == DiagnosticCodes.FixFileInUse ? PlanBlockerKind.FileInUse : PlanBlockerKind.InstallNotWritable, string.Empty, $"{error.Message} {error.Recommendation}".TrimEnd());
-
     private async Task<Result<PlannedFix>> PlanApplyAsync(IManagedFix fix, FixApplyContext context, CancellationToken cancellationToken)
     {
         if (!(await fix.PrepareAsync(context, cancellationToken)).TryGetValue(out var prepared, out var error))
@@ -68,7 +65,7 @@ public sealed class PlanFix
         }
 
         var paths = prepared.Entry.Files.Select(f => f.TargetPath).ToList();
-        var state = await StateAsync(context.InstallDirectory, context.Record, paths, prepared.Replaceable, cancellationToken);
+        var state = await _state.ExecuteAsync(context.InstallDirectory, context.Record, paths, prepared.Replaceable, cancellationToken);
         return state.TryGetValue(out var install, out error)
             ? Result.Success(new PlannedFix(FixIds.DisplayName(fix.Id), FixPlanner.PlanApply(prepared.Entry, install), prepared))
             : Result.Failure<PlannedFix>(error);
@@ -83,20 +80,9 @@ public sealed class PlanFix
         }
 
         var paths = record.Files.Where(f => f.ModId.Equals(applied, StringComparison.OrdinalIgnoreCase)).Select(f => f.TargetPath).ToList();
-        var state = await StateAsync(install, record, paths, new HashSet<string>(), cancellationToken);
+        var state = await _state.ExecuteAsync(install, record, paths, new HashSet<string>(), cancellationToken);
         return state.TryGetValue(out var current, out var error)
             ? Result.Success(new PlannedFix(FixIds.DisplayName(fix.Id), FixPlanner.PlanRemove(applied, current, library), Prepared: null))
             : Result.Failure<PlannedFix>(error);
-    }
-
-    private async Task<Result<InstallState>> StateAsync(string install, DeploymentRecord record, IReadOnlyList<string> paths, IReadOnlySet<string> replaceable, CancellationToken cancellationToken)
-    {
-        if (!(await _files.HashAsync(install, paths, cancellationToken)).TryGetValue(out var hashes, out var error))
-        {
-            return Result.Failure<InstallState>(error);
-        }
-
-        var problems = await _files.CheckWritableAsync(install, paths, cancellationToken);
-        return Result.Success(new InstallState(record, hashes, replaceable, problems.Select(Blocker).ToList()));
     }
 }

@@ -25,6 +25,7 @@ readme), not a forum guess.
 | `license` | The item's license as its author states it. |
 | `fingerprints` | One or more; the item is found when any one matches. |
 | `whenMissing` | Optional. Advice shown when the item is **not** installed; leave it out for items that are only reported when found. |
+| `needs` | Optional. `[{ "item": id, "source": "https://..." }]`: other entries the item needs to work, each with a link to where its author says so. Turning on a mod that runs inside the game warns when one is missing ([ADR-0033](../docs/adr/0033-mods-that-run-inside-the-game.md) §5). |
 
 Fingerprint kinds:
 
@@ -32,7 +33,7 @@ Fingerprint kinds:
 |---|---|---|
 | `AddInUid` | The `UID` of the `AddInItem` in the `.dazip`'s `Manifest.xml` | `Settings\AddIns.xml` registers that UID (enabled or not) |
 | `OverrideFile` | A file name the mod ships | That file is anywhere under `packages\core\override` |
-| `GameFile` | A path relative to the install folder, with `/` | The file exists and, with `marker`, contains the marker as a whole NUL-terminated string. The string after it is reported as the version. |
+| `GameFile` | A path relative to the install folder, with `/` | The file exists and, with `marker`, contains the marker as a whole NUL-terminated string. The string after it is reported as the version. Without a marker, a mod that runs inside the game is also recognized in the Library by that file's name, so pick a name only that mod ships. |
 | `LargeAddressAware` | The executable, for the record | The game executable's header has the flag set |
 | `DownloadSha256` | The SHA-256 of an official download, in lowercase hex, with its `version` | Never on disk. At import, a download with this hash is shown as that version of the item; a download the item's other fingerprints recognize but that matches none of its hashes gets `DAO_MOD_SAFETY_DOWNLOAD_DIFFERS` ([ADR-0018](../docs/adr/0018-mod-safety.md)) |
 
@@ -60,9 +61,18 @@ entry always keeps a fingerprint found on disk, because a download hash cannot t
 | `qwinn-fixpack` | `AddInUid` `qwinn_fixpack_3`, `DownloadSha256` of v3.5 | `QUDAO Fixpack v3.5-4689-3-5-1550475932.zip` (Nexus mod 4689), sha256 `6a2788e24d900bea771a27353f17e0f88dd96914175c731f385504a3155f2674`, via the `.dazip` inside it |
 | `extra-dog-slot` | `AddInUid` `Extra_Dog_Slot`, `DownloadSha256` of v1.41 | `dao_extradogslot_1_41-664.dazip` (Nexus mod 664, v1.41), sha256 `973f9879f5301581adb922c14c89581d97c3a30b8b90151a3e9cfa4e784cb8d2` |
 | `dxvk` | `GameFile` `bin_ship/d3d9.dll`, marker `DXVK: ` | See below |
+| `dao-lib` | `GameFile` `bin_ship/daolib/addresses/daoaddresses-code.index`, `DownloadSha256` of 0.11.0 | `DAOLib 0.11.0 7052 0.11.0 2026-11-10T23-35Z h5CLGYWD.zip` (Nexus mod 7052), sha256 `a1d5083afe99d3d39b6819f843ad9e872897980491ae6f69a7fa9048dbc1f0c1`, by its file list. Its `README.txt` gives the license and the `dinput8.chain.dll` way through |
+| `native-controller-framework` | `GameFile` `bin_ship/DAControllerFramework.ini`, `DownloadSha256` of 2.2.1b | `Dragon Age - Native Controller Framework v2.2.1b 7051 2.2.1b 2026-11-10T20-45Z ZJU7TXc5.zip` (Nexus mod 7051), sha256 `a34ea1f42931d0c73309aaafc7a8941d2c23a20b785186768003437fd745c58c`, by its file list only: the author doesn't allow its files to be given to AI services, so no file in it was opened. Its page calls an LAA-patched executable mandatory, which is its `needs` |
 | `dlc-*` (11 entries) | `AddInUid` `DAO_PRC_*` (19 UIDs) | See below |
 
-The list of conflicts is empty until the mods the Fixpack's documentation calls incompatible (Alistair Dialog Patch,
+`dao-lib` and `native-controller-framework` are both `bin_ship/dinput8.dll`, so they conflict. The way through is from
+DAO Lib's own compatibility page. `dinput8.dll` itself is no fingerprint, since both ship one.
+
+Luma (Nexus mod 7084) has no entry yet: its page was hidden by its author on 2026-11-08 as unsupported, and its
+repository states no license. Its 0.6.9 download is `Luma-Dragon Age Origins.addon` among its files, sha256
+`f0e394acf0dd2815e36fefe3d0c8cda943d8dd1cb1f74bbe7eb970f7e9533c1f`, for when it comes back.
+
+The other conflicts wait until the mods the Fixpack's documentation calls incompatible (Alistair Dialog Patch,
 Zevran Dialogue Fixes, Equal Love, Complete Bi Overhaul, Auto Loot, Improved Atmosphere) have fingerprints read the
 same way. A conflict needs both of its sides in the catalog.
 

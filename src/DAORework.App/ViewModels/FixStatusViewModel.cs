@@ -5,6 +5,7 @@ using DAORework.Application.Profiles;
 using DAORework.Core.Common;
 using DAORework.Core.Fixes;
 using DAORework.Core.Mods.Backups;
+using DAORework.Core.Mods.Library;
 using Microsoft.Extensions.Logging;
 
 namespace DAORework.App.ViewModels;
@@ -32,6 +33,9 @@ public sealed partial class FixStatusViewModel : RecoverableChangesViewModel
     public partial string? Summary { get; set; }
 
     protected override string RollbackConsequence => "the fixes that were on before it are on again.";
+
+    /// <summary>Gets or sets how a mod that runs inside the game is named: by its Library name, which the Mods tab knows.</summary>
+    public Func<string, string> ModName { get; set; } = ModIds.ReadableName;
 
     protected override Task<Result<string>> FolderAsync(CancellationToken cancellationToken) => ProfileInstall.ForAsync(_getProfile, ProfileName, cancellationToken);
 
@@ -61,15 +65,22 @@ public sealed partial class FixStatusViewModel : RecoverableChangesViewModel
         Summary = status.Applied.Count == 0 ? $"No fixes are applied through DAORework in {install}." : $"Install folder: {install}";
         ChangeUnfinished = status.ChangeUnfinished;
 
-        ShowBackups(status.Backups, [.. status.Applied.Select(f => f.LibraryId)], status.Record, DeploymentChangeText.Fixes, FixName, "no fixes");
+        // What is on now includes mods that run inside the game, which share this record (ADR-0033 §4).
+        ShowBackups(status.Backups, status.Record?.ActiveModIds ?? [.. status.Applied.Select(f => f.LibraryId)], status.Record, DeploymentChangeText.Fixes, FixName, "no fixes");
     }
 
     /// <summary>
     /// A fix is recorded by its library id, fixes/&lt;entry&gt;, whose entry starts with the fix's id: it reads as the fix's
-    /// name ("4 GB patch", "DXVK"), and an entry of a fix DAORework does not know as the entry.
+    /// name ("4 GB patch", "DXVK"), and an entry of a fix DAORework does not know as the entry. A mod that runs inside the
+    /// game, which shares this record (ADR-0033 §4), reads as the Mods tab names it.
     /// </summary>
-    private static string FixName(string libraryId)
+    private string FixName(string libraryId)
     {
+        if (!FixIds.IsFixEntry(libraryId))
+        {
+            return ModName(libraryId);
+        }
+
         string[] known = [FixIds.LargeAddressAware, FixIds.Dxvk];
         return known.FirstOrDefault(fix => FixIds.IsEntryOf(libraryId, fix)) is { } fix
             ? FixIds.DisplayName(fix)

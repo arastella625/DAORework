@@ -8,6 +8,7 @@ using DAORework.Application.Installations;
 using DAORework.Application.Launching;
 using DAORework.Application.Looks;
 using DAORework.Application.Mods;
+using DAORework.Application.Mods.AddIns;
 using DAORework.Application.Mods.Adoption;
 using DAORework.Application.Mods.Apply;
 using DAORework.Application.Mods.Backups;
@@ -15,6 +16,7 @@ using DAORework.Application.Mods.Changes;
 using DAORework.Application.Mods.Downloads;
 using DAORework.Application.Mods.Handover;
 using DAORework.Application.Mods.Library;
+using DAORework.Application.Mods.Programs;
 using DAORework.Application.Preferences;
 using DAORework.Application.Profiles;
 using DAORework.Application.Saves;
@@ -38,6 +40,7 @@ public static class DependencyInjection
         services.AddSingleton<IDiagnosticRule, ProtonPrefixRule>();
         services.AddSingleton<IDiagnosticRule, ModFoldersRule>();
         services.AddSingleton<IDiagnosticRule, InstallOverrideRule>();
+        services.AddSingleton<IDiagnosticRule, AddInClashRule>();
         services.AddSingleton<IDiagnosticRule, BinShipProgramsRule>();
         services.AddSingleton<IDiagnosticRule, LargeAddressAwareRule>();
         services.AddSingleton<IDiagnosticRule, SteamProtectedExecutableRule>();
@@ -54,6 +57,7 @@ public static class DependencyInjection
         services.AddSingleton<IFingerprintMatcher, LargeAddressAwareMatcher>();
 
         services.AddSingleton<ReadInstallOverride>();
+        services.AddSingleton<FindAddInClashes>();
         services.AddSingleton<OpenModPage>();
         services.AddSingleton<ReadVortexHandover>();
         services.AddSingleton<CopyVortexMods>();
@@ -71,6 +75,7 @@ public static class DependencyInjection
         services.AddSingleton<ApplyInstallation>();
         services.AddSingleton<ProfileDocumentsFolders>();
         services.AddSingleton<DetectDocumentsFolders>();
+        services.AddSingleton<SameFolder>();
         services.AddSingleton<CreateProfile>();
         services.AddSingleton<GetProfile>();
         services.AddSingleton<ListProfiles>();
@@ -120,8 +125,15 @@ public static class DependencyInjection
         // One strategy per managed fix (ADR-0013). Add a fix by adding its IManagedFix here.
         services.AddSingleton<IManagedFix, LargeAddressAwareFix>();
         services.AddSingleton<IManagedFix, DxvkFix>();
+        services.AddSingleton<ReadInstallState>();
         services.AddSingleton<PlanFix>();
         services.AddSingleton<ApplyFix>();
+        services.AddSingleton<ReadGameProgramFiles>();
+        services.AddSingleton<PlanGameProgramMod>();
+        services.AddSingleton<ApplyGameProgramMod>();
+        services.AddSingleton<GetGameProgramStatus>();
+        services.AddSingleton<FindMissingNeeds>();
+        services.AddSingleton<GameProgramSteps>();
         services.AddSingleton<GetFixStatus>();
 
         return services;

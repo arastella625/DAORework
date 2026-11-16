@@ -103,7 +103,7 @@ public sealed class LibraryScreenTests : IDisposable
         Assert.True(viewModel.Library.IsError);
         Assert.StartsWith("Added 1 mod. Broken.rar needs a look: ", viewModel.Library.StatusMessage, StringComparison.Ordinal);
         var row = Assert.Single(viewModel.Library.Mods);
-        Assert.Contains("It holds 1 program file(s) (tools/setup.exe). They stay in the library and are never installed into the game's folders.", row.Notes);
+        Assert.Contains("It holds 1 program file(s) (tools/setup.exe). They stay in the library: a mod like this never installs them.", row.Notes);
         Assert.Null(row.Warning);
     }
 

@@ -218,7 +218,7 @@ public sealed class FixUseCaseTests
     }
 
     private Task<Result<PlannedFix>> Plan(FixChangeKind kind, string fix = "laa") =>
-        new PlanFix(_stores, _stores, _library, _files, [new LargeAddressAwareFix(_files)]).ExecuteAsync(new PlanFixRequest(Install, fix, kind));
+        new PlanFix(_stores, _stores, _library, new ReadInstallState(_files), [new LargeAddressAwareFix(_files)]).ExecuteAsync(new PlanFixRequest(Install, fix, kind));
 
     private ApplyFix ApplyFix() =>
         new(_library, new ApplyModPlan(new BackUpDeployment(_backups), _stores, new JournaledApplyRunner(_stores, _stores, _stores)), _stores);

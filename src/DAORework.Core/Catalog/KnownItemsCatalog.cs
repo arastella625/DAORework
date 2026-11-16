@@ -25,13 +25,10 @@ public sealed record KnownItemsCatalog(int SchemaVersion, IReadOnlyList<KnownIte
         }
 
         var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var problem = ItemsProblem(catalog.Items ?? [], ids) ?? ConflictsProblem(catalog.Conflicts ?? [], ids);
-        if (problem is not null)
-        {
-            return Invalid(problem);
-        }
-
-        return Result.Success(catalog with { Items = catalog.Items ?? [], Conflicts = catalog.Conflicts ?? [] });
+        var items = catalog.Items ?? [];
+        var conflicts = catalog.Conflicts ?? [];
+        var problem = ItemsProblem(items, ids) ?? ConflictsProblem(conflicts, ids) ?? NeedsProblem(items, ids);
+        return problem is null ? Result.Success(catalog with { Items = items, Conflicts = conflicts }) : Invalid(problem);
     }
 
     private static string? ItemsProblem(IReadOnlyList<KnownItem> items, HashSet<string> ids)
@@ -59,6 +56,25 @@ public sealed record KnownItemsCatalog(int SchemaVersion, IReadOnlyList<KnownIte
             .Where(c => c.Problem is not null)
             .Select(c => $"Conflict '{c.conflict?.First}' / '{c.conflict?.Second}': {c.Problem}")
             .FirstOrDefault();
+
+    /// <summary>
+    /// A need names another entry, with a link to where its author says so (ADR-0033 §5). The entry has a download hash,
+    /// since that is how a mod in the Library is matched to it at all.
+    /// </summary>
+    private static string? NeedsProblem(IReadOnlyList<KnownItem> items, HashSet<string> ids) =>
+        items
+            .SelectMany(item => (item.Needs ?? []).Select(need => (item.Id, Need: need)))
+            .Select(n => n.Need switch
+            {
+                null => $"Entry '{n.Id}' has an empty need.",
+                _ when !ids.Contains(n.Need.Item ?? string.Empty) => $"Entry '{n.Id}' needs '{n.Need.Item}', which is not a catalog entry.",
+                _ when string.Equals(n.Need.Item, n.Id, StringComparison.OrdinalIgnoreCase) => $"Entry '{n.Id}' cannot need itself.",
+                _ when !IsHttpsUrl(n.Need.Source) => $"Entry '{n.Id}': the source of its need '{n.Need.Item}' must be an https link.",
+                _ when !items.First(i => i.Id == n.Id).Fingerprints.Any(f => f.Kind == FingerprintKind.DownloadSha256) =>
+                    $"Entry '{n.Id}' has needs but no download hash, so a mod in the Library is never known to be it.",
+                _ => null,
+            })
+            .FirstOrDefault(p => p is not null);
 
     private static string? Problem(KnownItem? item)
     {

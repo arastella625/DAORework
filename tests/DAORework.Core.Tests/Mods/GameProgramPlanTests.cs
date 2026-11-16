@@ -33,6 +33,14 @@ public sealed class GameProgramPlanTests
     }
 
     [Fact]
+    public void Plan_WithAnotherMod_SaysToTurnItOnByItself()
+    {
+        var blocker = Plan(Mods.Override("hair", "hair.dds"), _program).Blockers.Single(b => b.Kind == PlanBlockerKind.GameProgramNotInstalled);
+
+        Assert.EndsWith("Turn it on by itself: mods activate dao-lib-1 --allow-programs dao-lib-1.", blocker.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void Plan_ACopyThatIsStillOn_SaysToTurnItOffFirst()
     {
         var current = new DeploymentRecord(["dao-lib-1"], [], []);

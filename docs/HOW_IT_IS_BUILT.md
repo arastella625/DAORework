@@ -32,7 +32,8 @@ Every one of these is public in this repository:
   were turned down and why. Where the choice was mine, it says so: for example the 4 GB patch approach and write access
   in [ADR-0013](adr/0013-managed-fixes-in-the-install-folder.md), and in
   [ADR-0018](adr/0018-mod-safety.md) that a mod your antivirus flags is refused with no override, and that programs
-  inside a mod are never installed.
+  inside a mod are never installed. [ADR-0033](adr/0033-mods-that-run-inside-the-game.md) later let mods that run
+  inside the game in, for `bin_ship` only, behind their own checks and the player's yes.
 - **The plan is phased, with gates.** [docs/ROADMAP.md](ROADMAP.md) lists every task and what has to be true before a
   phase counts as done.
 - **Your files are protected by design, and that is tested.** Nothing is written without a plan you see first and a

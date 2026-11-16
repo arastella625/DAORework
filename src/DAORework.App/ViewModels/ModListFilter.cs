@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DAORework.Core.Mods.AddIns;
 
 namespace DAORework.App.ViewModels;
 
@@ -42,7 +43,7 @@ public sealed partial class ModListFilter : ObservableObject
     public partial ModKindFilter Kind { get; set; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ShowsMods), nameof(ShowsFound), nameof(IsAll), nameof(IsOn), nameof(IsOff), nameof(IsFound), nameof(IsGameFolder))]
+    [NotifyPropertyChangedFor(nameof(ShowsMods), nameof(ShowsFound), nameof(IsAll), nameof(IsOn), nameof(IsOff), nameof(IsFound), nameof(IsGameFolder), nameof(IsSharingAddIns))]
     public partial ModShowFilter Show { get; set; }
 
     [ObservableProperty]
@@ -80,11 +81,22 @@ public sealed partial class ModListFilter : ObservableObject
     [ObservableProperty]
     public partial bool HasGameFolder { get; set; }
 
+    /// <summary>Gets or sets each enabled add-in's Priority and shared files, by UID, which its row shows (P2.5-23).</summary>
+    [ObservableProperty]
+    public partial IReadOnlyDictionary<string, AddInMark> AddInMarks { get; set; } = new Dictionary<string, AddInMark>();
+
+    [ObservableProperty]
+    public partial string SharingAddInsLabel { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets a value indicating whether two add-ins share a file, so its chip shows (P2.5-23).</summary>
+    [ObservableProperty]
+    public partial bool HasSharingAddIns { get; set; }
+
     public bool ShowsList => Kind != ModKindFilter.CombinedFiles && !Arranging;
 
     public bool ShowsMods => ShowsList && Show is not (ModShowFilter.Found or ModShowFilter.GameFolder);
 
-    public bool ShowsFound => ShowsList && Show is ModShowFilter.All or ModShowFilter.Found or ModShowFilter.GameFolder;
+    public bool ShowsFound => ShowsList && Show is ModShowFilter.All or ModShowFilter.Found or ModShowFilter.GameFolder or ModShowFilter.SharingAddIns;
 
     public bool ShowsCombined => Kind == ModKindFilter.CombinedFiles && !Arranging;
 
@@ -97,6 +109,8 @@ public sealed partial class ModListFilter : ObservableObject
     public bool IsFound => Show == ModShowFilter.Found;
 
     public bool IsGameFolder => Show == ModShowFilter.GameFolder;
+
+    public bool IsSharingAddIns => Show == ModShowFilter.SharingAddIns;
 
     public string ArrangeLabel => Arranging ? "Done arranging" : "Arrange";
 
@@ -118,6 +132,8 @@ public sealed partial class ModListFilter : ObservableObject
     partial void OnSearchTextChanged(string? value) => Update();
 
     partial void OnSortIndexChanged(int value) => Update();
+
+    partial void OnAddInMarksChanged(IReadOnlyDictionary<string, AddInMark> value) => Update();
 
     /// <summary>Shows only the mods in one state; the list comes back if the Combined files card was showing.</summary>
     [RelayCommand]
@@ -180,32 +196,57 @@ public sealed partial class ModListFilter : ObservableObject
     private void Update()
     {
         var alreadyListed = MarkModsInTheGame();
+        MarkAddIns();
         Unlisted = [.. _found.Where(m => !alreadyListed.Contains(m))];
         var mods = _mods.Where(m => OfKind(m.IsAddIn)).ToList();
         var found = _found.Where(m => OfKind(m.IsAddIn) && !alreadyListed.Contains(m)).ToList();
+        Count(mods, found);
+        if (ChipHasGone())
+        {
+            Show = ModShowFilter.All; // Nothing is left under the chip that was picked.
+        }
+
+        Refill(VisibleMods, ModListOrder.Sorted(mods.Where(m => ModListOrder.Matches(m.Title, SearchText) && Shows(m)), (ModSort)SortIndex));
+        Refill(VisibleFound, found.Where(m => ModListOrder.Matches(m.Title, SearchText) && Shows(m)));
+        NothingMatches = !string.IsNullOrWhiteSpace(SearchText) && VisibleMods.Count == 0 && VisibleFound.Count == 0;
+    }
+
+    private void Count(List<LibraryModRow> mods, List<HandInstalledModRow> found)
+    {
         var on = mods.Count(m => m.IsActive);
         AllLabel = $"All ({mods.Count + found.Count})";
         OnLabel = $"On ({on})";
         OffLabel = $"Off ({mods.Count - on})";
         FoundLabel = $"Found in your game ({found.Count})";
-        var inGameFolder = found.Where(m => m.IsInGameFolder).ToList();
-        GameFolderLabel = $"In your game folder ({inGameFolder.Count})";
+        GameFolderLabel = $"In your game folder ({found.Count(m => m.IsInGameFolder)})";
         HasGameFolder = _found.Any(m => m.IsInGameFolder);
-        if (!HasGameFolder && Show == ModShowFilter.GameFolder)
-        {
-            Show = ModShowFilter.All; // The chip has gone, and nothing is left under it.
-        }
-
-        var shown = mods.Where(m => ModListOrder.Matches(m.Title, SearchText) && Show switch
-        {
-            ModShowFilter.On => m.IsActive,
-            ModShowFilter.Off => !m.IsActive,
-            _ => true,
-        });
-        Refill(VisibleMods, ModListOrder.Sorted(shown, (ModSort)SortIndex));
-        Refill(VisibleFound, (Show == ModShowFilter.GameFolder ? inGameFolder : found).Where(m => ModListOrder.Matches(m.Title, SearchText)));
-        NothingMatches = !string.IsNullOrWhiteSpace(SearchText) && VisibleMods.Count == 0 && VisibleFound.Count == 0;
+        SharingAddInsLabel = $"Add-ins sharing files ({mods.Count(m => Shares(m.PriorityMark)) + found.Count(m => Shares(m.PriorityMark))})";
+        HasSharingAddIns = _mods.Any(m => Shares(m.PriorityMark)) || _found.Any(m => Shares(m.PriorityMark));
     }
+
+    private bool ChipHasGone() => Show switch
+    {
+        ModShowFilter.GameFolder => !HasGameFolder,
+        ModShowFilter.SharingAddIns => !HasSharingAddIns,
+        _ => false,
+    };
+
+    private bool Shows(LibraryModRow mod) => Show switch
+    {
+        ModShowFilter.On => mod.IsActive,
+        ModShowFilter.Off => !mod.IsActive,
+        ModShowFilter.SharingAddIns => Shares(mod.PriorityMark),
+        _ => true,
+    };
+
+    private bool Shows(HandInstalledModRow row) => Show switch
+    {
+        ModShowFilter.GameFolder => row.IsInGameFolder,
+        ModShowFilter.SharingAddIns => Shares(row.PriorityMark),
+        _ => true,
+    };
+
+    private static bool Shares(AddInMark? mark) => mark?.Shares == true;
 
     /// <summary>
     /// A mod in the Library and in the game is one mod, shown once (P2.6-26): an off row says so, and turning it on takes
@@ -222,6 +263,20 @@ public sealed partial class ModListFilter : ObservableObject
         }
 
         return listed;
+    }
+
+    /// <summary>Each add-in row shows its Priority, whichever list it is in and however often the lists are read again (P2.5-23).</summary>
+    private void MarkAddIns()
+    {
+        foreach (var mod in _mods)
+        {
+            mod.PriorityMark = mod.AddInUid is { } uid ? AddInMarks.GetValueOrDefault(uid) : null;
+        }
+
+        foreach (var row in _found)
+        {
+            row.PriorityMark = row.AddInUid is { } uid ? AddInMarks.GetValueOrDefault(uid) : null;
+        }
     }
 
     /// <summary>Changes the list only if what it shows has changed: building every row again is the slowest thing the window does.</summary>

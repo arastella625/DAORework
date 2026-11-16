@@ -51,6 +51,21 @@ internal sealed record GateScenario(string Name, string Group, bool OnInstall, I
         [["fixes", "apply", "dxvk", "{dxvk-2.3}", "-p", GateFixtures.Profile, "--yes"]],
         ["fixes", "remove", "dxvk", "-p", GateFixtures.Profile, "--yes"]);
 
+    /// <summary>Gets turning on a mod that runs inside the game (ADR-0033): DLLs and an .ini into bin_ship, on the fixes' record.</summary>
+    public static GateScenario TurnOnGameProgram { get; } = new(
+        "turn on a mod that runs inside the game",
+        "fixes",
+        true,
+        [],
+        ["mods", "activate", "{program}", "--allow-programs", "{program}", "-p", GateFixtures.Profile, "--yes"]);
+
+    public static GateScenario TurnOffGameProgram { get; } = new(
+        "turn off a mod that runs inside the game",
+        "fixes",
+        true,
+        [["mods", "activate", "{program}", "--allow-programs", "{program}", "-p", GateFixtures.Profile, "--yes"]],
+        ["mods", "deactivate", "{program}", "-p", GateFixtures.Profile, "--yes"]);
+
     public static GateScenario AdoptAddInInPlace { get; } = new("adopt an add-in where it is", "mods", false, [], ["mods", "adopt", "addin:hand_addin", "-p", GateFixtures.Profile, "--yes"]);
 
     public static GateScenario AdoptOverrideFolder { get; } = new("adopt an override folder", "mods", false, [], ["mods", "adopt", "override:Hand Hair", "-p", GateFixtures.Profile, "--yes"]);

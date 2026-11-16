@@ -61,7 +61,7 @@ public sealed class CliModAdoptTests : IDisposable
 
         var result = _host.Run("mods", "adopt", "--dry-run", "-p", "Mods");
 
-        Assert.Contains("Holds 1 program file(s) (install.bat): adopting leaves them where they are, and DAORework never installs programs.", result.Output, StringComparison.Ordinal);
+        Assert.Contains("Holds 1 program file(s) (install.bat): adopting leaves them where they are.", result.Output, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -73,7 +73,11 @@ public static class ModActivationPlanner
         };
     }
 
-    /// <summary>Says what to do when there is something to do: a copy added as an override mod is still on, or the mod is DXVK.</summary>
+    /// <summary>
+    /// Such a mod is turned on by itself, after the player says they trust it (ADR-0033 §3), never in a change with others.
+    /// Says what to do: turn off a copy added as an override mod that is still on, use the Fixes page for DXVK, or turn it
+    /// on by itself.
+    /// </summary>
     private static PlanBlocker GameProgramBlocker(LibraryMod mod, DeploymentRecord current)
     {
         var dxvk = mod.Files.Any(f => f.RelativePath.EndsWith("d3d9.dll", StringComparison.OrdinalIgnoreCase));
@@ -81,11 +85,11 @@ public static class ModActivationPlanner
             ? $" Turn {mod.Name} off first: it was added before DAORework knew this, and its files do nothing where they are."
             : dxvk
                 ? " For DXVK, use: fixes apply dxvk <release>."
-                : string.Empty;
+                : $" Turn it on by itself: mods activate {mod.Id} --allow-programs {mod.Id}.";
         return new PlanBlocker(
             PlanBlockerKind.GameProgramNotInstalled,
             mod.Id,
-            $"{mod.Name} runs inside the game, and DAORework can't install that kind of mod yet. Nothing was changed, and it stays in your Library.{next}")
+            $"{mod.Name} runs inside the game, so it's turned on by itself, after you say you trust it. Nothing was changed, and it stays in your Library.{next}")
         {
             ModIds = [mod.Id],
             LeaveOutModIds = [mod.Id],

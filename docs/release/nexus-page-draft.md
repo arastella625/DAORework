@@ -30,7 +30,8 @@ https://github.com/arastella625/DAORework/releases/latest. Its checksum and buil
   exactly what will be copied, replaced or removed before anything changes, and takes a backup first. Any change can
   be rolled back.
 - **Shows conflicts.** For every file two mods share, it shows whose copy the game uses, and lets you reorder them.
-- **Checks every mod.** Program files inside a mod are named and never installed. Every mod is scanned by your own
+- **Checks every mod.** Program files inside an ordinary mod are named and left out; from 0.7.0, a mod that runs
+  inside the game goes in once the player says they trust it (ADR-0033). Every mod is scanned by your own
   antivirus (Microsoft Defender or whichever you use) before it is kept, and a mod it flags is refused. A download
   that differs from the known official one is pointed out.
 - **Fixes.** Applies and removes the 4 GB (large address aware) patch and DXVK, and notices when Steam's Verify
