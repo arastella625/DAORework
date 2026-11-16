@@ -107,7 +107,7 @@ run with launch) stay open as an issue ([#5](https://github.com/arastella625/DAO
 project has those copies. The record is [testing/phase-1-matrix.md](testing/phase-1-matrix.md).
 
 **Exit gate:**
-- [ ] It works on Steam, GOG and EA App installs (manual test matrix recorded in `docs/testing/`). *(Steam verified on a real install; GOG and EA App covered by fake-registry tests only. Carried forward as [#5](https://github.com/arastella625/DAORework/issues/5).)*
+- [ ] It works on Steam, GOG and EA App installs (manual test matrix recorded in `docs/testing/`). *(Steam verified on a real install, and GOG on a player's GOG Galaxy install on 2026-11-15; EA App covered by fake-registry tests only. Carried forward as [#5](https://github.com/arastella625/DAORework/issues/5).)*
 - [x] No write operation targets any path outside the app-data folder. *(Audited: every writer is rooted in `DaoReworkOptions`; the saves and the install are only read.)*
 - [x] Every Phase 1 feature is reachable in the GUI.
 - [x] The headless screenshot tests are green.
@@ -252,9 +252,9 @@ reader.
   as it was. *(Steam, 2026-10-31, owner's report: [matrix](testing/phase-2.5-matrix.md).)*
 - [x] The fault-injection suite covers adopt and is green. *(Four adoption scenarios beside Phase 2's eight.)*
 - [ ] Steam, GOG and EA App each have a real run recorded in `docs/testing/phase-2.5-matrix.md`. No platform is
-  carried forward. *Steam is recorded (2026-10-31). GOG and EA App are still open as
-  [#5](https://github.com/arastella625/DAORework/issues/5): nobody on the project has either copy, so 0.3.0 says
-  plainly that only Steam has been run on a real install.*
+  carried forward. *Steam is recorded (2026-10-31), and GOG (2026-11-15, by a player from outside the project, on
+  0.6.0). EA App is still open as [#5](https://github.com/arastella625/DAORework/issues/5): nobody has run it on a
+  real EA App copy yet.*
 - [ ] At least one beta tester who is not on the project completes adopt, import, activate and rollback in the GUI
   without the docs or help from the owner. *The owner decided on 2026-10-31 to release 0.3.0 without one, since
   nobody outside the project is available yet; the first public users take that role, and their reports are

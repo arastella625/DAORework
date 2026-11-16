@@ -4,24 +4,25 @@ The manual record the Phase 1 exit gate asks for ([ROADMAP](../ROADMAP.md#phase-
 it works on Steam, GOG and EA App installs; no write operation targets any path outside the app-data folder; every
 Phase 1 feature is reachable in the GUI; the headless screenshot tests are green.
 
-**Status: Steam verified; GOG and EA App carried forward as issue [#5](https://github.com/arastella625/DAORework/issues/5).**
-Steam is verified on a real install. GOG and EA App are covered only by automated tests that use a fake registry,
-because nobody on the project has a real GOG or EA App copy yet. The owner closed Phase 1 on 2026-09-29 with this item
-open, rather than hold Phase 2 for it. The runs go in [How to add a run](#how-to-add-a-run).
+**Status: Steam and GOG verified; EA App carried forward as issue [#5](https://github.com/arastella625/DAORework/issues/5).**
+Steam is verified on a real install, and GOG on a player's GOG Galaxy install on 2026-11-15. EA App is covered only
+by automated tests that use a fake registry, because nobody has run it on a real EA App copy yet. The owner closed
+Phase 1 on 2026-09-29 with this item open, rather than hold Phase 2 for it. The runs go in
+[How to add a run](#how-to-add-a-run).
 
 ## Installs
 
 | Distribution | How DAORework finds it | Real install | Automated tests | Status |
 |---|---|---|---|---|
 | **Steam** | `libraryfolders.vdf` under the Steam folder, then `appmanifest_47810.acf` in each library (any drive) | Ultimate Edition at `D:\SteamLibrary\steamapps\common\Dragon Age Ultimate Edition`, Windows, owner's machine. All PASS, 2026-09-29 (run below). | `SteamLibraryLocatorTests`, `VdfReaderTests`; the App tests detect a Steam library on a second drive | **Verified** |
-| **GOG** | `HKLM\SOFTWARE\WOW6432Node\GOG.com\Games\*` (and the non-WOW64 key), matched by game name, folder checked on disk | Not run | `RegistryLocatorTests.Gog_GameRegisteredUnderGalaxy_IsFound`, `Gog_RegisteredButNotOnDisk_IsNotReported` | **Open** |
+| **GOG** | `HKLM\SOFTWARE\WOW6432Node\GOG.com\Games\*` (and the non-WOW64 key), matched by game name, folder checked on disk | GOG Galaxy at `C:\Program Files (x86)\GOG Galaxy\Games\Dragon Age Origins`, a player's machine, found by the GOG registry key on 0.6.0, 2026-11-15 ([Phase 2.5 matrix](phase-2.5-matrix.md#gog-run-2026-11-15)) | `RegistryLocatorTests.Gog_GameRegisteredUnderGalaxy_IsFound`, `Gog_RegisteredButNotOnDisk_IsNotReported` | **Verified** |
 | **EA App / Origin / retail** | `HKLM\SOFTWARE\WOW6432Node\BioWare\Dragon Age` `Path` (and the non-WOW64 key), folder checked on disk | Not run | `RegistryLocatorTests.BioWare_KeyWrittenByTheEaApp_IsFoundAsEaApp`, `BioWare_KeyPointingIntoSteam_KeepsTheSteamDistribution` | **Open** |
 | Any other folder | `detect --path <folder>`, or Browse on the Profile page | Steam folder given by hand: PASS | `WellKnownPathLocatorTests`, CLI and App tests | Verified |
 
 What the fake-registry tests cannot show: the exact key and value names a real GOG Galaxy or EA App install writes
 on a current Windows. The GOG key layout (`GOG.com\Games\<id>` with `gameName` and `path`) and the BioWare key
 (`BioWare\Dragon Age` with `Path`) come from the stores' documented and commonly reported registrations, not from an
-install we have seen.
+install we have seen. A real GOG Galaxy install confirmed the GOG one on 2026-11-15.
 
 ## Steam run, feature by feature
 

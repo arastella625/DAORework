@@ -45,9 +45,9 @@ https://github.com/arastella625/DAORework/releases/latest. Its checksum and buil
 
 **Requirements**
 - Windows 10 or 11, 64-bit. Nothing else to install (no .NET needed).
-- Dragon Age: Origins (any edition). *Tested on a real Steam Ultimate Edition install. GOG and EA App installs are
-  detected but have not yet been tried on a real machine; reports are welcome.* (Update this line if those runs
-  happen before upload.)
+- Dragon Age: Origins (any edition). *Tested on real Steam Ultimate Edition and GOG installs. EA App installs are
+  detected but have not yet been tried on a real machine; reports are welcome.* (Update this line if that run
+  happens before upload.)
 
 **Installation**
 Unzip anywhere and run `DAORework.exe`. Create a profile in the header: it finds your install and documents folder,

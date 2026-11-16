@@ -75,7 +75,8 @@ known-items catalog. Phase 2 (mod manager, release 0.2.0) writes, always behind 
 library, mod activation, and DXVK and the 4 GB patch (since 0.3.0, not on Steam's protected copy) as managed
 fixes, with a test suite that kills DAORework at
 every write and proves each change still ends fully before or fully after. Both are verified on a real Steam
-install; GOG and EA App installs still need a real run ([#5](https://github.com/arastella625/DAORework/issues/5)).
+install, and a player has run them on a GOG one; EA App installs still need a real run
+([#5](https://github.com/arastella625/DAORework/issues/5)).
 Phase 2.5 (release 0.3.0, the first public one) puts all of it in the window and adds adopting the mods you installed
 by hand, `.7z` and `.rar` import, the load order and its conflicts, and mod safety checks (programs in a mod left out,
 your antivirus scans every mod, downloads compared with the known official ones). Phase 2.6 (releases 0.3.1 to 0.6.0)
