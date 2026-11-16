@@ -36,13 +36,17 @@ The phases below still run in order, but in this order from here, each a release
 |---|---|---|
 | 0.6.x | Fixes from real use | What players report on 0.6.0, and Phase 2.6's leftovers: [#204](https://github.com/arastella625/DAORework/issues/204), [#205](https://github.com/arastella625/DAORework/issues/205), [#107](https://github.com/arastella625/DAORework/issues/107), [#98](https://github.com/arastella625/DAORework/issues/98), P2.5-37 and P2.5-38 |
 | 0.7.0 | Mods that run inside the game, and add-ins | Phase 2.8 (P2.8-04 to P2.8-08), P2.5-23 ([#72](https://github.com/arastella625/DAORework/issues/72)), and P2.5-31's add-ins ([#116](https://github.com/arastella625/DAORework/issues/116)) |
-| 0.8.0 | Conflicts from the inside | P3-01's GFF and TLK readers, P3-08, P3-09, and combining tables whose changes don't overlap once [ADR-0040](adr/0040-combining-more-than-one-file.md) is decided |
-| 0.9.0 | A guide, and the release candidate | Phase 2.9 (P2.9-03 to P2.9-06), and P3-06 if [ADR-0035](adr/0035-opt-in-update-check.md) is accepted |
+| 0.8.0 | Makes sense | Phase 2.10 (P2.10-02 to P2.10-07), with P2.9-03 (the cozy guide) and P2.9-06 (testers from outside the project) moved in |
+| 0.9.0 | Conflicts from the inside, and the release candidate | P3-01's GFF and TLK readers, P3-08, P3-09, and combining tables whose changes don't overlap once [ADR-0040](adr/0040-combining-more-than-one-file.md) is decided; P2.9-04 and P2.9-05; and P3-06 if [ADR-0035](adr/0035-opt-in-update-check.md) is accepted |
 | 1.0.0 | Ready for everyone | P2.9-07: Phase 2.9's exit gate |
 
 **After 1.0:** Phase 2.7 (Steam on Linux), unless a Linux player with real Steam and Proton can run P2.7-09 sooner;
 P3-12 (`nxm://` links, once Nexus answers); P3-05 (the music player); P3-02 and P3-03 (browsing the game's data); and
 the remaster track.
+
+**Changed on 2026-11-15 (P2.10-01):** the owner found the window hard to follow for the players it is for, so 0.8.0
+became *Makes sense*: a calmer window that shows what a player got, with pictures, and the guide. Conflicts from the
+inside moved to 0.9.0 with the release candidate.
 
 **No dates.** A release ships when it's done and checked on a real install. Testers from outside the project are
 asked for during 0.7.0 and 0.8.0 (P2.9-06), so they don't hold up 1.0.
@@ -711,9 +715,75 @@ these mods on Linux; a replacement `daorigins.exe`, which is never in scope.
 
 ---
 
+## Phase 2.10: Makes sense
+
+**Status: scheduled for 0.8.0** ([the road to 1.0](#the-road-to-10)), after 0.7.0 is published. Added 2026-11-15.
+It runs before Phase 2.9's remaining tasks and keeps its number, as Phase 2.8 did.
+
+**Why:** on 2026-11-15 the owner said the window "isn't much for people yet", and that turning on character-creation
+mods feels like nothing happens. The README's own screenshots show why: the window explains how DAORework works
+(*Override mods*, *Add-ins*, *Priority 109 · loses*) more than what the player gets; Home says *Not checked yet*,
+*Almost there* and *Ready* at once; most rows on Mods say *loses* with nothing to do about it; combining
+`chargenmorphcfg.xml` works but only shows in the game; and the list called *Combined files* lists overlaps.
+
+**Goal:** a player who has never modded can tell in one look whether the game is ready and what to do next, sees what
+each mod gave them, with its own pictures, and finds the details only when they ask.
+
+**The owner's choices (2026-11-15):** pictures come only from the mod's own download or from the player, so nothing is
+fetched or shipped; the page is for mods the player already has, not a shop for new ones; and this release comes
+before conflicts from the inside.
+
+**Task IDs:** `P2.10-` (branch `feat/P2.10-02-one-headline`).
+
+- P2.10-01 Decide it: this phase, the road to 1.0 changed, the roadmap page,
+  [ADR-0049](adr/0049-pictures-and-words-a-mod-brings.md), [ADR-0050](adr/0050-a-calmer-window.md),
+  [ADR-0051](adr/0051-the-cozy-guide.md) and their words in [VOICE.md](VOICE.md).
+- P2.10-02 One headline and one next step on Home (ADR-0050 §1): one Core rule beside `NextMoves` decides both, from the
+  readiness facts and the last check; the Ready card, *Almost there* and the next-step card become one card; the game is
+  checked when the window opens and after each change. *Last change · Undo* stays.
+- P2.10-03 What you got (ADR-0050 §4): `ChargenMorphCounts` beside `ChargenMorphCombiner` counts what each mod's
+  `chargenmorphcfg.xml` adds to character creation (hairstyles, faces, beards, colours, tattoos, skins), against the
+  game's own copy on the player's PC where it can be read, else against what every copy shares. It shows on the row,
+  in the message after turning mods on, and under *Where mods overlap*. Where nothing can be counted it says *Adds to
+  character creation*, with no number.
+- P2.10-04 Pictures and words from the download (ADR-0049): the Library keeps a `.dazip`'s outer readme and pictures,
+  shows the pictures a mod came with (never `.dds` or `.tga` textures), reads a description and author from an add-in's
+  `Manifest.xml` or a readme's first paragraph, and makes small thumbnails safely. `mod.json` goes to schema 4, with a
+  test that reads schema 3. Mods already in the Library are filled in from what they kept, and *Add a picture* covers
+  the rest.
+- P2.10-05 *About this mod* (ADR-0050 §3): a page for each mod with its pictures, description, author, what it adds, its
+  switch, its warnings and *Open the mod's page*; kind, files, *wins/loses* and Priority go under *Details*. A mod with
+  no picture shows a crest drawn in the theme's colours.
+- P2.10-06 A calmer Mods list (ADR-0050 §2 and §5): rows show a thumbnail, the name, what the mod adds and the switch;
+  kind, *wins/loses* and Priority move under *Details* on *About this mod*, and only *Could break quests* stays on it. A
+  *List | Cards* switch shows the same mods as picture cards. The message after turning several mods on is one line and
+  *Details*. *Combined files* becomes *Where mods overlap*, with *Could break quests* first and *Only looks* folded.
+- P2.10-07 Release pictures: the README, website and Nexus pictures retaken, as P2.5-28 did.
+
+P2.9-03 (the cozy guide, [ADR-0051](adr/0051-the-cozy-guide.md)) and P2.9-06 (testers from outside the project) run in
+this release too.
+
+**Not in this phase:** fetching anything from Nexus Mods or any other site (still no network access, SDD §12);
+pictures in the repository or the release that come from a mod; showing mods the player doesn't have; drawing a mod's
+textures or models; conflicts from the inside (0.9.0).
+
+**Exit gate:**
+- [ ] P2.10-01 to P2.10-07, P2.9-03 and P2.9-06's two runs are done.
+- [ ] Every changed screen has a headless screenshot at real scale (70 mods), and the owner has looked at each one in
+  the real window.
+- [ ] Checked read-only against scratch copies of the owner's real downloads: the pictures shown are the mods'
+  previews, not their textures, and the counts for the owner's hair and face mods match what the character creator
+  shows.
+- [ ] A player from outside the project, with no help, says whether the game is ready, turns on a hair mod and says
+  what it added.
+- [ ] Released as `v0.8.0`, with the roadmap page's card moved to *Out now*.
+
+---
+
 ## Phase 2.9: Ready for 1.0
 
-**Status: scheduled for 0.9.0** (P2.9-01 and P2.9-02 are done with the road to 1.0). Added 2026-11-11.
+**Status: scheduled for 0.9.0** (P2.9-01 and P2.9-02 are done with the road to 1.0), except P2.9-03 and P2.9-06,
+which run in 0.8.0 with Phase 2.10. Added 2026-11-11.
 
 **Goal:** what 1.0 promises that no earlier phase covers: a guide for a first game with mods, a window usable by
 keyboard and screen reader, files that every later version reads, and real players on every Windows copy.
@@ -726,6 +796,7 @@ keyboard and screen reader, files that every later version reads, and real playe
 - P2.9-03 A guide for a first game with mods, the owner's *cozy guide*: a short walk through finding the game, adding
   mods, turning them on and pressing Play, that can be skipped and opened again from Settings. It builds on P2.6-36's
   first steps. An ADR comes first: what it shows, when it comes back, and its words in [VOICE.md](VOICE.md).
+  *In 0.8.0 with Phase 2.10; its ADR is [ADR-0051](adr/0051-the-cozy-guide.md).*
 - P2.9-04 Keyboard and screen readers: every action can be reached and done by keyboard with a visible focus, and
   every control has a name a screen reader says. It starts with an audit of the window, recorded in `docs/testing/`,
   and ends with a run through Windows Narrator.
@@ -734,7 +805,8 @@ keyboard and screen reader, files that every later version reads, and real playe
   misreading it. An ADR comes first, with what *stable* means for the command line and diagnostic codes.
 - P2.9-06 Testers from outside the project, asked for during 0.7.0 and 0.8.0: a short test script in `docs/testing/`,
   a request on the Nexus page and the website, and GOG and EA App players first ([#5](https://github.com/arastella625/DAORework/issues/5),
-  [#70](https://github.com/arastella625/DAORework/issues/70)).
+  [#70](https://github.com/arastella625/DAORework/issues/70)). *In 0.8.0 with Phase 2.10: a first run before P2.10-02
+  shows where players get stuck today, and a second after P2.10-06 shows what changed.*
 - P2.9-07 Release 1.0.0: the version, the changelog's section, the audit re-run, this roadmap, and the roadmap page.
 
 **Not in this phase:** Linux (Phase 2.7), `nxm://` links, translations, and anything after 1.0.
@@ -808,7 +880,7 @@ Flatpak, AppImage or distribution packages; macOS; malware scanning on Linux; ch
 **Goal:** understand the game's data through clean-room readers and give the tooling a GUI.
 
 **Scheduled in part (2026-11-11, [the road to 1.0](#the-road-to-10)):** P3-01's GFF and TLK readers, P3-08 and P3-09
-for 0.8.0, and P3-06 for 0.9.0 if ADR-0035 is accepted. P3-02, P3-03, P3-05 and P3-12 come after 1.0. This phase's exit
+for 0.9.0 (moved from 0.8.0 on 2026-11-15), and P3-06 for 0.9.0 if ADR-0035 is accepted. P3-02, P3-03, P3-05 and P3-12 come after 1.0. This phase's exit
 gate is still the real-install round trip.
 
 - P3-01 The `DAORework.Formats` library (BCL only). Readers for ERF v2.0/v2.2, GFF v4.0 and TLK are built from public community specifications, which are cited in `docs/formats/`. DAOTools (MIT) may be ported with attribution; xoreos (GPL-3) supplies specifications and observed behavior only ([ADR-0009](adr/0009-third-party-mods-and-tools.md) tier 3). Each reader gets fuzz tests.
