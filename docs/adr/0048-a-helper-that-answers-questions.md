@@ -20,7 +20,7 @@ Some facts shape the answer:
   mod, it must not be able to act on it.
 - **The player must still understand what happened** (the owner's direction of 2026-11-04). Every change DAORework makes
   is already a preview with *Apply*, and every change can be undone from History.
-- **Much of what it needs already exists:** diagnostic codes with plain one-line findings, *Combined files*, *Find the
+- **Much of what it needs already exists:** diagnostic codes with plain one-line findings, *Where mods overlap*, *Find the
   problem mod* ([ADR-0042](0042-finding-the-problem-mod.md)), and `PathRedactor`, which already removes the player's name
   from support bundles.
 - **Each answer costs money.** On Anthropic's pricing page on 2026-11-11, a question with about 10,000 tokens in (the
@@ -45,7 +45,7 @@ the owner picks the host. The model can change on the relay without a new DAORew
 ### 3. What is sent
 - **The question,** as the player typed it.
 - **A facts sheet DAORework builds:** its version, which copy of the game (Steam, GOG, EA App), the mods by name with on or
-  off and their order, the diagnostic codes found with their one-line findings, and the *Combined files* summary.
+  off and their order, the diagnostic codes found with their one-line findings, and the *Where mods overlap* summary.
 - **No paths at all,** and the facts sheet goes through `PathRedactor` too, for names typed into the question. No readme
   text, no file contents, no saves, no account, key or install id.
 - **The player can see it.** *Show what's sent* opens the facts sheet as text before the first question of a conversation.
@@ -63,7 +63,7 @@ the owner picks the host. The model can change on the relay without a new DAORew
 The relay asks for a structured answer: plain text, and up to three suggested steps.
 - **The text is shown as plain text.** No links, markup or pictures are rendered from it. A mod's page opens only through
   `OpenModPage`'s `https` rule (P3-11), from the catalog, never from the answer.
-- **Each step is one of the window's own actions**, from a fixed list: open a card (*Combined files*, *Troubleshooting*,
+- **Each step is one of the window's own actions**, from a fixed list: open a card (*Where mods overlap*, *Troubleshooting*,
   *History*), turn a mod on or off, move a mod in *Arrange*, start *Find the problem mod*, *Check the game*. A step names
   mods by the ids in the facts sheet.
 - **The window checks every step** against its own state, and drops one that names an unknown mod or an action not on the
