@@ -10,12 +10,16 @@ before release: Steam refused to start the game after the 4 GB patch, because St
 ([ADR-0023](../adr/0023-steam-protected-executable.md)); she confirmed the fix on the same machine (section 4, step 1).
 The automated suites (unit, App screenshot and fault-injection tests) are green on `main`.
 
+**GOG run done on 2026-11-15 by a player from outside the project, on 0.6.0**, with their own mods; every step they
+ran passed: [their report on #5](https://github.com/arastella625/DAORework/issues/5#issuecomment-6905846944),
+and [the run](#gog-run-2026-11-15) below.
+
 ## Installs
 
 | Distribution | Real install | Status |
 |---|---|---|
 | **Steam** | Ultimate Edition at `D:\SteamLibrary\steamapps\common\Dragon Age Ultimate Edition`, owner's machine | **Run 2026-10-31: passed** (owner's report) |
-| **GOG** | Nobody on the project has a GOG copy | Open, as in Phase 1 ([#5](https://github.com/arastella625/DAORework/issues/5)) |
+| **GOG** | GOG Galaxy copy at `C:\Program Files (x86)\GOG Galaxy\Games\Dragon Age Origins`, a player's machine | **Run 2026-11-15: passed** for the steps run ([below](#gog-run-2026-11-15)) |
 | **EA App** | Nobody on the project has an EA App copy | Open, as in Phase 1 ([#5](https://github.com/arastella625/DAORework/issues/5)) |
 
 The exit gate says no platform is carried forward again. If 0.3.0 ships with GOG and EA App still open, the
@@ -68,6 +72,28 @@ nothing depends on DAORework's own backups. Then use only `DAORework.exe` from t
 | 1b | DXVK installed, then Steam → Verify integrity of game files, then back in DAORework | DXVK shows as no longer in effect, naming Verify integrity; installing it again restores it | PASS (owner's report, 2026-10-31) |
 | 2 | Fixes tab: install DXVK from a downloaded release, then roll it back from its backup | The game starts with DXVK, then without it | PASS (owner's report, 2026-10-31) |
 | 3 | Saves tab: back up the saves | A backup appears; the saves folder is unchanged | PASS (owner's report, 2026-10-31) |
+
+## GOG run, 2026-11-15
+
+By vaeleborne, a player from outside the project, on DAORework 0.6.0 and Windows 11 (build 26200), with mods they had
+installed by hand: Qwinn's Fixpack and No Helmet Hack as add-ins, AddItem, More Hairstyles and one loose
+`ABI_Base.GDA`. The results are
+[their report on #5](https://github.com/arastella625/DAORework/issues/5#issuecomment-6905846944)
+and the support bundle attached to it, which the project read on 2026-11-15: Defender found nothing in it, and every
+path had the user name replaced. Steps not listed were not part of this run.
+
+| # | Step | Result |
+|---|---|---|
+| 2.1 | Create a profile | PASS: the GOG registry and the usual folders both found the one copy, counted once. The game, the launcher and the documents folder were right, and six mods were found |
+| 2.2, 2.3 | *Take them over* | PASS: Mods listed the six, all on |
+| 2.4 | Start the game from the window | PASS: started three times (the bundle's log) |
+| 2.6 | Turn off one mod, then undo it | PASS: off and on again through undo (player's report) |
+| | Diagnostics | PASS: 12 notes, all Info, and the game can start. Turning off an older second copy of a mod brought a warning the player called helpful. GOG's `daorigins.exe` already had the 4 GB flag, which a GOG copy allows |
+
+Not run: the script (section 1), steps 2.5 and 2.7, and sections 3 and 4.
+
+Seen in the bundle, for later: the first *Take them over* took 6 seconds, and the window was held for up to 1.2
+seconds a few times. AddItem's two readmes stayed in its old folder in `Override`, where they mean nothing to the game.
 
 ## How to add a run
 
