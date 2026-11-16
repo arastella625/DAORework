@@ -339,9 +339,11 @@ read the game's file formats wait for P3-01 (P3-07 to P3-09).
 - P2.5-23 Add-ins against each other: show the active add-ins with their `Priority` from `AddIns.xml`, and warn when
   two add-ins ship a file with the same name. How the game ranks add-ins is checked on the owner's install first;
   DAORework changes no priority until it is. *Checked on 2026-11-15 ([#72](https://github.com/arastella625/DAORework/issues/72)):
-  the lower Priority wins a shared file, and on a tie the entry listed first in `AddIns.xml`. Done so far:
-  `AddInClashRule` in the diagnostics, comparing loose files and the names inside archives, and `mods inspect` listing
-  the add-ins in the game's order with their Priority. The window's tag and filter on Mods follow.*
+  the lower Priority wins a shared file, and on a tie the entry listed first in `AddIns.xml`. Done: `AddInClashRule` in
+  the diagnostics, comparing loose files and the names inside archives; `mods inspect` listing the add-ins in the
+  game's order with their Priority; and on Mods, each add-in's row tagged with its Priority and whether it wins or
+  loses a shared file, the files named below it, and an *Add-ins sharing files* chip
+  ([screenshot](screenshots/p2.5-23/01-addin-priority.png)).*
 
 **A workflow-first window** *(added 2026-11-01, from the owner's review of a clickable mock: six tabs instead of 11
 places, plain words, mods told apart by how the game loads them, and a richer on-theme look;

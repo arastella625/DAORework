@@ -11,9 +11,21 @@
         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
           <CheckBox VerticalAlignment="Top" IsChecked="{Binding IsSelected}" IsVisible="{Binding CanManage}" ToolTip.Tip="Tick to adopt it with the others" />
           <StackPanel Grid.Column="1" Spacing="3">
-            <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
+              <TextBlock Name="PriorityMark" Classes="Secondary" FontStyle="Italic" VerticalAlignment="Center" Text="{Binding PriorityMark.Text}"
+                         ToolTip.Tip="When two add-ins have a file of the same name, the game uses the copy from the one with the lower Priority. The lines below say which files."
+                         IsVisible="{Binding PriorityMark, Converter={x:Static ObjectConverters.IsNotNull}}" />
+            </StackPanel>
             <TextBlock Classes="Mono Secondary" Text="{Binding Details}" TextWrapping="Wrap" />
             <ItemsControl ItemsSource="{Binding Notes}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                  <TextBlock Text="{Binding}" TextWrapping="Wrap" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <ItemsControl Name="AddInShares" ItemsSource="{Binding PriorityMark.Sentences}">
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="x:String">
                   <TextBlock Text="{Binding}" TextWrapping="Wrap" />

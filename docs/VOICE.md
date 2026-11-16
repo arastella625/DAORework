@@ -41,6 +41,7 @@ summary follows these rules. The command line keeps its own words; see the end.
 | Add mods | Import | Adding never changes the game. |
 | Play | Launch game | The one large button. |
 | Add-in | addin, DAZIP mod | A packaged `.dazip` mod; the game lists it under Downloadable Content. |
+| Priority 100 · wins, Add-ins sharing files | Add-in load order, conflict | An add-in's tag and filter on Mods (P2.5-23). *Priority* is the game's own field in `AddIns.xml`, so it keeps that name; the override load order stays *Arrange*. *Wins* or *loses* only when another add-in has a file of the same name. |
 | Override mod | override folder mod | Files that replace the game's own. |
 | Runs in the game, I trust this mod and where I got it | Native mod, DLL mod, plugin, ASI | A mod whose program goes into the game folder ([ADR-0033](adr/0033-mods-that-run-inside-the-game.md)): the tag on its row, and the tick box its preview asks every time. |
 | Combined files | merged files, conflicts | Files several mods need at once. |

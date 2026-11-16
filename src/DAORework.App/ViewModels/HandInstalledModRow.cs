@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DAORework.Core.Common;
+using DAORework.Core.Mods.AddIns;
 using DAORework.Core.Mods.Adoption;
 
 namespace DAORework.App.ViewModels;
@@ -31,6 +32,13 @@ public sealed partial class HandInstalledModRow : ObservableObject
 
     /// <summary>Gets a value indicating whether this is an add-in found in the game, rather than override files.</summary>
     public bool IsAddIn => Candidate?.Kind == AdoptionCandidateKind.AddIn;
+
+    /// <summary>Gets its UID in <c>AddIns.xml</c> when it is an add-in, which its Priority is found by (P2.5-23).</summary>
+    public string? AddInUid => IsAddIn ? AdoptionIds.AddInUid(Candidate!.Id) : null;
+
+    /// <summary>Gets or sets its Priority and the files it shares with other add-ins, or null when it isn't an enabled add-in (P2.5-23).</summary>
+    [ObservableProperty]
+    public partial AddInMark? PriorityMark { get; set; }
 
     /// <summary>Gets or sets a value indicating whether it is ticked to be adopted with the others by <i>Adopt selected</i>.</summary>
     [ObservableProperty]

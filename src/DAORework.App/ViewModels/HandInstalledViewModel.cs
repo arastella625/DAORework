@@ -52,6 +52,9 @@ public sealed partial class HandInstalledViewModel : PageViewModel
     [ObservableProperty]
     public partial string? OfficialSummary { get; set; }
 
+    /// <summary>Gets or sets what else <i>Look again</i> reads, such as the add-ins' priorities (P2.5-23).</summary>
+    public Func<CancellationToken, Task>? AfterScanAsync { get; set; }
+
     public void Load(string? profileName)
     {
         ProfileName = profileName;
@@ -80,7 +83,14 @@ public sealed partial class HandInstalledViewModel : PageViewModel
     private void ClearSelection() => SetSelected(false);
 
     [RelayCommand]
-    private Task ScanAsync(CancellationToken cancellationToken) => GuardAsync(token => ReadAsync(quiet: false, token), cancellationToken);
+    private async Task ScanAsync(CancellationToken cancellationToken)
+    {
+        await GuardAsync(token => ReadAsync(quiet: false, token), cancellationToken);
+        if (AfterScanAsync is { } afterScan)
+        {
+            await afterScan(cancellationToken);
+        }
+    }
 
     private async Task ReadAsync(bool quiet, CancellationToken cancellationToken)
     {

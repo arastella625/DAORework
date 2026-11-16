@@ -1,6 +1,7 @@
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DAORework.Core.Common;
+using DAORework.Core.Mods.AddIns;
 using DAORework.Core.Mods.Library;
 using DAORework.Core.Mods.Safety;
 
@@ -28,6 +29,9 @@ public sealed partial class LibraryModRow : ObservableObject
 
     /// <summary>Gets a value indicating whether the mod is an add-in (a <c>.dazip</c>), rather than an override mod (ADR-0026).</summary>
     public bool IsAddIn { get; private init; }
+
+    /// <summary>Gets its UID in <c>AddIns.xml</c> when it is an add-in, which its Priority is found by (P2.5-23).</summary>
+    public string? AddInUid { get; private init; }
 
     /// <summary>Gets a value indicating whether it runs inside the game, so it is turned on by itself (ADR-0033 §3).</summary>
     public bool RunsInGame { get; private init; }
@@ -67,6 +71,10 @@ public sealed partial class LibraryModRow : ObservableObject
     /// <summary>Gets or sets what it does to the files it shares with other mods, or null when it shares none that differ (P2.6-33).</summary>
     [ObservableProperty]
     public partial string? ConflictMark { get; set; }
+
+    /// <summary>Gets or sets its Priority and the files it shares with other add-ins, or null when it isn't an enabled add-in (P2.5-23).</summary>
+    [ObservableProperty]
+    public partial AddInMark? PriorityMark { get; set; }
 
     /// <summary>Gets or sets a value indicating whether its row is expanded to show its details (ADR-0038).</summary>
     [ObservableProperty]
@@ -141,6 +149,7 @@ public sealed partial class LibraryModRow : ObservableObject
             warning)
         {
             IsAddIn = entry.Mod.AddInUid is not null,
+            AddInUid = entry.Mod.AddInUid,
             RunsInGame = entry.Mod.Kind == ModKind.GameProgram,
             AddedAt = entry.ImportedAtUtc,
             PageLink = check.IsSuccess ? check.Value.Item?.Source : null,

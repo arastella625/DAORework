@@ -8,6 +8,7 @@ All notable changes to DAORework are recorded here. The format follows
 
 ### Changed
 - *Check the game* says when two add-ins have a file of the same name, and whose copy the game uses (P2.5-23, `DAO_ADDINS_SHARE_FILE`). It's the add-in with the lower Priority in `AddIns.xml`, or, on equal priorities, the one listed first, as checked in the game ([#72](https://github.com/arastella625/DAORework/issues/72)). Files inside an add-in's archives are compared too. `mods inspect` lists the add-ins the game loads, in its order and with their Priority. DAORework changes no priority.
+- On Mods, each add-in shows its Priority, and whether it wins or loses a file it shares with another add-in. Its row names those files, and the *Add-ins sharing files* chip shows only those add-ins (P2.5-23).
 
 ## [0.6.0] - 2026-11-11
 
