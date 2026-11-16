@@ -40,11 +40,17 @@ summary follows these rules. The command line keeps its own words; see the end.
 | Arrange | Load order, priority | *When two mods change the same file, the lower one wins.* |
 | Add mods | Import | Adding never changes the game. |
 | Play | Launch game | The one large button. |
+| Welcome, One thing first, Not ready yet, Ready to play | Not checked yet, Almost there, Setup incomplete | Home's one headline ([ADR-0050](adr/0050-a-calmer-window.md) §1), always with one sentence and one button. |
+| About this mod, Back to your mods | Mod details, properties, mod page | A mod's own page ([ADR-0050](adr/0050-a-calmer-window.md) §3). *Open the mod's page* stays the link to its web page. |
+| Adds 12 hairstyles, Adds to character creation, Character creation has 48 more hairstyles | Entries, morphs, resources | What a mod gave the player ([ADR-0050](adr/0050-a-calmer-window.md) §4). Only counted, never guessed: with no count, *Adds to character creation*. |
+| Add a picture | Upload, set thumbnail | The player's own picture for a mod ([ADR-0049](adr/0049-pictures-and-words-a-mod-brings.md)). |
+| List, Cards | Grid view, tiles | How *Your mods* is shown. |
+| Skip the guide, Show the guide again, You're set | Tutorial, onboarding, wizard | The cozy guide ([ADR-0051](adr/0051-the-cozy-guide.md)). Never *simply* or *just*. |
 | Add-in | addin, DAZIP mod | A packaged `.dazip` mod; the game lists it under Downloadable Content. |
-| Priority 100 · wins, Add-ins sharing files | Add-in load order, conflict | An add-in's tag and filter on Mods (P2.5-23). *Priority* is the game's own field in `AddIns.xml`, so it keeps that name; the override load order stays *Arrange*. *Wins* or *loses* only when another add-in has a file of the same name. |
+| Priority 100 · wins, Add-ins sharing files | Add-in load order, conflict | An add-in's tag and filter on Mods (P2.5-23). *Priority* is the game's own field in `AddIns.xml`, so it keeps that name; the override load order stays *Arrange*. *Wins* or *loses* only when another add-in has a file of the same name. From 0.8.0 it is under *Details* on *About this mod* ([ADR-0050](adr/0050-a-calmer-window.md) §2). |
 | Override mod | override folder mod | Files that replace the game's own. |
 | Runs in the game, I trust this mod and where I got it | Native mod, DLL mod, plugin, ASI | A mod whose program goes into the game folder ([ADR-0033](adr/0033-mods-that-run-inside-the-game.md)): the tag on its row, and the tick box its preview asks every time. |
-| Combined files | merged files, conflicts | Files several mods need at once. |
+| Where mods overlap; Combined, so both work | Combined files, conflicts, merged files | Files more than one mod ships, *Could break quests* first ([ADR-0050](adr/0050-a-calmer-window.md) §5). *Combined, so both work* is the files DAORework merges, such as `chargenmorphcfg.xml`. |
 | New downloads | download watcher, auto-import | Mods noticed in the player's Downloads folder ([ADR-0034](adr/0034-picking-up-new-downloads.md)). *Add*, *Not this one*, *Add all*. |
 | Move from Vortex | Vortex handover, migrate | The card that takes mods over from Vortex ([ADR-0028](adr/0028-taking-over-from-vortex.md)): *Copy*, *Purge in Vortex*, *Turn them on*. |
 | Placed by Vortex | Vortex-deployed | A tag on a mod Vortex installed ([ADR-0028](adr/0028-taking-over-from-vortex.md)), named as Vortex names it. |
