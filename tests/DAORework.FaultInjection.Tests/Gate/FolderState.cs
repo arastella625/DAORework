@@ -34,6 +34,18 @@ internal static class FolderState
         return string.Join("; ", missing.Concat(extra));
     }
 
+    /// <summary>A state with some file lines from another: each replaces the line for its path, or joins its folder's lines, in <see cref="Take"/>'s order.</summary>
+    public static IReadOnlyList<string> With(IReadOnlyList<string> state, IReadOnlyList<string> files)
+    {
+        var paths = files.Select(PathOf).ToHashSet(StringComparer.Ordinal);
+        return [.. state.Where(l => !paths.Contains(PathOf(l))).Concat(files)
+            .OrderBy(l => l.StartsWith("install", StringComparison.Ordinal))
+            .ThenBy(l => l.Contains(" active: ", StringComparison.Ordinal))
+            .ThenBy(l => l, StringComparer.Ordinal)];
+    }
+
+    private static string PathOf(string line) => line[..Math.Max(line.LastIndexOf('='), 0)];
+
     private static string Sha(string path) => Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(path)))[..16];
 
     private static List<string> ActiveIds(GateFolders folders, string folder)
