@@ -8,6 +8,7 @@ using DAORework.Application.Installations;
 using DAORework.Application.Launching;
 using DAORework.Application.Looks;
 using DAORework.Application.Mods;
+using DAORework.Application.Mods.AddIns;
 using DAORework.Application.Mods.Adoption;
 using DAORework.Application.Mods.Apply;
 using DAORework.Application.Mods.Backups;
@@ -39,6 +40,7 @@ public static class DependencyInjection
         services.AddSingleton<IDiagnosticRule, ProtonPrefixRule>();
         services.AddSingleton<IDiagnosticRule, ModFoldersRule>();
         services.AddSingleton<IDiagnosticRule, InstallOverrideRule>();
+        services.AddSingleton<IDiagnosticRule, AddInClashRule>();
         services.AddSingleton<IDiagnosticRule, BinShipProgramsRule>();
         services.AddSingleton<IDiagnosticRule, LargeAddressAwareRule>();
         services.AddSingleton<IDiagnosticRule, SteamProtectedExecutableRule>();
@@ -55,6 +57,7 @@ public static class DependencyInjection
         services.AddSingleton<IFingerprintMatcher, LargeAddressAwareMatcher>();
 
         services.AddSingleton<ReadInstallOverride>();
+        services.AddSingleton<FindAddInClashes>();
         services.AddSingleton<OpenModPage>();
         services.AddSingleton<ReadVortexHandover>();
         services.AddSingleton<CopyVortexMods>();

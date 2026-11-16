@@ -35,6 +35,11 @@ public static class DiagnosticCodes
     public const string AddInsDirectoryFound = "DAO_ADDINS_DIRECTORY_FOUND";
     public const string AddInsDirectoryNotFound = "DAO_ADDINS_DIRECTORY_NOT_FOUND";
 
+    // P2.5-23: add-ins against each other. The game uses the copy from the add-in with the lower Priority.
+    public const string AddInsShareFile = "DAO_ADDINS_SHARE_FILE";
+    public const string AddInsListUnreadable = "DAO_ADDINS_LIST_UNREADABLE";
+    public const string AddInsArchiveUnreadable = "DAO_ADDINS_ARCHIVE_UNREADABLE";
+
     public const string ProfileValid = "DAO_PROFILE_VALID";
 
     // P1-03: the extended rule set. Every code below is report-only; none blocks a launch.

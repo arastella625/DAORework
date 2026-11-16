@@ -6,6 +6,9 @@ All notable changes to DAORework are recorded here. The format follows
 
 ## [Unreleased]
 
+### Changed
+- *Check the game* says when two add-ins have a file of the same name, and whose copy the game uses (P2.5-23, `DAO_ADDINS_SHARE_FILE`). It's the add-in with the lower Priority in `AddIns.xml`, or, on equal priorities, the one listed first, as checked in the game ([#72](https://github.com/arastella625/DAORework/issues/72)). Files inside an add-in's archives are compared too. `mods inspect` lists the add-ins the game loads, in its order and with their Priority. DAORework changes no priority.
+
 ## [0.6.0] - 2026-11-11
 
 Help when something goes wrong, and fewer copies of your mods. *Find the problem mod* turns half your mods off each round until one is left, and *What changed* shows what's new since your last game with other mods, with a way back. *Combined files* and previews put what could break quests first. Adding a mod looks first, and *Keep one of each* clears the copies a library builds up. The Mods page is one list of one-line rows with search, sort and drag, a next step worked out from where you are, and first steps for a new player. Backups reuse your Library instead of filling your drive, a batch carries on past a mod that fails, and Home says when your mods are in a folder the game doesn't read.
