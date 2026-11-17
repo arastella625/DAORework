@@ -8,10 +8,9 @@ Starting shapes for the medieval touch, to shape however you like. Nothing here 
 |---|---|---|
 | `clasp.blend` | Iron corner bracket with three rivets | `render_corners.py` (all four corners) |
 | `band.blend` | Tooled-leather strip for behind the header, one repeating tile | `render_band.py` |
-| `marks.blend` | Three replacements for the seal: Shield, Roundel, Banner, each with a tick (ready) and a ! (needs a look). The Shield also has an archway (*Welcome*) and an arrow (*One thing first*), and Pass 1's options beside them. The picks are the open door, the signpost, the nail !, the lantern and the bare candle (see ART-PASSES.md); the lantern is the one switched on | `render_all_marks.py` (every mark, plus a plain one) |
-
+| `marks.blend` | Three replacements for the seal: Shield, Roundel, Banner, each with a tick (ready) and a ! (needs a look). The Shield also has an archway (*Welcome*) and an arrow (*One thing first*), and Pass 1's options beside them. The picks are the open door, the signpost, the nail !, the lantern and the bare candle (see ART-PASSES.md); the lantern is the one switched on | `render_all_marks.py` (every mark and the plain shield, three times each: full, `-small` and `-bare`; the plain one has no bare) |
 | `rig.blend` | The light every piece shares: *Light: top left* (clasp, marks), *Light: from above (band)*, and the world *Soft ambient*. The pieces link it, so change the light here | nothing to render |
-| `export_all.py` | Renders every piece, then writes the shading masks the app tints to `export/` (`<piece>@<pixels>.png`) | `blender -b --factory-startup --python export_all.py` |
+| `export_all.py` | Renders every piece, then writes the shading masks the app tints to `export/` (`<piece>@<size>.png` and `@<size>@2x.png`, size in device-independent pixels) | `blender -b --factory-startup --python-exit-code 1 --python export_all.py` |
 
 To run one: open the Scripting tab, pick the script in the text editor's list, then Run Script. Renders land in
 `renders/` next to each file. F12 is fine for a quick look, but it only shows the render, it doesn't save it. These

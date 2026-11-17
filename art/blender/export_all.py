@@ -1,20 +1,23 @@
 """Renders every piece and turns the renders into the shading masks the app tints.
 
 Run from anywhere (Blender must be closed, or at least not have these files open with unsaved changes):
-    blender -b --factory-startup --python export_all.py
+    blender -b --factory-startup --python-exit-code 1 --python export_all.py
 Add  -- --no-render  at the end to remake the masks from the renders already in renders/, without rendering.
+--python-exit-code 1 makes a failed export end with an error instead of looking like it worked.
 
 Each .blend is opened in turn and its own render script runs, so the renders in renders/ are refreshed exactly as if
 you had pressed Run Script in each file. Nothing is saved back into the .blend files.
 
-The masks land in export/, one PNG per piece and size, named <piece>@<pixels>.png:
+The masks land in export/, two PNGs per piece and size: <piece>@<size>.png and <piece>@<size>@2x.png, where size is
+how big the app shows it, in device-independent pixels (the band's is its height):
 - alpha is the shape (the app tints it with the theme's colour);
 - grey is light and shade around 50%: 50% leaves the tint as it is, lighter lightens it, darker darkens it (the app
   lays it over the tint with hard light, like the clickable mock does).
-A mark's small sizes come from its -small render (the plain body, no fine detail), its big sizes from the full one.
-Each mark also gets <piece>-bare@<pixels>.png: the mark alone, no shield, for looks that draw it flat (Korcari, which
-has no shading, so a mark inside a shield would be just a shield).
+A mark shown below 48 uses its -small render (the plain body, no fine detail), from 48 up the full one, at both 1x
+and 2x. Each mark also gets <piece>-bare@<size>.png: the mark alone, no shield, for looks that draw it flat (Korcari,
+which has no shading, so a mark inside a shield would be just a shield).
 """
+import functools
 import os
 import sys
 
@@ -28,7 +31,8 @@ PIECES = (("clasp.blend", "render_corners.py"), ("band.blend", "render_band.py")
 # Which marks go to the app: the picks from ART-PASSES.md, plus the plain shield. Add a mark's file name to export it.
 MARKS = ("welcome-open-door", "one-thing-first-signpost", "needs-a-look-nail", "ready-lantern",
          "without-your-mods-candle", "plain")
-SMALL, BIG = (24, 34, 46, 48, 68, 92), (96, 128, 192, 256)  # 1x and 2x of where they show
+CLASP, BAND = (34,), (80,)  # where they show, in device-independent pixels
+SMALL, BIG = (24, 34, 46), (48, 64, 96, 128)
 CONTRAST = {"clasp": 1.5, "band": 2.4, "mark": 2.4}  # how strongly light and shade are kept
 
 
@@ -47,6 +51,17 @@ def load(name):
     return a.reshape(h, w, 4)[::-1].copy()
 
 
+def middle(name):
+    """The middle brightness of a render's solid pixels: what 50% grey stands for in every mask shaded against it.
+    Each piece is shaded against one render, so the same surface keeps the same tone in every mask and at every size."""
+    rgba = load(name)
+    solid = rgba[..., :3].mean(-1)[rgba[..., 3] > 0.9]
+    if not solid.size:
+        raise ValueError(f"renders/{name}.png has nothing solid to measure the shading against")
+    return float(np.median(solid))
+
+
+@functools.lru_cache
 def area(n_in, n_out):
     """Area-average resampling: each output pixel is the mean of the input pixels it covers."""
     e = np.linspace(0, n_in, n_out + 1)
@@ -58,24 +73,9 @@ def area(n_in, n_out):
     return m
 
 
-def fill_square(rgba, pad=0.06):
-    """Crops to the shape (a bare mark is small in the shield's framing) and centres it in a square."""
-    ys, xs = np.nonzero(rgba[..., 3] > 0.02)
-    cy, cx = (ys.min() + ys.max()) / 2, (xs.min() + xs.max()) / 2
-    half = max(ys.max() - ys.min(), xs.max() - xs.min()) / 2 * (1 + 2 * pad)
-    out = np.zeros((int(2 * half) + 1,) * 2 + (4,), np.float32)
-    for oy in range(out.shape[0]):
-        sy = int(round(cy - half + oy))
-        if 0 <= sy < rgba.shape[0]:
-            x0 = int(round(cx - half))
-            lo, hi = max(0, x0), min(rgba.shape[1], x0 + out.shape[1])
-            out[oy, lo - x0:hi - x0] = rgba[sy, lo:hi]
-    return out
-
-
-def save_mask(rgba, k, w, h, out_name):
+def save_mask(rgba, k, ref, w, h, out_name):
     lum, al = rgba[..., :3].mean(-1), rgba[..., 3]
-    shade = np.clip(0.5 + (lum / np.percentile(lum[al > 0.9], 50) - 1) * k * 0.5, 0, 1)
+    shade = np.clip(0.5 + (lum / ref - 1) * k * 0.5, 0, 1)
     pre = np.dstack([shade * al, al])  # premultiplied, so edges don't pick up the empty background
     r = np.einsum("pj,ojc->opc", area(rgba.shape[1], w), np.einsum("oi,ijc->ojc", area(rgba.shape[0], h), pre))
     g = r[..., 0] / np.maximum(r[..., 1], 1e-6)
@@ -86,30 +86,29 @@ def save_mask(rgba, k, w, h, out_name):
     bpy.data.images.remove(img)
 
 
+def save_sizes(rgba, piece, ref, sizes, name):
+    """Writes <name>@<size>.png and <name>@<size>@2x.png for every size the piece shows at."""
+    written = []
+    for size in sizes:
+        for h, out_name in ((size, f"{name}@{size}"), (2 * size, f"{name}@{size}@2x")):
+            save_mask(rgba, CONTRAST[piece], ref, h * rgba.shape[1] // rgba.shape[0], h, out_name)
+            written.append(out_name)
+    return written
+
+
 def export_everything():
     os.makedirs(EXPORT, exist_ok=True)
-    written = []
+    clasp, band = middle("clasp-tl"), middle("band")
+    big, small = middle("mark-shield-plain"), middle("mark-shield-plain-small")
+    written = save_sizes(load("band"), "band", band, BAND, "band")
     for corner in ("tl", "tr", "br", "bl"):
-        src = load(f"clasp-{corner}")
-        for s in (34, 68):
-            save_mask(src, CONTRAST["clasp"], s, s, f"clasp-{corner}@{s}")
-            written.append(f"clasp-{corner}@{s}")
-    src = load("band")
-    for h in (80, 160):
-        save_mask(src, CONTRAST["band"], h * src.shape[1] // src.shape[0], h, f"band@{h}")
-        written.append(f"band@{h}")
+        written += save_sizes(load(f"clasp-{corner}"), "clasp", clasp, CLASP, f"clasp-{corner}")
     for mark in MARKS:
         name = f"mark-shield-{mark}"
-        for level, sizes in ((f"{name}-small", SMALL), (name, BIG)):
-            src = load(level)
-            for s in sizes:
-                save_mask(src, CONTRAST["mark"], s, s, f"{name}@{s}")
-                written.append(f"{name}@{s}")
+        written += save_sizes(load(f"{name}-small"), "mark", small, SMALL, name)
+        written += save_sizes(load(name), "mark", big, BIG, name)
         if mark != "plain":  # the plain shield has no mark to show bare
-            src = fill_square(load(f"{name}-bare"))
-            for s in SMALL + BIG:
-                save_mask(src, CONTRAST["mark"], s, s, f"{name}-bare@{s}")
-                written.append(f"{name}-bare@{s}")
+            written += save_sizes(load(f"{name}-bare"), "mark", big, SMALL + BIG, f"{name}-bare")
     return written
 
 

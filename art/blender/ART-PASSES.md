@@ -271,7 +271,8 @@ added has "(Pass 7)" in its label.
   92 (from the small level) and 96, 128, 192 and 256 (from the big one). The marks it exports are listed at the top of
   the script.
 - Check sheet: `renders/pass8-export-check.png`, the masks tinted gold and lavender the app's way at real sizes.
-- Backups from before the link: `clasp.before-rig.blend`, `band.before-rig.blend`, `marks.before-rig.blend`.
+- Backups from before the link, on the owner's machine only (`.gitignore` keeps `*.before-*.blend` out of the
+  repository): `clasp.before-rig.blend`, `band.before-rig.blend`, `marks.before-rig.blend`.
 
 ## Pass 9: In the window
 Put each pass's renders into the clickable mock in all four themes, and check the ornaments are still quieter than the
@@ -290,6 +291,19 @@ looks.
   a doorway, a signpost, a !, a lantern with its panes, a lit candle.
 - The rows' small status marks in the mock are still the old Roundel; the passes didn't cover them.
 - `export_all.py` takes `-- --no-render` to remake the masks from the renders already there.
+
+**Changed in review (2026-11-17)**, from the reviews of the pull request that adds these files:
+- A bare mark was cut out of the shield-sized render, only about 90 to 125 px across, and blown up to 256 px. Now the
+  render script closes the camera in on each bare mark, so it fills the 256 px frame like the shield does, and the
+  cropping in `export_all.py` is gone.
+- Each mask was shaded against its own picture's middle brightness, so the same oak came out a little lighter or
+  darker from mark to mark and from the small drawing to the big one. Now every mark is shaded against the plain
+  shield (the small marks against the small plain shield), the clasps against one corner, the band against itself.
+- The masks are named by where they show: `<piece>@<size>.png` and `<piece>@<size>@2x.png`, size in
+  device-independent pixels. A mark shown below 48 uses the small drawing at 1x and 2x, from 48 up the big one, so
+  moving the window to a sharper screen never swaps the drawing. The old names were pixel sizes, and 48 px was both
+  the small drawing's 24 at 2x and the big drawing's 48 at 1x.
+- The command now has `--python-exit-code 1`, so a failed export ends with an error.
 
 ## Your crest (an idea for later)
 Every profile could have a crest of its own in a corner of the window, next to the profile's name: a small companion

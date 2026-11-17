@@ -39,16 +39,21 @@ The passes answered these by trying them:
    - `rig.blend` holds the light and the world every piece links: from the top left, and from above for the band. A
      piece can't drift on its own.
    - `export_all.py` opens each piece, runs that piece's own render script, and writes the masks.
+   - Masks are named by where they show: `<piece>@<size>.png` and `<piece>@<size>@2x.png`, the size in
+     device-independent pixels.
    - The App keeps its copies under `src/DAORework.App/Assets/Ornaments/`, only at the sizes it draws, each at 1x and
      2x. The PR that changes a source also carries the new masks.
 3. **A mask is grey with alpha** (amends ADR-0026 §4's "white masks").
    - Alpha is the shape, painted with a token brush through `OpacityMask`, as now.
    - Grey is light and shade around 50%, laid over the tint with hard light. The theme's colour is kept and so is the
      modelling: 50% leaves the tint alone, lighter lightens it, darker darkens it.
-4. **Three drawings of each mark, picked by size.**
-   - **Big**, above 48 px: the planked shield with its iron, nails and every fine detail.
-   - **Small**, 48 px and below: a plain shield with no fine detail, so the mark is the clearest thing.
-   - **Bare**: the mark alone, cropped to its own shape, with lit openings left as holes (see 6).
+   - 50% is the middle brightness of one fixed render per piece (for the marks, the plain shield), so a surface keeps
+     its tone in every mask and at every size.
+4. **Three drawings of each mark, picked by the size it shows at** in device-independent pixels, so the 1x and 2x
+   copies of one size are the same drawing.
+   - **Big**, 48 and up: the planked shield with its iron, nails and every fine detail.
+   - **Small**, below 48: a plain shield with no fine detail, so the mark is the clearest thing.
+   - **Bare**: the mark alone, framed on its own shape, with lit openings left as holes (see 6).
 
    The render script handles all three. An object marked `Fine detail` is left out of the small and bare drawings;
    one marked `Hole when bare` is left out of the bare one.
@@ -80,7 +85,7 @@ The passes answered these by trying them:
 
 ## Consequences
 - Changing a mark is a `.blend` edit and one command. It needs no App code.
-- The repository gains about 0.6 MB of `.blend` sources. The App gains only the masks it draws: the 120 masks
+- The repository gains about 0.6 MB of `.blend` sources. The App gains only the masks it draws: the 164 masks
   `export_all.py` writes today come to 1.4 MB, and the App needs a small part of that.
 - CI doesn't run Blender, so the masks are committed, not built. A test checks that every mask a view uses exists, is
   grey with alpha, and has the size its name says, beside `ViewsUseTokensTests`.
