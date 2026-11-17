@@ -20,6 +20,14 @@ namespace DAORework.Infrastructure.Mods;
 /// </summary>
 internal sealed class LibraryImporter
 {
+    // TODO: Update this as seen fit. This is an example inner byte limit: tune against supported mod size and disk usage? Let user set limit?
+    // Maximum temprorary archive bytes across all wrapper layers on an import, for now 10GB seemed reasonable enough?
+    private const long MaxEmbeddedArchiveBytes = 10L * 1024 * 1024 * 1024;
+
+    // Allows for a structure like Outer.dazip --> inner1.dazip --> inner2.dazip --> actual.dazip
+    // TODO: Adjust as seen fit. May just want it to be 2, not sure how many valid mods have a ton of depth.
+    private const int MaxWrapperDepth = 3;
+
     public const string MetadataSuffix = ".mod.json";
 
     private readonly IFileSystem _fileSystem;
@@ -43,8 +51,19 @@ internal sealed class LibraryImporter
         ImportAsync(source, ModOrigin.Download, cancellationToken);
 
     /// <summary>Imports one opened source with where it came from (ADR-0015); a source already in the library keeps its entry.</summary>
-    public async Task<Result<LibraryImport>> ImportAsync(ModSource source, ModOrigin origin, CancellationToken cancellationToken)
+    public async Task<Result<LibraryImport>> ImportAsync(ModSource source, ModOrigin origin, CancellationToken cancellationToken) =>
+        await ImportCoreAsync(source, origin, wrapperDepth: 0, remainingArchiveBytes: MaxEmbeddedArchiveBytes, cancellationToken);
+
+    private async Task<Result<LibraryImport>> ImportCoreAsync(ModSource source, ModOrigin origin, int wrapperDepth, long remainingArchiveBytes, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var validation = ValidateSource(source);
+        if (validation.IsFailure)
+        {
+            return Result.Failure<LibraryImport>(validation.Error!);
+        }
+
         if (!ArchiveClassifier.Classify(source.Files).TryGetValue(out var shape, out var error))
         {
             return Result.Failure<LibraryImport>(error);
@@ -52,8 +71,15 @@ internal sealed class LibraryImporter
 
         if (shape.Shape == ArchiveShape.WrappedAddIn)
         {
-            using var inner = await UnwrapAsync(source, shape.InnerDazip!, cancellationToken);
-            return await ImportAsync(inner, origin, cancellationToken);
+            if (wrapperDepth >= MaxWrapperDepth)
+            {
+                return Result.Failure<LibraryImport>(new Error(DiagnosticCodes.ModImportInvalid, $"The archive exceeds the maximum of {MaxWrapperDepth} " + "wrapper layers. Extract the DAZIP and import it directly."));
+            }
+
+            var unwrapped = await UnwrapAsync(source, shape.InnerDazip!, remainingArchiveBytes, cancellationToken);
+
+            using var inner = unwrapped.Source;
+            return await ImportCoreAsync(inner, origin, wrapperDepth + 1, remainingArchiveBytes - unwrapped.Bytes, cancellationToken);
         }
 
         var described = await DescribeAsync(source, shape.Shape);
@@ -136,18 +162,51 @@ internal sealed class LibraryImporter
         return shape == ArchiveShape.GameProgram && origin.Kind == ModOriginKind.Download ? ModKind.GameProgram : ModKind.Override;
     }
 
-    private static async Task<ZipModSource> UnwrapAsync(ModSource outer, string dazip, CancellationToken cancellationToken)
+    private async Task<(ZipModSource Source, long Bytes)> UnwrapAsync(ModSource outer, string dazip, long maxBytes, CancellationToken cancellationToken)
     {
-        var buffer = new MemoryStream();
-        await using (var stream = outer.Open(dazip))
-        {
-            await stream.CopyToAsync(buffer, cancellationToken);
-        }
+        var tempDirectory = _fileSystem.Path.Combine(_root, ".import-temp");
+        _fileSystem.Directory.CreateDirectory(tempDirectory);
 
-        buffer.Position = 0;
-        var sha = Convert.ToHexStringLower(await SHA256.HashDataAsync(buffer, cancellationToken));
-        buffer.Position = 0;
-        return new ZipModSource(dazip[(dazip.LastIndexOf('/') + 1)..], sha, buffer);
+        var tempPath = _fileSystem.Path.Combine(tempDirectory, $"{Guid.NewGuid():N}.tmp");
+
+        var temporary = _fileSystem.FileStream.New(
+            tempPath,
+            FileMode.CreateNew,
+            FileAccess.ReadWrite,
+            FileShare.None,
+            bufferSize: 81920,
+            options: FileOptions.Asynchronous | FileOptions.DeleteOnClose);
+
+        var ownershipTransferred = false;
+
+        try
+        {
+            await using (var input = outer.Open(dazip))
+            {
+                await BoundedStreamCopy.CopyAsync(input, temporary, maxBytes, cancellationToken);
+            }
+
+            await temporary.FlushAsync(cancellationToken);
+            var bytes = temporary.Length;
+
+            // Hash the embedded DAZIP, then rewind for ZipArchive
+            temporary.Position = 0;
+            var sha = Convert.ToHexStringLower(await SHA256.HashDataAsync(temporary, cancellationToken));
+
+            temporary.Position = 0;
+
+            var inner = new ZipModSource(dazip[(dazip.LastIndexOf('/') + 1)..], sha, temporary);
+
+            ownershipTransferred = true;
+            return (inner, bytes);
+        }
+        finally
+        {
+            if (!ownershipTransferred)
+            {
+                await temporary.DisposeAsync();
+            }
+        }
     }
 
     private static async Task<string> ReadTextAsync(ModSource source, string file)
@@ -160,13 +219,6 @@ internal sealed class LibraryImporter
     /// <summary>Checks the mod's size and finds its name, and its UID when it is an add-in.</summary>
     private static async Task<Result<(string Name, string? Uid)>> DescribeAsync(ModSource source, ArchiveShape shape)
     {
-        if (source.Files.Count > FolderModLibrary.MaxFiles || source.TotalBytes > FolderModLibrary.MaxBytes)
-        {
-            return Result.Failure<(string Name, string? Uid)>(new Error(
-                DiagnosticCodes.ModImportInvalid,
-                $"{source.Name} holds {source.Files.Count} files, {new ByteSize(source.TotalBytes)} in all: more than any mod DAORework accepts."));
-        }
-
         if (shape != ArchiveShape.AddIn)
         {
             return Result.Success<(string Name, string? Uid)>((ModIds.NameFromFileName(source.Stem), null));
@@ -208,4 +260,29 @@ internal sealed class LibraryImporter
                 cancellationToken);
 
     private string MetadataPath(string id) => _fileSystem.Path.Combine(_root, id + MetadataSuffix);
+
+    private static Result ValidateSource(ModSource source)
+    {
+        if (source.Files.Count > FolderModLibrary.MaxFiles)
+        {
+            return Result.Failure(new Error(DiagnosticCodes.ModImportInvalid, $"{source.Name} contains too many files."));
+        }
+
+        long totalBytes;
+        try
+        {
+            totalBytes = source.TotalBytes;
+        }
+        catch (OverflowException)
+        {
+            return Result.Failure(new Error(DiagnosticCodes.ModImportInvalid, $"{source.Name} reports an invalid expanded size."));
+        }
+
+        if (totalBytes < 0 || totalBytes > FolderModLibrary.MaxBytes)
+        {
+            return Result.Failure(new Error(DiagnosticCodes.ModImportInvalid, $"{source.Name} exceeds the allowed expanded size."));
+        }
+
+        return Result.Success();
+    }
 }
