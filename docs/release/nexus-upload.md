@@ -51,8 +51,8 @@ players to the same zip on GitHub in the meantime.
    quarantine notice and the VirusTotal link, and send it. It asks which antivirus engines flagged the zip, and their
    detection names.
 3. **Report each false positive.** For every engine VirusTotal or Nexus names, send the zip to that vendor as a false
-   positive, with the detection name and the link to the source. Start with Microsoft Defender, which most Windows players run:
-   [submit a file to Microsoft](https://www.microsoft.com/en-us/wdsi/filesubmission), as a software developer, and
+   positive, with the detection name and the link to the source. Start with Microsoft Defender, which most Windows
+   players run: [submit a file to Microsoft](https://www.microsoft.com/en-us/wdsi/filesubmission), as a software developer, and
    choose *incorrectly detected*. For other engines, use the vendor's own false-positive page. Each cleared report
    makes the next release less likely to be flagged.
 4. **If support doesn't answer in a week** (P2.6-80), go on in this order, and stop at the first that works. Nexus's
