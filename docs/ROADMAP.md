@@ -35,7 +35,7 @@ The phases below still run in order, but in this order from here, each a release
 | Release | Theme | Tasks |
 |---|---|---|
 | 0.6.x | Fixes from real use | What players report on 0.6.0, and Phase 2.6's leftovers: [#204](https://github.com/arastella625/DAORework/issues/204), [#205](https://github.com/arastella625/DAORework/issues/205), [#107](https://github.com/arastella625/DAORework/issues/107), [#98](https://github.com/arastella625/DAORework/issues/98), P2.5-37 and P2.5-38 |
-| 0.7.0 | Mods that run inside the game, and add-ins | Phase 2.8 (P2.8-04 to P2.8-08), P2.5-23 ([#72](https://github.com/arastella625/DAORework/issues/72)), and P2.5-31's add-ins ([#116](https://github.com/arastella625/DAORework/issues/116)) |
+| 0.7.0 | Mods that run inside the game, and add-ins | Phase 2.8 (P2.8-04 to P2.8-08) and P2.5-23 ([#72](https://github.com/arastella625/DAORework/issues/72)). P2.5-31's add-ins ([#116](https://github.com/arastella625/DAORework/issues/116)) are carried forward until a real `.dazip` deployment by Vortex can be checked |
 | 0.8.0 | Makes sense | Phase 2.10 (P2.10-02 to P2.10-07), with P2.9-03 (the cozy guide) and P2.9-06 (testers from outside the project) moved in |
 | 0.9.0 | Conflicts from the inside, and the release candidate | P3-01's GFF and TLK readers, P3-08, P3-09, and combining tables whose changes don't overlap once [ADR-0040](adr/0040-combining-more-than-one-file.md) is decided; P2.9-04 and P2.9-05; and P3-06 if [ADR-0035](adr/0035-opt-in-update-check.md) is accepted |
 | 1.0.0 | Ready for everyone | P2.9-07: Phase 2.9's exit gate |
@@ -273,7 +273,7 @@ platform item was carried into Phase 2.*
 ## Phase 2.6: After launch
 
 **Status: in progress.** Releases `v0.3.1` to `v0.6.0` came from this work (see [CHANGELOG.md](../CHANGELOG.md)). Open:
-P2.5-23, P2.5-31's add-ins ([#116](https://github.com/arastella625/DAORework/issues/116)), the SonarCloud findings
+P2.5-31's add-ins ([#116](https://github.com/arastella625/DAORework/issues/116)), the SonarCloud findings
 (P2.5-37, P2.5-38), and the two items carried from Phase 2.5's exit gate. Opened on 2026-11-03 for the work that had
 been added to Phase 2.5 after 0.3.0.
 
@@ -482,6 +482,11 @@ decision.
   and `description.bbcode` to Nexus when they change on `main`, so the owner no longer pastes them. The gallery, the
   name, permissions and the category stay manual. The description gains P2.6-06's note about Nexus's manual check.
   *Done ([#93](https://github.com/arastella625/DAORework/pull/93), [#94](https://github.com/arastella625/DAORework/pull/94)).*
+- P2.6-80 When Nexus doesn't answer ([#238](https://github.com/arastella625/DAORework/issues/238)): emails to
+  support went unanswered while uploads stayed held, so `docs/release/nexus-upload.md` says what to do next, in order:
+  scan the zip on VirusTotal ourselves and report each false positive, reply on the same email, message a moderator on
+  the site, then post in the forums' *Site Support*. Each upload's wait is noted on the issue. The page's AI-use
+  disclosure, which Nexus requires of existing mods from 2027-01-02, is set by hand like the category.
 - P2.6-10 The real-install check knows Steam starts the game ([#99](https://github.com/arastella625/DAORework/issues/99),
   [ADR-0022](adr/0022-launching-steam-installs-through-steam.md)): `verify-real-install.ps1` still wanted a process
   id, so a Steam install failed two launch checks on the owner's run of 2026-11-03 although the game started. The
@@ -708,8 +713,9 @@ these mods on Linux; a replacement `daorigins.exe`, which is never in scope.
 
 **Exit gate:**
 - [ ] P2.8-01 to P2.8-08 are done.
-- [ ] On the owner's real install, DAO Lib and Luma are each turned on, load in the game, are turned off and undone, and
-  the folder ends as it started, apart from files the mod wrote itself.
+- [ ] On the owner's real install, DAO Lib is turned on, loads in the game, is turned off and undone, and the folder
+  ends as it started, apart from files the mod wrote itself. Luma is run the same way once its page is back and it
+  states a license; its author hid it on 2026-11-08 (P2.8-06), so it doesn't hold up 0.7.0.
 - [ ] A tester with Steam's protected executable runs ADR-0033's *Not yet seen* items, recorded in `docs/testing/`.
   Anything not run there is not claimed as supported.
 

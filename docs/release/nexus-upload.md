@@ -42,14 +42,27 @@ Nexus holds every upload that contains programs until its staff have checked it 
 quarantined at first (0.3.1 and 0.4.0 both were). The README, the website and the Nexus description say so, and point
 players to the same zip on GitHub in the meantime.
 
-1. **Ask for the review.** The release run's summary (Actions → Release → the tag's run) has the email to
+1. **Scan it yourself first.** Upload the zip from the GitHub release to [VirusTotal](https://www.virustotal.com) and
+   keep the link to its report. It names the engines that flag the zip, and their detection names, without waiting for
+   Nexus to say. The scan is done by hand: a scan in CI waits on P2.6-07's results.
+2. **Ask for the review.** The release run's summary (Actions → Release → the tag's run) has the email to
    `support@nexusmods.com` filled in with the version, the zip's SHA-256, the release link, the attestation command
    and how to build it, from [nexus-review-request.md](nexus-review-request.md). Copy it, add the file id from the
-   quarantine notice, and send it. It asks which antivirus engines flagged the zip, and their detection names.
-2. **Report each false positive.** For every engine Nexus names, send the zip to that vendor as a false positive, with
-   the detection name and the link to the source. Start with Microsoft Defender, which most Windows players run:
+   quarantine notice and the VirusTotal link, and send it. It asks which antivirus engines flagged the zip, and their
+   detection names.
+3. **Report each false positive.** For every engine VirusTotal or Nexus names, send the zip to that vendor as a false
+   positive, with the detection name and the link to the source. Start with Microsoft Defender, which most Windows players run:
    [submit a file to Microsoft](https://www.microsoft.com/en-us/wdsi/filesubmission), as a software developer, and
    choose *incorrectly detected*. For other engines, use the vendor's own false-positive page. Each cleared report
    makes the next release less likely to be flagged.
-3. **Note the outcome** on [#87](https://github.com/arastella625/DAORework/issues/87): which engines, how long the
-   review took. That shows whether the release changes in P2.6-07 help.
+4. **If support doesn't answer in a week** (P2.6-80), go on in this order, and stop at the first that works. Nexus's
+   help page names email and a moderator on the website as the two ways to ask. Never delete the held file: Nexus
+   says that breaks the page's version history.
+   1. Reply on the same email, rather than starting a new one, saying when you first wrote.
+   2. Send a private message on the site to a moderator: one for Dragon Age: Origins, or a Community Manager (staff
+      have a *Staff* badge on the forums). Give the mod page, the file id, when it was held and when you emailed, and
+      the source, release and VirusTotal links.
+   3. Post the same in the forums' *Site Support* section, where staff answer in public.
+5. **Note the outcome** on [#238](https://github.com/arastella625/DAORework/issues/238): the version, when it
+   was held and cleared, which engines flagged it, and which way of asking worked. That shows whether P2.6-07's
+   release changes and the steps above help.
