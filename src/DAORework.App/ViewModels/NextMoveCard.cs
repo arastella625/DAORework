@@ -36,6 +36,10 @@ public sealed partial class NextMoveCard : ObservableObject
     [ObservableProperty]
     public partial NextMoveKind Kind { get; private set; }
 
+    /// <summary>Gets the step as <see cref="NextMoves"/> said it, for Home's headline (P2.10-02).</summary>
+    [ObservableProperty]
+    public partial NextMove? Move { get; private set; }
+
     [ObservableProperty]
     public partial string Title { get; private set; } = string.Empty;
 
@@ -92,6 +96,9 @@ public sealed partial class NextMoveCard : ObservableObject
                 await OpenTargetAsync(HomeTarget.ModsLibrary, cancellationToken);
                 await _mods.Library.ImportFileCommand.ExecuteAsync(null);
                 break;
+            case NextMoveKind.TurnOnMods or NextMoveKind.FinishVortexMove:
+                await OpenTargetAsync(HomeTarget.ModsLibrary, cancellationToken); // Home's button; on Mods these have none.
+                break;
             default:
                 break;
         }
@@ -111,6 +118,7 @@ public sealed partial class NextMoveCard : ObservableObject
             _mods.Activation.ActiveModIds.Count,
             _mods.Library.CopiesToClear);
         var move = NextMoves.For(facts);
+        Move = move;
         Kind = move.Kind;
         Title = move.Title;
         Body = move.Body;

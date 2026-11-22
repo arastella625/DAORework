@@ -3,11 +3,12 @@ using Avalonia.Headless.XUnit;
 using DAORework.App.ViewModels;
 using DAORework.App.Views;
 using DAORework.Application.Profiles;
+using DAORework.Core.Common;
 using Xunit;
 
 namespace DAORework.App.Tests;
 
-/// <summary>Home, the first tab (ADR-0026, P2.5-25): ready or not, the setup at a glance, and the last change with Undo.</summary>
+/// <summary>Home, the first tab (ADR-0026, P2.5-25): one headline and one next step (ADR-0050 §1), and the last change with Undo.</summary>
 public sealed class HomeScreenTests : IDisposable
 {
     private readonly AppTestHost _host = new();
@@ -21,41 +22,59 @@ public sealed class HomeScreenTests : IDisposable
     public void Dispose() => _host.Dispose();
 
     [AvaloniaFact]
-    public void NoProfile_SaysHowToStart_AndOffersNoCheck()
+    public async Task NoProfile_SaysWelcome_AndOpensGameFolders()
     {
         var window = _host.Resolve<MainWindowViewModel>();
         var home = window.Home;
 
         Assert.Equal(MainWindowViewModel.HomePage, window.SelectedPage); // Home opens first.
-        Assert.Equal("Welcome", home.ReadyTitle);
-        Assert.False(home.CanCheck);
+        Assert.Equal("Welcome", home.Card.Title);
+        Assert.Equal("Game folders", home.Card.Button);
         Assert.False(home.HasLastChange);
+
+        await home.TakeCardCommand.ExecuteAsync(null);
+
+        Assert.Equal(MainWindowViewModel.SettingsPage, window.SelectedPage);
+        Assert.True(window.GameFoldersOpen);
     }
 
     [AvaloniaFact]
-    public async Task ACheckedGame_IsReadyToPlay()
+    public async Task OpeningAProfile_ChecksTheGame_AndSaysTheOneThingFirst()
     {
         var (_, viewModel) = await _scenario.OpenAsync();
 
-        await viewModel.Home.CheckGameCommand.ExecuteAsync(null);
+        await viewModel.CheckingGame;
 
-        Assert.Equal("Ready to play", viewModel.Home.ReadyTitle);
-        Assert.True(viewModel.Home.IsReady);
-        Assert.False(viewModel.Home.CanCheck);
+        Assert.True(viewModel.Diagnostics.HasReport); // Checked on open, with no button pressed.
+        Assert.Equal("One thing first", viewModel.Home.Card.Title);
+        Assert.Equal("4 mods are in your game.", viewModel.Home.Card.Sentence); // The seeded install's hand-placed mods.
+        Assert.Equal("Take them over", viewModel.Home.Card.Button);
     }
 
     [AvaloniaFact]
-    public async Task TurningOnAMod_ShowsInTheStrip_AndUndoFromHomeAsksInHistory()
+    public async Task TurningOnAMod_ChecksAgain_SaysReady_AndUndoFromHomeAsksInHistory()
     {
-        var (window, viewModel) = await _scenario.OpenAsync();
+        _host.SeedRealisticInstall();
+        _host.FileSystem.Directory.Delete(GamePaths.OverrideDirectory(_scenario.DocumentsDirectory), recursive: true); // Nothing to take over first.
+        var (window, viewModel) = await _scenario.OpenAsync(seedInstall: false);
         await _scenario.ImportHairPackAsync(viewModel);
+        await viewModel.CheckingGame;
+        var checks = 0;
+        var showReport = viewModel.Diagnostics.AfterReportAsync!;
+        viewModel.Diagnostics.AfterReportAsync = (profile, issues, token) =>
+        {
+            checks++;
+            return showReport(profile, issues, token);
+        };
 
         await _scenario.ActivateHairPackAsync(viewModel);
+        await viewModel.CheckingGame;
 
         var home = viewModel.Home;
-        var overrides = Assert.Single(home.Setup!.Parts, p => p.Title == "Override mods");
-        Assert.StartsWith("1 on", overrides.Count, StringComparison.Ordinal);
-        Assert.Equal("Almost there", home.Setup.Title);
+        Assert.Equal("Ready to play", home.Card.Title);
+        Assert.Equal("Play", home.Card.Button);
+        Assert.True(home.IsReady);
+        Assert.True(checks > 0); // The change was checked, with no button pressed.
         Assert.Equal("Turned on Hair Pack", home.LastChange);
         viewModel.SelectedPage = MainWindowViewModel.HomePage;
         window.UpdateLayout();
@@ -75,15 +94,14 @@ public sealed class HomeScreenTests : IDisposable
         var elsewhere = MockUnixSupport.Path(@"D:\BioWare\Dragon Age");
         await PointProfileAtAsync(viewModel, elsewhere);
 
-        await viewModel.Home.CheckGameCommand.ExecuteAsync(null);
+        await viewModel.CheckingGame;
 
         var step = viewModel.NextSteps.Steps[0];
         Assert.Equal(NextStepKind.ChooseGameDocumentsFolder, step.Kind);
         Assert.Contains(_scenario.DocumentsDirectory, step.Detail, StringComparison.Ordinal);
         Assert.Contains(elsewhere, step.Detail, StringComparison.Ordinal);
-        Assert.True(viewModel.Home.IsReady); // A warning: the game still starts, it just doesn't see the mods.
-        Assert.Equal("Ready to play, without your mods", viewModel.Home.ReadyTitle); // ...so nothing says all is well with them.
-        Assert.StartsWith("The game can start, but it reads another documents folder", viewModel.Home.ReadyBody, StringComparison.Ordinal);
+        Assert.False(viewModel.Home.HasProblems); // A warning: the game still starts, it just doesn't see the mods...
+        Assert.NotEqual("Ready to play", viewModel.Home.Card.Title); // ...so nothing says all is well with them.
         Assert.True(viewModel.Home.Setup!.GameReadsElsewhere);
         ModsTabScenario.Show<NextStepsPanel>(window);
         Screenshots.Save(window, "47-home-documents-not-the-games");
@@ -100,7 +118,7 @@ public sealed class HomeScreenTests : IDisposable
     {
         var (_, viewModel) = await _scenario.OpenAsync();
 
-        await viewModel.Home.CheckGameCommand.ExecuteAsync(null);
+        await viewModel.CheckingGame;
 
         Assert.DoesNotContain(viewModel.NextSteps.Steps, s => s.Kind == NextStepKind.ChooseGameDocumentsFolder);
     }

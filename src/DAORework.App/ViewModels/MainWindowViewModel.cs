@@ -1,3 +1,4 @@
+using System.Collections.Specialized;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DAORework.App.ViewModels;
@@ -23,8 +24,10 @@ public sealed partial class MainWindowViewModel : ObservableObject
     /// <summary>The index of the Settings tab, which also holds the game folders and Troubleshooting.</summary>
     public const int SettingsPage = 5;
 
+    private readonly GameRecheck _recheck;
     private Task? _initialization;
     private Task _selecting = Task.CompletedTask;
+    private bool _loadingProfile;
 
     public MainWindowViewModel(ProfileListViewModel profiles, LaunchViewModel launch, PagesViewModel pages, SettingsPageViewModel settings, HomeViewModel home)
     {
@@ -34,22 +37,24 @@ public sealed partial class MainWindowViewModel : ObservableObject
         Pages = pages;
         Settings = settings;
         Home = home;
+        _recheck = new GameRecheck(() => Diagnostics.RunDiagnosticsCommand.ExecuteAsync(null));
         Profiles.SelectionChanged += (_, name) => _selecting = SelectProfileAsync(name);
         Settings.Looks.ListChanged += (_, _) => _ = Pages.Profile.Look.RefreshAsync(); // The Profile page offers the looks made in Settings.
 
-        // The first-run flow (P2.5-07): the first profile is diagnosed at once, and the diagnosis ends in next steps.
+        // The first-run flow (P2.5-07): selecting the first profile checks it, and the check ends in next steps.
         Profiles.AfterFirstProfileAsync = async _ =>
         {
-            await _selecting; // The check reads the profile, so every page has to be pointed at it first.
-            await Diagnostics.RunDiagnosticsCommand.ExecuteAsync(null);
+            await _selecting;
+            await CheckingGame;
         };
         Diagnostics.AfterReportAsync = Home.ShowReportAsync;
         NextSteps.TakeStepAsync = TakeStepAsync;
         Home.Watch(ModsTab, Fixes);
+        CheckAfterEachChange();
         ModsTab.Working.Watch(Diagnostics, "Checking your game");
         ModsTab.Working.Watch(Fixes.Change, "Working out the preview");
         ModsTab.Working.Watch(Saves, "Working on your saves");
-        Home.CheckAsync = _ => Diagnostics.RunDiagnosticsCommand.ExecuteAsync(null);
+        Home.PlayAsync = _ => Launch.LaunchCommand.ExecuteAsync(null);
         Home.NavigateAsync = OpenFromHomeAsync;
         ModsTab.NextMove.OpenAsync = (target, token) => OpenFromHomeAsync(target, null, token);
         ShareTheGameFolderRecord();
@@ -66,6 +71,9 @@ public sealed partial class MainWindowViewModel : ObservableObject
     /// <summary>Gets or sets whether Settings shows Troubleshooting: the diagnostics and the folder figures.</summary>
     [ObservableProperty]
     public partial bool TroubleshootingOpen { get; set; }
+
+    /// <summary>Gets the game's checks running in the background, done when the last one asked for has ended (ADR-0050 §1).</summary>
+    public Task CheckingGame => _recheck.Running;
 
     /// <summary>Gets Home, the first tab (P2.5-25).</summary>
     public HomeViewModel Home { get; }
@@ -105,12 +113,25 @@ public sealed partial class MainWindowViewModel : ObservableObject
     public Task InitializeAsync(CancellationToken cancellationToken = default) =>
         _initialization ??= Task.WhenAll(Profiles.LoadAsync(cancellationToken), Settings.LoadAsync(cancellationToken));
 
-    /// <summary>Points the launch action and every page at <paramref name="profileName"/> (null clears them).</summary>
-    public Task SelectProfileAsync(string? profileName, CancellationToken cancellationToken = default)
+    /// <summary>Points the launch action and every page at <paramref name="profileName"/> (null clears them), then checks the game.</summary>
+    public async Task SelectProfileAsync(string? profileName, CancellationToken cancellationToken = default)
     {
         Launch.ProfileName = profileName;
         Home.Show(profileName);
-        return Pages.SelectProfileAsync(profileName, cancellationToken);
+        _loadingProfile = true;
+        try
+        {
+            await Pages.SelectProfileAsync(profileName, cancellationToken);
+        }
+        finally
+        {
+            _loadingProfile = false;
+        }
+
+        if (profileName is not null)
+        {
+            _recheck.Request(); // In the background: Home says Checking your game until it's done (ADR-0050 §1).
+        }
     }
 
     /// <summary>Shows the tab a step belongs on and opens its plan or list there; nothing is applied until the user applies it.</summary>
@@ -163,6 +184,21 @@ public sealed partial class MainWindowViewModel : ObservableObject
                 ShowOnModsPage(target);
                 break;
         }
+    }
+
+    // Every change to mods or fixes records a backup, so a new one means the game is checked again. Loading a profile
+    // fills the same lists, and is checked once when it's done instead.
+    private void CheckAfterEachChange()
+    {
+        NotifyCollectionChangedEventHandler changed = (_, _) =>
+        {
+            if (!_loadingProfile && Diagnostics.ProfileName is not null)
+            {
+                _recheck.Request();
+            }
+        };
+        ModsTab.Changes.Backups.CollectionChanged += changed;
+        Fixes.Status.Backups.CollectionChanged += changed;
     }
 
     /// <summary>
