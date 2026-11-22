@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Avalonia.LogicalTree;
 using Avalonia.Threading;
+using DAORework.App.ViewModels;
 using DAORework.App.Views;
 using Xunit;
 
@@ -89,5 +90,11 @@ public sealed class RealScaleScreensTests : IDisposable
         Screenshots.Save(window, "real-scale-screen-arrange");
         ModsTabScenario.Show<ChangesPanel>(window);
         Screenshots.Save(window, "real-scale-screen-history");
+
+        await viewModel.CheckingGame; // Checked again after the change, in the background (ADR-0050 §1).
+        viewModel.SelectedPage = MainWindowViewModel.HomePage;
+        window.UpdateLayout();
+        Assert.Single(window.GetLogicalDescendants().OfType<Button>().Where(b => b.Name == "HeadlineButton" && b.IsEffectivelyVisible).Distinct());
+        Screenshots.Save(window, "real-scale-screen-home");
     }
 }

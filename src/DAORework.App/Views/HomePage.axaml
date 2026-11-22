@@ -3,15 +3,15 @@
              xmlns:vm="using:DAORework.App.ViewModels"
              xmlns:views="using:DAORework.App.Views"
              xmlns:controls="using:DAORework.App.Controls"
+             xmlns:mods="using:DAORework.Core.Mods"
              x:Class="DAORework.App.Views.HomePage"
              x:DataType="vm:HomeViewModel">
-  <!-- Home (ADR-0026, P2.5-25): ready or not, the setup at a glance, the last change, and what is worth a look. -->
+  <!-- Home (ADR-0026, P2.5-25, ADR-0050 §1): one card that says whether to play or what to do first, the last change, and what is worth a look. -->
   <ScrollViewer>
     <StackPanel Margin="12" Spacing="12">
-      <!-- First, so a new player sees it: it was below the fold when last in the list. -->
-      <views:NextMovePanel DataContext="{Binding NextMove}" IsVisible="{Binding IsShown, FallbackValue=False}" x:DataType="vm:NextMoveCard" />
+      <!-- One card: a headline, one sentence and one button (ADR-0050 §1, P2.10-02); the last change beside it. -->
       <Grid ColumnDefinitions="3*,12,2*">
-        <controls:Card>
+        <controls:Card Name="Headline">
           <Panel ClipToBounds="True">
           <!-- A soft burst of gold behind the good news; a plain theme draws none (ADR-0026 §4). -->
           <Canvas Opacity="{DynamicResource OrnamentOpacity}" IsVisible="{Binding IsReady}" IsHitTestVisible="False">
@@ -22,16 +22,28 @@
             <StackPanel Orientation="Horizontal" Spacing="10">
               <PathIcon Classes="Ok" Width="22" Height="22" Data="{StaticResource IconOk}" IsVisible="{Binding IsReady}" />
               <PathIcon Classes="Warning" Width="22" Height="22" Data="{StaticResource IconWarning}" IsVisible="{Binding HasProblems}" />
-              <TextBlock Name="ReadyTitle" Classes="PageTitle" Text="{Binding ReadyTitle}" />
+              <TextBlock Name="HeadlineTitle" Classes="PageTitle" Text="{Binding Card.Title}" />
             </StackPanel>
-            <TextBlock Name="ReadyBody" Classes="Secondary" TextWrapping="Wrap" Text="{Binding ReadyBody}" />
-            <StackPanel Orientation="Horizontal" Spacing="10">
-              <Button Name="CheckGameButton" Classes="accent" Content="Check the game" Command="{Binding CheckGameCommand}" IsVisible="{Binding CanCheck}" />
-              <Button Name="SeeProblemsButton" Content="See what's wrong" Command="{Binding OpenCommand}"
-                      CommandParameter="{x:Static vm:HomeTarget.Diagnostics}" IsVisible="{Binding HasProblems}" />
-              <Button Name="GameFoldersButton" Content="Game folders" Command="{Binding OpenCommand}"
-                      CommandParameter="{x:Static vm:HomeTarget.GameFolders}" />
-            </StackPanel>
+            <TextBlock Name="HeadlineSentence" Classes="Secondary" TextWrapping="Wrap" Text="{Binding Card.Sentence}" />
+            <!-- Where a new player is (P2.6-36). It goes once a mod is on, so there is nothing to dismiss. -->
+            <ItemsControl Name="FirstSteps" ItemsSource="{Binding NextMove.FirstSteps, FallbackValue={x:Null}}"
+                          IsVisible="{Binding NextMove.FirstSteps.Count, Converter={x:Static views:CountConverters.IsPositive}, FallbackValue=False}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <StackPanel Orientation="Horizontal" Spacing="16" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="mods:FirstStep">
+                  <StackPanel Orientation="Horizontal" Spacing="5">
+                    <PathIcon Classes="Ok" Width="12" Height="12" Data="{StaticResource IconOk}" IsVisible="{Binding IsDone}" />
+                    <TextBlock Classes="Secondary" Text="{Binding Name}" />
+                  </StackPanel>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Button Name="HeadlineButton" Classes="accent" HorizontalAlignment="Left" Content="{Binding Card.Button}"
+                    Command="{Binding TakeCardCommand}" IsVisible="{Binding HasButton}" />
           </StackPanel>
           </Panel>
         </controls:Card>
@@ -47,42 +59,6 @@
           </StackPanel>
         </controls:Card>
       </Grid>
-
-      <controls:Card Classes="framed" DataContext="{Binding Setup}" x:DataType="vm:SetupSummary" IsVisible="{Binding $parent[UserControl].((vm:HomeViewModel)DataContext).Setup, Converter={x:Static ObjectConverters.IsNotNull}}">
-        <StackPanel Spacing="10">
-          <TextBlock Name="SetupTitle" Classes="SectionTitle" Text="{Binding Title}" />
-          <TextBlock Classes="Secondary" TextWrapping="Wrap" Text="{Binding Body}" />
-          <ItemsControl Name="SetupParts" ItemsSource="{Binding Parts}">
-            <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate>
-                <UniformGrid Columns="3" />
-              </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-              <DataTemplate x:DataType="vm:SetupPart">
-                <Button Margin="0,0,10,0" Padding="14,12" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
-                        Command="{Binding $parent[UserControl].((vm:HomeViewModel)DataContext).OpenCommand}" CommandParameter="{Binding Target}">
-                  <Grid ColumnDefinitions="Auto,12,*">
-                    <controls:Seal VerticalAlignment="Top" Classes.warning="{Binding NeedsALook}">
-                      <Panel>
-                        <PathIcon Classes="Ok" Width="13" Height="13" Data="{StaticResource IconOk}" IsVisible="{Binding IsReady}" />
-                        <PathIcon Classes="Warning" Width="13" Height="13" Data="{StaticResource IconWarning}" IsVisible="{Binding NeedsALook}" />
-                      </Panel>
-                    </controls:Seal>
-                    <StackPanel Grid.Column="2" Spacing="2">
-                      <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
-                      <TextBlock Classes="Secondary" TextWrapping="Wrap" Text="{Binding Count}" />
-                      <TextBlock Classes="Status" Text="{Binding Status}" IsVisible="{Binding IsReady}" />
-                      <TextBlock Classes="Warning" Text="{Binding Status}" IsVisible="{Binding NeedsALook}" />
-                      <TextBlock Classes="Secondary" Text="{Binding Status}" IsVisible="{Binding IsChecking}" />
-                    </StackPanel>
-                  </Grid>
-                </Button>
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
-        </StackPanel>
-      </controls:Card>
 
       <controls:Card IsVisible="{Binding Setup.HasModsOn, FallbackValue=False}">
         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">

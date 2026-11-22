@@ -740,7 +740,11 @@ before conflicts from the inside.
   [ADR-0051](adr/0051-the-cozy-guide.md) and their words in [VOICE.md](VOICE.md).
 - P2.10-02 One headline and one next step on Home (ADR-0050 §1): one Core rule beside `NextMoves` decides both, from the
   readiness facts and the last check; the Ready card, *Almost there* and the next-step card become one card; the game is
-  checked when the window opens and after each change. *Last change · Undo* stays.
+  checked when the window opens and after each change. *Last change · Undo* stays. *Done, ahead of 0.7.0 while CI was
+  down (the owner's choice, 2026-11-22): `HomeHeadlines` and `GameCheck` in Core, one card on Home with one button
+  ([screenshot](screenshots/p2.10-02/01-home-one-thing-first.png), [ready](screenshots/p2.10-02/02-home-ready.png)),
+  and `GameRecheck` checking on open and after each new backup, never two at once. *New downloads* and *Find the
+  problem mod* still have their own cards; moving them into *Worth a look* (ADR-0050 §1) is left for P2.10-06.*
 - P2.10-03 What you got (ADR-0050 §4): `ChargenMorphCounts` beside `ChargenMorphCombiner` counts what each mod's
   `chargenmorphcfg.xml` adds to character creation (hairstyles, faces, beards, colours, tattoos, skins), against the
   game's own copy on the player's PC where it can be read, else against what every copy shares. It shows on the row,

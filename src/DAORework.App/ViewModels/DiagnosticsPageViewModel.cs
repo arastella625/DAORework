@@ -90,12 +90,12 @@ public sealed partial class DiagnosticsPageViewModel : PageViewModel
         GuardAsync(
             async token =>
             {
-                if (ProfileName is null)
+                if (ProfileName is not { } profileName)
                 {
                     return;
                 }
 
-                var profileResult = await _getProfile.ExecuteAsync(new GetProfileRequest(ProfileName), token);
+                var profileResult = await _getProfile.ExecuteAsync(new GetProfileRequest(profileName), token);
                 if (!profileResult.TryGetValue(out var profile, out var error))
                 {
                     ReportError(error);
@@ -104,6 +104,10 @@ public sealed partial class DiagnosticsPageViewModel : PageViewModel
 
                 var report = (await _runDiagnostics.ExecuteAsync(new RunDiagnosticsRequest(profile), token)).Value;
                 ReportPath = await _reportWriter.WriteAsync(report, token);
+                if (profileName != ProfileName)
+                {
+                    return; // Another profile was chosen while this one was checked; its own check follows.
+                }
 
                 Issues.Clear();
                 foreach (var issue in report.Issues)
@@ -116,7 +120,7 @@ public sealed partial class DiagnosticsPageViewModel : PageViewModel
                 ReportStatus(report.CanLaunch ? "The profile can launch." : "The profile cannot launch until the errors are fixed.");
                 if (AfterReportAsync is not null)
                 {
-                    await AfterReportAsync(ProfileName, report.Issues, token);
+                    await AfterReportAsync(profileName, report.Issues, token);
                 }
             },
             cancellationToken);
