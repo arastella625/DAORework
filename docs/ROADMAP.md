@@ -806,7 +806,9 @@ keyboard and screen reader, files that every later version reads, and real playe
 - P2.9-06 Testers from outside the project, asked for during 0.7.0 and 0.8.0: a short test script in `docs/testing/`,
   a request on the Nexus page and the website, and GOG and EA App players first ([#5](https://github.com/arastella625/DAORework/issues/5),
   [#70](https://github.com/arastella625/DAORework/issues/70)). *In 0.8.0 with Phase 2.10: a first run before P2.10-02
-  shows where players get stuck today, and a second after P2.10-06 shows what changed.*
+  shows where players get stuck today, and a second after P2.10-06 shows what changed. The request is out: the script is
+  [tester-script.md](testing/tester-script.md), asked for on the website and the Nexus page, with a section for Steam's
+  protected copy that Phase 2.8's gate needs.*
 - P2.9-07 Release 1.0.0: the version, the changelog's section, the audit re-run, this roadmap, and the roadmap page.
 
 **Not in this phase:** Linux (Phase 2.7), `nxm://` links, translations, and anything after 1.0.
