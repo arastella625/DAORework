@@ -6,7 +6,14 @@ All notable changes to DAORework are recorded here. The format follows
 
 ## [Unreleased]
 
+## [0.7.0] - YYYY-MM-DD
+
+Mods that run inside the game, and add-ins that share files. DAORework now installs mods such as DAO Lib that put a program beside the game's own, once you say you trust them, with the same preview, backup and *Undo* as any other mod. It says what such a mod needs, such as the 4 GB patch, and which add-in's copy the game uses when two ship the same file. Nothing changes in how other mods are installed, backed up or undone, and there is still no Linux download.
+
 ### Changed
+- Mods that run inside the game can be turned on (P2.8-04, P2.8-05, [ADR-0033](docs/adr/0033-mods-that-run-inside-the-game.md)). A mod such as DAO Lib puts its DLLs in the game's `bin_ship` folder. Its switch opens its own preview, and *Apply* stays off until you tick *I trust this mod and where I got it*. Its files are checked against the copy in your Library and scanned again before they're placed, and turning it off or *Undo* puts the folder back. Turning it off needs no tick. *Turn on selected* leaves these mods out and names them, so each is said yes to on its own. On the command line, `mods activate <id> --allow-programs <id>` turns one on, and `--yes` doesn't cover it.
+- A mod's preview says what it needs (P2.8-06): the controller mod needs the 4 GB patch, and turning it on warns when the patch is missing, or says it can't go on Steam's protected copy. DAO Lib and the controller mod conflict, and the preview links DAO Lib's page on how to use both.
+- Turning a mod that runs inside the game on and off is tested by stopping DAORework before every write, and checking that the change can then be finished or undone with nothing lost (P2.8-07).
 - *Check the game* says when two add-ins have a file of the same name, and whose copy the game uses (P2.5-23, `DAO_ADDINS_SHARE_FILE`). It's the add-in with the lower Priority in `AddIns.xml`, or, on equal priorities, the one listed first, as checked in the game ([#72](https://github.com/arastella625/DAORework/issues/72)). Files inside an add-in's archives are compared too. `mods inspect` lists the add-ins the game loads, in its order and with their Priority. DAORework changes no priority.
 - On Mods, each add-in shows its Priority, and whether it wins or loses a file it shares with another add-in. Its row names those files, and the *Add-ins sharing files* chip shows only those add-ins (P2.5-23).
 
@@ -253,7 +260,8 @@ CLI does what it did before, with the fixes listed under *Fixed*.
 - Report JSON uses one consistent camelCase naming (P0-06).
 - The README tree and command list are correct again (P0-14).
 
-[Unreleased]: https://github.com/arastella625/DAORework/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/arastella625/DAORework/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/arastella625/DAORework/releases/tag/v0.7.0
 [0.6.0]: https://github.com/arastella625/DAORework/releases/tag/v0.6.0
 [0.5.0]: https://github.com/arastella625/DAORework/releases/tag/v0.5.0
 [0.4.0]: https://github.com/arastella625/DAORework/releases/tag/v0.4.0
