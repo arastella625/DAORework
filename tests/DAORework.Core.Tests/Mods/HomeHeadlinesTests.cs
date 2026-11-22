@@ -7,19 +7,20 @@ namespace DAORework.Core.Tests.Mods;
 /// <summary>Home's one headline, sentence and button (P2.10-02, ADR-0050 §1).</summary>
 public sealed class HomeHeadlinesTests
 {
-    private static readonly GameCheck Clean = new(0, false);
+    private static readonly GameCheck _clean = new(0, false);
 
     public static TheoryData<NextMoveKind, GameCheck?, HomeHeadlineKind> Order => new()
     {
         { NextMoveKind.SetUpTheGame, new GameCheck(3, false), HomeHeadlineKind.Welcome },
         { NextMoveKind.SettleTheLastChange, new GameCheck(3, false), HomeHeadlineKind.OneThingFirst },
         { NextMoveKind.TakeOverWhatIsInTheGame, new GameCheck(1, false), HomeHeadlineKind.NotReady },
+        { NextMoveKind.Play, GameCheck.CouldNotRun, HomeHeadlineKind.NotReady },
         { NextMoveKind.Play, new GameCheck(1, true), HomeHeadlineKind.NotReady },
         { NextMoveKind.TakeOverWhatIsInTheGame, null, HomeHeadlineKind.OneThingFirst },
-        { NextMoveKind.TurnOnMods, Clean, HomeHeadlineKind.OneThingFirst },
+        { NextMoveKind.TurnOnMods, _clean, HomeHeadlineKind.OneThingFirst },
         { NextMoveKind.Play, null, HomeHeadlineKind.Checking },
         { NextMoveKind.Play, new GameCheck(0, true), HomeHeadlineKind.ReadyWithoutMods },
-        { NextMoveKind.Play, Clean, HomeHeadlineKind.Ready },
+        { NextMoveKind.Play, _clean, HomeHeadlineKind.Ready },
     };
 
     [Theory]
@@ -32,7 +33,7 @@ public sealed class HomeHeadlinesTests
     [Fact]
     public void For_OneThingFirst_SaysTheStep_AndKeepsItsButton()
     {
-        var headline = HomeHeadlines.For(Move(NextMoveKind.TakeOverWhatIsInTheGame), Clean);
+        var headline = HomeHeadlines.For(Move(NextMoveKind.TakeOverWhatIsInTheGame), _clean);
 
         Assert.Equal("One thing first", headline.Title);
         Assert.Equal("3 mods are in your game.", headline.Sentence);
@@ -43,8 +44,8 @@ public sealed class HomeHeadlinesTests
     [Fact]
     public void For_AStepWithNoButtonOnMods_StillHasOneOnHome()
     {
-        Assert.Equal("Turn them on", HomeHeadlines.For(Move(NextMoveKind.TurnOnMods), Clean).Button);
-        Assert.Equal("Go to Mods", HomeHeadlines.For(Move(NextMoveKind.FinishVortexMove), Clean).Button);
+        Assert.Equal("Turn them on", HomeHeadlines.For(Move(NextMoveKind.TurnOnMods), _clean).Button);
+        Assert.Equal("Go to Mods", HomeHeadlines.For(Move(NextMoveKind.FinishVortexMove), _clean).Button);
     }
 
     [Fact]
@@ -62,6 +63,15 @@ public sealed class HomeHeadlinesTests
     {
         Assert.Equal("1 problem to fix before the game can start.", HomeHeadlines.For(Move(NextMoveKind.Play), new GameCheck(1, false)).Sentence);
         Assert.Equal("2 problems to fix before the game can start.", HomeHeadlines.For(Move(NextMoveKind.Play), new GameCheck(2, false)).Sentence);
+    }
+
+    [Fact]
+    public void For_ACheckThatCouldNotRun_SaysSo_AndOpensTroubleshooting()
+    {
+        var headline = HomeHeadlines.For(Move(NextMoveKind.Play), GameCheck.CouldNotRun);
+
+        Assert.Equal("The game couldn't be checked. Troubleshooting says why.", headline.Sentence);
+        Assert.Equal(HomeButton.SeeProblems, headline.Action);
     }
 
     [Fact]

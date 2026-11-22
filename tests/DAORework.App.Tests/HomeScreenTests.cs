@@ -4,6 +4,7 @@ using DAORework.App.ViewModels;
 using DAORework.App.Views;
 using DAORework.Application.Profiles;
 using DAORework.Core.Common;
+using DAORework.Core.Mods;
 using Xunit;
 
 namespace DAORework.App.Tests;
@@ -101,7 +102,7 @@ public sealed class HomeScreenTests : IDisposable
         Assert.Contains(_scenario.DocumentsDirectory, step.Detail, StringComparison.Ordinal);
         Assert.Contains(elsewhere, step.Detail, StringComparison.Ordinal);
         Assert.False(viewModel.Home.HasProblems); // A warning: the game still starts, it just doesn't see the mods...
-        Assert.NotEqual("Ready to play", viewModel.Home.Card.Title); // ...so nothing says all is well with them.
+        Assert.Equal(HomeHeadlineKind.OneThingFirst, viewModel.Home.Card.Kind); // ...so nothing says all is well: taking over comes first.
         Assert.True(viewModel.Home.Setup!.GameReadsElsewhere);
         ModsTabScenario.Show<NextStepsPanel>(window);
         Screenshots.Save(window, "47-home-documents-not-the-games");

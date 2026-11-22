@@ -112,6 +112,20 @@ public sealed partial class HomeViewModel : ObservableObject
         return NextSteps.ShowAsync(profileName, issues, cancellationToken);
     }
 
+    /// <summary>Says <i>Checking your game</i> until the check asked for now ends, so nothing says ready for a change not yet checked.</summary>
+    public void ShowChecking()
+    {
+        _check = null;
+        ShowCard();
+    }
+
+    /// <summary>Ends a check: one that showed no report couldn't run, and the card says so instead of checking for ever.</summary>
+    public void ShowCheckEnded()
+    {
+        _check ??= GameCheck.CouldNotRun;
+        ShowCard();
+    }
+
     [RelayCommand]
     private Task TakeCardAsync(CancellationToken cancellationToken) => Card.Action switch
     {

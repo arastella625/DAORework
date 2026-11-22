@@ -32,6 +32,9 @@ public sealed partial class ProfilePathsViewModel : PageViewModel
         _picker = picker;
     }
 
+    /// <summary>Gets or sets what runs after a path is saved, set by the window: the game is checked again.</summary>
+    public Action? AfterSave { get; set; }
+
     [ObservableProperty]
     public partial string? ProfileName { get; set; }
 
@@ -113,6 +116,7 @@ public sealed partial class ProfilePathsViewModel : PageViewModel
 
                 Apply(profile);
                 ReportSuccess($"Saved the {Describe(kind)} path.");
+                AfterSave?.Invoke();
             },
             cancellationToken);
 

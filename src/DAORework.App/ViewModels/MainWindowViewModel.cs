@@ -27,7 +27,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
     private readonly GameRecheck _recheck;
     private Task? _initialization;
     private Task _selecting = Task.CompletedTask;
-    private bool _loadingProfile;
+    private int _loadingProfiles;
 
     public MainWindowViewModel(ProfileListViewModel profiles, LaunchViewModel launch, PagesViewModel pages, SettingsPageViewModel settings, HomeViewModel home)
     {
@@ -37,7 +37,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
         Pages = pages;
         Settings = settings;
         Home = home;
-        _recheck = new GameRecheck(() => Diagnostics.RunDiagnosticsCommand.ExecuteAsync(null));
+        _recheck = new GameRecheck(CheckTheGameAsync);
         Profiles.SelectionChanged += (_, name) => _selecting = SelectProfileAsync(name);
         Settings.Looks.ListChanged += (_, _) => _ = Pages.Profile.Look.RefreshAsync(); // The Profile page offers the looks made in Settings.
 
@@ -118,14 +118,14 @@ public sealed partial class MainWindowViewModel : ObservableObject
     {
         Launch.ProfileName = profileName;
         Home.Show(profileName);
-        _loadingProfile = true;
+        _loadingProfiles++;
         try
         {
             await Pages.SelectProfileAsync(profileName, cancellationToken);
         }
         finally
         {
-            _loadingProfile = false;
+            _loadingProfiles--;
         }
 
         if (profileName is not null)
@@ -186,19 +186,42 @@ public sealed partial class MainWindowViewModel : ObservableObject
         }
     }
 
-    // Every change to mods or fixes records a backup, so a new one means the game is checked again. Loading a profile
-    // fills the same lists, and is checked once when it's done instead.
+    // Every change to mods or fixes records a backup, so a new one means the game is checked again, as does a new game
+    // folder. Loading a profile fills the same lists, and is checked once when it's done instead.
     private void CheckAfterEachChange()
     {
-        NotifyCollectionChangedEventHandler changed = (_, _) =>
+        void Changed()
         {
-            if (!_loadingProfile && Diagnostics.ProfileName is not null)
+            if (_loadingProfiles == 0 && Diagnostics.ProfileName is not null)
             {
+                Home.ShowChecking();
                 _recheck.Request();
             }
-        };
-        ModsTab.Changes.Backups.CollectionChanged += changed;
-        Fixes.Status.Backups.CollectionChanged += changed;
+        }
+
+        NotifyCollectionChangedEventHandler backups = (_, _) => Changed();
+        ModsTab.Changes.Backups.CollectionChanged += backups;
+        Fixes.Status.Backups.CollectionChanged += backups;
+        Profile.Paths.AfterSave = Changed;
+        Profile.Installs.Applied += (_, _) => Changed();
+    }
+
+    // Waits for a check started from Troubleshooting first, so two never run at once. A check for a profile no longer
+    // chosen ends quietly: the new profile's own check follows.
+    private async Task CheckTheGameAsync()
+    {
+        if (Diagnostics.RunDiagnosticsCommand.ExecutionTask is { IsCompleted: false } running)
+        {
+            await running;
+        }
+
+        var profileName = Diagnostics.ProfileName;
+        Home.ShowChecking();
+        await Diagnostics.RunDiagnosticsCommand.ExecuteAsync(null);
+        if (profileName == Diagnostics.ProfileName)
+        {
+            Home.ShowCheckEnded();
+        }
     }
 
     /// <summary>

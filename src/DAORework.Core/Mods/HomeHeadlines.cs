@@ -16,6 +16,7 @@ public static class HomeHeadlines
         {
             (NextMoveKind.SetUpTheGame, _) => new(HomeHeadlineKind.Welcome, "Welcome", "Create a profile in the header, then show DAORework where your game is.", move.Button, HomeButton.TakeNextMove),
             (NextMoveKind.SettleTheLastChange, _) => OneThingFirst(move),
+            (_, { Failed: true }) => new(HomeHeadlineKind.NotReady, "Not ready yet", "The game couldn't be checked. Troubleshooting says why.", "See what's wrong", HomeButton.SeeProblems),
             (_, { Problems: > 0 } found) => new(HomeHeadlineKind.NotReady, "Not ready yet", $"{Problems(found.Problems)} to fix before the game can start.", "See what's wrong", HomeButton.SeeProblems),
             (not NextMoveKind.Play, _) => OneThingFirst(move),
             (_, null) => new(HomeHeadlineKind.Checking, "Checking your game", "It takes a moment. You can carry on meanwhile.", null, HomeButton.None),
