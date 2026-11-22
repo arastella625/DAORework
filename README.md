@@ -53,7 +53,8 @@ publisher. A new publisher still builds up reputation with Windows SmartScreen, 
   files your Library already has, so they don't fill your drive.
 - **Shows conflicts,** most serious first: files that could break quests before those that only change how things
   look. For every file two mods share, whose copy the game uses, and lets you reorder them. Files
-  inside `.erf` archives are compared too, though there DAORework can't tell which copy the game uses.
+  inside `.erf` archives are compared too, though there DAORework can't tell which copy the game uses. Add-ins show
+  their Priority, and when two ship a file of the same name, which one's copy the game uses.
 - **Checks every mod.** Your own antivirus scans every mod before it is kept, and a download that differs from the known
   official one is pointed out. Programs inside an ordinary mod are named and left out. A mod that runs inside the game,
   such as DAO Lib, goes into your game folder only after you say you trust it, and is scanned again first. Its preview
@@ -81,7 +82,8 @@ Phase 2.5 (release 0.3.0, the first public one) puts all of it in the window and
 by hand, `.7z` and `.rar` import, the load order and its conflicts, and mod safety checks (programs in a mod left out,
 your antivirus scans every mod, downloads compared with the known official ones). Phase 2.6 (releases 0.3.1 to 0.6.0)
 follows what real use shows: several mods at once, the six-tab window, combining hair and head mods, moving from
-Vortex, and in 0.6.0 finding the mod behind a problem and keeping one copy of each. 0.5.0 also carries the first parts of three later pieces of work: mods that run inside the game, Steam on
+Vortex, and in 0.6.0 finding the mod behind a problem and keeping one copy of each. Phase 2.8 (release 0.7.0) installs
+mods that run inside the game, such as DAO Lib, once you say you trust them. 0.5.0 also carries the first parts of three later pieces of work: mods that run inside the game, Steam on
 Linux (there is no Linux download yet) and the file-format toolkit.
 
 ## How it is built
