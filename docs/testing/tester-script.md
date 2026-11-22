@@ -54,5 +54,5 @@ Then turn DAO Lib off, or *Undo* it.
 Say which copy of the game you have (Steam, GOG or EA App) and which DAORework version: the zip's name says it, such
 as `DAORework-0.7.0-win-x64.zip`. Then give your answers, by step number.
 
-If something went wrong, Settings › Troubleshooting has *Save a support bundle*. It holds folder paths, which can
-include your Windows user name, so look through it before you attach it.
+If something went wrong, Settings › Troubleshooting has *Save a support bundle*. It puts `<user>` in place of your
+Windows user name, but holds your mods' and folders' names, so look through it before you attach it.
