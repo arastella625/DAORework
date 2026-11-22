@@ -5,4 +5,7 @@ public sealed record ErfTableOfContents(string Version, uint Flags, IReadOnlyLis
 {
     /// <summary>Gets a value indicating whether the entries' data is encrypted, which a reader of names needn't care about.</summary>
     public bool IsEncrypted => ((Flags >> 4) & 0xF) != 0;
+
+    /// <summary>Gets a value indicating whether the entries' data is compressed (bits 29 to 31).</summary>
+    public bool IsCompressed => (Flags >> 29) != 0;
 }

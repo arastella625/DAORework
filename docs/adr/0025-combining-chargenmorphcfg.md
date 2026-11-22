@@ -45,7 +45,13 @@ a `name` (hairs also a `cut`; the same hair with two cuts is two entries the gam
   changed. The plan warns that the game picks one copy, as it does for any shadowed file; adopting it (ADR-0015) makes
   it one of the combined copies.
 - **Only the mods' files are read.** The base game's copy inside its own archives is neither read nor written, and
-  nothing is downloaded.
+  nothing is downloaded. *(Amended 2026-11-22 by the owner, for counting what mods add (ADR-0050 §4, P2.10-03): the
+  game's own copy is now read, never written, from the player's install, as the list every mod adds to. DAORework
+  looks for an entry named `chargenmorphcfg.xml` in the archives of `packages/core/data` and reads the first it finds,
+  or a loose copy there. The archive is untrusted like any file: a compressed or encrypted entry, or one that doesn't
+  fit, is not read. Without the game's copy, counts are against what every mod's copy shares, and with one such mod
+  there is nothing to count against, so it only says it adds to character creation. Nothing from the game's copy is
+  written, combined or shipped.)*
 
 ## Consequences
 - Hair, head and colour mods work together without hand-merging, and the combined file goes away with the mods.

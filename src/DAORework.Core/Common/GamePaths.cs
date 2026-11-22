@@ -20,6 +20,9 @@ public static class GamePaths
     /// <summary>Where the game executable lives, relative to the install directory.</summary>
     public static readonly string GameExecutableRelativePath = Path.Combine(BinShipDirectoryName, GameExecutableFileName);
 
+    /// <summary>Where the game keeps its own archives, relative to the install directory.</summary>
+    public static readonly string CoreDataRelativePath = Path.Combine("packages", "core", "data");
+
     /// <summary>Where loose override mods live, relative to the documents directory.</summary>
     public static readonly string OverrideRelativePath = Path.Combine("packages", "core", "override");
 
@@ -38,6 +41,8 @@ public static class GamePaths
     public static string LauncherExecutable(string installDirectory) => Path.Combine(installDirectory, LauncherExecutableFileName);
 
     public static string DefaultDocumentsDirectory(string myDocumentsDirectory) => Path.Combine(myDocumentsDirectory, DocumentsRelativePath);
+
+    public static string CoreDataDirectory(string installDirectory) => Path.Combine(installDirectory, CoreDataRelativePath);
 
     public static string OverrideDirectory(string documentsDirectory) => Path.Combine(documentsDirectory, OverrideRelativePath);
 

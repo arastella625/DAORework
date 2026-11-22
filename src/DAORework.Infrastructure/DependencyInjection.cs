@@ -68,6 +68,7 @@ public static class DependencyInjection
         services.AddSingleton<IPlayHistoryStore, JsonPlayHistoryStore>();
         services.AddSingleton<IDownloadsFolder, FolderDownloads>();
         services.AddSingleton<IErfContentsReader, LibraryErfContents>();
+        services.AddSingleton<IGameChargenMorphSource, GameChargenMorphSource>();
         services.AddSingleton<INewDownloadsStore, JsonNewDownloadsStore>();
         services.AddSingleton<IAdoptionImporter, HandInstalledModImporter>();
         services.AddSingleton<IMalwareScanner, AmsiMalwareScanner>();

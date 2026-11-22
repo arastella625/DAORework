@@ -122,6 +122,9 @@ public static class DiagnosticCodes
     // P2.5-20: combining chargenmorphcfg.xml from several mods (ADR-0025).
     public const string ModChargenMorphUnreadable = "DAO_MOD_CHARGENMORPH_UNREADABLE";
 
+    // P2.10-03: the game's own chargenmorphcfg.xml, read to count what mods add (ADR-0025, amended 2026-11-22).
+    public const string GameChargenMorphUnreadable = "DAO_GAME_CHARGENMORPH_UNREADABLE";
+
     // P2.5-10: the app's own preferences, such as the theme (ADR-0016, ADR-0017).
     public const string PreferencesUnreadable = "DAO_PREFERENCES_UNREADABLE";
 
