@@ -1,6 +1,6 @@
 # ADR-0052: Our own art: where it's made, how it's exported, and the headline marks
 
-- **Status:** Proposed
+- **Status:** Accepted (by the owner, 2026-11-22)
 - **Date:** 2026-11-16
 - **Amends:** [ADR-0026](0026-workflow-first-layout.md) §4 (how a bitmap ornament is drawn, the seal, and *Korcari*);
   builds on [ADR-0050](0050-a-calmer-window.md) §1 (the headline card)
