@@ -15,12 +15,16 @@ namespace DAORework.App.ViewModels;
 public sealed partial class CozyGuideViewModel(GetPreferences getPreferences, SetGuideClosed setGuideClosed, ILogger<CozyGuideViewModel> logger)
     : PageViewModel(logger)
 {
-    private NextMoveFacts _facts = new(false, false, false, 0, 0, 0);
+    private NextMoveFacts? _facts;
+    private bool _loaded;
     private bool _closed;
     private bool _seen;
 
-    /// <summary>Gets or sets what a step's button does, set by Home: open the place it names, or play.</summary>
-    public Func<GuideStepKind, CancellationToken, Task>? TakeAsync { get; set; }
+    /// <summary>Gets or sets how a place is opened, set by Home.</summary>
+    public Func<HomeTarget, CancellationToken, Task>? OpenAsync { get; set; }
+
+    /// <summary>Gets or sets how the game is started, set by Home; true when it started.</summary>
+    public Func<CancellationToken, Task<bool>>? PlayAsync { get; set; }
 
     /// <summary>Gets the four steps, each marked done or not.</summary>
     public ObservableCollection<GuideStep> Steps { get; } = [];
@@ -50,6 +54,7 @@ public sealed partial class CozyGuideViewModel(GetPreferences getPreferences, Se
             async token =>
             {
                 _closed = (await getPreferences.ExecuteAsync(new GetPreferencesRequest(), token)).TryGetValue(out var preferences, out _) && preferences.GuideClosed;
+                _loaded = true;
                 Show();
             },
             cancellationToken);
@@ -62,20 +67,28 @@ public sealed partial class CozyGuideViewModel(GetPreferences getPreferences, Se
         Show();
     }
 
+    /// <summary>Each step's button goes where the step is done (ADR-0051 §1); <i>Play</i> finishes the guide once the game starts.</summary>
     [RelayCommand]
     private async Task TakeStepAsync(CancellationToken cancellationToken)
     {
-        if (Current is not { } step || TakeAsync is null)
+        switch (Current?.Kind)
         {
-            return;
-        }
-
-        await TakeAsync(step.Kind, cancellationToken);
-        if (step.Kind == GuideStepKind.Play)
-        {
-            await CloseAsync(finished: true, cancellationToken);
+            case GuideStepKind.Play when PlayAsync is { } play && await play(cancellationToken):
+                await CloseAsync(finished: true, cancellationToken);
+                break;
+            case GuideStepKind.FindYourGame:
+                await OpenTargetAsync(HomeTarget.GameFolders, cancellationToken);
+                break;
+            case GuideStepKind.AddMods or GuideStepKind.TurnThemOn:
+                await OpenTargetAsync(HomeTarget.ModsLibrary, cancellationToken);
+                break;
+            default:
+                break;
         }
     }
+
+    private Task OpenTargetAsync(HomeTarget target, CancellationToken cancellationToken) =>
+        OpenAsync?.Invoke(target, cancellationToken) ?? Task.CompletedTask;
 
     [RelayCommand]
     private Task SkipAsync(CancellationToken cancellationToken) => CloseAsync(finished: false, cancellationToken);
@@ -106,10 +119,12 @@ public sealed partial class CozyGuideViewModel(GetPreferences getPreferences, Se
             },
             cancellationToken);
 
+    // Nothing shows until both the choice to close it and where the player is are known, so it never flashes up.
     private void Show()
     {
-        var steps = CozyGuide.For(_facts);
-        IsShown = CozyGuide.Shows(_closed, _facts, _seen);
+        var facts = _facts ?? new NextMoveFacts(false, false, false, 0, 0, 0);
+        var steps = CozyGuide.For(facts);
+        IsShown = _loaded && _facts is not null && CozyGuide.Shows(_closed, facts, _seen);
         _seen |= IsShown;
         Steps.Clear();
         foreach (var step in steps)

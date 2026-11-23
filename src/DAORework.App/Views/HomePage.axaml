@@ -13,8 +13,8 @@
       <TextBlock Name="GuideFinished" Margin="12,0" Classes="Status" Text="{x:Static mods:CozyGuide.Finished}" IsVisible="{Binding Guide.JustFinished}" />
       <Grid ColumnDefinitions="3*,12,2*">
         <!-- The cozy guide (ADR-0051): Home's one card while it runs, a step at a time; the window stays usable around it. -->
-        <controls:Card Name="Guide" DataContext="{Binding Guide}" x:DataType="vm:CozyGuideViewModel" IsVisible="{Binding IsShown}">
-          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+        <controls:Card Name="Guide" IsVisible="{Binding ShowsGuide}">
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16" DataContext="{Binding Guide}" x:DataType="vm:CozyGuideViewModel">
             <StackPanel Spacing="8">
               <TextBlock Classes="Label" Text="Your first game with mods" />
               <TextBlock Name="GuideTitle" Classes="PageTitle" Text="{Binding Current.Title, FallbackValue={x:Null}}" />
@@ -49,7 +49,7 @@
             </Panel>
           </Grid>
         </controls:Card>
-        <controls:Card Name="Headline" IsVisible="{Binding !Guide.IsShown}">
+        <controls:Card Name="Headline" IsVisible="{Binding !ShowsGuide}">
           <Panel ClipToBounds="True">
           <!-- A soft burst of gold behind the good news; a plain theme draws none (ADR-0026 §4). -->
           <Canvas Opacity="{DynamicResource OrnamentOpacity}" IsVisible="{Binding IsReady}" IsHitTestVisible="False">

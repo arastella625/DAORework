@@ -1,6 +1,7 @@
 using Avalonia.Headless.XUnit;
 using DAORework.App.ViewModels;
 using DAORework.Application.Abstractions;
+using DAORework.Core.Common;
 using DAORework.Core.Mods;
 using Xunit;
 
@@ -39,6 +40,8 @@ public sealed class CozyGuideScreenTests : IDisposable
     [AvaloniaFact]
     public async Task APlayerWhoAddedModsFirst_StartsAtTurnThemOn_ThenPlayFinishesIt()
     {
+        _host.SeedRealisticInstall();
+        _host.FileSystem.Directory.Delete(GamePaths.OverrideDirectory(_scenario.DocumentsDirectory), recursive: true); // Nothing to take over.
         var (window, viewModel) = await _scenario.OpenAsync(seedInstall: false);
         await _scenario.ImportHairPackAsync(viewModel);
         var guide = viewModel.Home.Guide;
@@ -58,9 +61,23 @@ public sealed class CozyGuideScreenTests : IDisposable
 
         await guide.TakeStepCommand.ExecuteAsync(null);
 
-        Assert.False(guide.IsShown);
+        Assert.False(guide.IsShown); // The game started, so the guide is finished.
         Assert.True(guide.JustFinished);
         Assert.True((await _host.Resolve<IPreferencesStore>().LoadAsync(TestContext.Current.CancellationToken)).Value.GuideClosed);
+    }
+
+    [AvaloniaFact]
+    public async Task APlayerWithModsOnAlready_NeverSeesIt()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync(seedInstall: false);
+        await _scenario.ImportHairPackAsync(viewModel);
+        await _scenario.ActivateHairPackAsync(viewModel);
+
+        var reopened = _host.Resolve<MainWindowViewModel>();
+        await reopened.InitializeAsync(TestContext.Current.CancellationToken);
+        await reopened.SelectProfileAsync("Default", TestContext.Current.CancellationToken);
+
+        Assert.False(reopened.Home.Guide.IsShown);
     }
 
     [AvaloniaFact]
@@ -73,9 +90,11 @@ public sealed class CozyGuideScreenTests : IDisposable
 
         Assert.False(guide.IsShown);
         Assert.False(guide.JustFinished); // Skipping isn't finishing, so You're set isn't said.
-        var reopened = _host.Resolve<MainWindowViewModel>().Home.Guide;
-        await reopened.LoadAsync(TestContext.Current.CancellationToken);
-        Assert.False(reopened.IsShown);
+        var reopened = _host.Resolve<MainWindowViewModel>(); // The window opened again, with where the player is known.
+        await reopened.InitializeAsync(TestContext.Current.CancellationToken);
+        await reopened.SelectProfileAsync("Default", TestContext.Current.CancellationToken);
+        Assert.False(reopened.Home.Guide.IsShown);
+        Assert.False(reopened.Home.ShowsGuide);
 
         await guide.ShowAgainCommand.ExecuteAsync(null);
 

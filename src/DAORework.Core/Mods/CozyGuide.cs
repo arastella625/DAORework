@@ -20,7 +20,7 @@ public static class CozyGuide
                 GuideStepKind.FindYourGame,
                 first[0].Name,
                 facts.HasProfile
-                    ? "DAORework found your game. If it's the wrong copy, Game folders changes it."
+                    ? "Your profile points DAORework at your game. If it's the wrong copy, Game folders changes it."
                     : "Create a profile in the header, then show DAORework where your game is.",
                 "Game folders",
                 first[0].IsDone),
