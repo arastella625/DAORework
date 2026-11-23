@@ -1,0 +1,6 @@
+# Made from the sources here, never committed (ADR-0052 §1).
+renders/
+export/
+*.blend1
+*.blend@
+*.before-*.blend
