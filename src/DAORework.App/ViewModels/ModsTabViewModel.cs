@@ -68,6 +68,7 @@ public sealed class ModsTabViewModel
         Selection = new LibrarySelectionViewModel(library.Mods, Filter.VisibleMods, Activation);
         Setup = new SetupSummary(this);
         NextMove = new NextMoveCard(this);
+        About = new AboutModViewModel(library.Mods);
 
         // A change made in one panel shows in the others: a new backup after Apply, what is active after a rollback,
         // an adopted mod in the Library and no longer in the list of mods installed by hand, the new load order.
@@ -106,6 +107,9 @@ public sealed class ModsTabViewModel
 
     /// <summary>Gets each add-in's Priority and the files it shares with other add-ins (P2.5-23).</summary>
     public AddInPriorityViewModel AddIns { get; }
+
+    /// <summary>Gets <i>About this mod</i>, the page a row's name opens (P2.10-05).</summary>
+    public AboutModViewModel About { get; }
 
     /// <summary>Gets what each mod adds to character creation (P2.10-03).</summary>
     public ChargenMorphAddsViewModel ChargenAdds { get; }

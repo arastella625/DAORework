@@ -205,7 +205,6 @@ public sealed partial class LibraryViewModel : PageViewModel
             row.ConflictMark = _marks.GetValueOrDefault(row.Id);
             row.Adds = chargen.AddsOf(row.Id)?.Adds();
             row.IsSelected = false;
-            row.IsExpanded = false;
             rows.Add(row);
         }
 

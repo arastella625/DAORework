@@ -81,10 +81,6 @@ public sealed partial class LibraryModRow : ObservableObject
     [NotifyPropertyChangedFor(nameof(Glance))]
     public partial string? Adds { get; set; }
 
-    /// <summary>Gets or sets a value indicating whether its row is expanded to show its details (ADR-0038).</summary>
-    [ObservableProperty]
-    public partial bool IsExpanded { get; set; }
-
     /// <summary>Gets what a one-line row says beside the name: its kind, and anything worth a glance (ADR-0038).</summary>
     public string Glance
     {

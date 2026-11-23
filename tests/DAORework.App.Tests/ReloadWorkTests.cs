@@ -62,7 +62,7 @@ public sealed class ReloadWorkTests : IDisposable
     {
         var (_, viewModel) = await new RealScaleScenario(_host).OpenAsync(withCopies: true);
         var first = viewModel.Library.Mods[0];
-        first.IsExpanded = true;
+        viewModel.ModsTab.About.OpenCommand.Execute(first);
         first.IsSelected = true;
         var listChanges = 0;
         viewModel.ModsTab.Filter.VisibleMods.CollectionChanged += (_, _) => listChanges++;
@@ -70,7 +70,7 @@ public sealed class ReloadWorkTests : IDisposable
         await viewModel.Library.LoadAsync(TestContext.Current.CancellationToken);
 
         Assert.Same(first, viewModel.Library.Mods[0]);
-        Assert.False(first.IsExpanded);
+        Assert.Same(first, viewModel.ModsTab.About.Mod); // The page stays on the same mod.
         Assert.False(first.IsSelected);
         Assert.Equal(0, listChanges);
     }

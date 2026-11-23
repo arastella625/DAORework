@@ -760,6 +760,9 @@ before conflicts from the inside.
 - P2.10-05 *About this mod* (ADR-0050 §3): a page for each mod with its pictures, description, author, what it adds, its
   switch, its warnings and *Open the mod's page*; kind, files, *wins/loses* and Priority go under *Details*. A mod with
   no picture shows a crest drawn in the theme's colours.
+  *Built while CI was down (2026-11-23), before P2.10-04's pictures: `AboutModViewModel` and `AboutModPanel` on the Mods
+  tab, reusing the row's switch, *Keep this one* and *Open the mod's page*; a crest per kind in `Shared.axaml`
+  ([screenshot](screenshots/p2.10-05/01-about-this-mod.png)). Pictures, description and author join it with P2.10-04.*
 - P2.10-06 A calmer Mods list (ADR-0050 §2 and §5): rows show a thumbnail, the name, what the mod adds and the switch;
   kind, *wins/loses* and Priority move under *Details* on *About this mod*, and only *Could break quests* stays on it. A
   *List | Cards* switch shows the same mods as picture cards. The message after turning several mods on is one line and
