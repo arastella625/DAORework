@@ -78,6 +78,16 @@ public sealed class ChargenMorphTallyTests
     }
 
     [Fact]
+    public void AddsOf_TwoModsWithTheSameList_AndNoGameCopy_StillAddToCharacterCreation()
+    {
+        var hairs = With("<resource name=\"hm_har_b\" cut=\"0\" />", HumanHair);
+
+        var tally = new ChargenMorphTally(Copies(("1.0", hairs), ("1.1", hairs)), game: null);
+
+        Assert.Equal("Adds to character creation", tally.AddsOf("1.0")!.Adds());
+    }
+
+    [Fact]
     public void Gained_CountsOnlyWhatTheChangeBroughtThatWasntThereBefore()
     {
         var a = With("""<resource name="hm_har_b" cut="0" /><resource name="hm_har_c" cut="0" />""", HumanHair);

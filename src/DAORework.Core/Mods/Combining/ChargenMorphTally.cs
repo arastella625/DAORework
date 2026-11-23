@@ -27,10 +27,22 @@ public sealed class ChargenMorphTally
     public bool AgainstTheGame { get; }
 
     /// <summary>What one mod adds, or null when it has no readable copy.</summary>
-    public ChargenMorphAdds? AddsOf(string modId) =>
-        !_copies.TryGetValue(modId, out var copy) ? null
-        : _baseline is null ? ChargenMorphAdds.Uncounted
-        : new ChargenMorphAdds(copy.Beyond(_baseline), Counted: true);
+    public ChargenMorphAdds? AddsOf(string modId)
+    {
+        if (!_copies.TryGetValue(modId, out var copy))
+        {
+            return null;
+        }
+
+        if (_baseline is null)
+        {
+            return ChargenMorphAdds.Uncounted;
+        }
+
+        // Against what the copies share, a copy two mods both ship adds nothing in counts, though it adds to the game.
+        var beyond = copy.Beyond(_baseline);
+        return beyond.Count == 0 && !AgainstTheGame ? ChargenMorphAdds.Uncounted : new ChargenMorphAdds(beyond, Counted: true);
+    }
 
     /// <summary>What the character creator gained going from the mods in <paramref name="before"/> to those in <paramref name="after"/>.</summary>
     public ChargenMorphAdds? Gained(IEnumerable<string> before, IEnumerable<string> after)
@@ -53,5 +65,5 @@ public sealed class ChargenMorphTally
     }
 
     private List<ChargenMorphEntries> Copies(IEnumerable<string> modIds) =>
-        [.. modIds.Distinct(StringComparer.Ordinal).Select(id => _copies.GetValueOrDefault(id)).OfType<ChargenMorphEntries>()];
+        [.. modIds.Distinct(StringComparer.OrdinalIgnoreCase).Select(id => _copies.GetValueOrDefault(id)).OfType<ChargenMorphEntries>()];
 }

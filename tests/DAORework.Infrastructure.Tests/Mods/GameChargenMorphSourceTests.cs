@@ -41,6 +41,15 @@ public sealed class GameChargenMorphSourceTests
     }
 
     [Fact]
+    public async Task Read_AnArchiveInUse_IsPassedOver_AndTheNextIsRead()
+    {
+        _fileSystem.AddFile(Path.Combine(_data, "a.erf"), new MockFileData(Erf(0, ("x.gda", "x"u8.ToArray()))) { AllowedFileShare = FileShare.None });
+        Add("b.erf", Erf(0, ("chargenmorphcfg.xml", "<morph_config/>"u8.ToArray())));
+
+        Assert.Equal("<morph_config/>", await ReadAsync());
+    }
+
+    [Fact]
     public async Task Read_AnInstallWithoutTheFolder_HasNoCopy()
     {
         Assert.Null(await ReadAsync());

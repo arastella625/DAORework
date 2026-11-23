@@ -31,7 +31,7 @@ public sealed class GameChargenMorphSource(IFileSystem fileSystem) : IGameCharge
             }
 
             var loose = fileSystem.Path.Combine(data, GamePaths.ChargenMorphFileName);
-            if (fileSystem.File.Exists(loose))
+            if (fileSystem.File.Exists(loose) && fileSystem.FileInfo.New(loose).Length <= ErfEntryReader.MaxEntryBytes)
             {
                 return Result.Success<string?>(fileSystem.File.ReadAllText(loose));
             }
@@ -55,17 +55,17 @@ public sealed class GameChargenMorphSource(IFileSystem fileSystem) : IGameCharge
         }
     }
 
-    // An archive that isn't a readable ERF, or whose copy isn't plain data, can't be the one to count from.
+    // An archive that isn't a readable ERF, whose copy isn't plain data, or that is in use, can't be the one to count from.
     private string? FromArchive(string path)
     {
-        using var stream = fileSystem.File.OpenRead(path);
         try
         {
+            using var stream = fileSystem.File.OpenRead(path);
             var table = ErfReader.ReadTableOfContents(stream);
             var entry = table.Entries.FirstOrDefault(e => e.Name.Equals(GamePaths.ChargenMorphFileName, StringComparison.OrdinalIgnoreCase));
             return entry is null ? null : Decode(ErfEntryReader.Read(stream, table, entry));
         }
-        catch (InvalidDataException)
+        catch (Exception exception) when (exception is InvalidDataException or IOException or UnauthorizedAccessException)
         {
             return null;
         }

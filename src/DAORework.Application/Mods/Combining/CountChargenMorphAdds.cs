@@ -12,7 +12,7 @@ namespace DAORework.Application.Mods.Combining;
 /// </summary>
 public sealed class CountChargenMorphAdds(IModLibrary library, IGameChargenMorphSource game)
 {
-    private readonly ConcurrentDictionary<string, ChargenMorphEntries?> _mods = new(StringComparer.Ordinal);
+    private readonly ConcurrentDictionary<string, ChargenMorphEntries?> _mods = new(StringComparer.OrdinalIgnoreCase);
     private readonly ConcurrentDictionary<string, ChargenMorphEntries?> _games = new(StringComparer.OrdinalIgnoreCase);
 
     /// <param name="mods">The library's mods.</param>
@@ -21,7 +21,7 @@ public sealed class CountChargenMorphAdds(IModLibrary library, IGameChargenMorph
     public async Task<ChargenMorphTally> ExecuteAsync(IReadOnlyList<LibraryMod> mods, string? installDirectory, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(mods);
-        var copies = new Dictionary<string, ChargenMorphEntries>(StringComparer.Ordinal);
+        var copies = new Dictionary<string, ChargenMorphEntries>(StringComparer.OrdinalIgnoreCase);
         foreach (var mod in mods)
         {
             if (await ReadModAsync(mod, cancellationToken) is { } entries)
@@ -64,9 +64,11 @@ public sealed class CountChargenMorphAdds(IModLibrary library, IGameChargenMorph
             return known;
         }
 
+        // Only a copy found is remembered: one missing or unreadable may be there after Steam verifies the files. Without
+        // it, mods are counted against what their copies share, which ChargenMorphTally.AgainstTheGame says.
         var read = await game.ReadAsync(installDirectory, cancellationToken);
-        return read.TryGetValue(out var text, out _)
-            ? _games[installDirectory] = text is null ? null : ChargenMorphEntries.Read(text)
-            : null; // Without the game's copy, mods are counted against what their copies share.
+        return read.TryGetValue(out var text, out _) && text is not null && ChargenMorphEntries.Read(text) is { } entries
+            ? _games[installDirectory] = entries
+            : null;
     }
 }
