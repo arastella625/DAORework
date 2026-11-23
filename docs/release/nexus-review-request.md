@@ -16,6 +16,7 @@ compiled code: DAORework.exe (the app) and dao.exe (its command line). There is 
   release has a GitHub build provenance attestation, which proves the zip came from that workflow and that commit:
   `gh attestation verify DAORework-{VERSION}-win-x64.zip --repo arastella625/DAORework`
 - {SIGNED}
+- VirusTotal's report on the zip: [VIRUSTOTAL LINK]
 - To build it yourself: install the .NET 10 SDK, then from the repository root run `pwsh ./scripts/publish-release.ps1`.
   The zip lands in `./artifacts`. The steps are in CONTRIBUTING.md.
 

@@ -55,6 +55,11 @@ They show the gilded-tome style (P2.5-28). If the window's look changes again, r
 
 ## On upload day
 
-Also choose: the category (Utilities), the generative-AI tag by Nexus's rules that day, and the file: the same zip as
+Also choose: the category (Utilities), the AI-use disclosure, and the file: the same zip as
 the GitHub release (the release workflow uploads it by itself once set up, [nexus-upload.md](../nexus-upload.md)).
 [nexus-page-draft.md](../nexus-page-draft.md) keeps the notes behind these choices.
+
+**AI-use disclosure.** Since 2026-11-03 Nexus asks every mod to say whether generative AI was used to make it, and
+existing mods must say so by 2027-01-02 or risk warnings or removal. DAORework's code is written with an AI coding
+assistant, so the page says so. Its pictures are screenshots of the app, so they aren't AI-made. If AI-made art is ever
+added (ADR-0026 §5), update the disclosure in the same release.
