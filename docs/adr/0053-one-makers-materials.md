@@ -24,19 +24,22 @@ inputs, and a local material can use it with its own input values.
 ## Decision
 1. **`art/blender/materials.blend` holds the shared surfaces**, next to `rig.blend`, as node groups with named inputs:
    - *Smith's iron*: hammer dents, polish and shine on the edges, grime, pits and rust. It has an input for every value
-     that differs between the irons today (lightness, polish and shine on the edges, roughness, dent depth, pits and
-     rust, grip rub), so the shield's hammered iron, the marks' blackened iron (no pits, no rust) and the Roundel's
-     polished iron are one recipe with different values.
-   - *Hewn oak*: the core every oak shares (grain, fibres, adze scoops), with the grain directions as inputs. What only
-     one piece has stays in that piece's material around the group: the shield's checks, old paint and scuffs, the
-     clasp's cracks and mitre seam.
-   - *Tooled leather* and, for the Banner, *Linen*.
+     that differs between the irons today: *Time and use* (1 is the shield's Pass 7 pits, rust and grip rub, 0 is the
+     marks' blackened iron, which never had them), *Polish on the edges*, *Shine on the edges*, *Rub brightness*,
+     *Lightness* and *Roughness*. The shield's hammered iron, the marks' blackened iron, the Roundel's polished iron and
+     the clasp's iron are one recipe with different values.
+   - *Hewn oak: adze scoops*: the part the two oaks really share today, the Pass 5 scoops, with the grain directions
+     as inputs. Their grain, fibres and other features differ (the shield's checks and old paint, the clasp's mitred
+     boards and cracks) and stay in each piece's material around the group; making them one recipe would change a
+     picture, so it's a later pass's choice.
    - The shared meshes one maker would reuse, starting with the rose-head nail.
+   - *Tooled leather* and *Linen* join when the Banner (Pass 14) becomes their second user; until then the band's
+     leather stays in `band.blend` (rule 2).
 2. **A surface goes in `materials.blend` when two pieces use it, or when one maker would make it for both.** A surface
    only one piece has (the stone, the wax, the light from inside, the rust streaks) stays in that piece's file.
 3. **Each piece links what it needs, the way it links the light.** Its own materials are thin: one linked group and the
    values that make this piece's version, named for what they are (*Polished iron grey (the roundel)* is *Smith's iron*
-   with more polish and lightness). Nobody makes a linked group local; to change a recipe, open `materials.blend`.
+   lighter and less rough). Nobody makes a linked group local; to change a recipe, open `materials.blend`.
 4. **Links are relative** (`//materials.blend`, like `//rig.blend`), so a fresh clone renders with no setup.
 5. **A missing link stops the export.** `export_all.py` checks that every linked light, group and mesh was found
    before it renders, and fails with the missing name instead of rendering a pink surface into the masks.

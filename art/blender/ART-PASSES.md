@@ -326,7 +326,7 @@ B lantern, B !, in gold and lavender, at 64, 32 and 24 px, then Korcari's flat m
 `renders/pass10-fields-close.png`.
 - **The boss** (*Roundel boss (iron)*) is a profile line turned by a *Screw* modifier: a slight dome, a raised ring and
   a flange. Move the line's points in Edit Mode and the whole boss follows. Its material, *Polished iron grey (the
-  roundel)*, is the smith's hammered iron made lighter and smoother, with shallower dents.
+  roundel)*, is the smith's hammered iron made lighter and smoother.
 - Six of the shield's rose-head nails go round the flange, and *Knock in the rim (cutter, move me)* dents the ring
   at the lower right.
 - The Roundel is now 1.8 across (it was 1.6), the Shield's height, so both fill the frame alike.
@@ -391,6 +391,30 @@ from `rig.blend`.
 - **Proof it changed nothing**: every render before and after matches to within render noise, as Pass 8 proved for
   the light.
 - ADR-0052 §2 names only the light as shared, so ADR-0053 comes first.
+
+**Done (2026-11-22).** `materials.blend` holds two node groups and one mesh, and marks.blend and clasp.blend link them
+by relative path, as they link the light:
+- **Smith's iron** is the shield's *Hammered iron grey* rebuilt node for node, with inputs for every value the irons
+  differ in. Each iron is now a thin material: the piece's coordinates, the group, and its values.
+
+  | Material | Values |
+  |---|---|
+  | *Hammered iron grey* (marks.blend) | all at their defaults |
+  | *Blackened iron grey (the marks)* | *Time and use* 0 (no pits, rust or rub), *Polish on the edges* 0.34, *Shine on the edges* 0.3 |
+  | *Polished iron grey (the roundel)* | *Lightness* 0.55, *Roughness* 0.55 |
+  | *Hammered iron grey (the clasp)* (was *… (the smith's, from marks.blend)*) | *Rub brightness* 0, coordinates from the clasp |
+
+- **Hewn oak: adze scoops** is the Pass 5 scoops, the part both oaks really share. The shield's *Oak grey* and the
+  clasp's *Aged wood grey* each call it with their own grain directions and depth (1.1 and 0.35); the rest of each oak
+  stays its own.
+- **Rose head nail** is the one nail mesh. Every nail and rivet keeps its material on the object, so the shield's
+  hammered nails, the blackened rose head on the nail ! and the clasp's rivets are still each their own iron.
+- **Nothing changed in a picture**: all 58 renders and 172 masks were made before and after. The largest render
+  difference is 4 levels out of 255 on one pixel (mean about 0.0005); the masks, which stretch light and shade, differ
+  by at most 6 levels on 2 pixels. Pass 8 accepted 2 to 11 levels on single pixels for the light.
+- `export_all.py` now stops if a piece can't find what it links, naming it, instead of rendering pink into the masks.
+- The band's leather stays in band.blend until the Banner is its second user (ADR-0053 rule 2).
+- Backups, on the owner's machine only: `marks.before-pass12.blend`, `clasp.before-pass12.blend`.
 
 ## Pass 13: Say it by kind (crests for a mod with no picture)
 ADR-0050 §3: a mod with no picture shows a crest in the theme's colours, by its kind. It shows in a Mods row (about
