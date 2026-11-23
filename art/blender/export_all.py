@@ -29,13 +29,15 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 RENDERS, EXPORT = os.path.join(HERE, "renders"), os.path.join(HERE, "export")
 PIECES = (("clasp.blend", "render_corners.py"), ("band.blend", "render_band.py"), ("marks.blend", "render_all_marks.py"))
 
-# Which marks go to the app: the picks from ART-PASSES.md, plus the plain shield. Add a mark's file name to export it.
-MARKS = ("welcome-open-door", "one-thing-first-signpost", "needs-a-look-nail", "ready-lantern",
-         "without-your-mods-candle", "plain")
 CLASP, BAND = (34,), (80,)  # where they show, in device-independent pixels
-SMALL, BIG = (24, 34, 46), (48, 64, 96, 128)
-# The Roundel's marks for the Mods tiles (Pass 10). It has only the small drawing, so its sizes stay below 48.
-ROUNDEL_MARKS, TILES = ("ready-lantern", "needs-a-look-nail"), (32,)
+# Which marks go to the app, per body: the picks from ART-PASSES.md, the sizes drawn from its -small render (below 48)
+# and from its full one (48 and up). Add a mark's file name to export it. The plain shield is exported too; the
+# Roundel (the Mods tiles, Pass 10) has only the small drawing.
+MARKS = {
+    "shield": (("welcome-open-door", "one-thing-first-signpost", "needs-a-look-nail", "ready-lantern",
+                "without-your-mods-candle", "plain"), (24, 34, 46), (48, 64, 96, 128)),
+    "roundel": (("ready-lantern", "needs-a-look-nail"), (32,), ()),
+}
 CONTRAST = {"clasp": 1.5, "band": 2.4, "mark": 2.4}  # how strongly light and shade are kept
 
 
@@ -102,21 +104,20 @@ def save_sizes(rgba, piece, ref, sizes, name):
 def export_everything():
     os.makedirs(EXPORT, exist_ok=True)
     clasp, band = middle("clasp-tl"), middle("band")
-    big, small = middle("mark-shield-plain"), middle("mark-shield-plain-small")
+    bare = middle("mark-shield-plain")  # a bare mark is the same mark on any body, so one reference for all
     written = save_sizes(load("band"), "band", band, BAND, "band")
     for corner in ("tl", "tr", "br", "bl"):
         written += save_sizes(load(f"clasp-{corner}"), "clasp", clasp, CLASP, f"clasp-{corner}")
-    for mark in MARKS:
-        name = f"mark-shield-{mark}"
-        written += save_sizes(load(f"{name}-small"), "mark", small, SMALL, name)
-        written += save_sizes(load(name), "mark", big, BIG, name)
-        if mark != "plain":  # the plain shield has no mark to show bare
-            written += save_sizes(load(f"{name}-bare"), "mark", big, SMALL + BIG, f"{name}-bare")
-    tile = middle("mark-roundel-plain-small")
-    for mark in ROUNDEL_MARKS:
-        name = f"mark-roundel-{mark}"
-        written += save_sizes(load(f"{name}-small"), "mark", tile, TILES, name)
-        written += save_sizes(load(f"{name}-bare"), "mark", big, TILES, f"{name}-bare")
+    for body, (marks, small_sizes, big_sizes) in MARKS.items():
+        small = middle(f"mark-{body}-plain-small")
+        big = middle(f"mark-{body}-plain") if big_sizes else None
+        for mark in marks:
+            name = f"mark-{body}-{mark}"
+            written += save_sizes(load(f"{name}-small"), "mark", small, small_sizes, name)
+            if big_sizes:
+                written += save_sizes(load(name), "mark", big, big_sizes, name)
+            if mark != "plain":  # a plain body has no mark to show bare
+                written += save_sizes(load(f"{name}-bare"), "mark", bare, small_sizes + big_sizes, f"{name}-bare")
     return written
 
 

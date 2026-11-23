@@ -373,23 +373,24 @@ at 160 and 80 px tall, the clasp at 68 and 34).
   is a detail you find, not one you see.
 - These copies of the smith's iron and nails don't follow changes made in marks.blend. A shared `materials.blend`
   (Pass 0's suggestion) would make them one; it isn't built yet.
-- Backups: `clasp.before-pass11.blend`, `band.before-pass11.blend`.
+- Backups, on the owner's machine only (`.gitignore` keeps `*.before-*.blend` out of the repository):
+  `clasp.before-pass11.blend`, `band.before-pass11.blend`.
 
 ## Pass 12: One maker's materials
 Passes 10 and 11 copied the smith's iron and rose heads into clasp.blend, so a change in marks.blend no longer reaches
 the clasp. Pass 0 suggested the fix: one file of shared materials that every piece links, the way they link the light
 from `rig.blend`.
 
-- **`materials.blend`** holds the surfaces one maker would share: *Hammered iron grey* and its rose-head nail,
-  *Blackened iron grey (the marks)*, *Oak grey*, *Walnut grey (the marks)*, *Leather grey*, and the linen the Banner
-  will need.
-- **Each piece links them** instead of keeping its own copy; a piece that must differ (the Roundel's polished iron,
-  the clasp's mitred oak) keeps its own material, built on the shared one, and says so in its name.
+- **`materials.blend`** holds the shared recipes as node groups with inputs
+  ([ADR-0053](../../docs/adr/0053-one-makers-materials.md)): *Smith's iron* (the hammered, blackened and polished
+  irons are one recipe with different values), *Hewn oak* (the grain, fibres and adze scoops every oak shares),
+  *Tooled leather*, *Linen* for the Banner, and the rose-head nail.
+- **Each piece links them** and keeps thin materials of its own: the group plus this piece's values, and around it
+  whatever only this piece has (the shield's old paint, the clasp's cracks and mitre seam). A surface only one piece
+  uses, like the walnut, the stone or the wax, stays where it is.
 - **Proof it changed nothing**: every render before and after matches to within render noise, as Pass 8 proved for
   the light.
-- ADR-0052 §2 names only the light as shared, so [ADR-0053](../../docs/adr/0053-one-makers-materials.md) comes first:
-  the shared surfaces are node groups (*Smith's iron*, *Hewn oak*, *Tooled leather*, *Linen*) with inputs, so each
-  piece keeps its own version as a few values instead of a copy.
+- ADR-0052 §2 names only the light as shared, so ADR-0053 comes first.
 
 ## Pass 13: Say it by kind (crests for a mod with no picture)
 ADR-0050 §3: a mod with no picture shows a crest in the theme's colours, by its kind. It shows in a Mods row (about
@@ -423,7 +424,7 @@ patch, wheel).
 - The mock's vector crest drew *runs in the game* as a lit lantern, the *Ready* mark; it now draws the wheel. The
   mock's crests stay vector shields with their field divided by the mod's name until Pass 14 gives the Banner its
   drawings.
-- The old tick and ! on the Banner are switched off. Backup: `marks.before-pass13.blend`.
+- The old tick and ! on the Banner are switched off. Backup, on the owner's machine only: `marks.before-pass13.blend`.
 
 ## Pass 14: The Banner catches up
 Passes 2 to 7 for the Banner in one go, as Pass 10 did for the Roundel, now on the shared materials.

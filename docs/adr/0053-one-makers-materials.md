@@ -23,10 +23,13 @@ inputs, and a local material can use it with its own input values.
 
 ## Decision
 1. **`art/blender/materials.blend` holds the shared surfaces**, next to `rig.blend`, as node groups with named inputs:
-   - *Smith's iron*: hammer dents, polish on the edges, grime, pits. Its inputs are lightness, polish, dent depth and
-     grip rub, so the shield's hammered iron, the marks' blackened iron and the Roundel's polished iron are one recipe.
-   - *Hewn oak*: grain, fibres, adze scoops, checks, old paint. Its grain directions come in as inputs, so the shield's
-     planks and the clasp's mitred boards both use it.
+   - *Smith's iron*: hammer dents, polish and shine on the edges, grime, pits and rust. It has an input for every value
+     that differs between the irons today (lightness, polish and shine on the edges, roughness, dent depth, pits and
+     rust, grip rub), so the shield's hammered iron, the marks' blackened iron (no pits, no rust) and the Roundel's
+     polished iron are one recipe with different values.
+   - *Hewn oak*: the core every oak shares (grain, fibres, adze scoops), with the grain directions as inputs. What only
+     one piece has stays in that piece's material around the group: the shield's checks, old paint and scuffs, the
+     clasp's cracks and mitre seam.
    - *Tooled leather* and, for the Banner, *Linen*.
    - The shared meshes one maker would reuse, starting with the rose-head nail.
 2. **A surface goes in `materials.blend` when two pieces use it, or when one maker would make it for both.** A surface
