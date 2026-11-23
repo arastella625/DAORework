@@ -305,6 +305,139 @@ looks.
   the small drawing's 24 at 2x and the big drawing's 48 at 1x.
 - The command now has `--python-exit-code 1`, so a failed export ends with an error.
 
+## Pass 10: The small marks (the Roundel on the Mods tiles)
+The Mods tab's three tiles (*Add-ins*, *Override mods*, *Runs in the game*) each show *Ready* or *Needs a look* with a
+mark at 32 px. They're still the Pass 0 Roundel with its tick and !, the last old pieces in the window.
+
+- **Same word, same picture.** *Ready* is the lit lantern and *Needs a look* is the nail !, the same marks as the Home
+  card's headlines. Someone who learned them on Home reads the tiles without learning anything new.
+- **The Roundel catches up with Passes 2 to 7 in one go**, because the Shield already made the choices: a raised ring, a
+  flange with the smith's rose-head rivets, a slight dome, hammer dents, and one knock on the rim.
+- **Field and charge must contrast, so pick one of two fields** (rendered side by side):
+  - *A. All iron*: a pale, polished boss under the blackened marks. Quietest, but iron on iron may not separate.
+  - *B. A small targe*: a round oak disc in an iron rim, the Shield's family made round, which ties the tiles to Home.
+- **Only the small and bare drawings.** Tiles show at 32 px, below 48, so the Roundel never needs the big drawing.
+  Korcari gets the bare marks flat, as on Home.
+- **Tests**: at 24 and 32 px the two read apart by shape alone. *Squint* picks the field. *Swap*: the two marks moved
+  from the Shield to the Roundel still belong. `export_all.py` gains the Roundel at 32 (and 64 at 2x).
+
+**Done (2026-11-22)**, picked **A, polished iron**. Sheet in `renders/pass10-sheet.png` (rows: A lantern, A !,
+B lantern, B !, in gold and lavender, at 64, 32 and 24 px, then Korcari's flat marks), close-up of both fields in
+`renders/pass10-fields-close.png`.
+- **The boss** (*Roundel boss (iron)*) is a profile line turned by a *Screw* modifier: a slight dome, a raised ring and
+  a flange. Move the line's points in Edit Mode and the whole boss follows. Its material, *Polished iron grey (the
+  roundel)*, is the smith's hammered iron made lighter and smoother, with shallower dents.
+- Six of the shield's rose-head nails go round the flange, and *Knock in the rim (cutter, move me)* dents the ring
+  at the lower right.
+- The Roundel is now 1.8 across (it was 1.6), the Shield's height, so both fill the frame alike.
+- **The marks are linked copies** of the Shield's lantern and nail !: reshape one on the Shield and the Roundel's copy
+  follows. Each hangs from an empty (*Lantern on the roundel (move, scale me)*, *Nail on the roundel (move, scale
+  me)*), at 1.3 times the Shield's size and centred by its whole shape.
+- The targe (B) is kept in *Roundel body: other (oak targe)*, and the Pass 0 disc in *Roundel body: old (blockout)*.
+  The render script only draws a body named *small* or *big*, so renaming swaps a field in. The old tick and ! are
+  switched off.
+- Tests: *Squint* passes at 24 and 32 px for both fields; A is the calmer next to text, B's grain turns to stripes
+  behind the mark. *Swap*: the Shield's marks sit on the Roundel unchanged.
+- `export_all.py` writes `mark-roundel-ready-lantern` and `mark-roundel-needs-a-look-nail` at 32 (and `@32@2x`), with
+  their `-bare` versions; the mock's Mods tiles use them.
+
+## Pass 11: The clasp and band join the set
+The clasp and the band were made before Passes 3 to 7, so they share the light (Pass 8) but not the hand. Next to the
+finished marks they can look like they came from another shop.
+
+- **The smith's iron is shared** (Pass 6): the clasp's rivets become the same rose heads, and its strap gets the
+  shield's hammered iron with its dents and polish.
+- **Wood that touches the shield's wood varies**: the clasp's oak moves to the Shield's hewn oak family, keeping its own
+  grain angle.
+- **Time and use** (Pass 7) where hands would touch: the band's leather is darker and smoother near the middle, its
+  stitching a little uneven, and one stitch is mended.
+- **One echo each, at most**: the clasp's spear tip already echoes the shield's straps, so the band borrows nothing.
+- **Still quieter than the words.** The test is the mock in all four looks: the clasps and band must look made by the
+  same hands as the marks, and still recede behind the headline.
+
+**Done (2026-11-22)**, sheet in `renders/pass11-sheet.png` (before on top, after below, in gold and lavender: the band
+at 160 and 80 px tall, the clasp at 68 and 34).
+- **The clasp's iron is the smith's.** Its rim uses *Hammered iron grey (the smith's, from marks.blend)*, a copy of the
+  shield's iron with the grip rub turned off (nobody grips a clasp). Its three rivets are now the shield's rose heads
+  (*Rose head nail (from marks.blend)*): a big one on the corner, which carries the clasp at 34 px, and a smaller one
+  on each arm. The old ball rivets wait in *Clasp: old rivets (off)*.
+- **Your mitred oak keeps its grain** and gains the shield's adze scoops (Pass 5), laid along each board's own grain.
+  The nodes are labelled *(Pass 11)*; *Adze depth* sets how deep.
+- **The band's leather** is darker and smoother along the middle, a little patchy, and its grain is rubbed flat there
+  (*Worn along the middle (how wide)*, *Darker where worn*, *Smoother where worn*). The first try was twice as dark
+  and read as smudges between the lozenges, so it was halved. The wear depends only on the distance across the strip
+  and on the leather's own 4-unit circle, so the band still tiles: its two edges differ no more than neighbouring
+  columns, as before.
+- **The stitches** are a little uneven (*A little uneven (Pass 11)*, a Displace after the Array), and one is mended
+  with a cross-stitch in newer, lighter thread (*Mended stitch (move me)*). The mend repeats once per tile; at 80 px it
+  is a detail you find, not one you see.
+- These copies of the smith's iron and nails don't follow changes made in marks.blend. A shared `materials.blend`
+  (Pass 0's suggestion) would make them one; it isn't built yet.
+- Backups: `clasp.before-pass11.blend`, `band.before-pass11.blend`.
+
+## Pass 12: One maker's materials
+Passes 10 and 11 copied the smith's iron and rose heads into clasp.blend, so a change in marks.blend no longer reaches
+the clasp. Pass 0 suggested the fix: one file of shared materials that every piece links, the way they link the light
+from `rig.blend`.
+
+- **`materials.blend`** holds the surfaces one maker would share: *Hammered iron grey* and its rose-head nail,
+  *Blackened iron grey (the marks)*, *Oak grey*, *Walnut grey (the marks)*, *Leather grey*, and the linen the Banner
+  will need.
+- **Each piece links them** instead of keeping its own copy; a piece that must differ (the Roundel's polished iron,
+  the clasp's mitred oak) keeps its own material, built on the shared one, and says so in its name.
+- **Proof it changed nothing**: every render before and after matches to within render noise, as Pass 8 proved for
+  the light.
+- ADR-0052 §2 names only the light as shared, so [ADR-0053](../../docs/adr/0053-one-makers-materials.md) comes first:
+  the shared surfaces are node groups (*Smith's iron*, *Hewn oak*, *Tooled leather*, *Linen*) with inputs, so each
+  piece keeps its own version as a few values instead of a copy.
+
+## Pass 13: Say it by kind (crests for a mod with no picture)
+ADR-0050 §3: a mod with no picture shows a crest in the theme's colours, by its kind. It shows in a Mods row (about
+40 px), on a card, and on the mod's *About this mod* page (about 160 px), so it needs the small and big drawings.
+
+- **The body is the Banner**, the third starter, so a crest never looks like a status: the Shield says how the game
+  is, the Roundel says how a kind of mod is, the Banner says what a mod *is*.
+- **One charge per kind**, picked like Pass 1 from a sheet at 24, 40 and 64 px. Suggestions to start from:
+
+  | Kind | Suggested charge | Why it reads |
+  |---|---|---|
+  | Add-in | **A key**, or a scroll with a ribbon | It opens something new in the game |
+  | Override mod | **A hammer**, or a patch stitched over cloth | It reworks what's already there |
+  | Runs in the game | **A lit brazier**, or a gear-like wheel | It runs while you play (but *light means good* belongs to the headlines, so it may stay unlit) |
+
+- **The tests**: the three read apart by shape alone at 24 px; none can be mistaken for a headline mark or a tile
+  mark; and *Swap*: on the Shield they'd still look like the set.
+
+**Picked (2026-11-22)**: **key** for an add-in, **hammer** for an override mod, **wheel** for a mod that runs in the
+game. Sheet in `renders/pass13-sheet.png` (each at 64, 40 and 24 px in gold, 40 and 24 in lavender, then all six at
+24 px beside the headline and tile marks), close-up in `renders/pass13-close.png` (key, hammer, brazier; scroll,
+patch, wheel).
+- The six are flat outlines in *Banner: add-in (key)*, *(scroll)*, *Banner: override (hammer)*, *(patch)*, *Banner:
+  runs in the game (brazier)*, *(wheel)*, in the marks' blackened iron for now (Pass 14 stitches them in). Each part is
+  its own piece: two shapes in one piece that overlap cut a hole, which is what first put a slot down the key's shaft.
+- **What read**: the hammer is a bold T at every size. The key is a keyhole shape at 24 px with its ring on top, so it
+  stays apart from the headline !, whose dot is at the bottom. The wheel is clear from 40 px and a spoked disc at 24.
+- **What didn't**: the scroll and the patch both melt into a rectangle at 24 px, and the brazier reads as a stool.
+- **Not mistaken for a status**: in the squint strip the Banner's swallowtail keeps every crest apart from the
+  Shield's and the Roundel's marks. The wheel stays unlit, so light still means good only on the headlines.
+- The mock's vector crest drew *runs in the game* as a lit lantern, the *Ready* mark; it now draws the wheel. The
+  mock's crests stay vector shields with their field divided by the mod's name until Pass 14 gives the Banner its
+  drawings.
+- The old tick and ! on the Banner are switched off. Backup: `marks.before-pass13.blend`.
+
+## Pass 14: The Banner catches up
+Passes 2 to 7 for the Banner in one go, as Pass 10 did for the Roundel, now on the shared materials.
+
+- **Built**: real folds (a few shape keys you can push around), a crossbar with turned ends, cords.
+- **Surface**: linen with a visible weave on the big drawing, plain on the small; the charge stitched in, not nailed.
+- **Age**: a darned patch (waiting since Pass 4), frayed hem threads, the cloth a little sun-faded at the folds.
+- **Made by hand**: uneven stitching round the charge, like the band's.
+
+## Pass 15: In the window, all together
+Pass 9 again, with everything: the headline marks, the tile marks, the clasps, the band and the crests in the mock, in
+all four looks, at real sizes. The test is unchanged: nobody looks at an ornament before the words, and every piece
+looks made by the same hands.
+
 ## Your crest (an idea for later)
 Every profile could have a crest of its own in a corner of the window, next to the profile's name: a small companion
 that's yours to make.

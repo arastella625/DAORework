@@ -14,8 +14,9 @@ how big the app shows it, in device-independent pixels (the band's is its height
 - grey is light and shade around 50%: 50% leaves the tint as it is, lighter lightens it, darker darkens it (the app
   lays it over the tint with hard light, like the clickable mock does).
 A mark shown below 48 uses its -small render (the plain body, no fine detail), from 48 up the full one, at both 1x
-and 2x. Each mark also gets <piece>-bare@<size>.png: the mark alone, no shield, for looks that draw it flat (Korcari,
-which has no shading, so a mark inside a shield would be just a shield).
+and 2x. The Roundel's marks for the Mods tiles come only from its -small render. Each mark also gets
+<piece>-bare@<size>.png: the mark alone, no shield, for looks that draw it flat (Korcari, which has no shading, so a
+mark inside a shield would be just a shield).
 """
 import functools
 import os
@@ -33,6 +34,8 @@ MARKS = ("welcome-open-door", "one-thing-first-signpost", "needs-a-look-nail", "
          "without-your-mods-candle", "plain")
 CLASP, BAND = (34,), (80,)  # where they show, in device-independent pixels
 SMALL, BIG = (24, 34, 46), (48, 64, 96, 128)
+# The Roundel's marks for the Mods tiles (Pass 10). It has only the small drawing, so its sizes stay below 48.
+ROUNDEL_MARKS, TILES = ("ready-lantern", "needs-a-look-nail"), (32,)
 CONTRAST = {"clasp": 1.5, "band": 2.4, "mark": 2.4}  # how strongly light and shade are kept
 
 
@@ -109,6 +112,11 @@ def export_everything():
         written += save_sizes(load(name), "mark", big, BIG, name)
         if mark != "plain":  # the plain shield has no mark to show bare
             written += save_sizes(load(f"{name}-bare"), "mark", big, SMALL + BIG, f"{name}-bare")
+    tile = middle("mark-roundel-plain-small")
+    for mark in ROUNDEL_MARKS:
+        name = f"mark-roundel-{mark}"
+        written += save_sizes(load(f"{name}-small"), "mark", tile, TILES, name)
+        written += save_sizes(load(f"{name}-bare"), "mark", big, TILES, f"{name}-bare")
     return written
 
 
