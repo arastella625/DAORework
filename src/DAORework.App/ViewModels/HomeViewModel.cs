@@ -16,11 +16,27 @@ public sealed partial class HomeViewModel : ObservableObject
     private GameCheck? _check;
     private bool _hasProfile;
 
-    public HomeViewModel(NextStepsViewModel nextSteps)
+    public HomeViewModel(NextStepsViewModel nextSteps, CozyGuideViewModel guide)
     {
         NextSteps = nextSteps;
+        Guide = guide;
+        Guide.OpenAsync = (target, token) => NavigateAsync is { } open ? open(target, null, token) : Task.CompletedTask;
+        Guide.PlayAsync = token => PlayAsync?.Invoke(token) ?? Task.FromResult(false);
+        Guide.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(CozyGuideViewModel.IsShown))
+            {
+                OnPropertyChanged(nameof(ShowsGuide));
+            }
+        };
         Show(profileName: null);
     }
+
+    /// <summary>Gets the cozy guide, Home's card while it runs (ADR-0051).</summary>
+    public CozyGuideViewModel Guide { get; }
+
+    /// <summary>Gets a value indicating whether the guide takes the card's place: not while the game can't start or a change is unfinished.</summary>
+    public bool ShowsGuide => Guide.IsShown && Card.Kind != HomeHeadlineKind.NotReady && NextMove?.Kind != NextMoveKind.SettleTheLastChange;
 
     /// <summary>Gets the suggestions ("Worth a look"); P2.5-07's Next steps, moved here.</summary>
     public NextStepsViewModel NextSteps { get; }
@@ -40,12 +56,12 @@ public sealed partial class HomeViewModel : ObservableObject
     /// <summary>Gets or sets what a Home button does, set by the window: switch to a tab and open the right part.</summary>
     public Func<HomeTarget, BackupRow?, CancellationToken, Task>? NavigateAsync { get; set; }
 
-    /// <summary>Gets or sets how the game is started, set by the window: the header's <i>Play</i>.</summary>
-    public Func<CancellationToken, Task>? PlayAsync { get; set; }
+    /// <summary>Gets or sets how the game is started, set by the window: the header's <i>Play</i>; true when it started.</summary>
+    public Func<CancellationToken, Task<bool>>? PlayAsync { get; set; }
 
     /// <summary>Gets Home's one card: its headline, sentence and button (P2.10-02).</summary>
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsReady), nameof(HasProblems), nameof(HasButton))]
+    [NotifyPropertyChangedFor(nameof(IsReady), nameof(HasProblems), nameof(HasButton), nameof(ShowsGuide))]
     public partial HomeHeadline Card { get; private set; } = HomeHeadlines.For(NextMoves.For(new NextMoveFacts(false, false, false, 0, 0, 0)), null);
 
     public bool IsReady => Card.Kind is HomeHeadlineKind.Ready or HomeHeadlineKind.ReadyWithoutMods;
@@ -77,12 +93,20 @@ public sealed partial class HomeViewModel : ObservableObject
             {
                 ShowCard();
             }
+            else if (e.PropertyName == nameof(NextMoveCard.Facts) && NextMove.Facts is { } facts)
+            {
+                Guide.Follow(facts);
+            }
         };
         NewDownloads = mods.NewDownloads;
         NotifyCollectionChangedEventHandler changed = (_, _) => ShowLastChange(mods.Changes.Backups, fixes.Status.Backups);
         mods.Changes.Backups.CollectionChanged += changed;
         fixes.Status.Backups.CollectionChanged += changed;
         ShowCard();
+        if (NextMove.Facts is { } known)
+        {
+            Guide.Follow(known);
+        }
     }
 
     [RelayCommand]

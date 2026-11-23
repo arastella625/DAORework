@@ -14,6 +14,12 @@ public sealed record AppPreferences
     /// <summary>Gets the app-wide look's id, such as <c>witch-of-the-wilds</c>. Null means the default.</summary>
     public string? Look { get; init; }
 
+    /// <summary>
+    /// Gets a value indicating whether the cozy guide was skipped or finished (ADR-0051 §6). Missing from an older file,
+    /// it reads as not closed, so the field needs no new schema.
+    /// </summary>
+    public bool GuideClosed { get; init; }
+
     /// <summary>Gets the look of each launch profile that has its own, by profile name (ADR-0017).</summary>
     public IReadOnlyDictionary<string, string> ProfileLooks { get; init; } =
         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);

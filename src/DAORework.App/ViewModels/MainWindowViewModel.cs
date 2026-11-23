@@ -54,7 +54,11 @@ public sealed partial class MainWindowViewModel : ObservableObject
         ModsTab.Working.Watch(Diagnostics, "Checking your game");
         ModsTab.Working.Watch(Fixes.Change, "Working out the preview");
         ModsTab.Working.Watch(Saves, "Working on your saves");
-        Home.PlayAsync = _ => Launch.LaunchCommand.ExecuteAsync(null);
+        Home.PlayAsync = async _ =>
+        {
+            await Launch.LaunchCommand.ExecuteAsync(null);
+            return Launch.ProfileName is not null && !Launch.IsError;
+        };
         Home.NavigateAsync = OpenFromHomeAsync;
         ModsTab.NextMove.OpenAsync = (target, token) => OpenFromHomeAsync(target, null, token);
         ShareTheGameFolderRecord();
@@ -111,7 +115,15 @@ public sealed partial class MainWindowViewModel : ObservableObject
 
     /// <summary>Loads the profile list and the custom looks once; the first profile becomes selected and the pages follow.</summary>
     public Task InitializeAsync(CancellationToken cancellationToken = default) =>
-        _initialization ??= Task.WhenAll(Profiles.LoadAsync(cancellationToken), Settings.LoadAsync(cancellationToken));
+        _initialization ??= Task.WhenAll(LoadProfilesThenGuideAsync(cancellationToken), Settings.LoadAsync(cancellationToken));
+
+    // The guide waits for the selected profile, so it opens on where the player is and never shows to one with mods on.
+    private async Task LoadProfilesThenGuideAsync(CancellationToken cancellationToken)
+    {
+        await Profiles.LoadAsync(cancellationToken);
+        await _selecting;
+        await Home.Guide.LoadAsync(cancellationToken);
+    }
 
     /// <summary>Points the launch action and every page at <paramref name="profileName"/> (null clears them), then checks the game.</summary>
     public async Task SelectProfileAsync(string? profileName, CancellationToken cancellationToken = default)
@@ -131,6 +143,15 @@ public sealed partial class MainWindowViewModel : ObservableObject
         if (profileName is not null)
         {
             _recheck.Request(); // In the background: Home says Checking your game until it's done (ADR-0050 §1).
+        }
+    }
+
+    /// <summary>Leaving Home after finishing the guide: <i>You're set</i> has been said once (ADR-0051 §3).</summary>
+    partial void OnSelectedPageChanged(int value)
+    {
+        if (value != HomePage)
+        {
+            Home.Guide.JustFinished = false;
         }
     }
 

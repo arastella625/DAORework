@@ -95,6 +95,14 @@
             <StackPanel Spacing="12">
               <views:SettingsPage DataContext="{Binding Settings}" />
               <views:NewDownloadsSettingsPanel DataContext="{Binding ModsTab.NewDownloads.Settings}" />
+              <controls:Card Margin="12,0" DataContext="{Binding Home.Guide}" x:DataType="vm:CozyGuideViewModel">
+                <StackPanel Spacing="8">
+                  <TextBlock Classes="SectionTitle" Text="The guide" />
+                  <TextBlock Classes="Secondary" TextWrapping="Wrap" Text="A walk through a first game with mods, on Home. It picks up at the first step not done yet." />
+                  <TextBlock Classes="Status" Text="{Binding StatusMessage}" IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                  <Button Name="ShowGuideAgainButton" Content="Show the guide again" Command="{Binding ShowAgainCommand}" HorizontalAlignment="Left" />
+                </StackPanel>
+              </controls:Card>
               <Expander Name="GameFolders" Margin="12,0" Header="Game folders" IsExpanded="{Binding GameFoldersOpen}" HorizontalAlignment="Stretch">
                 <views:ProfilePage DataContext="{Binding Profile}" />
               </Expander>

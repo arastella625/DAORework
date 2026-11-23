@@ -5,6 +5,7 @@ using Avalonia.LogicalTree;
 using Avalonia.Threading;
 using DAORework.App.ViewModels;
 using DAORework.App.Views;
+using DAORework.Core.Mods;
 using Xunit;
 
 namespace DAORework.App.Tests;
@@ -94,7 +95,19 @@ public sealed class RealScaleScreensTests : IDisposable
         await viewModel.CheckingGame; // Checked again after the change, in the background (ADR-0050 §1).
         viewModel.SelectedPage = MainWindowViewModel.HomePage;
         window.UpdateLayout();
-        Assert.Single(window.GetLogicalDescendants().OfType<Button>().Where(b => b.Name == "HeadlineButton" && b.IsEffectivelyVisible).Distinct());
+
+        // The guide was on Home when the window opened, so with mods on it's at its last step (ADR-0051 §3).
+        Assert.Equal(GuideStepKind.Play, viewModel.Home.Guide.Current!.Kind);
+        Assert.Single(VisibleButtons(window, "GuideButton"));
+        Assert.Empty(VisibleButtons(window, "HeadlineButton"));
+        Screenshots.Save(window, "real-scale-screen-home-guide");
+
+        await viewModel.Home.Guide.SkipCommand.ExecuteAsync(null);
+        window.UpdateLayout();
+        Assert.Single(VisibleButtons(window, "HeadlineButton"));
         Screenshots.Save(window, "real-scale-screen-home");
     }
+
+    private static List<Button> VisibleButtons(Window window, string name) =>
+        [.. window.GetLogicalDescendants().OfType<Button>().Where(b => b.Name == name && b.IsEffectivelyVisible).Distinct()];
 }
