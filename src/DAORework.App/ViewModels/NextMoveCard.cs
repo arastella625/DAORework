@@ -36,6 +36,10 @@ public sealed partial class NextMoveCard : ObservableObject
     [ObservableProperty]
     public partial NextMoveKind Kind { get; private set; }
 
+    /// <summary>Gets where the player is, for the cozy guide (P2.9-03).</summary>
+    [ObservableProperty]
+    public partial NextMoveFacts? Facts { get; private set; }
+
     /// <summary>Gets the step as <see cref="NextMoves"/> said it, for Home's headline (P2.10-02).</summary>
     [ObservableProperty]
     public partial NextMove? Move { get; private set; }
@@ -118,6 +122,7 @@ public sealed partial class NextMoveCard : ObservableObject
             _mods.Activation.ActiveModIds.Count,
             _mods.Library.CopiesToClear);
         var move = NextMoves.For(facts);
+        Facts = facts;
         Move = move;
         Kind = move.Kind;
         Title = move.Title;

@@ -81,6 +81,7 @@ public static class DependencyInjection
         services.AddSingleton<ListProfiles>();
         services.AddSingleton<GetPreferences>();
         services.AddSingleton<SetLook>();
+        services.AddSingleton<SetGuideClosed>();
         services.AddSingleton<ListLooks>();
         services.AddSingleton<CreateLook>();
         services.AddSingleton<UpdateLook>();

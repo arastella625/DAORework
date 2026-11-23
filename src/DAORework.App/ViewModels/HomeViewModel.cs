@@ -16,11 +16,16 @@ public sealed partial class HomeViewModel : ObservableObject
     private GameCheck? _check;
     private bool _hasProfile;
 
-    public HomeViewModel(NextStepsViewModel nextSteps)
+    public HomeViewModel(NextStepsViewModel nextSteps, CozyGuideViewModel guide)
     {
         NextSteps = nextSteps;
+        Guide = guide;
+        Guide.TakeAsync = TakeGuideStepAsync;
         Show(profileName: null);
     }
+
+    /// <summary>Gets the cozy guide, Home's card while it runs (ADR-0051).</summary>
+    public CozyGuideViewModel Guide { get; }
 
     /// <summary>Gets the suggestions ("Worth a look"); P2.5-07's Next steps, moved here.</summary>
     public NextStepsViewModel NextSteps { get; }
@@ -76,6 +81,10 @@ public sealed partial class HomeViewModel : ObservableObject
             if (e.PropertyName == nameof(NextMoveCard.Move))
             {
                 ShowCard();
+            }
+            else if (e.PropertyName == nameof(NextMoveCard.Facts) && NextMove.Facts is { } facts)
+            {
+                Guide.Follow(facts);
             }
         };
         NewDownloads = mods.NewDownloads;
@@ -134,6 +143,14 @@ public sealed partial class HomeViewModel : ObservableObject
         HomeButton.GameFolders => OpenAsync(HomeTarget.GameFolders, cancellationToken),
         HomeButton.Play => PlayAsync?.Invoke(cancellationToken) ?? Task.CompletedTask,
         _ => Task.CompletedTask,
+    };
+
+    // Each step's button goes where the step is done (ADR-0051 §1); nothing changes until the player does it there.
+    private Task TakeGuideStepAsync(GuideStepKind step, CancellationToken cancellationToken) => step switch
+    {
+        GuideStepKind.FindYourGame => OpenAsync(HomeTarget.GameFolders, cancellationToken),
+        GuideStepKind.Play => PlayAsync?.Invoke(cancellationToken) ?? Task.CompletedTask,
+        _ => OpenAsync(HomeTarget.ModsLibrary, cancellationToken),
     };
 
     [RelayCommand]

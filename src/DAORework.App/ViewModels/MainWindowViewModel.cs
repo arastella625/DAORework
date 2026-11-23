@@ -111,7 +111,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
 
     /// <summary>Loads the profile list and the custom looks once; the first profile becomes selected and the pages follow.</summary>
     public Task InitializeAsync(CancellationToken cancellationToken = default) =>
-        _initialization ??= Task.WhenAll(Profiles.LoadAsync(cancellationToken), Settings.LoadAsync(cancellationToken));
+        _initialization ??= Task.WhenAll(Profiles.LoadAsync(cancellationToken), Settings.LoadAsync(cancellationToken), Home.Guide.LoadAsync(cancellationToken));
 
     /// <summary>Points the launch action and every page at <paramref name="profileName"/> (null clears them), then checks the game.</summary>
     public async Task SelectProfileAsync(string? profileName, CancellationToken cancellationToken = default)

@@ -800,7 +800,9 @@ keyboard and screen reader, files that every later version reads, and real playe
 - P2.9-03 A guide for a first game with mods, the owner's *cozy guide*: a short walk through finding the game, adding
   mods, turning them on and pressing Play, that can be skipped and opened again from Settings. It builds on P2.6-36's
   first steps. An ADR comes first: what it shows, when it comes back, and its words in [VOICE.md](VOICE.md).
-  *In 0.8.0 with Phase 2.10; its ADR is [ADR-0051](adr/0051-the-cozy-guide.md).*
+  *In 0.8.0 with Phase 2.10; its ADR is [ADR-0051](adr/0051-the-cozy-guide.md). Built on P2.10-02's Home while CI was down
+  (2026-11-22): `CozyGuide` in Core reuses `FirstSteps`, the choice to close it is `GuideClosed` in the preferences,
+  and four drawings in `Shared.axaml` take the theme's colours ([screenshot](screenshots/p2.9-03/01-turn-them-on.png)).*
 - P2.9-04 Keyboard and screen readers: every action can be reached and done by keyboard with a visible focus, and
   every control has a name a screen reader says. It starts with an audit of the window, recorded in `docs/testing/`,
   and ends with a run through Windows Narrator.

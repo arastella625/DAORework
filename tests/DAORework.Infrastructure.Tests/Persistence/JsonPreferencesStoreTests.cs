@@ -64,6 +64,22 @@ public sealed class JsonPreferencesStoreTests : IDisposable
         Assert.Equal("korcari", loaded.Value.Look);
     }
 
+    [Fact]
+    public async Task Load_AFileFromBeforeTheGuide_ReadsItAsNotClosed_AndClosingItRoundTrips()
+    {
+        Directory.CreateDirectory(_directory);
+        await File.WriteAllTextAsync(PreferencesFile, "{ \"schemaVersion\": 1, \"look\": \"korcari\" }");
+        var store = CreateStore();
+
+        Assert.False((await store.LoadAsync()).Value.GuideClosed);
+
+        await store.SaveAsync((await store.LoadAsync()).Value with { GuideClosed = true });
+
+        var loaded = (await store.LoadAsync()).Value;
+        Assert.True(loaded.GuideClosed);
+        Assert.Equal("korcari", loaded.Look);
+    }
+
     [Theory]
     [InlineData("not json at all")]
     [InlineData("[1, 2, 3]")]

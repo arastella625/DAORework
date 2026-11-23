@@ -10,8 +10,46 @@
   <ScrollViewer>
     <StackPanel Margin="12" Spacing="12">
       <!-- One card: a headline, one sentence and one button (ADR-0050 §1, P2.10-02); the last change beside it. -->
+      <TextBlock Name="GuideFinished" Margin="12,0" Classes="Status" Text="{x:Static mods:CozyGuide.Finished}" IsVisible="{Binding Guide.JustFinished}" />
       <Grid ColumnDefinitions="3*,12,2*">
-        <controls:Card Name="Headline">
+        <!-- The cozy guide (ADR-0051): Home's one card while it runs, a step at a time; the window stays usable around it. -->
+        <controls:Card Name="Guide" DataContext="{Binding Guide}" x:DataType="vm:CozyGuideViewModel" IsVisible="{Binding IsShown}">
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+            <StackPanel Spacing="8">
+              <TextBlock Classes="Label" Text="Your first game with mods" />
+              <TextBlock Name="GuideTitle" Classes="PageTitle" Text="{Binding Current.Title, FallbackValue={x:Null}}" />
+              <TextBlock Name="GuideText" Classes="Secondary" TextWrapping="Wrap" Text="{Binding Current.Text, FallbackValue={x:Null}}" />
+              <ItemsControl Name="GuideSteps" ItemsSource="{Binding Steps}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" Spacing="16" />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="mods:GuideStep">
+                    <StackPanel Orientation="Horizontal" Spacing="5">
+                      <PathIcon Classes="Ok" Width="12" Height="12" Data="{StaticResource IconOk}" IsVisible="{Binding IsDone}"
+                                AutomationProperties.Name="Done" />
+                      <TextBlock Classes="Secondary" Text="{Binding Title}" />
+                    </StackPanel>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+              <StackPanel Orientation="Horizontal" Spacing="10">
+                <Button Name="GuideButton" Classes="accent" Content="{Binding Current.Button, FallbackValue={x:Null}}" Command="{Binding TakeStepCommand}" />
+                <Button Name="SkipGuideButton" Content="Skip the guide" Command="{Binding SkipCommand}" />
+              </StackPanel>
+            </StackPanel>
+            <!-- Drawn in the theme's colours, so every look recolours it; a screen reader passes over it. -->
+            <Panel Grid.Column="1" VerticalAlignment="Top" AutomationProperties.AccessibilityView="Raw">
+              <PathIcon Width="64" Height="64" Foreground="{DynamicResource HeadingBrush}" Data="{StaticResource GuideFind}" IsVisible="{Binding ShowsFind}" />
+              <PathIcon Width="64" Height="64" Foreground="{DynamicResource HeadingBrush}" Data="{StaticResource GuideAdd}" IsVisible="{Binding ShowsAdd}" />
+              <PathIcon Width="64" Height="64" Foreground="{DynamicResource HeadingBrush}" Data="{StaticResource GuideSwitch}" IsVisible="{Binding ShowsSwitch}" />
+              <PathIcon Width="64" Height="64" Foreground="{DynamicResource HeadingBrush}" Data="{StaticResource GuidePlay}" IsVisible="{Binding ShowsPlay}" />
+            </Panel>
+          </Grid>
+        </controls:Card>
+        <controls:Card Name="Headline" IsVisible="{Binding !Guide.IsShown}">
           <Panel ClipToBounds="True">
           <!-- A soft burst of gold behind the good news; a plain theme draws none (ADR-0026 §4). -->
           <Canvas Opacity="{DynamicResource OrnamentOpacity}" IsVisible="{Binding IsReady}" IsHitTestVisible="False">
