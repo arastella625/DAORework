@@ -39,11 +39,15 @@ MARKS = {
     "roundel": (("ready-lantern", "needs-a-look-nail"), (32,), ()),
 }
 CONTRAST = {"clasp": 1.5, "band": 2.4, "mark": 2.4}  # how strongly light and shade are kept
+LINKED = ("objects", "collections", "worlds", "materials", "node_groups", "meshes")  # what pieces link (ADR-0053)
 
 
 def render_everything():
     for blend, script in PIECES:
         bpy.ops.wm.open_mainfile(filepath=os.path.join(HERE, blend))
+        missing = [f"{block.name} ({kind})" for kind in LINKED for block in getattr(bpy.data, kind) if block.is_missing]
+        if missing:  # a renamed or missing rig.blend or materials.blend would render pink or unlit into the masks
+            raise RuntimeError(f"{blend} can't find what it links: {', '.join(missing)}")
         exec(compile(bpy.data.texts[script].as_string(), f"{blend}:{script}", "exec"), {"__name__": "__main__"})
 
 
