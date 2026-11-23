@@ -749,8 +749,9 @@ before conflicts from the inside.
   own copy ([ADR-0025](adr/0025-combining-chargenmorphcfg.md), amended): `ErfEntryReader` and `GameChargenMorphSource`
   find it in `packages/core/data`, `ChargenMorphTally` counts by section, `CountChargenMorphAdds` reads each copy once,
   and the row, the message and the combined file's line say it ([screenshot](screenshots/p2.10-03/01-what-you-got.png)).
-  Not done until the section names are checked against the owner's real file: the table in `ChargenMorphEntries` is
-  marked as a shortcut until then.*
+  The section names were checked against the owner's own copy on 2026-11-23: `brow_stubble_colors` and
+  `crew_cut_colors` run alongside `hair_colors`, so a hair colour is counted once. Still to check on the owner's
+  install: which archive the game reads its copy from, patch folders included.*
 - P2.10-04 Pictures and words from the download (ADR-0049): the Library keeps a `.dazip`'s outer readme and pictures,
   shows the pictures a mod came with (never `.dds` or `.tga` textures), reads a description and author from an add-in's
   `Manifest.xml` or a readme's first paragraph, and makes small thumbnails safely. `mod.json` goes to schema 4, with a

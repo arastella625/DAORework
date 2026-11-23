@@ -101,6 +101,30 @@ public sealed class ChargenMorphTallyTests
     }
 
     [Fact]
+    public void AddsOf_AHairColourMod_CountsEachColourOnce_ThoughItFillsThreeLists()
+    {
+        // The game's own section names (checked 2026-11-23); every entry here is made up.
+        const string game = """
+            <morph_config>
+              <heads><human_male><resource name="hm_hed_a" /></human_male></heads>
+              <hair_colors><resource name="t1_har_a" /></hair_colors>
+              <brow_stubble_colors><resource name="t1_brw_a" /></brow_stubble_colors>
+              <crew_cut_colors><resource name="t1_crw_a" /></crew_cut_colors>
+              <lip_makeup_colors><resource name="t1_lip_a" /></lip_makeup_colors>
+            </morph_config>
+            """;
+        var tints = game
+            .Replace("<resource name=\"t1_har_a\" />", "<resource name=\"t1_har_a\" /><resource name=\"t1_har_b\" /><resource name=\"t1_har_c\" />", StringComparison.Ordinal)
+            .Replace("<resource name=\"t1_brw_a\" />", "<resource name=\"t1_brw_a\" /><resource name=\"t1_brw_b\" /><resource name=\"t1_brw_c\" />", StringComparison.Ordinal)
+            .Replace("<resource name=\"t1_crw_a\" />", "<resource name=\"t1_crw_a\" /><resource name=\"t1_crw_b\" /><resource name=\"t1_crw_c\" />", StringComparison.Ordinal)
+            .Replace("<resource name=\"t1_lip_a\" />", "<resource name=\"t1_lip_a\" /><resource name=\"t1_lip_b\" />", StringComparison.Ordinal);
+
+        var tally = new ChargenMorphTally(Copies(("tints", tints)), Read(game));
+
+        Assert.Equal("Adds 3 colours", tally.AddsOf("tints")!.Adds()); // 2 hair colours and 1 lipstick, not 2 brow or crew-cut ones too.
+    }
+
+    [Fact]
     public void Read_NotAMorphConfig_IsNotCounted()
     {
         Assert.Null(ChargenMorphEntries.Read("<other/>"));

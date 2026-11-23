@@ -9,8 +9,8 @@ namespace DAORework.Core.Mods.Combining;
 /// </summary>
 public sealed class ChargenMorphEntries
 {
-    // shortcut: section names as ADR-0025 and the toolset wiki give them, not yet checked against a real game file;
-    // confirm against the owner's copy before P2.10-03 leaves draft.
+    // The sections of the game's own copy, checked against the owner's on 2026-11-23. brow_stubble_colors and
+    // crew_cut_colors run alongside hair_colors (207 entries each), so a hair colour counts once, from hair_colors.
     private static readonly (string Section, ChargenMorphKind Kind)[] _kinds =
     [
         ("hairs", ChargenMorphKind.Hairstyle),
@@ -18,6 +18,8 @@ public sealed class ChargenMorphEntries
         ("beards", ChargenMorphKind.Beard),
         ("tattoos", ChargenMorphKind.Tattoo),
         ("skins", ChargenMorphKind.Skin),
+        ("brow_stubble_colors", ChargenMorphKind.Other),
+        ("crew_cut_colors", ChargenMorphKind.Other),
     ];
 
     private readonly Dictionary<string, ChargenMorphKind> _entries;
@@ -91,15 +93,16 @@ public sealed class ChargenMorphEntries
             .ToDictionary(g => g.Key, g => g.Count());
     }
 
+    // A named section first, then any other colour list (hair, skin, eyes, makeup, tattoo colours), then Other.
     private static ChargenMorphKind KindOf(string section)
     {
-        if (section.Contains("color", StringComparison.OrdinalIgnoreCase) || section.Contains("colour", StringComparison.OrdinalIgnoreCase))
+        if (_kinds.FirstOrDefault(k => k.Section.Equals(section, StringComparison.OrdinalIgnoreCase)) is { Section: not null } known)
         {
-            return ChargenMorphKind.Colour;
+            return known.Kind;
         }
 
-        return _kinds.FirstOrDefault(k => k.Section.Equals(section, StringComparison.OrdinalIgnoreCase)) is { Section: not null } known
-            ? known.Kind
+        return section.Contains("color", StringComparison.OrdinalIgnoreCase) || section.Contains("colour", StringComparison.OrdinalIgnoreCase)
+            ? ChargenMorphKind.Colour
             : ChargenMorphKind.Other;
     }
 
