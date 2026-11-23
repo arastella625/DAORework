@@ -4,8 +4,9 @@ namespace DAORework.FaultInjection.Tests.Gate;
 /// One change the gate kills at every write: the commands that set up its starting state, the command itself, and
 /// the command group ("mods" or "fixes") whose recover, status and rollback settle it. Mod ids are written as their
 /// placeholders. <see cref="OnInstall"/> says whether the change is to the install folder rather than the documents folder.
+/// <see cref="Edit"/>, when there is one, changes files by hand after the setup commands, as a player would.
 /// </summary>
-internal sealed record GateScenario(string Name, string Group, bool OnInstall, IReadOnlyList<string[]> Setup, string[] Command)
+internal sealed record GateScenario(string Name, string Group, bool OnInstall, IReadOnlyList<string[]> Setup, string[] Command, Action<GateFolders>? Edit = null)
 {
     public static GateScenario Activate { get; } = new("activate two mods", "mods", false, [], ["mods", "activate", "{addin}", "{override}", "-p", GateFixtures.Profile, "--yes"]);
 
@@ -65,6 +66,15 @@ internal sealed record GateScenario(string Name, string Group, bool OnInstall, I
         true,
         [["mods", "activate", "{program}", "--allow-programs", "{program}", "-p", GateFixtures.Profile, "--yes"]],
         ["mods", "deactivate", "{program}", "-p", GateFixtures.Profile, "--yes"]);
+
+    /// <summary>Gets turning off a mod that runs inside the game after the player edited its .ini, which stays where it is (ADR-0033 §4).</summary>
+    public static GateScenario TurnOffEditedGameProgram { get; } = new(
+        "turn off an edited mod that runs inside the game",
+        "fixes",
+        true,
+        [["mods", "activate", "{program}", "--allow-programs", "{program}", "-p", GateFixtures.Profile, "--yes"]],
+        ["mods", "deactivate", "{program}", "-p", GateFixtures.Profile, "--yes"],
+        GateFixtures.EditProgramIni);
 
     public static GateScenario AdoptAddInInPlace { get; } = new("adopt an add-in where it is", "mods", false, [], ["mods", "adopt", "addin:hand_addin", "-p", GateFixtures.Profile, "--yes"]);
 
