@@ -14,8 +14,8 @@
         <Panel Width="96" Height="96" VerticalAlignment="Top" AutomationProperties.AccessibilityView="Raw">
           <PathIcon Width="96" Height="96" Foreground="{DynamicResource HeadingBrush}" Data="{StaticResource IconShield}" />
           <PathIcon Width="44" Height="44" Margin="0,0,0,8" Foreground="{DynamicResource BackgroundBrush}" Data="{StaticResource CrestOverride}" IsVisible="{Binding About.IsOverride}" />
-          <PathIcon Width="44" Height="44" Margin="0,0,0,8" Foreground="{DynamicResource BackgroundBrush}" Data="{StaticResource CrestAddIn}" IsVisible="{Binding About.Mod.IsAddIn, FallbackValue=False}" />
-          <PathIcon Width="44" Height="44" Margin="0,0,0,8" Foreground="{DynamicResource BackgroundBrush}" Data="{StaticResource CrestProgram}" IsVisible="{Binding About.Mod.RunsInGame, FallbackValue=False}" />
+          <PathIcon Width="44" Height="44" Margin="0,0,0,8" Foreground="{DynamicResource BackgroundBrush}" Data="{StaticResource CrestAddIn}" IsVisible="{Binding About.IsAddIn}" />
+          <PathIcon Width="44" Height="44" Margin="0,0,0,8" Foreground="{DynamicResource BackgroundBrush}" Data="{StaticResource CrestProgram}" IsVisible="{Binding About.RunsInGame}" />
         </Panel>
         <StackPanel Grid.Column="1" Spacing="6">
           <TextBlock Name="AboutTitle" Classes="PageTitle" TextWrapping="Wrap" Text="{Binding About.Mod.Title, FallbackValue={x:Null}}" />

@@ -64,7 +64,7 @@
                                  ToolTip.Tip="This mod shares files with another. Arrange shows which and decides who wins."
                                  IsVisible="{Binding ConflictMark, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                       <TextBlock Name="PriorityMark" Classes="Secondary" FontStyle="Italic" VerticalAlignment="Center" Text="{Binding PriorityMark.Text}"
-                                 ToolTip.Tip="When two add-ins have a file of the same name, the game uses the copy from the one with the lower Priority. Its details say which files."
+                                 ToolTip.Tip="When two add-ins have a file of the same name, the game uses the copy from the one with the lower Priority. Its page says which files."
                                  IsVisible="{Binding PriorityMark, Converter={x:Static ObjectConverters.IsNotNull}}" />
                     </StackPanel>
                   </Button>

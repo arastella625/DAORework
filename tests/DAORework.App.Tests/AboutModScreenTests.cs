@@ -47,6 +47,32 @@ public sealed class AboutModScreenTests : IDisposable
         Assert.False(about.IsOpen);
     }
 
+    [AvaloniaFact]
+    public async Task AHomeCardThatOpensMods_ShowsTheList_NotAnOpenModsPage()
+    {
+        var (_, viewModel) = await _scenario.OpenAsync();
+        await _scenario.ImportHairPackAsync(viewModel);
+        viewModel.ModsTab.About.OpenCommand.Execute(viewModel.Library.Mods[0]);
+
+        await viewModel.Home.OpenCommand.ExecuteAsync(HomeTarget.ModsArrange);
+
+        Assert.False(viewModel.ModsTab.About.IsOpen);
+        Assert.True(viewModel.ModsTab.Filter.Arranging);
+    }
+
+    [Fact]
+    public void ThePagesKind_IsTheModsKind_AsItsDetailsSay()
+    {
+        var mods = new ObservableCollection<LibraryModRow> { Row("override-with-uid", ModKind.Override, "SomeUid") };
+        var about = new AboutModViewModel(mods);
+
+        about.OpenCommand.Execute(mods[0]);
+
+        Assert.Equal("Override mod", about.Kind); // An add-in UID alone doesn't make it an add-in.
+        Assert.True(about.IsOverride);
+        Assert.False(about.IsAddIn);
+    }
+
     [Fact]
     public void ThePage_FollowsTheSameModToItsNewRow_AndClosesWhenItHasGone()
     {
@@ -62,8 +88,8 @@ public sealed class AboutModScreenTests : IDisposable
         Assert.False(about.IsOpen);
     }
 
-    private static LibraryModRow Row(string id) =>
+    private static LibraryModRow Row(string id, ModKind kind = ModKind.Override, string? uid = null) =>
         LibraryModRow.From(
-            new LibraryEntry(new LibraryMod(id, "Long Hair", ModKind.Override, []), "long-hair.zip", "sha", DateTimeOffset.UnixEpoch),
+            new LibraryEntry(new LibraryMod(id, "Long Hair", kind, [], uid), "long-hair.zip", "sha", DateTimeOffset.UnixEpoch),
             Result.Failure<DownloadCheck>(new Error(DiagnosticCodes.ModImportInvalid, "Not compared.")));
 }

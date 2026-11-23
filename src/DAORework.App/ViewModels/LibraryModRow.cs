@@ -36,6 +36,9 @@ public sealed partial class LibraryModRow : ObservableObject
     /// <summary>Gets a value indicating whether it runs inside the game, so it is turned on by itself (ADR-0033 §3).</summary>
     public bool RunsInGame { get; private init; }
 
+    /// <summary>Gets what kind of mod it is, as its <i>Details</i> says it (P2.10-05).</summary>
+    public ModKind ModKind { get; private init; }
+
     public string Details { get; }
 
     public IReadOnlyList<string> Notes { get; }
@@ -152,6 +155,7 @@ public sealed partial class LibraryModRow : ObservableObject
             IsAddIn = entry.Mod.AddInUid is not null,
             AddInUid = entry.Mod.AddInUid,
             RunsInGame = entry.Mod.Kind == ModKind.GameProgram,
+            ModKind = entry.Mod.Kind,
             AddedAt = entry.ImportedAtUtc,
             PageLink = check.IsSuccess ? check.Value.Item?.Source : null,
             Copy = copy,

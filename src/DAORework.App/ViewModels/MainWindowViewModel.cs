@@ -189,6 +189,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
     // Home's cards open the Mods page as they say: Arrange for an overlap, the combined files, or every mod.
     private void ShowOnModsPage(HomeTarget target)
     {
+        ModsTab.About.BackCommand.Execute(null); // A mod's page stands in for the list, so what Home opens would stay hidden.
         var filter = ModsTab.Filter;
         filter.Kind = target == HomeTarget.ModsCombined ? ModKindFilter.CombinedFiles : ModKindFilter.All;
         filter.Show = ModShowFilter.All;

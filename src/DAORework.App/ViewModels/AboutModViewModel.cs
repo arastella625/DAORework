@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DAORework.Core.Mods.Library;
 
 namespace DAORework.App.ViewModels;
 
@@ -26,7 +27,7 @@ public sealed partial class AboutModViewModel : ObservableObject
 
     /// <summary>Gets the mod shown, or null when the list is.</summary>
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsOpen), nameof(Kind), nameof(IsOverride))]
+    [NotifyPropertyChangedFor(nameof(IsOpen), nameof(Kind), nameof(IsOverride), nameof(IsAddIn), nameof(RunsInGame))]
     public partial LibraryModRow? Mod { get; private set; }
 
     /// <summary>Gets or sets a value indicating whether <i>Details</i> is open.</summary>
@@ -35,17 +36,26 @@ public sealed partial class AboutModViewModel : ObservableObject
 
     public bool IsOpen => Mod is not null;
 
-    /// <summary>Gets what kind of mod it is, in docs/VOICE.md's words.</summary>
-    public string Kind => Mod switch
+    /// <summary>Gets what kind of mod it is, in docs/VOICE.md's words, as its <i>Details</i> says it.</summary>
+    public string Kind => Mod?.ModKind switch
     {
         null => string.Empty,
-        { RunsInGame: true } => "Runs in the game",
-        { IsAddIn: true } => "Add-in",
+        ModKind.GameProgram => "Runs in the game",
+        ModKind.AddIn => "Add-in",
         _ => "Override mod",
     };
 
-    /// <summary>Gets a value indicating whether it is an override mod, so its crest shows that kind's mark.</summary>
-    public bool IsOverride => Mod is { IsAddIn: false, RunsInGame: false };
+    /// <summary>Gets a value indicating whether the crest shows an override mod's mark.</summary>
+    public bool IsOverride => Mod is not null && Mod.ModKind is not (ModKind.AddIn or ModKind.GameProgram);
+
+    /// <summary>Gets a value indicating whether the crest shows an add-in's mark.</summary>
+    public bool IsAddIn => Mod?.ModKind == ModKind.AddIn;
+
+    /// <summary>Gets a value indicating whether the crest shows the mark of a mod that runs in the game.</summary>
+    public bool RunsInGame => Mod?.ModKind == ModKind.GameProgram;
+
+    /// <summary>Gets the mod the page showed last, so <i>Back</i> can bring its row into view.</summary>
+    public LibraryModRow? LastShown { get; private set; }
 
     [RelayCommand]
     private void Open(LibraryModRow mod)
@@ -65,6 +75,7 @@ public sealed partial class AboutModViewModel : ObservableObject
             return;
         }
 
+        LastShown = Mod;
         Mod = null;
         OpenedOrClosed?.Invoke(this, EventArgs.Empty);
     }
