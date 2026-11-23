@@ -76,6 +76,11 @@ public sealed partial class LibraryModRow : ObservableObject
     [ObservableProperty]
     public partial AddInMark? PriorityMark { get; set; }
 
+    /// <summary>Gets or sets what it adds to character creation, such as <i>Adds 12 hairstyles</i>, or null (P2.10-03).</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(Glance))]
+    public partial string? Adds { get; set; }
+
     /// <summary>Gets or sets a value indicating whether its row is expanded to show its details (ADR-0038).</summary>
     [ObservableProperty]
     public partial bool IsExpanded { get; set; }
@@ -86,7 +91,7 @@ public sealed partial class LibraryModRow : ObservableObject
         get
         {
             var kind = Details.Split(" · ")[0].StartsWith("add-in", StringComparison.Ordinal) ? "add-in" : Details.Split(" · ")[0];
-            return string.Join(" · ", new[] { kind, IsInGame ? "in your game" : null, Copy is null ? null : $"{Copy.Count} copies" }.OfType<string>());
+            return string.Join(" · ", new[] { kind, Adds, IsInGame ? "in your game" : null, Copy is null ? null : $"{Copy.Count} copies" }.OfType<string>());
         }
     }
 

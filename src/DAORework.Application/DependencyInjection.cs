@@ -13,6 +13,7 @@ using DAORework.Application.Mods.Adoption;
 using DAORework.Application.Mods.Apply;
 using DAORework.Application.Mods.Backups;
 using DAORework.Application.Mods.Changes;
+using DAORework.Application.Mods.Combining;
 using DAORework.Application.Mods.Downloads;
 using DAORework.Application.Mods.Handover;
 using DAORework.Application.Mods.Library;
@@ -108,6 +109,7 @@ public static class DependencyInjection
         services.AddSingleton<LookBeforeAdding>();
         services.AddSingleton<CopyFolders>();
         services.AddSingleton<FindModsInside>();
+        services.AddSingleton<CountChargenMorphAdds>();
         services.AddSingleton<PlanKeepCopy>();
         services.AddSingleton<PlanKeepEach>();
         services.AddSingleton<RecordSwap>();

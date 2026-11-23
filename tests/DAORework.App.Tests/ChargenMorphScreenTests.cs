@@ -109,6 +109,44 @@ public sealed class ChargenMorphScreenTests : IDisposable
         Assert.Single(viewModel.ModsTab.Changes.Backups);
     }
 
+    [AvaloniaFact]
+    public async Task TwoHairMods_SayWhatEachAdds_AndTurningThemOnSaysWhatCharacterCreationGained()
+    {
+        var (window, viewModel) = await _scenario.OpenAsync();
+        await _scenario.ImportAsync(viewModel, Path.Combine(_downloads, "Long Hair.zip"), (GamePaths.ChargenMorphFileName, Morph("hm_har_long")));
+        await _scenario.ImportAsync(viewModel, Path.Combine(_downloads, "Short Hair.zip"), (GamePaths.ChargenMorphFileName, Morph("hm_har_short")));
+
+        // No game copy in this install, so each is counted against the base hair both copies share.
+        Assert.All(viewModel.Library.Mods, m => Assert.Equal("Adds 1 hairstyle", m.Adds));
+        Assert.Contains("Adds 1 hairstyle", viewModel.Library.Mods[0].Glance, StringComparison.Ordinal);
+        var activation = viewModel.ModsTab.Activation;
+        viewModel.ModsTab.Selection.SelectAllCommand.Execute(null);
+        await viewModel.ModsTab.Selection.ActivateSelectedCommand.ExecuteAsync(null);
+        await activation.ApplyCommand.ExecuteAsync(null);
+
+        Assert.False(activation.IsError, activation.StatusMessage);
+        Assert.Contains("Character creation has 2 more hairstyles.", activation.StatusMessage, StringComparison.Ordinal);
+        var combined = Assert.Single(viewModel.ModsTab.LoadOrder.CombinedFiles);
+        Assert.EndsWith("Character creation has 2 more hairstyles.", combined.Detail, StringComparison.Ordinal);
+        ModsTabScenario.Show<LibraryPanel>(window);
+        Screenshots.Save(window, "chargenmorph-adds");
+    }
+
+    [AvaloniaFact]
+    public async Task OneHairMod_IsCountedAgainstTheGamesOwnCopy()
+    {
+        _host.SeedRealisticInstall();
+        _host.FileSystem.AddFile(
+            Path.Combine(GamePaths.CoreDataDirectory(AppTestHost.InstallDirectory), GamePaths.ChargenMorphFileName),
+            new MockFileData(Morph("hm_har_game")));
+        var (_, viewModel) = await _scenario.OpenAsync(seedInstall: false);
+
+        await _scenario.ImportAsync(viewModel, Path.Combine(_downloads, "Long Hair.zip"), (GamePaths.ChargenMorphFileName, Morph("hm_har_long")));
+
+        // Against the game's copy, base, game and long: only the long hair is new. Without it, one mod couldn't be counted.
+        Assert.Equal("Adds 1 hairstyle", Assert.Single(viewModel.Library.Mods).Adds);
+    }
+
     /// <summary>A small chargenmorphcfg.xml: one base hair every copy shares, and the mod's own.</summary>
     private static string Morph(string hair) => $"""
         <morph_config>

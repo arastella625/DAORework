@@ -41,3 +41,7 @@ Each entry adds one field: `size` becomes `packedSize`, followed by `unpackedSiz
 ## What DAORework does with it
 `ErfReader` reads the table of contents only, and never a file's data, so encryption and compression don't matter to it.
 A table that can't fit in the file, or an entry pointing past its end, is refused.
+
+`ErfEntryReader` reads one entry's data, only to find the game's own `chargenmorphcfg.xml` (ADR-0025, P2.10-03). It reads
+plain data only: an encrypted or compressed archive, an entry whose two sizes differ, one past the end of the file or
+one over 16 MiB is refused, and the caller goes on without it.
