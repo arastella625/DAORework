@@ -38,7 +38,8 @@ public sealed class KeepCopyScreenTests : IDisposable
         Assert.Equal("Remove the other copy", keep.RemoveLabel);
         Assert.True(keep.CanRemove);
         Assert.True(_host.FileSystem.Directory.Exists(folder));
-        Row(viewModel, "Hair Pack").IsExpanded = true;
+        viewModel.ModsTab.About.OpenCommand.Execute(Row(viewModel, "Hair Pack")); // Keep this one is under the page's Details (ADR-0050 §3).
+        viewModel.ModsTab.About.ShowsDetails = true;
         window.UpdateLayout();
         Screenshots.Save(window, "46-keep-this-one");
 

@@ -5,8 +5,11 @@
              xmlns:controls="using:DAORework.App.Controls"
              x:Class="DAORework.App.Views.ModsListPanel"
              x:DataType="vm:ModsTabViewModel">
-  <!-- The Mods tab as one page (ADR-0026, P2.5-26): the kind cards and chips filter it; Arrange turns it into the load order. -->
-  <StackPanel Spacing="12">
+  <!-- The Mods tab as one page (ADR-0026, P2.5-26): the kind cards and chips filter it; Arrange turns it into the load order.
+       A mod's name opens its own page in place of all of it (ADR-0050 §3). -->
+  <Panel>
+  <views:AboutModPanel Name="AboutMod" IsVisible="{Binding About.IsOpen}" />
+  <StackPanel Spacing="12" IsVisible="{Binding !About.IsOpen}">
     <ItemsControl Name="KindCards" Margin="12,0" ItemsSource="{Binding Setup.Parts}">
       <ItemsControl.ItemsPanel>
         <ItemsPanelTemplate>
@@ -109,4 +112,5 @@
     <views:LoadOrderPanel DataContext="{Binding LoadOrder}" IsVisible="{Binding $parent[views:ModsListPanel].((vm:ModsTabViewModel)DataContext).Filter.Arranging}" />
     <views:CombinedFilesPanel DataContext="{Binding LoadOrder}" IsVisible="{Binding $parent[views:ModsListPanel].((vm:ModsTabViewModel)DataContext).Filter.ShowsCombined}" />
   </StackPanel>
+  </Panel>
 </UserControl>

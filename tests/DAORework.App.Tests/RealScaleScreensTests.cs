@@ -49,20 +49,22 @@ public sealed class RealScaleScreensTests : IDisposable
     }
 
     [AvaloniaFact]
-    public async Task ModRows_AreOneLine_UntilExpanded()
+    public async Task ModRows_AreOneLine_AndTheNameOpensTheModsPage()
     {
         var (window, viewModel) = await _scenario.OpenAsync();
         ModsTabScenario.Show<LibraryPanel>(window);
         window.UpdateLayout();
         var list = window.GetLogicalDescendants().OfType<ItemsControl>().First(i => i.Name == "LibraryMods");
+        Assert.InRange(list.ContainerFromIndex(0)!.Bounds.Height, 1, 46);
 
-        var closed = list.ContainerFromIndex(0)!.Bounds.Height;
-        viewModel.Library.Mods[0].IsExpanded = true;
+        viewModel.ModsTab.About.OpenCommand.Execute(viewModel.Library.Mods[0]);
         window.UpdateLayout();
-        Screenshots.Save(window, "real-scale-rows");
+        Screenshots.Save(window, "real-scale-about");
 
-        Assert.InRange(closed, 1, 46);
-        Assert.True(list.ContainerFromIndex(0)!.Bounds.Height > closed);
+        Assert.False(list.IsEffectivelyVisible); // The page stands in for the list...
+        viewModel.ModsTab.About.BackCommand.Execute(null);
+        window.UpdateLayout();
+        Assert.True(list.IsEffectivelyVisible); // ...until Back to your mods.
     }
 
     [AvaloniaFact]

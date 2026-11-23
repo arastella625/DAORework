@@ -99,6 +99,11 @@ internal sealed class ModsTabScenario(AppTestHost host)
     {
         // The Mods page shows the load order only while arranging, and the combined files only on their card (P2.5-26).
         var viewModel = (MainWindowViewModel)window.DataContext!;
+        if (typeof(TPanel) != typeof(AboutModPanel))
+        {
+            viewModel.ModsTab.About.BackCommand.Execute(null); // A mod's page stands in for the whole list (ADR-0050 §3).
+        }
+
         var filter = viewModel.ModsTab.Filter;
         filter.Arranging = typeof(TPanel) == typeof(LoadOrderPanel);
         filter.Kind = typeof(TPanel) == typeof(CombinedFilesPanel) ? ModKindFilter.CombinedFiles : ModKindFilter.All;

@@ -52,10 +52,11 @@
             <Border Padding="0,4" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,1,0,0">
               <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                 <CheckBox VerticalAlignment="Top" IsChecked="{Binding IsSelected}" ToolTip.Tip="Tick to activate or deactivate it with the others" />
-                <!-- One line, with details in place (ADR-0038). A warning stays outside: it is never behind a click. -->
+                <!-- One line; the name opens the mod's page (ADR-0050 §3). A warning stays on the row: it is never behind a click. -->
                 <StackPanel Grid.Column="1" Spacing="3">
-                  <ToggleButton Name="ModDetails" Classes="rowName" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" IsChecked="{Binding IsExpanded}"
-                                ToolTip.Tip="Show or hide its details">
+                  <Button Name="ModDetails" Classes="rowName" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" CommandParameter="{Binding}"
+                          Command="{Binding $parent[views:LibraryPanel].((vm:ModsTabViewModel)DataContext).About.OpenCommand}"
+                          AutomationProperties.Name="{Binding Title, StringFormat='About {0}'}" ToolTip.Tip="See what this mod is and what it adds">
                     <StackPanel Orientation="Horizontal" Spacing="10">
                       <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
                       <TextBlock Classes="Secondary" VerticalAlignment="Center" Text="{Binding Glance}" />
@@ -63,40 +64,10 @@
                                  ToolTip.Tip="This mod shares files with another. Arrange shows which and decides who wins."
                                  IsVisible="{Binding ConflictMark, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                       <TextBlock Name="PriorityMark" Classes="Secondary" FontStyle="Italic" VerticalAlignment="Center" Text="{Binding PriorityMark.Text}"
-                                 ToolTip.Tip="When two add-ins have a file of the same name, the game uses the copy from the one with the lower Priority. Its details say which files."
+                                 ToolTip.Tip="When two add-ins have a file of the same name, the game uses the copy from the one with the lower Priority. Its page says which files."
                                  IsVisible="{Binding PriorityMark, Converter={x:Static ObjectConverters.IsNotNull}}" />
                     </StackPanel>
-                  </ToggleButton>
-<StackPanel Spacing="3" Margin="8,0,0,6" IsVisible="{Binding IsExpanded}">
-                      <TextBlock Classes="Mono Secondary" Text="{Binding Details}" TextWrapping="Wrap" />
-                      <TextBlock Classes="Secondary" TextWrapping="Wrap" IsVisible="{Binding IsInGame}"
-                                 Text="Already in your game. Turning it on takes that copy over, so there's no second one." />
-                      <ItemsControl Name="AddInShares" ItemsSource="{Binding PriorityMark.Sentences}">
-                        <ItemsControl.ItemTemplate>
-                          <DataTemplate x:DataType="x:String">
-                            <TextBlock Text="{Binding}" TextWrapping="Wrap" />
-                          </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                      </ItemsControl>
-                      <ItemsControl ItemsSource="{Binding Notes}">
-                        <ItemsControl.ItemTemplate>
-                          <DataTemplate x:DataType="x:String">
-                            <TextBlock Text="{Binding}" TextWrapping="Wrap" />
-                          </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                      </ItemsControl>
-                      <Button Name="KeepCopyButton" Content="Keep this one" HorizontalAlignment="Left" CommandParameter="{Binding}"
-                              ToolTip.Tip="Remove this mod's other copies from your Library. You'll see a preview first."
-                              IsVisible="{Binding Copy, Converter={x:Static ObjectConverters.IsNotNull}}"
-                              Command="{Binding $parent[views:LibraryPanel].((vm:ModsTabViewModel)DataContext).KeepCopy.PlanKeepCommand}" />
-                      <Button Name="KeepWholeButton" Content="{Binding KeepWholeLabel}" HorizontalAlignment="Left" CommandParameter="{Binding}"
-                              ToolTip.Tip="Remove this mod from your Library and keep the bigger one. You'll see a preview first."
-                              IsVisible="{Binding Inside, Converter={x:Static ObjectConverters.IsNotNull}}"
-                              Command="{Binding $parent[views:LibraryPanel].((vm:ModsTabViewModel)DataContext).KeepCopy.PlanKeepWholeCommand}" />
-                      <Button Content="Open the mod's page" HorizontalAlignment="Left" CommandParameter="{Binding PageLink}"
-                              IsVisible="{Binding PageLink, Converter={x:Static ObjectConverters.IsNotNull}}"
-                              Command="{Binding $parent[views:LibraryPanel].((vm:ModsTabViewModel)DataContext).ModPage.OpenCommand}" />
-                    </StackPanel>
+                  </Button>
                   <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" IsVisible="{Binding Warning, Converter={x:Static ObjectConverters.IsNotNull}}">
                     <PathIcon Classes="Warning" Data="{StaticResource IconWarning}" VerticalAlignment="Top" />
                     <TextBlock Grid.Column="1" Classes="Warning" Text="{Binding Warning}" TextWrapping="Wrap" />

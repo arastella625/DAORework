@@ -36,6 +36,9 @@ public sealed partial class LibraryModRow : ObservableObject
     /// <summary>Gets a value indicating whether it runs inside the game, so it is turned on by itself (ADR-0033 §3).</summary>
     public bool RunsInGame { get; private init; }
 
+    /// <summary>Gets what kind of mod it is, as its <i>Details</i> says it (P2.10-05).</summary>
+    public ModKind ModKind { get; private init; }
+
     public string Details { get; }
 
     public IReadOnlyList<string> Notes { get; }
@@ -80,10 +83,6 @@ public sealed partial class LibraryModRow : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(Glance))]
     public partial string? Adds { get; set; }
-
-    /// <summary>Gets or sets a value indicating whether its row is expanded to show its details (ADR-0038).</summary>
-    [ObservableProperty]
-    public partial bool IsExpanded { get; set; }
 
     /// <summary>Gets what a one-line row says beside the name: its kind, and anything worth a glance (ADR-0038).</summary>
     public string Glance
@@ -156,6 +155,7 @@ public sealed partial class LibraryModRow : ObservableObject
             IsAddIn = entry.Mod.AddInUid is not null,
             AddInUid = entry.Mod.AddInUid,
             RunsInGame = entry.Mod.Kind == ModKind.GameProgram,
+            ModKind = entry.Mod.Kind,
             AddedAt = entry.ImportedAtUtc,
             PageLink = check.IsSuccess ? check.Value.Item?.Source : null,
             Copy = copy,

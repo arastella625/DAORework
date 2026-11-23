@@ -1,0 +1,79 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DAORework.App.ViewModels"
+             xmlns:views="using:DAORework.App.Views"
+             xmlns:controls="using:DAORework.App.Controls"
+             x:Class="DAORework.App.Views.AboutModPanel"
+             x:DataType="vm:ModsTabViewModel">
+  <!-- About this mod (ADR-0050 §3, P2.10-05): the mod's own page, in place of the list. What the row used to unfold is under Details. -->
+  <controls:Card Margin="12,0">
+    <StackPanel Spacing="12">
+      <Button Name="BackToModsButton" Content="Back to your mods" HorizontalAlignment="Left" Command="{Binding About.BackCommand}" />
+      <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="20">
+        <!-- No picture yet (P2.10-04): a crest in the theme's colours, by kind. A screen reader passes over it; the kind is said below. -->
+        <Panel Width="96" Height="96" VerticalAlignment="Top" AutomationProperties.AccessibilityView="Raw">
+          <PathIcon Width="96" Height="96" Foreground="{DynamicResource HeadingBrush}" Data="{StaticResource IconShield}" />
+          <PathIcon Width="44" Height="44" Margin="0,0,0,8" Foreground="{DynamicResource BackgroundBrush}" Data="{StaticResource CrestOverride}" IsVisible="{Binding About.IsOverride}" />
+          <PathIcon Width="44" Height="44" Margin="0,0,0,8" Foreground="{DynamicResource BackgroundBrush}" Data="{StaticResource CrestAddIn}" IsVisible="{Binding About.IsAddIn}" />
+          <PathIcon Width="44" Height="44" Margin="0,0,0,8" Foreground="{DynamicResource BackgroundBrush}" Data="{StaticResource CrestProgram}" IsVisible="{Binding About.RunsInGame}" />
+        </Panel>
+        <StackPanel Grid.Column="1" Spacing="6">
+          <TextBlock Name="AboutTitle" Classes="PageTitle" TextWrapping="Wrap" Text="{Binding About.Mod.Title, FallbackValue={x:Null}}" />
+          <TextBlock Name="AboutKind" Classes="Secondary" Text="{Binding About.Kind}" />
+          <TextBlock Name="AboutAdds" FontWeight="SemiBold" Text="{Binding About.Mod.Adds, FallbackValue={x:Null}}"
+                     IsVisible="{Binding About.Mod.Adds, Converter={x:Static StringConverters.IsNotNullOrEmpty}, FallbackValue=False}" />
+          <TextBlock Classes="Secondary" TextWrapping="Wrap" IsVisible="{Binding About.Mod.IsInGame, FallbackValue=False}"
+                     Text="Already in your game. Turning it on takes that copy over, so there's no second one." />
+          <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" IsVisible="{Binding About.Mod.Warning, Converter={x:Static ObjectConverters.IsNotNull}, FallbackValue=False}">
+            <PathIcon Classes="Warning" Data="{StaticResource IconWarning}" VerticalAlignment="Top" />
+            <TextBlock Grid.Column="1" Classes="Warning" Text="{Binding About.Mod.Warning, FallbackValue={x:Null}}" TextWrapping="Wrap" />
+          </Grid>
+          <Button Name="AboutModPage" Content="Open the mod's page" HorizontalAlignment="Left" CommandParameter="{Binding About.Mod.PageLink, FallbackValue={x:Null}}"
+                  IsVisible="{Binding About.Mod.PageLink, Converter={x:Static ObjectConverters.IsNotNull}, FallbackValue=False}"
+                  Command="{Binding ModPage.OpenCommand}" />
+        </StackPanel>
+        <!-- The same switch as the row: it shows the preview, and moves once the change is applied. -->
+        <StackPanel Grid.Column="2" VerticalAlignment="Top">
+          <Button Name="AboutTurnOn" Classes="switch" Content="Off" IsVisible="{Binding !About.Mod.IsActive, FallbackValue=False}" CommandParameter="{Binding About.Mod}"
+                  AutomationProperties.Name="{Binding About.Mod.Title, StringFormat='Turn on {0}', FallbackValue={x:Null}}" ToolTip.Tip="Turn on"
+                  Command="{Binding Activation.ActivateCommand}" />
+          <Button Name="AboutTurnOff" Classes="switch on" Content="On" IsVisible="{Binding About.Mod.IsActive, FallbackValue=False}" CommandParameter="{Binding About.Mod}"
+                  AutomationProperties.Name="{Binding About.Mod.Title, StringFormat='Turn off {0}', FallbackValue={x:Null}}" ToolTip.Tip="Turn off"
+                  Command="{Binding Activation.DeactivateCommand}" />
+        </StackPanel>
+      </Grid>
+      <Expander Name="AboutDetails" Header="Details" IsExpanded="{Binding About.ShowsDetails}" HorizontalAlignment="Stretch">
+        <StackPanel Spacing="6">
+          <TextBlock Classes="Mono Secondary" Text="{Binding About.Mod.Details, FallbackValue={x:Null}}" TextWrapping="Wrap" />
+          <TextBlock Classes="Secondary" FontStyle="Italic" Text="{Binding About.Mod.PriorityMark.Text, FallbackValue={x:Null}}"
+                     IsVisible="{Binding About.Mod.PriorityMark, Converter={x:Static ObjectConverters.IsNotNull}, FallbackValue=False}" />
+          <TextBlock Classes="Secondary" FontStyle="Italic" Text="{Binding About.Mod.ConflictMark, FallbackValue={x:Null}}"
+                     ToolTip.Tip="This mod shares files with another. Arrange shows which and decides who wins."
+                     IsVisible="{Binding About.Mod.ConflictMark, Converter={x:Static StringConverters.IsNotNullOrEmpty}, FallbackValue=False}" />
+          <ItemsControl Name="AddInShares" ItemsSource="{Binding About.Mod.PriorityMark.Sentences, FallbackValue={x:Null}}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="x:String">
+                <TextBlock Text="{Binding}" TextWrapping="Wrap" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <ItemsControl Name="AboutNotes" ItemsSource="{Binding About.Mod.Notes, FallbackValue={x:Null}}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="x:String">
+                <TextBlock Text="{Binding}" TextWrapping="Wrap" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <Button Name="KeepCopyButton" Content="Keep this one" HorizontalAlignment="Left" CommandParameter="{Binding About.Mod}"
+                  ToolTip.Tip="Remove this mod's other copies from your Library. You'll see a preview first."
+                  IsVisible="{Binding About.Mod.Copy, Converter={x:Static ObjectConverters.IsNotNull}, FallbackValue=False}"
+                  Command="{Binding KeepCopy.PlanKeepCommand}" />
+          <Button Name="KeepWholeButton" Content="{Binding About.Mod.KeepWholeLabel, FallbackValue={x:Null}}" HorizontalAlignment="Left" CommandParameter="{Binding About.Mod}"
+                  ToolTip.Tip="Remove this mod from your Library and keep the bigger one. You'll see a preview first."
+                  IsVisible="{Binding About.Mod.Inside, Converter={x:Static ObjectConverters.IsNotNull}, FallbackValue=False}"
+                  Command="{Binding KeepCopy.PlanKeepWholeCommand}" />
+        </StackPanel>
+      </Expander>
+    </StackPanel>
+  </controls:Card>
+</UserControl>
