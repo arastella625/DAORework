@@ -40,6 +40,9 @@ public sealed partial class LoadOrderViewModel : PageViewModel
     /// <summary>Gets or sets what runs after a new order was applied, such as reading the other panels again.</summary>
     public Func<CancellationToken, Task>? AfterChangeAsync { get; set; }
 
+    /// <summary>Gets or sets what a combined <c>chargenmorphcfg.xml</c>'s mods add to character creation, by mod id (P2.10-03).</summary>
+    public Func<IReadOnlyList<string>, string?>? DescribeCombined { get; set; }
+
     /// <summary>Gets the active mods, lowest priority first, in the order being edited.</summary>
     public ObservableCollection<LoadOrderRow> Order { get; } = [];
 
@@ -275,7 +278,8 @@ public sealed partial class LoadOrderViewModel : PageViewModel
         foreach (var file in combined)
         {
             var from = string.Join(", ", file.FromModIds.Select(nameOf));
-            CombinedFiles.Add(new FileConflictRow(file.FileName, "Combined", $"Merged from {from}, so every mod's part works."));
+            var gain = DescribeCombined?.Invoke(file.FromModIds) is { } gained ? $" {gained}." : string.Empty;
+            CombinedFiles.Add(new FileConflictRow(file.FileName, "Combined", $"Merged from {from}, so every mod's part works.{gain}"));
         }
 
         CombinedCount = CombinedFiles.Count;

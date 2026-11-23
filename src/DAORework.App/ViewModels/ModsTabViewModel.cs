@@ -30,6 +30,10 @@ public sealed class ModsTabViewModel
         Programs = actions.Programs;
         LastGame = actions.Troubleshooting.LastGame;
         AddIns = actions.Troubleshooting.AddIns;
+        ChargenAdds = actions.Troubleshooting.ChargenAdds;
+        library.CountChargenMorph = ChargenAdds.CountAsync;
+        deployed.Activation.DescribeGain = ChargenAdds.Gained;
+        deployed.LoadOrder.DescribeCombined = modIds => ChargenAdds.Gained([], modIds);
         HandInstalled = handInstalled;
         Library = library;
         Activation = deployed.Activation;
@@ -103,6 +107,9 @@ public sealed class ModsTabViewModel
     /// <summary>Gets each add-in's Priority and the files it shares with other add-ins (P2.5-23).</summary>
     public AddInPriorityViewModel AddIns { get; }
 
+    /// <summary>Gets what each mod adds to character creation (P2.10-03).</summary>
+    public ChargenMorphAddsViewModel ChargenAdds { get; }
+
     /// <summary>Gets <i>Find the problem mod</i> (ADR-0042).</summary>
     public ProblemSearchViewModel ProblemSearch { get; }
 
@@ -153,6 +160,7 @@ public sealed class ModsTabViewModel
         KeepEach.Load(profileName);
         LookFirst.CancelCommand.Execute(null);
         HandInstalled.Load(profileName);
+        ChargenAdds.Load(profileName);
         await Activation.LoadAsync(profileName, cancellationToken); // First, so a listed mod's state is known as it is read.
         await Programs.LoadAsync(profileName, cancellationToken);
         await Library.LoadAsync(cancellationToken);

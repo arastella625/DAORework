@@ -19,8 +19,6 @@ public static class ChargenMorphCombiner
 {
     public const string RootName = "morph_config";
 
-    private const long MaxCharacters = 16 * 1024 * 1024;
-
     public static Result<CombinedChargenMorph> Combine(IReadOnlyList<ChargenMorphCopy> copies)
     {
         ArgumentNullException.ThrowIfNull(copies);
@@ -58,13 +56,9 @@ public static class ChargenMorphCombiner
 
     private static Result<XElement> Parse(ChargenMorphCopy copy)
     {
-        // No DTDs and no external resources: a mod's file can never make DAORework read anything else.
-        // Whitespace is dropped on reading, so the combined file is indented the same throughout.
-        var settings = new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = null, MaxCharactersInDocument = MaxCharacters, IgnoreWhitespace = true };
         try
         {
-            using var reader = XmlReader.Create(new StringReader(copy.Xml), settings);
-            var root = XDocument.Load(reader).Root;
+            var root = ChargenMorphXml.Load(copy.Xml);
             if (root is not null && root.Name.LocalName.Equals(RootName, StringComparison.OrdinalIgnoreCase))
             {
                 return Result.Success(root);
@@ -106,15 +100,11 @@ public static class ChargenMorphCombiner
         }
     }
 
-    private static bool IsEntry(XElement element) => !element.HasElements;
+    private static bool IsEntry(XElement element) => ChargenMorphXml.IsEntry(element);
 
-    private static bool SameName(XElement a, XElement b) => a.Name.LocalName.Equals(b.Name.LocalName, StringComparison.OrdinalIgnoreCase);
+    private static bool SameName(XElement a, XElement b) => ChargenMorphXml.SameName(a, b);
 
-    private static bool SameEntry(XElement a, XElement b) =>
-        SameName(a, b) && Attributes(a).SetEquals(Attributes(b));
-
-    private static HashSet<string> Attributes(XElement element) =>
-        element.Attributes().Select(x => $"{x.Name.LocalName.ToUpperInvariant()}={x.Value.ToUpperInvariant()}").ToHashSet(StringComparer.Ordinal);
+    private static bool SameEntry(XElement a, XElement b) => ChargenMorphXml.SameEntry(a, b);
 
     private static string Write(XElement root)
     {

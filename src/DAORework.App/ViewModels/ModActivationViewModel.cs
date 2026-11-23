@@ -37,6 +37,9 @@ public sealed partial class ModActivationViewModel : PageViewModel
     /// <summary>Raised when <see cref="ActiveModIds"/> has been read again.</summary>
     public event EventHandler? ActiveModsChanged;
 
+    /// <summary>Gets or sets what a change gained in character creation, from the mods on before to those on after (P2.10-03).</summary>
+    public Func<IEnumerable<string>, IEnumerable<string>, string?>? DescribeGain { get; set; }
+
     /// <summary>Gets or sets what runs after a change was applied, such as reading the backups again.</summary>
     public Func<CancellationToken, Task>? AfterChangeAsync { get; set; }
 
@@ -105,6 +108,7 @@ public sealed partial class ModActivationViewModel : PageViewModel
 
                 var title = Preview.Title ?? "Making the change";
                 var planned = _planned;
+                var before = ActiveModIds;
                 ClearPlan();
                 if (!(await _apply.ApplyAsync(title, new ApplyModPlanRequest(pending.Documents, pending.Plan), token)).TryGetValue(out var report, out var error))
                 {
@@ -123,13 +127,14 @@ public sealed partial class ModActivationViewModel : PageViewModel
                     await AfterChangeAsync(token);
                 }
 
+                var gained = DescribeGain?.Invoke(before, ActiveModIds) is { } gain ? $" {gain}." : string.Empty;
                 if (planned is { LeftOut.Count: > 0 })
                 {
-                    ReportStatus(LeftOut.Outcome($"Turned on {Counted.Of(planned.Mods.Count, "mod")}.", planned.LeftOut));
+                    ReportStatus(LeftOut.Outcome($"Turned on {Counted.Of(planned.Mods.Count, "mod")}.{gained}", planned.LeftOut));
                 }
                 else
                 {
-                    ReportSuccess("Done. You can undo it in History.");
+                    ReportSuccess($"Done.{gained} You can undo it in History.");
                 }
             },
             cancellationToken);

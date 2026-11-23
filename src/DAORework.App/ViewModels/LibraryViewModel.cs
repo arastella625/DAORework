@@ -4,6 +4,7 @@ using DAORework.App.Services;
 using DAORework.Application.Mods.Library;
 using DAORework.Core.Common;
 using DAORework.Core.Diagnostics;
+using DAORework.Core.Mods.Combining;
 using DAORework.Core.Mods.Downloads;
 using DAORework.Core.Mods.Library;
 using Microsoft.Extensions.Logging;
@@ -49,6 +50,9 @@ public sealed partial class LibraryViewModel : PageViewModel
 
     /// <summary>Gets or sets how a row finds the bigger mod it is inside (ADR-0041).</summary>
     public Func<IReadOnlyList<LibraryEntry>, IReadOnlyDictionary<string, ModInside>>? FindInside { get; set; }
+
+    /// <summary>Gets or sets how what each mod adds to character creation is counted, set by the Mods tab (P2.10-03).</summary>
+    public Func<IReadOnlyList<LibraryMod>, CancellationToken, Task<ChargenMorphTally>>? CountChargenMorph { get; set; }
 
     public Task LoadAsync(CancellationToken cancellationToken = default) => GuardAsync(RefreshAsync, cancellationToken);
 
@@ -186,6 +190,7 @@ public sealed partial class LibraryViewModel : PageViewModel
         var shown = entries.Where(e => _active.Contains(e.Mod.Id) || !e.Mod.Files.All(f => NonModFiles.Is(f.RelativePath))).ToList();
         var copies = ModCopies.Find(shown, _active);
         var inside = FindInside?.Invoke(shown) ?? new Dictionary<string, ModInside>();
+        var chargen = await CountChargenAsync(shown, cancellationToken);
         var sets = copies.Values.GroupBy(c => c.Group, StringComparer.OrdinalIgnoreCase).ToList();
         CopySets = sets.Count;
         CopiesToClear = sets.Count(s => s.Any(c => c.HoldsAll));
@@ -198,6 +203,7 @@ public sealed partial class LibraryViewModel : PageViewModel
             var row = onScreen.TryGetValue(read.Id, out var same) && same.ShowsTheSameAs(read) ? same : read;
             row.IsActive = _active.Contains(row.Id);
             row.ConflictMark = _marks.GetValueOrDefault(row.Id);
+            row.Adds = chargen.AddsOf(row.Id)?.Adds();
             row.IsSelected = false;
             row.IsExpanded = false;
             rows.Add(row);
@@ -207,4 +213,7 @@ public sealed partial class LibraryViewModel : PageViewModel
         // list is still replaced, since the counts on the cards hear of a change from it, and that alone rebuilds nothing.
         Mods.ReplaceAll(rows);
     }
+
+    private Task<ChargenMorphTally> CountChargenAsync(IReadOnlyList<LibraryEntry> shown, CancellationToken cancellationToken) =>
+        CountChargenMorph is null ? Task.FromResult(ChargenMorphTally.Empty) : CountChargenMorph([.. shown.Select(e => e.Mod)], cancellationToken);
 }

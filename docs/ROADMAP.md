@@ -745,7 +745,12 @@ before conflicts from the inside.
   `chargenmorphcfg.xml` adds to character creation (hairstyles, faces, beards, colours, tattoos, skins), against the
   game's own copy on the player's PC where it can be read, else against what every copy shares. It shows on the row,
   in the message after turning mods on, and under *Where mods overlap*. Where nothing can be counted it says *Adds to
-  character creation*, with no number.
+  character creation*, with no number. *Built while CI was down (2026-11-22), with the owner's choice to read the game's
+  own copy ([ADR-0025](adr/0025-combining-chargenmorphcfg.md), amended): `ErfEntryReader` and `GameChargenMorphSource`
+  find it in `packages/core/data`, `ChargenMorphTally` counts by section, `CountChargenMorphAdds` reads each copy once,
+  and the row, the message and the combined file's line say it ([screenshot](screenshots/p2.10-03/01-what-you-got.png)).
+  Not done until the section names are checked against the owner's real file: the table in `ChargenMorphEntries` is
+  marked as a shortcut until then.*
 - P2.10-04 Pictures and words from the download (ADR-0049): the Library keeps a `.dazip`'s outer readme and pictures,
   shows the pictures a mod came with (never `.dds` or `.tga` textures), reads a description and author from an add-in's
   `Manifest.xml` or a readme's first paragraph, and makes small thumbnails safely. `mod.json` goes to schema 4, with a
