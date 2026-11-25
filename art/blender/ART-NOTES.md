@@ -6,10 +6,11 @@ Starting shapes for the medieval touch, to shape however you like. Nothing here 
 
 | File | What it is | Save the renders with |
 |---|---|---|
-| `clasp.blend` | Iron corner bracket with three rivets | `render_corners.py` (all four corners) |
-| `band.blend` | Tooled-leather strip for behind the header, one repeating tile | `render_band.py` |
-| `marks.blend` | Three replacements for the seal: Shield, Roundel, Banner, each with a tick (ready) and a ! (needs a look). The Shield also has an archway (*Welcome*) and an arrow (*One thing first*), and Pass 1's options beside them. The picks are the open door, the signpost, the nail !, the lantern and the bare candle (see ART-PASSES.md); the lantern is the one switched on | `render_all_marks.py` (every mark and the plain shield, three times each: full, `-small` and `-bare`; the plain one has no bare) |
+| `clasp.blend` | Iron corner bracket over mitred oak, with three rose-head rivets (the corner one big) | `render_corners.py` (all four corners) |
+| `band.blend` | Tooled-leather strip for behind the header, one repeating tile, worn along the middle, hand-stitched with one mend | `render_band.py` |
+| `marks.blend` | Three bodies, each saying one thing: the Shield (the headline marks), the Roundel (the Mods tiles) and the Banner (the crest of a mod with no picture). The Shield has the Pass 1 tick and ! switched off, and also has an archway (*Welcome*) and an arrow (*One thing first*), and Pass 1's options beside them. The picks are the open door, the signpost, the nail !, the lantern and the bare candle (see ART-PASSES.md); the lantern is the one switched on. The Roundel carries the lantern and the nail ! (Pass 10); the Banner carries the crest charges, key, hammer and wheel (Pass 13); their old tick and ! are switched off | `render_all_marks.py` (every mark and the plain shield, three times each: full, `-small` and `-bare`; the plain one has no bare) |
 | `rig.blend` | The light every piece shares: *Light: top left* (clasp, marks), *Light: from above (band)*, and the world *Soft ambient*. The pieces link it, so change the light here | nothing to render |
+| `materials.blend` | The surfaces one maker would share (ADR-0053): *Smith's iron* and *Hewn oak: adze scoops* (node groups) and the *Rose head nail* mesh. marks.blend and clasp.blend link them, so change them here | nothing to render |
 | `export_all.py` | Renders every piece, then writes the shading masks the app tints to `export/` (`<piece>@<size>.png` and `@<size>@2x.png`, size in device-independent pixels) | `blender -b --factory-startup --python-exit-code 1 --python export_all.py` |
 
 To run one: open the Scripting tab, pick the script in the text editor's list, then Run Script. Renders land in
@@ -30,6 +31,10 @@ book or a smith's work, and nobody has to look at it to use the app.
 - **Keep the light where it is**, top left (from above for the band). Every piece in the window must agree on where
   the light comes from, or they look pasted on. The suns are linked from `rig.blend`, so a piece can't drift on its
   own; to change the light, change it there.
+- **Take the shared surfaces from `materials.blend`** (ADR-0053). A piece's iron is a thin material: the linked
+  *Smith's iron* group with this piece's values (*Time and use*, *Polish* and *Shine on the edges*, *Rub brightness*,
+  *Lightness*, *Roughness*). Change the values in the piece; change the recipe in `materials.blend`. Never make a
+  linked group local: that's a copy, and copies drift. `export_all.py` stops if a piece can't find what it links.
 - **Check it small.** The clasp shows at about 34 px, a mark at about 24 to 46 px, the band at 80 px tall. Detail
   under about 1/40 of the piece disappears. Bold shapes and a clear silhouette read best.
 - **Nothing from Dragon Age.** No griffons, Grey Warden heraldry, Chantry sunburst or anything traced from the games
@@ -46,6 +51,10 @@ book or a smith's work, and nobody has to look at it to use the app.
 - In marks.blend the Shield has two bodies: *big (planks)* and *small (plain)*. Tick an object's custom property
   `Fine detail` (Object Properties > Custom Properties) to keep it out of the small render.
   Each mark is also rendered *bare* (no body) for Korcari; an object with `Hole when bare` is left out of that render.
+  Only a body collection named *big* or *small* is rendered. The Roundel has only *small*; its other fields (*other*,
+  *old*) wait there; the Banner has *big (linen)* and *small (plain)*, and its folds are the shape key *Folds (push
+  me)*. To swap one in, first rename the current *small* to *other*, then rename the one you want to
+  *small*; the render stops with a message if two share a size.
 - The band's motif and studs repeat with an *Array* modifier: edit the first tile on the left and the other eight
   follow. The leather grain repeats exactly every 4 units, so the render tiles with no seam. Keep the frame 4 wide.
 

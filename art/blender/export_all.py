@@ -14,8 +14,9 @@ how big the app shows it, in device-independent pixels (the band's is its height
 - grey is light and shade around 50%: 50% leaves the tint as it is, lighter lightens it, darker darkens it (the app
   lays it over the tint with hard light, like the clickable mock does).
 A mark shown below 48 uses its -small render (the plain body, no fine detail), from 48 up the full one, at both 1x
-and 2x. Each mark also gets <piece>-bare@<size>.png: the mark alone, no shield, for looks that draw it flat (Korcari,
-which has no shading, so a mark inside a shield would be just a shield).
+and 2x. The Roundel's marks for the Mods tiles come only from its -small render. Each mark also gets
+<piece>-bare@<size>.png: the mark alone, no shield, for looks that draw it flat (Korcari, which has no shading, so a
+mark inside a shield would be just a shield).
 """
 import functools
 import os
@@ -28,17 +29,27 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 RENDERS, EXPORT = os.path.join(HERE, "renders"), os.path.join(HERE, "export")
 PIECES = (("clasp.blend", "render_corners.py"), ("band.blend", "render_band.py"), ("marks.blend", "render_all_marks.py"))
 
-# Which marks go to the app: the picks from ART-PASSES.md, plus the plain shield. Add a mark's file name to export it.
-MARKS = ("welcome-open-door", "one-thing-first-signpost", "needs-a-look-nail", "ready-lantern",
-         "without-your-mods-candle", "plain")
 CLASP, BAND = (34,), (80,)  # where they show, in device-independent pixels
-SMALL, BIG = (24, 34, 46), (48, 64, 96, 128)
+# Which marks go to the app, per body: the picks from ART-PASSES.md, the sizes drawn from its -small render (below 48)
+# and from its full one (48 and up). Add a mark's file name to export it. Each plain body is exported too; the
+# Roundel (the Mods tiles, Pass 10) has only the small drawing.
+MARKS = {
+    "shield": (("welcome-open-door", "one-thing-first-signpost", "needs-a-look-nail", "ready-lantern",
+                "without-your-mods-candle", "plain"), (24, 34, 46), (48, 64, 96, 128)),
+    "roundel": (("ready-lantern", "needs-a-look-nail"), (32,), ()),
+    # The crest of a mod with no picture, by kind (Pass 13 and 14): a Mods row (40), a card and its About page.
+    "banner": (("add-in-key", "override-hammer", "runs-in-the-game-wheel", "plain"), (40,), (96, 160)),
+}
 CONTRAST = {"clasp": 1.5, "band": 2.4, "mark": 2.4}  # how strongly light and shade are kept
+LINKED = ("objects", "collections", "worlds", "materials", "node_groups", "meshes")  # what pieces link (ADR-0053)
 
 
 def render_everything():
     for blend, script in PIECES:
         bpy.ops.wm.open_mainfile(filepath=os.path.join(HERE, blend))
+        missing = [f"{block.name} ({kind})" for kind in LINKED for block in getattr(bpy.data, kind) if block.is_missing]
+        if missing:  # a renamed or missing rig.blend or materials.blend would render pink or unlit into the masks
+            raise RuntimeError(f"{blend} can't find what it links: {', '.join(missing)}")
         exec(compile(bpy.data.texts[script].as_string(), f"{blend}:{script}", "exec"), {"__name__": "__main__"})
 
 
@@ -99,16 +110,20 @@ def save_sizes(rgba, piece, ref, sizes, name):
 def export_everything():
     os.makedirs(EXPORT, exist_ok=True)
     clasp, band = middle("clasp-tl"), middle("band")
-    big, small = middle("mark-shield-plain"), middle("mark-shield-plain-small")
+    bare = middle("mark-shield-plain")  # a bare mark is the same mark on any body, so one reference for all
     written = save_sizes(load("band"), "band", band, BAND, "band")
     for corner in ("tl", "tr", "br", "bl"):
         written += save_sizes(load(f"clasp-{corner}"), "clasp", clasp, CLASP, f"clasp-{corner}")
-    for mark in MARKS:
-        name = f"mark-shield-{mark}"
-        written += save_sizes(load(f"{name}-small"), "mark", small, SMALL, name)
-        written += save_sizes(load(name), "mark", big, BIG, name)
-        if mark != "plain":  # the plain shield has no mark to show bare
-            written += save_sizes(load(f"{name}-bare"), "mark", big, SMALL + BIG, f"{name}-bare")
+    for body, (marks, small_sizes, big_sizes) in MARKS.items():
+        small = middle(f"mark-{body}-plain-small")
+        big = middle(f"mark-{body}-plain") if big_sizes else None
+        for mark in marks:
+            name = f"mark-{body}-{mark}"
+            written += save_sizes(load(f"{name}-small"), "mark", small, small_sizes, name)
+            if big_sizes:
+                written += save_sizes(load(name), "mark", big, big_sizes, name)
+            if mark != "plain":  # a plain body has no mark to show bare
+                written += save_sizes(load(f"{name}-bare"), "mark", bare, small_sizes + big_sizes, f"{name}-bare")
     return written
 
 
