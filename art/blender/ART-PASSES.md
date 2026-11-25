@@ -606,6 +606,22 @@ before on top) and the oak alone in `renders/pass18-oak.png`; the small sizes in
 - **A little bounce** from the field into the undersides of the charge, so dark iron still shows its shape.
 - Still one sun from `rig.blend`; this adds what real light does around it, not a second light.
 
+**Done (2026-11-25)**, before and after in `renders/pass19-close.png` (lantern, candle, door, nail; before on top),
+where it changed in `renders/pass19-diff.png` (grey is no change, lighter is lit, darker is shadowed), the small sizes
+in `renders/pass19-strip.png`.
+- **Contact shadows**: the colour darkens where something sits right over it (an ambient-occlusion reach of about 0.02
+  to 0.025), in *Smith's iron* (so every iron), the shield's oak and the Banner's linen. Every strap, nail and mark now
+  has a thin dark line where it meets its field, which the sun's shadow alone didn't give.
+- **The lit pieces light what's around them**: a soft point light where each one's light comes from, the light the
+  object gives off rather than a second sun. *Light pool: the lanthorn* leaves a halo on the shield, *the candle
+  flame* a glow round the flame, *the doorway, on its sill* a band of light on the sill. They are `Fine detail`, so
+  the small drawings stay plain. The first strength lit only the lantern and candle themselves; set higher and
+  stronger, they reach the shield.
+- **Bounce** was already there: Cycles carries light through four diffuse bounces, so the dark iron's undersides
+  already catch light from the field. Nothing to add.
+- **The 24 px check passes.**
+- Backups, on the owner's machine only: `materials.before-pass19.blend`, `marks.before-pass19.blend`.
+
 ## Pass 20: Lived in (history you can read)
 - **Soot** above the lantern's chimney and the candle's flame, faint on the shield behind them.
 - **Wax** dripped on the candle's dish and once, long ago, on the shield.
