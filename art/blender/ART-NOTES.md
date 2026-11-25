@@ -41,6 +41,29 @@ book or a smith's work, and nobody has to look at it to use the app.
   (LEGAL_BOUNDARIES.md). Our own shapes, or classic medieval motifs nobody owns.
 - **Red stays for danger only.** Shapes are grey anyway, but don't plan a piece around being red.
 
+## Built properly (the build check every pass ends with)
+Each drawing has a triangle budget for where it shows, and `audit_build.py` checks it (`export_all.py` runs it first
+and stops if a drawing is over):
+
+| Drawing | Shows at | Budget |
+|---|---|---|
+| Clasp | 34 px | 4,000 |
+| Band | 80 px tall | 12,000 |
+| Shield, big / small | up to 128 / 46 px | 12,000 / 4,000 |
+| Roundel (the Mods tiles) | 32 px | 4,000 |
+| Banner, big / small | up to 160 / 40 px | 12,000 / 4,000 |
+
+- **Nothing thinner than a pixel at the largest size** it's exported at; it becomes surface or goes. Strokes that
+  only read together as a texture (a darned grid, a frayed hem, a crack) may stay, and say so in the object property
+  *Build: why*.
+- **Curves** at resolution 6 or less; thin strokes with a bevel resolution of 1. **Turned parts** (*Screw*) turned
+  only as many times as their size needs.
+- **Options not picked** are left out of the view layer (unticked in the Outliner), not just hidden, so they're
+  never evaluated or rendered. Tick one back in to use it.
+- **Lighter versions are modifiers named *Build: …*** (un-subdivide, decimate), so the editable shape stays as it was.
+  `build_properly.py` makes them, and running it again changes nothing.
+- **Renders** use the GPU when there is one, 4 light bounces, and keep the scene between a clip's frames.
+
 ## How the files are built (so the edits stay easy)
 - Each plate is a flat **outline** with two modifiers: *Thickness* (Solidify) and *Rounded edges* (Bevel). Reshape it
   by moving the outline's points in Edit Mode, and the depth and edges follow. Each plate's *rim* is its own object;
