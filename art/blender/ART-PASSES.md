@@ -501,6 +501,179 @@ to 14, checked live in all four looks at real sizes.
 - Found on the way, in the mock only: the *Could break quests* warnings drew their icon at full width, because the
   icon had no size; it's 15 px now, like the others.
 
+## Pass 16: Motion (things that move when something happens)
+A test is already in marks.blend: the Banner sways from its bar while folds run down the cloth (*Banner wind (lattice,
+Wind 0 = still)*). One property, *Wind*, drives it all: at 0 the motion modifiers are switched off in the render, so
+every still is the same pixels as before (checked against Pass 13); at 1 it plays a 4-second loop whose last frame
+flows into its first. Preview: the private *Banner motion test* page.
+Since Pass 14 the rig sits on the real Banner: the cloth, its darning and the charges sway and ripple, the tassels
+only sway, and the crossbar, sleeve and finials hold still (the lattice's top row is on the bar). Every ripple starts
+from one point at the bar (*Banner wind source (the bar)*), so pieces with different origins ripple in step.
+
+- **Motion says something changed, then rests.** The door swings open on your first visit; the lantern's wick
+  catches when the game becomes ready; the nail ! is struck in once when something needs a look; the signpost's board
+  swings and settles; a crest's banner lifts once when you turn its mod on. Each plays once, in about a second.
+- **Loops only for what is alive by nature**, and slow: a flame's flicker, a banner in a breeze while you point at it.
+  Never more than one loop on screen at a time, and nothing in a long list loops.
+- **Stills always exist.** Windows' *Animation effects* off, the window in the background, or Korcari: every piece shows
+  its still.
+- **Drawn the same way as the stills**: Blender renders the frames, `export_all.py` turns them into one strip of grey
+  masks per piece and size, and the app tints them exactly as it tints a still. A glow that only brightens can be the
+  app fading one still over another instead.
+- The app side (when each piece plays, the setting, the strips' budget) is drafted as
+  [ADR-0054](../../docs/adr/0054-motion.md) (Proposed), and needs a place on the roadmap before any App code.
+
+## Realism passes (Passes 17 to 22): the medieval look, made believable
+Passes 2 to 7 made the pieces look made. These make them look *real*: things a smith, a joiner or a chandler of the
+time would recognise. The guide is how such things were actually made, which also keeps them our own: real history,
+not anybody's game.
+
+Two rules hold for every one of them:
+- **Realism lives in the big drawing and the motion.** The small drawing stays plain (ADR-0052 §4), and every pass
+  ends with the 24 px check: if a mark reads worse, the detail goes.
+- **Still grey, still calm.** Realism comes from shape, roughness, relief and light, never from colour, and never
+  louder than the words.
+
+## Pass 17: Made the way it was made (period construction)
+Each piece rebuilt to how it would really have been made. Suggestions:
+
+| Piece | How it was really made |
+|---|---|
+| Shield | Glued oak boards faced with linen or rawhide under gesso, the edge bound in rawhide or iron, nails clenched (bent over) on the back |
+| Lantern | A *lanthorn*: panes of thin horn, not glass, so the light comes through soft and milky; a pierced tin or iron top for the smoke |
+| Candle | On a pricket (an iron spike) rather than in a socket; the wax uneven where it was dipped |
+| Door | Planks on ledges, strap hinges ending in curls, studded with clench nails, under a rounded arch |
+| Key | A warded key: a bit cut to pass the wards, a hollow shank, a bow forged round and a little out of true |
+| Hammer | A smith's cross-peen, the face crowned and polished by use, the handle wedged through the eye |
+| Banner | Wool or linen, the charge appliquéd and edged in couched cord, a sleeve over a crossbar with turned finials, cords and tassels |
+
+## Pass 18: Close up (surfaces at the scale they really have)
+- **Oak** shows its rays: the silver flecks of quarter-sawn oak, and open pores along the grain.
+- **Hand-forged iron** has fire scale (a dark skin, flaking at edges), hammer facets, and a bright polish only where
+  it's handled.
+- **Linen** has a weave with slubs (thicker threads at random), **leather** its pores and creases, **wax** a soft
+  sheen and drips that thin as they run.
+- **Roughness from measured ranges**, not guesses: polished iron smooth, fire scale and linen matte, wax in between.
+
+## Pass 19: Light that behaves (contact, bounce, glow)
+- **Contact shadows** where every charge meets its field and every nail meets its wood, so nothing looks pasted on.
+- **The lit pieces light their surroundings**: the lantern and candle cast a warm pool on the shield around them, and
+  the doorway's light spills out onto its sill.
+- **A little bounce** from the field into the undersides of the charge, so dark iron still shows its shape.
+- Still one sun from `rig.blend`; this adds what real light does around it, not a second light.
+
+## Pass 20: Lived in (history you can read)
+- **Soot** above the lantern's chimney and the candle's flame, faint on the shield behind them.
+- **Wax** dripped on the candle's dish and once, long ago, on the shield.
+- **Wood that moved**: a board slightly cupped, a hairline gap where two boards shrank apart.
+- **Nothing quite symmetric**: rivets of a few sizes, a hinge strap a touch longer on one side, a key bow out of round.
+- **Repairs** that tell a story: a newer board, a replaced nail (Pass 7 has one), a patched banner (Pass 14).
+
+## Pass 21: Motion with weight (real physics)
+Each clip in ADR-0054 moves the way the real thing would.
+- **The lantern swings like a pendulum of its size** (a longer hang swings slower), and its glow and shadow swing with
+  it.
+- **A flame flickers in two layers**: a quick small flutter over a slow lean, never a regular blink.
+- **The banner is a cloth simulation** with wind, baked and blended into a seamless loop, so its folds fall and catch
+  like real cloth (the test's lattice sway becomes its fallback).
+- **The doors open with weight**: a slow start, a swing, and a small settle against the hinges.
+- **The nail is struck once**: a sharp drop, a tiny bounce, a puff of dust that fades.
+- **Secondary motion**: a key's ring, a banner's tassels and cords follow a beat behind.
+
+## Pass 22: Atmosphere (for the bigger set pieces)
+Only where a whole scene is drawn (the look's backdrop, the setup hall, *Play*), never behind a mark.
+- **Volumetric light**: a shaft of light with dust drifting through it, rendered as a grey mask like everything else.
+- **Mist, embers and wisps** for the looks' backdrops (Witch of the Wilds, Blood and Shadow, The Fade), slow, seamless
+  loops at the edge of the window.
+- **Depth**: near things sharper, far things softer and lighter, as air does.
+
+## Making it move, and the whole set (Passes 23 to 30)
+Passes 16 to 22 set the rules and the realism. These make the motion and the bigger pictures for 1.0, then measure the
+whole set before it ships. They come after the realism passes, so the clips are rendered from the finished models, and
+each still ends with the 24 px check.
+
+## Pass 23: The clips (ADR-0054's motion, made)
+- **Each headline mark gets its `-arrive` clip**, ending on its still: the doors swing open, the lantern's wick
+  catches, the nail is struck in, the signpost's board swings and settles, the candle is lit. At most 1.5 seconds,
+  12 frames a second.
+- **The tile marks** play the same lantern and nail clips on the Roundel. **A crest** lifts once in a gust when its mod
+  is turned on.
+- **One property drives each clip**, like the Banner's *Wind*: *Open* on the doors, *Lit* on the wick and the candle,
+  *Struck* on the nail. At its rest value the still is the same pixels as before, checked the way Pass 16 was.
+- **`export_all.py` writes the strips** (`<piece>@<size>-arrive.png`, `@2x`), and checks that each clip's last frame
+  matches the still and that every strip is within ADR-0054's budget.
+- Sheet: every clip as a filmstrip at real size, in each look, and Korcari's still beside it.
+
+## Pass 24: What's alive (the idle loops)
+- **The flames**: the lantern's and the candle's, a quick small flutter over a slow lean (Pass 21), never a blink.
+- **The banner in a breeze**: the Pass 16 rig, slower and smaller, for a crest you point at on *About this mod*.
+- Each loop is at least 3 seconds and seamless, and has its still.
+- **The minute test**: watch Home for a minute. If the loop pulls your eye from the headline's words, halve it.
+
+## Pass 25: Moments (the set pieces)
+Three ideas for 1.0 made into short scenes from the pieces we already have (the same lantern, door, iron and wax), so
+nothing new has to be learned. Each needs its own roadmap task, plays in at most 2 seconds, can be skipped, and has a
+still.
+- **The setup hall**: a row of unlit lanterns on a wall, one lighting as each first-run check passes (game found,
+  documents found, backups ready).
+- **Sealed**: while changes are applied the wax warms; when they're done a seal is stamped. *Undo* cracks it.
+- **Play**: the Welcome doors open across the window, then the game starts.
+
+## Pass 26: A backdrop for each look
+Pass 22's atmosphere made real, behind the header only.
+- One scene per look, modelled and rendered as grey masks the look tints: mist at a forest's edge for Witch of the
+  Wilds, slow embers for Blood and Shadow, drifting wisps for The Fade. None for Korcari.
+- A slow seamless drift, 8 seconds or more, and a still.
+- A custom look's own background picture (ADR-0017) replaces it.
+- The test: the header's words and *Play* stay the first thing you read.
+
+## Pass 27: Pictures for empty places
+Small scenes (about 120 px) where a list or a page is empty, from the same set, with the words still saying it.
+- **No mods yet**: an empty rack.
+- **Nothing overlaps**: two banners hanging side by side.
+- **No backups yet**: an empty chest, lid open.
+- **No game found yet**: the Welcome doors, closed.
+
+## Pass 28: Your crest (the parts kit)
+After its ADR and a place on the roadmap (see *Your crest* below).
+- Shield shapes from the Shield's family, the divisions as vector shapes, the charges from Pass 13's family (keys,
+  hammers, wheels and more), and the headline marks hanging on it.
+- Every part reads at 24 px, and any crest made from the kit looks like the set.
+
+## Pass 29: The whole set, measured
+- **Size**: every mask and strip against ADR-0052's and ADR-0054's budgets, the total in the App, and the memory once
+  decoded.
+- **At real scale**: the App's screens with `RealScaleLibrary` (`docs/REVIEWING.md` pass 6), in every look, at 100%
+  and 200% display scaling.
+- **Every piece read again** at 24 px and squinted at, after all the realism and motion passes.
+- **Every clip with motion off**: Windows' *Animation effects* off, *Motion: Off*, Korcari, and the window in the
+  background each show the still.
+
+## Pass 30: The art guide
+The rules the passes found, on one page (`art/blender/ART-GUIDE.md`), so a new contributor makes a piece that belongs:
+- the one light, the three drawings and when each shows, field and charge, *light means good*, the nail and strap sizes,
+  how real things were made;
+- the motion rules, a clip's property and its rest value;
+- how to add a piece: from a starter, through the export, to a sheet in every look.
+
+## Ideas for 1.0 (Passes 25 to 28 take some of these)
+Ways to make modding feel like part of the game, each tied to a moment in the app. All our own art, all calm.
+
+- **The setup hall**: on the first run, a wall of unlit lanterns; each lights as a check passes (game found, documents
+  found, backups ready). Progress you can see without reading.
+- **Sealed**: while changes are applied, wax warms; when they're done, a seal is stamped (*Sealed*). Undo cracks it.
+- **Banners in a row**: add-ins' priority shown as banners hung on a rail, reordered by rehanging them.
+- **Where mods overlap**: two crossed banners, the one that wins in front.
+- **Empty places with a picture**: an empty rack (*Nothing here yet*), two banners hanging side by side (*Nothing
+  overlaps*).
+- **A backdrop for each look** behind the header: our own painted silhouettes with slow drift (mist at a forest edge
+  for Witch of the Wilds, embers for Blood and Shadow, wisps for The Fade; none for Korcari).
+- **Play**: the doors swing open across the window, then the game starts.
+- **Your crest** (below), with the headline marks hanging on it, and perhaps a small familiar of our own making that
+  speaks the cozy guide's lines (ADR-0051).
+- **Sound, off unless you turn it on**: a clink when a mod turns on, a page turning, a wick catching.
+
+
 ## Your crest (an idea for later)
 Every profile could have a crest of its own in a corner of the window, next to the profile's name: a small companion
 that's yours to make.
