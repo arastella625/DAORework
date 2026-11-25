@@ -571,6 +571,34 @@ top), the small sizes in `renders/pass17-strip.png` (64, 24, 32 and 40 px tinted
   sheen and drips that thin as they run.
 - **Roughness from measured ranges**, not guesses: polished iron smooth, fire scale and linen matte, wax in between.
 
+**Done (2026-11-25)**, before and after in `renders/pass18-close.png` (plain shield, lantern, clasp, Roundel, candle;
+before on top) and the oak alone in `renders/pass18-oak.png`; the small sizes in `renders/pass18-strip.png`.
+- **The smith's iron is hand-forged** (in *Smith's iron*, so every iron follows): a dark, matte skin of fire scale
+  that has flaked off in places and is worn away on the edges, and hammer facets, small flat planes over the dents.
+  A new input, *Fire scale*, sets how much is left: 1 on the shield, the marks and the clasp, 0.15 on the Roundel's
+  polished boss.
+- **The oak shows its rays and pores**: silver flecks running across the grain, a little lighter and smoother, and
+  short dark pores along it. Both oaks share them through a new group in materials.blend, *Hewn oak: rays and pores*
+  (ADR-0053: one maker's surface), each with its own grain directions. The first strength barely showed at 256 px,
+  so the flecks were made larger and lighter.
+- **The band's leather** has pores and creases running along the strip, laid on the circle its grain already uses,
+  so it still tiles: its edges differ by 0.0037, against 0.0048 between neighbouring columns.
+- **Wax** has a soft sheen and a little light through it (roughness 0.45, some subsurface).
+- **Roughness from measured ranges**:
+
+  | Surface | Roughness |
+  |---|---|
+  | Polished iron (the Roundel's boss, worn edges) | 0.25 to 0.35 |
+  | Fire scale | about 0.78 |
+  | Oak | 0.85, the rays about 0.7 |
+  | Linen | 0.88 |
+  | Wax | 0.45 |
+
+- **The 24 px check passes**: the new surfaces are finer than a pixel at small sizes and average out; the small marks
+  look as before.
+- Backups, on the owner's machine only: `materials.before-pass18.blend`, `marks.before-pass18.blend`,
+  `clasp.before-pass18.blend`, `band.before-pass18.blend`.
+
 ## Pass 19: Light that behaves (contact, bounce, glow)
 - **Contact shadows** where every charge meets its field and every nail meets its wood, so nothing looks pasted on.
 - **The lit pieces light their surroundings**: the lantern and candle cast a warm pool on the shield around them, and
