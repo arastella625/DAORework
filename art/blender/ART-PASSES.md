@@ -691,6 +691,49 @@ each still ends with the 24 px check.
   simulation and the *Built properly* pass are where that's fixed.
 - Backup, on the owner's machine only: `marks.before-pass23.blend`.
 
+## Built properly (between Passes 23 and 24)
+The owner asked whether the models were built the way a professional would, or just put together; renders had
+grown to over 20 minutes. An audit found both. The renders ran on the CPU with 12 light bounces and rebuilt the scene
+for every clip frame, and several pieces drew far more than their largest size can show.
+
+**Done (2026-11-25)**: every drawing now has a triangle budget for where it shows (`ART-NOTES.md`, *Built properly*),
+`audit_build.py` checks it, and `export_all.py` runs the check first.
+
+| Drawing | Before | After | Budget |
+|---|---|---|---|
+| Clasp | 3,948 (its old rivets, counted though unrendered) | 590 | 4,000 |
+| Band | 13,564 | 5,614 | 12,000 |
+| Shield, big / small | 8,734 / 1,218 | 8,718 / 1,218 | 12,000 / 4,000 |
+| Roundel | 23,306 | 2,904 | 4,000 |
+| Banner, big / small | 34,180 / 23,684 | 10,138 / 3,584 | 12,000 / 4,000 |
+
+- **A full export (every still and the ten clips) took 1,370 seconds and now takes 109**, with the same 234 masks:
+  the GPU when there is one (OptiX on the owner's RTX 4060), 4 light bounces, the scene kept between a clip's
+  frames, unused options no longer rendered (39 stills instead of 76), and the lighter pieces.
+- **The masks barely moved**: across all 107 still masks at 2x the median change is 0.0001 in grey and nothing in
+  shape. The Roundel's tiles changed most (about 2% in grey: its ring is a little flatter and the knock is gone, which
+  32 px can't show), then the big Banner's crests (about 0.5%: its folds a touch softer). These are the new baseline.
+- **What changed, all named *Build: …* and re-runnable by `build_properly.py`**:
+  - the Banner's folded cloth un-subdivided once, and the plain cloth decimated to 15%; both cloths' *Thickness* keeps
+    only the top and the rim, since the back faces away from every camera;
+  - the Roundel's boss turned 40 times instead of 128, its profile halved, its knock and the thickness the knock needed
+    switched off;
+  - circles of 48 points or more drawn with half the points (the wheel, its hub, the key's bow, their cords);
+  - curves at resolution 6, thin strokes with a bevel resolution of 1; the crossbars, sleeves, finials and tassels
+    turned only as often as their size needs;
+  - the couching stitches, a third of a pixel even at 160 px, switched off; the darning, the frayed hem and the
+    lantern's crack kept, because their strokes read together as a texture;
+  - the band's studs and stitches decimated (repeated small parts);
+  - options not picked (the old marks, the unpicked crest charges, the targe, the blockouts, the clasp's old rivets)
+    left out of the view layer: the render script skips them and Blender doesn't evaluate them while you work.
+- **Found on the way**: with a second Blender rendering on the same GPU, one export came out with the small Shield's
+  iron rim black, and no error. Alone it rendered right every time. So `export_all.py` now won't start while another
+  Blender is running (`-- --anyway` overrides it).
+- **My own part of it**: Pass 23's Banner rig had subdivided the tassels four levels by mistake (a turned profile has
+  no faces until its *Screw*), and its patch two levels more than it needed. Both are fixed in *rig_banner_motion.py*.
+- Backups, on the owner's machine only: `marks.before-built-properly.blend`, `clasp.before-built-properly.blend`,
+  `band.before-built-properly.blend`.
+
 ## Pass 24: What's alive (the idle loops)
 - **The flames**: the lantern's and the candle's, a quick small flutter over a slow lean (Pass 21), never a blink.
 - **The banner in a breeze**: the Pass 16 rig, slower and smaller, for a crest you point at on *About this mod*.

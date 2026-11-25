@@ -3,6 +3,9 @@
 Run from anywhere (Blender must be closed, or at least not have these files open with unsaved changes):
     blender -b --factory-startup --python-exit-code 1 --python export_all.py
 Add  -- --no-render  at the end to remake the masks from the renders already in renders/, without rendering.
+It first runs audit_build.py (every drawing within its triangle budget), then renders on the GPU if there is one. It
+won't start while another Blender is running, because two on one GPU can render wrong without an error (add  -- --anyway
+to export regardless).
 --python-exit-code 1 makes a failed export end with an error instead of looking like it worked.
 
 Each .blend is opened in turn and its own render script runs, so the renders in renders/ are refreshed exactly as if
@@ -68,6 +71,46 @@ CLIPS = {
 CLIP_FRAMES, CLIP_BYTES = 48, 400_000  # ADR-0054's budget: frames in a clip, bytes in a 2x strip
 CONTRAST = {"clasp": 1.5, "band": 2.4, "mark": 2.4}  # how strongly light and shade are kept
 LINKED = ("objects", "collections", "worlds", "materials", "node_groups", "meshes")  # what pieces link (ADR-0053)
+
+
+def another_blender():
+    """Two Blenders rendering on one GPU can come out wrong with no error at all (in one test, a whole material
+    rendered black), so the export wants the GPU to itself."""
+    import subprocess
+    try:
+        if os.name == "nt":
+            out = subprocess.run(["tasklist", "/fi", "imagename eq blender.exe", "/fo", "csv", "/nh"],
+                                 capture_output=True, text=True, check=False).stdout
+            pids = [int(line.split('","')[1]) for line in out.splitlines() if line.startswith('"blender.exe"')]
+        else:
+            pids = [int(p) for p in subprocess.run(["pgrep", "-x", "blender"], capture_output=True, text=True,
+                                                   check=False).stdout.split()]
+    except (OSError, ValueError, IndexError):
+        return False  # can't tell: carry on
+    return any(pid != os.getpid() for pid in pids)
+
+
+def use_gpu():
+    """Cycles on the GPU when there is one (factory settings always start on the CPU); otherwise the CPU."""
+    prefs = bpy.context.preferences.addons["cycles"].preferences
+    for kind in ("OPTIX", "CUDA", "HIP", "METAL", "ONEAPI"):
+        try:
+            prefs.compute_device_type = kind
+        except TypeError:
+            continue
+        prefs.get_devices()
+        if any(d.type == kind for d in prefs.devices):
+            for d in prefs.devices:
+                d.use = d.type == kind
+            return kind
+    prefs.compute_device_type = "NONE"
+    return "CPU"
+
+
+def audit():
+    """The build check first: a drawing over its budget stops the export (audit_build.py says which)."""
+    path = os.path.join(HERE, "audit_build.py")
+    exec(compile(open(path, encoding="utf-8").read(), path, "exec"), {"__name__": "__main__", "__file__": path})
 
 
 def render_everything():
@@ -186,6 +229,11 @@ def export_everything():
 
 
 if "--no-render" not in sys.argv:
+    if another_blender() and "--anyway" not in sys.argv:
+        raise SystemExit("Another Blender is running. Close it (or let its render finish) and run the export again;"
+                         " add  -- --anyway  to export regardless.")
+    audit()
+    print("RENDERING ON", use_gpu())
     render_everything()
 done = export_everything()
 print(f"EXPORTED {len(done)} masks to {EXPORT}")
