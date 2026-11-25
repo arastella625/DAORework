@@ -587,7 +587,76 @@ Only where a whole scene is drawn (the look's backdrop, the setup hall, *Play*),
   loops at the edge of the window.
 - **Depth**: near things sharper, far things softer and lighter, as air does.
 
-## Ideas for 1.0 (not planned yet)
+## Making it move, and the whole set (Passes 23 to 30)
+Passes 16 to 22 set the rules and the realism. These make the motion and the bigger pictures for 1.0, then measure the
+whole set before it ships. They come after the realism passes, so the clips are rendered from the finished models, and
+each still ends with the 24 px check.
+
+## Pass 23: The clips (ADR-0054's motion, made)
+- **Each headline mark gets its `-arrive` clip**, ending on its still: the doors swing open, the lantern's wick
+  catches, the nail is struck in, the signpost's board swings and settles, the candle is lit. At most 1.5 seconds,
+  12 frames a second.
+- **The tile marks** play the same lantern and nail clips on the Roundel. **A crest** lifts once in a gust when its mod
+  is turned on.
+- **One property drives each clip**, like the Banner's *Wind*: *Open* on the doors, *Lit* on the wick and the candle,
+  *Struck* on the nail. At its rest value the still is the same pixels as before, checked the way Pass 16 was.
+- **`export_all.py` writes the strips** (`<piece>@<size>-arrive.png`, `@2x`), and checks that each clip's last frame
+  matches the still and that every strip is within ADR-0054's budget.
+- Sheet: every clip as a filmstrip at real size, in each look, and Korcari's still beside it.
+
+## Pass 24: What's alive (the idle loops)
+- **The flames**: the lantern's and the candle's, a quick small flutter over a slow lean (Pass 21), never a blink.
+- **The banner in a breeze**: the Pass 16 rig, slower and smaller, for a crest you point at on *About this mod*.
+- Each loop is at least 3 seconds and seamless, and has its still.
+- **The minute test**: watch Home for a minute. If the loop pulls your eye from the headline's words, halve it.
+
+## Pass 25: Moments (the set pieces)
+Three ideas for 1.0 made into short scenes from the pieces we already have (the same lantern, door, iron and wax), so
+nothing new has to be learned. Each needs its own roadmap task, plays in at most 2 seconds, can be skipped, and has a
+still.
+- **The setup hall**: a row of unlit lanterns on a wall, one lighting as each first-run check passes (game found,
+  documents found, backups ready).
+- **Sealed**: while changes are applied the wax warms; when they're done a seal is stamped. *Undo* cracks it.
+- **Play**: the Welcome doors open across the window, then the game starts.
+
+## Pass 26: A backdrop for each look
+Pass 22's atmosphere made real, behind the header only.
+- One scene per look, modelled and rendered as grey masks the look tints: mist at a forest's edge for Witch of the
+  Wilds, slow embers for Blood and Shadow, drifting wisps for The Fade. None for Korcari.
+- A slow seamless drift, 8 seconds or more, and a still.
+- A custom look's own background picture (ADR-0017) replaces it.
+- The test: the header's words and *Play* stay the first thing you read.
+
+## Pass 27: Pictures for empty places
+Small scenes (about 120 px) where a list or a page is empty, from the same set, with the words still saying it.
+- **No mods yet**: an empty rack.
+- **Nothing overlaps**: two banners hanging side by side.
+- **No backups yet**: an empty chest, lid open.
+- **No game found yet**: the Welcome doors, closed.
+
+## Pass 28: Your crest (the parts kit)
+After its ADR and a place on the roadmap (see *Your crest* below).
+- Shield shapes from the Shield's family, the divisions as vector shapes, the charges from Pass 13's family (keys,
+  hammers, wheels and more), and the headline marks hanging on it.
+- Every part reads at 24 px, and any crest made from the kit looks like the set.
+
+## Pass 29: The whole set, measured
+- **Size**: every mask and strip against ADR-0052's and ADR-0054's budgets, the total in the App, and the memory once
+  decoded.
+- **At real scale**: the App's screens with `RealScaleLibrary` (`docs/REVIEWING.md` pass 6), in every look, at 100%
+  and 200% display scaling.
+- **Every piece read again** at 24 px and squinted at, after all the realism and motion passes.
+- **Every clip with motion off**: Windows' *Animation effects* off, *Motion: Off*, Korcari, and the window in the
+  background each show the still.
+
+## Pass 30: The art guide
+The rules the passes found, on one page (`art/blender/ART-GUIDE.md`), so a new contributor makes a piece that belongs:
+- the one light, the three drawings and when each shows, field and charge, *light means good*, the nail and strap sizes,
+  how real things were made;
+- the motion rules, a clip's property and its rest value;
+- how to add a piece: from a starter, through the export, to a sheet in every look.
+
+## Ideas for 1.0 (Passes 25 to 28 take some of these)
 Ways to make modding feel like part of the game, each tied to a moment in the app. All our own art, all calm.
 
 - **The setup hall**: on the first run, a wall of unlit lanterns; each lights as a check passes (game found, documents
