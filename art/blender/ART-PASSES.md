@@ -486,6 +486,21 @@ Pass 9 again, with everything: the headline marks, the tile marks, the clasps, t
 all four looks, at real sizes. The test is unchanged: nobody looks at an ornament before the words, and every piece
 looks made by the same hands.
 
+**Done (2026-11-25)**: the clickable mock (a private page, not in the repository) now uses all 214 masks from Passes 9
+to 14, checked live in all four looks at real sizes.
+- **Every piece is ours now**: the headline marks on Home, the Roundel marks on the Mods tiles, the clasps and the
+  band, and the Banner crests for mods with no picture, in the Mods rows (40 px), on cards and on a mod's *About* page.
+- **A crest keeps the mock's idea**: its field is divided by the mod's name (plain, per pale, per fess, per bend,
+  quarterly, a chevron), so no two picture-less mods look alike, and the Banner's light and shade and its dark wool
+  charge lie over the field in hard light. The field's two tones are the look's metal and its accent mixed with metal:
+  Blood and Shadow's accent text is the same colour as its metal, so a division made from it vanished there.
+- **Korcari** shows each crest's charge alone, flat, in the heading colour: a key, a hammer, a wheel.
+- **The test passes**: on Home, *Ready to play* and its sentence come first and the shield, band and clasps stay
+  behind them. On the Mods tab the crests sit among the mods' own pictures without outshouting them, and every piece
+  shows the same iron, wood, light and hand.
+- Found on the way, in the mock only: the *Could break quests* warnings drew their icon at full width, because the
+  icon had no size; it's 15 px now, like the others.
+
 ## Pass 16: Motion (things that move when something happens)
 A test is already in marks.blend: the Banner sways from its bar while folds run down the cloth (*Banner wind (lattice,
 Wind 0 = still)*). One property, *Wind*, drives it all: at 0 the motion modifiers are switched off in the render, so
