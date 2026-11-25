@@ -547,6 +547,22 @@ Each piece rebuilt to how it would really have been made. Suggestions:
 | Hammer | A smith's cross-peen, the face crowned and polished by use, the handle wedged through the eye |
 | Banner | Wool or linen, the charge appliquéd and edged in couched cord, a sleeve over a crossbar with turned finials, cords and tassels |
 
+**Done (2026-11-25)**, before and after in `renders/pass17-close.png` (lantern, candle, door, key, hammer; before on
+top), the small sizes in `renders/pass17-strip.png` (64, 24, 32 and 40 px tinted, before on top).
+- **The lanthorn**: its panes are horn now (*Horn panes, lit (the lanthorn)*): milky, mottled in layers, and softer
+  than glass, still the lightest thing on the lantern. Its cap is pierced; the piercings let a little light out. The
+  Roundel's lantern shares the panes.
+- **The candle** is dipped: faint rings where each layer of wax set, seen close up.
+- **The door**: each leaf is three planks with dark seams (*Walnut grey, planked (the door)*), studded with two rows of
+  clench nails (the shared rose-head nail, blackened).
+- **The key** has a warded bit (slots cut to pass the wards) and a bow a little out of true; **the hammer** a crowned
+  face, and its eye and wedge picked out in cord. Their couched cords and stitches follow on the same objects.
+- **Not changed, on purpose**: the shield stays oak boards bound in iron, one of the ways they were really made; a
+  linen-and-gesso facing would hide the planks picked in Passes 3 to 7, so it waits as your option. The candle's
+  pricket and the key's hollow shank can't be seen from the front. The Banner was already made this way in Pass 14.
+- **The 24 px check passes**: every new shape is `Fine detail`, and the small marks look as before.
+- Backup, on the owner's machine only: `marks.before-pass17.blend`.
+
 ## Pass 18: Close up (surfaces at the scale they really have)
 - **Oak** shows its rays: the silver flecks of quarter-sawn oak, and open pores along the grain.
 - **Hand-forged iron** has fire scale (a dark skin, flaking at edges), hammer facets, and a bright polish only where
