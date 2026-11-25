@@ -31,12 +31,14 @@ PIECES = (("clasp.blend", "render_corners.py"), ("band.blend", "render_band.py")
 
 CLASP, BAND = (34,), (80,)  # where they show, in device-independent pixels
 # Which marks go to the app, per body: the picks from ART-PASSES.md, the sizes drawn from its -small render (below 48)
-# and from its full one (48 and up). Add a mark's file name to export it. The plain shield is exported too; the
+# and from its full one (48 and up). Add a mark's file name to export it. Each plain body is exported too; the
 # Roundel (the Mods tiles, Pass 10) has only the small drawing.
 MARKS = {
     "shield": (("welcome-open-door", "one-thing-first-signpost", "needs-a-look-nail", "ready-lantern",
                 "without-your-mods-candle", "plain"), (24, 34, 46), (48, 64, 96, 128)),
     "roundel": (("ready-lantern", "needs-a-look-nail"), (32,), ()),
+    # The crest of a mod with no picture, by kind (Pass 13 and 14): a Mods row (40), a card and its About page.
+    "banner": (("add-in-key", "override-hammer", "runs-in-the-game-wheel", "plain"), (40,), (96, 160)),
 }
 CONTRAST = {"clasp": 1.5, "band": 2.4, "mark": 2.4}  # how strongly light and shade are kept
 LINKED = ("objects", "collections", "worlds", "materials", "node_groups", "meshes")  # what pieces link (ADR-0053)

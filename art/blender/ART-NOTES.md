@@ -52,7 +52,8 @@ book or a smith's work, and nobody has to look at it to use the app.
   `Fine detail` (Object Properties > Custom Properties) to keep it out of the small render.
   Each mark is also rendered *bare* (no body) for Korcari; an object with `Hole when bare` is left out of that render.
   Only a body collection named *big* or *small* is rendered. The Roundel has only *small*; its other fields (*other*,
-  *old*) wait there. To swap one in, first rename the current *small* to *other*, then rename the one you want to
+  *old*) wait there; the Banner has *big (linen)* and *small (plain)*, and its folds are the shape key *Folds (push
+  me)*. To swap one in, first rename the current *small* to *other*, then rename the one you want to
   *small*; the render stops with a message if two share a size.
 - The Banner can move: *Banner wind (lattice, Wind 0 = still)* has a property *Wind*. Leave it at 0 for every still
   render (the motion is then switched off in the render); set it to 1 and press Play to see the 4-second loop.

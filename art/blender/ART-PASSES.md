@@ -458,6 +458,29 @@ Passes 2 to 7 for the Banner in one go, as Pass 10 did for the Roundel, now on t
 - **Age**: a darned patch (waiting since Pass 4), frayed hem threads, the cloth a little sun-faded at the folds.
 - **Made by hand**: uneven stitching round the charge, like the band's.
 
+**Done (2026-11-25)**, built toward Pass 17's row for the Banner (linen, the charge appliquéd and edged in couched
+cord, a sleeve over a crossbar with turned finials). Sheet in `renders/pass14-sheet.png` (the three crests tinted
+gold and lavender at 160, 96 and 40 px, 40 at 2x, then Korcari's flat marks), close-up in `renders/pass14-close.png`
+(big drawing above, small below).
+- **Two drawings, like the Shield**: *Banner body: big (linen)* and *Banner body: small (plain)*; the Pass 0 shape
+  waits in *Banner body: old (blockout)*.
+- **The cloth** is a grid that follows the old outline exactly. Its folds are a shape key, *Folds (push me)*: slide it
+  for deeper or flatter folds, or sculpt it. They are flat on a panel under the charge (appliqué stiffens the cloth)
+  and round the darn, so the charge always sits on a flat field and reads at 40 px.
+- **The sleeve** wraps a walnut crossbar with turned finials, with a tassel hanging at each end (big drawing only).
+- **The charges are appliquéd**: dark wool (*Wool grey (the banner's charge)*) sewn on the linen, each piece a hair
+  above the last so overlaps don't flicker, edged in couched cord held down by small, uneven stitches. The cord and
+  stitches are `Fine detail`, so the small and bare drawings show just the wool shape.
+- **Age and hand**: a darned patch in newer linen on the left tail, frayed threads along both tails' edges, and the
+  linen a little lighter where the folds stand out (sun-faded). The linen has a plain weave with slubs, seen up close.
+- The new materials (*Linen grey (the banner)*, its newer darn, wool, cord, thread) stay in marks.blend: only the
+  Banner uses them (ADR-0053 rule 2). The crossbar is the marks' walnut.
+- `export_all.py` exports the three picks and the plain Banner at 40 px (small) and 96 and 160 px (big), with bare
+  versions: 214 masks in all. The Shield's, Roundel's, clasp's and band's masks are unchanged.
+- The motion rig (Pass 16) was made on the blockout. The new cloth, bar and charges don't carry its *Wind:*
+  modifiers yet.
+- Backup, on the owner's machine only: `marks.before-pass14.blend`.
+
 ## Pass 15: In the window, all together
 Pass 9 again, with everything: the headline marks, the tile marks, the clasps, the band and the crests in the mock, in
 all four looks, at real sizes. The test is unchanged: nobody looks at an ornament before the words, and every piece
@@ -468,6 +491,9 @@ A test is already in marks.blend: the Banner sways from its bar while folds run 
 Wind 0 = still)*). One property, *Wind*, drives it all: at 0 the motion modifiers are switched off in the render, so
 every still is the same pixels as before (checked against Pass 13); at 1 it plays a 4-second loop whose last frame
 flows into its first. Preview: the private *Banner motion test* page.
+Since Pass 14 the rig sits on the real Banner: the cloth, its darning and the charges sway and ripple, the tassels
+only sway, and the crossbar, sleeve and finials hold still (the lattice's top row is on the bar). Every ripple starts
+from one point at the bar (*Banner wind source (the bar)*), so pieces with different origins ripple in step.
 
 - **Motion says something changed, then rests.** The door swings open on your first visit; the lantern's wick
   catches when the game becomes ready; the nail ! is struck in once when something needs a look; the signpost's board
