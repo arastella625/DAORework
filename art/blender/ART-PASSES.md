@@ -664,6 +664,33 @@ each still ends with the 24 px check.
   matches the still and that every strip is within ADR-0054's budget.
 - Sheet: every clip as a filmstrip at real size, in each look, and Korcari's still beside it.
 
+**Done (2026-11-25)**, ten clips, previewed on the private *Pass 23 Clips* page; filmstrips in
+`renders/pass23-filmstrips.png` (each clip's 19 frames left to right, the last its still).
+- **The clips**: the doors swing open toward you and the doorway's light comes up (the light on the sill fades in
+  from clear, not from black); the lantern's wick catches, flickers and settles; the nail is struck home; the
+  signpost's board rocks on its top nail and settles; the candle's flame catches small and grows. The Mods tiles play
+  the lantern and the nail on the Roundel, and each kind's crest lifts once in a gust (key, hammer, wheel, on the small
+  Banner, where a crest shows in a Mods row). 1.5 seconds each, 19 frames at 12 a second.
+- **One property per clip** on a control empty, *Clip: … (Shut / Unlit / Raised / Swing 0 = the still)*, and *Gust*
+  on the Banner's lattice, keyed from frame -36 to 0 and holding 0 after, so every still and the Banner's loop
+  (frames 0 to 95) are made exactly as before: all 70 renders of every mark at every level were compared pixel for
+  pixel. The parts follow through pivot empties labelled *(Pass 23)* and through drivers on each glow's strength, so
+  a glow's strength at rest stays the same number and Cycles samples it as before.
+- **The nail, reworked after the owner's look** (it read like a zoom): only the nail moves, its dot and washer stay;
+  it comes down faster and faster into the board with its shadow closing in, flattens a little on the blow, rebounds a
+  touch and settles.
+- **What the first try got wrong**: whole-number keys made Blender round every curve, so the doors jumped and the
+  bounces vanished; the sill's light dimmed to a black slab; and the clip renderer moved the other bodies aside,
+  which shifted the Shield-textured iron on the Roundel. Each clip's last frame is now checked against its still.
+- `export_all.py` renders the clips (`render_clips.py`, inside marks.blend) and writes each as a strip,
+  `<piece>@<size>-arrive.png` and `@2x`: the headline marks at 64, the tiles at 32, the crests at 40. It stops if a
+  clip has more than 48 frames, doesn't end on its still, or has a 2x strip over 400 KB. Today's 2x strips are 19 to 133 KB.
+- The rigs are re-runnable texts inside marks.blend, *rig_banner_motion.py* and *rig_clips.py*: each undoes what it
+  made and makes it again, so they can be run on top of later passes. Pass 19's light pools go dark with their clips.
+- **Still to come, from the owner's look**: the Banner looks fake and rigid, still and moving. Pass 21's cloth
+  simulation and the *Built properly* pass are where that's fixed.
+- Backup, on the owner's machine only: `marks.before-pass23.blend`.
+
 ## Pass 24: What's alive (the idle loops)
 - **The flames**: the lantern's and the candle's, a quick small flutter over a slow lean (Pass 21), never a blink.
 - **The banner in a breeze**: the Pass 16 rig, slower and smaller, for a crest you point at on *About this mod*.

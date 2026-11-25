@@ -17,6 +17,11 @@ A mark shown below 48 uses its -small render (the plain body, no fine detail), f
 and 2x. The Roundel's marks for the Mods tiles come only from its -small render. Each mark also gets
 <piece>-bare@<size>.png: the mark alone, no shield, for looks that draw it flat (Korcari, which has no shading, so a
 mark inside a shield would be just a shield).
+
+Pass 23's clips (ADR-0054): marks.blend's render_clips.py renders each -arrive clip into renders/clips/, and each
+becomes one strip of masks, frame after frame left to right, <piece>@<size>-arrive.png and <piece>@<size>@2x-arrive.png.
+The export stops if a clip has more than 48 frames, if its last frame isn't exactly its still, or if a 2x strip is
+over 400 KB.
 """
 import functools
 import os
@@ -27,7 +32,8 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RENDERS, EXPORT = os.path.join(HERE, "renders"), os.path.join(HERE, "export")
-PIECES = (("clasp.blend", "render_corners.py"), ("band.blend", "render_band.py"), ("marks.blend", "render_all_marks.py"))
+PIECES = (("clasp.blend", "render_corners.py"), ("band.blend", "render_band.py"), ("marks.blend", "render_all_marks.py"),
+          ("marks.blend", "render_clips.py"))
 
 CLASP, BAND = (34,), (80,)  # where they show, in device-independent pixels
 # Which marks go to the app, per body: the picks from ART-PASSES.md, the sizes drawn from its -small render (below 48)
@@ -40,6 +46,26 @@ MARKS = {
     # The crest of a mod with no picture, by kind (Pass 13 and 14): a Mods row (40), a card and its About page.
     "banner": (("add-in-key", "override-hammer", "runs-in-the-game-wheel", "plain"), (40,), (96, 160)),
 }
+# Pass 23's -arrive clips: the clip's render name -> (the piece it animates, the still it must end on, the plain render
+# it's shaded against, where it shows). A headline mark at 64, a Mods tile at 32, a crest in a Mods row at 40.
+CLIPS = {
+    "welcome": ("mark-shield-welcome-open-door", "mark-shield-welcome-open-door", "mark-shield-plain", (64,)),
+    "ready": ("mark-shield-ready-lantern", "mark-shield-ready-lantern", "mark-shield-plain", (64,)),
+    "needs-a-look": ("mark-shield-needs-a-look-nail", "mark-shield-needs-a-look-nail", "mark-shield-plain", (64,)),
+    "one-thing-first": ("mark-shield-one-thing-first-signpost", "mark-shield-one-thing-first-signpost",
+                        "mark-shield-plain", (64,)),
+    "without-your-mods": ("mark-shield-without-your-mods-candle", "mark-shield-without-your-mods-candle",
+                          "mark-shield-plain", (64,)),
+    "tile-ready": ("mark-roundel-ready-lantern", "mark-roundel-ready-lantern-small", "mark-roundel-plain-small", (32,)),
+    "tile-needs-a-look": ("mark-roundel-needs-a-look-nail", "mark-roundel-needs-a-look-nail-small",
+                          "mark-roundel-plain-small", (32,)),
+    "crest-add-in-key": ("mark-banner-add-in-key", "mark-banner-add-in-key-small", "mark-banner-plain-small", (40,)),
+    "crest-override-hammer": ("mark-banner-override-hammer", "mark-banner-override-hammer-small",
+                              "mark-banner-plain-small", (40,)),
+    "crest-runs-in-the-game-wheel": ("mark-banner-runs-in-the-game-wheel", "mark-banner-runs-in-the-game-wheel-small",
+                                     "mark-banner-plain-small", (40,)),
+}
+CLIP_FRAMES, CLIP_BYTES = 48, 400_000  # ADR-0054's budget: frames in a clip, bytes in a 2x strip
 CONTRAST = {"clasp": 1.5, "band": 2.4, "mark": 2.4}  # how strongly light and shade are kept
 LINKED = ("objects", "collections", "worlds", "materials", "node_groups", "meshes")  # what pieces link (ADR-0053)
 
@@ -84,17 +110,28 @@ def area(n_in, n_out):
     return m
 
 
-def save_mask(rgba, k, ref, w, h, out_name):
+def make_mask(rgba, k, ref, w, h):
     lum, al = rgba[..., :3].mean(-1), rgba[..., 3]
     shade = np.clip(0.5 + (lum / ref - 1) * k * 0.5, 0, 1)
     pre = np.dstack([shade * al, al])  # premultiplied, so edges don't pick up the empty background
     r = np.einsum("pj,ojc->opc", area(rgba.shape[1], w), np.einsum("oi,ijc->ojc", area(rgba.shape[0], h), pre))
     g = r[..., 0] / np.maximum(r[..., 1], 1e-6)
+    return np.dstack([g, g, g, r[..., 1]])
+
+
+def write_png(mask, out_name):
+    h, w = mask.shape[:2]
+    path = os.path.join(EXPORT, f"{out_name}.png")
     img = bpy.data.images.new(out_name, w, h, alpha=True)
-    img.pixels.foreach_set(np.ascontiguousarray(np.dstack([g, g, g, r[..., 1]])[::-1]).ravel().astype(np.float32))
-    img.filepath_raw, img.file_format = os.path.join(EXPORT, f"{out_name}.png"), "PNG"
+    img.pixels.foreach_set(np.ascontiguousarray(mask[::-1]).ravel().astype(np.float32))
+    img.filepath_raw, img.file_format = path, "PNG"
     img.save()
     bpy.data.images.remove(img)
+    return os.path.getsize(path)
+
+
+def save_mask(rgba, k, ref, w, h, out_name):
+    write_png(make_mask(rgba, k, ref, w, h), out_name)
 
 
 def save_sizes(rgba, piece, ref, sizes, name):
@@ -104,6 +141,27 @@ def save_sizes(rgba, piece, ref, sizes, name):
         for h, out_name in ((size, f"{name}@{size}"), (2 * size, f"{name}@{size}@2x")):
             save_mask(rgba, CONTRAST[piece], ref, h * rgba.shape[1] // rgba.shape[0], h, out_name)
             written.append(out_name)
+    return written
+
+
+def export_clips():
+    """Each clip's frames become one strip per size, after three checks (ADR-0054 §5 and §6)."""
+    written = []
+    for clip, (piece, still, plain, sizes) in CLIPS.items():
+        frames = sorted(f[:-4] for f in os.listdir(os.path.join(RENDERS, "clips"))
+                        if f.startswith(clip + "-") and f[len(clip) + 1:-4].isdigit())
+        if not frames or len(frames) > CLIP_FRAMES:
+            raise ValueError(f"clip {clip} has {len(frames)} frames; a clip has 1 to {CLIP_FRAMES}")
+        renders = [load(os.path.join("clips", f)) for f in frames]
+        if (np.abs(renders[-1] - load(still)).max(-1) > 0.1).any():  # it must rest on exactly the still
+            raise ValueError(f"clip {clip} doesn't end on its still, renders/{still}.png")
+        ref = middle(plain)
+        for size in sizes:
+            for h, out_name in ((size, f"{piece}@{size}-arrive"), (2 * size, f"{piece}@{size}@2x-arrive")):
+                strip = np.concatenate([make_mask(r, CONTRAST["mark"], ref, h, h) for r in renders], 1)
+                if write_png(strip, out_name) > CLIP_BYTES and h == 2 * size:
+                    raise ValueError(f"{out_name}.png is over ADR-0054's {CLIP_BYTES // 1000} KB")
+                written.append(out_name)
     return written
 
 
@@ -124,7 +182,7 @@ def export_everything():
                 written += save_sizes(load(name), "mark", big, big_sizes, name)
             if mark != "plain":  # a plain body has no mark to show bare
                 written += save_sizes(load(f"{name}-bare"), "mark", bare, small_sizes + big_sizes, f"{name}-bare")
-    return written
+    return written + export_clips()
 
 
 if "--no-render" not in sys.argv:
