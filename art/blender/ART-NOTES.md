@@ -57,6 +57,10 @@ book or a smith's work, and nobody has to look at it to use the app.
   *small*; the render stops with a message if two share a size.
 - The Banner can move: *Banner wind (lattice, Wind 0 = still)* has a property *Wind*. Leave it at 0 for every still
   render (the motion is then switched off in the render); set it to 1 and press Play to see the 4-second loop.
+- The headline marks, the tiles' marks and the crests have *-arrive* clips (Pass 23): each has a control empty
+  *Clip: … (<Property> 0 = the still)* keyed from frame -36 to 0. Leave the scene at frame 0 or later for stills.
+  To change a rig, edit and run *rig_clips.py* or *rig_banner_motion.py* in the Scripting tab: each undoes what it
+  made and makes it again.
 - The band's motif and studs repeat with an *Array* modifier: edit the first tile on the left and the other eight
   follow. The leather grain repeats exactly every 4 units, so the render tiles with no seam. Keep the frame 4 wide.
 
