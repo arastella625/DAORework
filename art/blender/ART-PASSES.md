@@ -629,6 +629,31 @@ in `renders/pass19-strip.png`.
 - **Nothing quite symmetric**: rivets of a few sizes, a hinge strap a touch longer on one side, a key bow out of round.
 - **Repairs** that tell a story: a newer board, a replaced nail (Pass 7 has one), a patched banner (Pass 14).
 
+**Done (2026-11-25)**, before and after in `renders/pass20-close.png` (candle, lantern, door; before on top), the
+soot and wax up close in `renders/pass20-zoom.png` (before, after for the candle, then the lantern), where it changed
+in `renders/pass20-diff.png` (grey is no change, lighter and darker are what changed), the small sizes in
+`renders/pass20-strip.png`.
+- **Soot** (*Soot above the lanthorn*, *Soot above the candle*): a sheet laid on the middle board, narrow at the
+  flame and wider as it rises, dark at the flame and fading upward. How dark is the object's *Soot* property (0.85
+  and 0.9). The first strength was there in numbers but lost among the shadows under the strap, so it was made
+  denser and wider.
+- **Wax**: a run over the candle dish's lip, coming out of the puddle, and one old drop on the shield below the dish
+  that set as it ran, duller and dustier than the candle (*Wax grey, old*).
+- **Wood that moved**: the old left board, the one with the split, is cupped, its edges a little higher than its
+  middle, so the light falls off across it (in the oak's surface, read from the board's *Cupped* property; the
+  boards are flat outlines, so a real bend would need new geometry). It has also shrunk away from the middle board: a
+  shape key, *Shrank apart*, moves its inner edge in, not at all where the strap holds it and 6 mm at the bottom.
+- **Seen through the gaps**: the gaps between the boards were see-through to the app's background (alpha as low as
+  0.03), so on a light theme they would have shown light. A back now sits behind the boards (*Shield back (seen
+  through the gaps)*), and the gaps show shadowed oak on any theme.
+- **A repair**: the right board is a newer one (*Time and use* 0.35, so less silvered and worn, and the old paint
+  stops at it), held by a new strap nail (*New iron grey*). Its two rust streaks are hidden, since it hasn't rusted
+  yet; turn them back on in the outliner if you want them.
+- **Nothing quite symmetric**: the right door's lower hinge strap was set 5 mm lower than the left one's. Rivets of
+  a few sizes (Pass 7) and the key's out-of-round bow (Pass 17) were already there, and so were the replaced nail
+  (Pass 7) and the patched banner (Pass 14).
+- **The 24 px check passes**: the new pieces are `Fine detail`, and the small marks and the Banner are unchanged.
+
 ## Pass 21: Motion with weight (real physics)
 Each clip in ADR-0054 moves the way the real thing would.
 - **The lantern swings like a pendulum of its size** (a longer hang swings slower), and its glow and shadow swing with
