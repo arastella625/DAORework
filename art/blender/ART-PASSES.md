@@ -665,6 +665,45 @@ Each clip in ADR-0054 moves the way the real thing would.
 - **The nail is struck once**: a sharp drop, a tiny bounce, a puff of dust that fades.
 - **Secondary motion**: a key's ring, a banner's tassels and cords follow a beat behind.
 
+**Done (2026-11-25)**. Before and after (before on top) in `renders/pass21-headline-a.png` (door, lantern) and
+`renders/pass21-headline-b.png` (nail, signpost, candle), every other frame; the nail's dust up close in
+`renders/pass21-dust.png`; the cloth's loop in `renders/pass21-cloth-loop.png`; a crest's gust and the Roundel's lantern
+in `renders/pass21-crest-and-tile.png`.
+- **Worked out, not placed**: each clip's curve now comes from a small simulation of the real thing, stepped 20 times
+  a frame and keyed once a frame (*weight.py*, a text in marks.blend, so the numbers can be read and changed). Whatever
+  still moves in the last few frames is eased to rest, so every clip ends exactly on its still.
+- **The doors**: a push that builds over a quarter second (a slow start), the leaves swing, knock against the wall,
+  bounce back about 7 degrees and settle, the hinges' sag bringing them home.
+- **The nail**: let go, it falls under gravity, faster and faster; the board takes it like a stiff spring with a
+  damper (a small squash and a tiny bounce); and a puff of dust is thrown out along the board, slowing in the air,
+  spreading and thinning until it's gone by the still (*Dust puff*, *Fine detail*).
+- **The lanthorn swings like a pendulum of its size**: nudged as it's lit, it swings on its knob (a 0.3 m lantern
+  hanging 0.2 m below it swings about once a second) and the bail's rub stops it. Its glow and Pass 19's light pool
+  swing with it, so its light and shadow move too. The Roundel's lantern does the same inside its holder.
+- **The signpost's board** rocks on its top nail as a pendulum too, a little slower, being longer.
+- **A flame flickers in two layers**: a quick small flutter (3 to 6 a second, under what 12 frames a second can show)
+  over a slow lean, made of sines that never line up, so it never blinks regularly. The candle's flame also tips with
+  the lean (*Lean*). Both calm before the still; the flames' loops are Pass 24.
+- **The Banner is cloth**: Blender's cloth simulation of the linen hanging from its sleeve, under gravity, in a
+  breath of wind from behind you on the left. The breath lifts it back from the bar (the left side first), the folds
+  smooth and come back in new places, and it falls back to hanging still. Each run starts from the cloth hanging still
+  and is eased back to it, so the loop's first frame is its still, as ADR-0054 asks, and every loop flows into the
+  next. A crest's gust is the same, shorter and sharper.
+- **How the cloth is kept**: the bake is stored as shape keys of a fine lattice (*Banner cloth (lattice, Pass 21)*,
+  17 by 27 points, about 7 cm apart), one a rendered frame, so every piece stitched to the cloth rides with it, the
+  curves of the charges as well as the meshes. The finest folds are as fine as the lattice; a denser one is two
+  numbers in *rig_banner_cloth.py*. The old sway is the fallback: *Cloth* 0 on the wind lattice.
+- **Secondary motion**: the tassels swing a beat behind the cloth, each a pendulum of its own length pushed by the
+  same wind. The key and the other charges are couched onto the linen, so they move with it, not behind it; nothing
+  hangs from them.
+- **The stills didn't change**: across all 234 masks the stills differ from Pass 20's by at most 1 level in 255, the
+  same as the band and clasp, which this pass doesn't touch (the GPU's noise). The ten clips changed, each still ends
+  on its still, and every strip is within ADR-0054's budget.
+- **One render came out wrong once**: on the first export the small Banner's crossbar ends rendered black in the
+  still. The check that a clip ends on its still caught it, and the next export was right. It's the same kind of
+  fault the *Built properly* pass saw; the check is what keeps it out of the app.
+- marks.blend grows from 533 KB to 710 KB (the cloth's shape keys).
+
 ## Pass 22: Atmosphere (for the bigger set pieces)
 Only where a whole scene is drawn (the look's backdrop, the setup hall, *Play*), never behind a mark.
 - **Volumetric light**: a shaft of light with dust drifting through it, rendered as a grey mask like everything else.
