@@ -11,6 +11,7 @@ Starting shapes for the medieval touch, to shape however you like. Nothing here 
 | `marks.blend` | Three bodies, each saying one thing: the Shield (the headline marks), the Roundel (the Mods tiles) and the Banner (the crest of a mod with no picture). The Shield has the Pass 1 tick and ! switched off, and also has an archway (*Welcome*) and an arrow (*One thing first*), and Pass 1's options beside them. The picks are the open door, the signpost, the nail !, the lantern and the bare candle (see ART-PASSES.md); the lantern is the one switched on. The Roundel carries the lantern and the nail ! (Pass 10); the Banner carries the crest charges, key, hammer and wheel (Pass 13); their old tick and ! are switched off | `render_all_marks.py` (every mark and the plain shield, three times each: full, `-small` and `-bare`; the plain one has no bare) |
 | `rig.blend` | The light every piece shares: *Light: top left* (clasp, marks), *Light: from above (band)*, and the world *Soft ambient*. The pieces link it, so change the light here | nothing to render |
 | `materials.blend` | The surfaces one maker would share (ADR-0053): *Smith's iron* and *Hewn oak: adze scoops* (node groups) and the *Rose head nail* mesh. marks.blend and clasp.blend link them, so change them here | nothing to render |
+| `atmosphere.blend` | Pass 22's studies in air, for the bigger set pieces (never behind a mark): four scenes, *Light through a window* (two shafts with dust drifting in them), *Mist at a forest's edge*, *Embers rising* (over a burning keep's wall) and *Wisps in the Fade* (floating islands). Pick a scene at the top of the window to see it. Nothing in the app uses them yet (Pass 26 does) | `render_atmosphere.py` (each scene's still; add `-- loops` for every frame of its 4-second loop) |
 | `export_all.py` | Renders every piece, then writes the shading masks the app tints to `export/` (`<piece>@<size>.png` and `@<size>@2x.png`, size in device-independent pixels) | `blender -b --factory-startup --python-exit-code 1 --python export_all.py` |
 
 To run one: open the Scripting tab, pick the script in the text editor's list, then Run Script. Renders land in
@@ -87,6 +88,15 @@ and stops if a drawing is over):
   *rig_weight.py* (the clips, keyed from the physics in *weight.py*; it runs *rig_clips.py* first) and
   *rig_banner_cloth.py* (the Banner's cloth; it runs *rig_banner_motion.py* first). To change how something moves,
   change its numbers in *weight.py* and run the rig. The cloth takes about 10 seconds to bake.
+- **atmosphere.blend is made by a script**, *build_atmosphere.py* (it runs *atmo_kit.py* first): running it again
+  makes every scene fresh, so change a study's numbers there rather than by hand, or a re-run loses the change. The
+  windows are live cuts (*Boolean* modifiers): move or reshape a *cutter* and the window follows.
+  - The air is a box with a volume material: a little even haze (what makes far things lighter and softer) and,
+    where there's more (mist, smoke, wisps), noise shaped into it. The dust and the embers are points on a mesh drawn
+    as tiny spheres by the *Drift (Pass 22)* geometry nodes.
+  - Everything moves on a 48-frame loop driven by the frame itself: the noise drifts round a circle through its own
+    fourth dimension, and each ember rises once a loop. Frame 48 is frame 0 again, so the loop has no seam, and its
+    first frame is the still (ADR-0054 section 5).
 - The band's motif and studs repeat with an *Array* modifier: edit the first tile on the left and the other eight
   follow. The leather grain repeats exactly every 4 units, so the render tiles with no seam. Keep the frame 4 wide.
 

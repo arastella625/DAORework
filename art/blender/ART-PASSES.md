@@ -711,6 +711,35 @@ Only where a whole scene is drawn (the look's backdrop, the setup hall, *Play*),
   loops at the edge of the window.
 - **Depth**: near things sharper, far things softer and lighter, as air does.
 
+**Done (2026-11-26)**, four studies in a new file, `atmosphere.blend`, previewed on the private *Pass 22 Atmosphere*
+page (each loop tinted in its look). The sheet of every still in every look is `renders/pass22-studies.png`. Nothing
+in the app uses them, and `export_all.py` doesn't export them: Pass 26 decides how a backdrop is drawn.
+- **The studies, one scene each**:
+  - *Light through a window*, for the setup hall and *Play*: two shafts of sun through a lancet window and a small
+    one, with dust drifting in the light (and unlit outside it, as it would be).
+  - *Mist at a forest's edge*, for Witch of the Wilds: five rows of firs going back into the air, with mist lying low
+    in banks. The low sun is behind the trees, so the mist glows.
+  - *Embers rising*, for Blood and Shadow: a keep's broken wall and tower against the smoke of a fire behind it, with
+    embers rising over the wall and nearer, each fading in and out.
+  - *Wisps in the Fade*: islands of rock adrift, with thin curling wisps in patches at several depths.
+- **Depth is the air itself**: every scene has a little even haze, so each row back is paler and softer, and the
+  camera focuses near. The light falls from the top left, like the light on every mark.
+- **Each moves on a 4-second loop** (48 frames at 12 a second) driven by the frame, so frame 48 is frame 0 again:
+  the seam check differs by at most 0.08 in one pixel (the clip check allows 0.1), and the first frame is the still.
+  The noise drifts round a circle through its fourth dimension; each ember rises once a loop.
+- **A scene is shaded against a fixed middle** (a render brightness of 0.5), not against its own median like a mark:
+  against its median, the keep's wall became the full tint and the fire's smoke blew out to white.
+- **A backdrop can't move as a strip of frames.** Each loop as masks weighs 8 to 20 MB even at 1x (960 by 240),
+  against ADR-0054's 400 KB at 2x, and ADR-0054 keeps loops for a flame or cloth. Pass 26 needs an ADR first. My
+  suggestion: two or three still layers (far, near, the air) that the app drifts slowly against each other.
+- **What the first tries got wrong**: the sun came in over the wall's top, so the hall got a ceiling and side walls;
+  the first ruin read as tower blocks; the fire's light was 24 m square and reached in front of the wall; the wisps
+  first averaged into an even haze, then ran to one vanishing point like warp lines, and are now thin lines in
+  sheets. Rendering from a script, only the window's scene follows the frame, so at first only the mist moved:
+  `render_atmosphere.py` now shows each scene before rendering it, and the seam check is what caught it.
+- **Light to build**: 1,100 to 32,000 triangles a scene (the dust is most of the hall), 510 KB. On the owner's GPU
+  the four stills take about 6 minutes at 1920 by 480, and each loop 6 to 9 minutes at 960 by 240.
+
 ## Making it move, and the whole set (Passes 23 to 30)
 Passes 16 to 22 set the rules and the realism. These make the motion and the bigger pictures for 1.0, then measure the
 whole set before it ships. They come after the realism passes, so the clips are rendered from the finished models, and
